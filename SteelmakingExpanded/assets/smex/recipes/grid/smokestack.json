@@ -1,0 +1,31 @@
+{
+  "name": "Smoke Stack Intake",
+  "ingredientPattern": "BHB,BPB,BNB",
+  "ingredients": {
+    "B": {
+      "type": "item",
+      "code": "game:refractorybrick-fired-tier3",
+      "quantity": 2
+    },
+    "N": {
+      "type": "item",
+      "code": "game:metalnailsandstrips-{metal}",
+      "quantity": 2
+    },
+    "H": {
+      "type": "item",
+      "code": "game:hammer-*",
+      "isTool": true
+    },
+    "P": { "type": "block", "code": "smex:gaspipe-straight*", "quantity": 1 }
+  },
+  "allowedVariants": {
+    "metal": ["iron", "steel"]
+  },
+  "width": 3,
+  "height": 3,
+  "output": {
+    "type": "block",
+    "code": "smex:smokestack-intake-n"
+  }
+}

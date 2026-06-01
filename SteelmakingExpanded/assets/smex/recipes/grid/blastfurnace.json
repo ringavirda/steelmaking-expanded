@@ -1,0 +1,165 @@
+[
+  {
+    "name": "Blast Furnace Door",
+    "ingredientPattern": "BRP,BN_,BRP",
+    "ingredients": {
+      "B": {
+        "type": "item",
+        "code": "game:refractorybrick-fired-tier3",
+        "quantity": 4
+      },
+      "R": { "type": "item", "code": "game:rod-{metal}", "quantity": 2 },
+      "N": {
+        "type": "item",
+        "code": "game:metalnailsandstrips-{metal}",
+        "quantity": 4
+      },
+      "P": { "type": "item", "code": "game:metalplate-{metal}", "quantity": 2 }
+    },
+    "allowedVariants": {
+      "metal": ["iron", "steel"]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "smex:blastfurnacedoor"
+    }
+  },
+  {
+    "name": "Molten Metal Tap",
+    "ingredientPattern": "BPH,BFC,BBB",
+    "ingredients": {
+      "B": {
+        "type": "item",
+        "code": "game:refractorybrick-fired-tier3",
+        "quantity": 2
+      },
+      "F": {
+        "type": "item",
+        "code": "game:clay-fire",
+        "quantity": 12
+      },
+      "P": {
+        "type": "item",
+        "code": "game:metalplate-{metal}",
+        "quantity": 1
+      },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      },
+      "C": {
+        "type": "item",
+        "code": "game:chisel-*",
+        "isTool": true
+      }
+    },
+    "allowedVariants": {
+      "metal": ["iron", "steel"]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "smex:blastfurnacetap-north"
+    }
+  },
+  {
+    "name": "Tuyere",
+    "ingredientPattern": "BHB,BCB,BPB",
+    "ingredients": {
+      "B": {
+        "type": "item",
+        "code": "game:refractorybrick-fired-tier3",
+        "quantity": 2
+      },
+      "P": {
+        "type": "block",
+        "code": "smex:gaspipe-straight*"
+      },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      },
+      "C": {
+        "type": "item",
+        "code": "game:chisel-*",
+        "isTool": true
+      }
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "smex:blastfurnace-tuyere-s"
+    }
+  },
+  {
+    "name": "Reinforced Hopper",
+    "ingredientPattern": "_H_,PSP,SPS",
+    "ingredients": {
+      "P": {
+        "type": "item",
+        "code": "game:metalplate-{metal}",
+        "quantity": 1
+      },
+      "S": {
+        "type": "item",
+        "code": "game:metalnailsandstrips-{metal}",
+        "quantity": 1
+      },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      }
+    },
+    "allowedVariants": {
+      "metal": ["iron", "steel"]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "smex:hopperreinforced"
+    }
+  },
+  {
+    "name": "Bell Hopper",
+    "ingredientPattern": "GHG,PSP,SPS",
+    "ingredients": {
+      "P": {
+        "type": "item",
+        "code": "game:metalplate-{metal}",
+        "quantity": 1
+      },
+      "S": {
+        "type": "item",
+        "code": "game:metalnailsandstrips-{metal}",
+        "quantity": 1
+      },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      },
+      "G": {
+        "type": "item",
+        "code": "game:gear-rusty",
+        "quantity": 4
+      }
+    },
+    "allowedVariants": {
+      "metal": ["iron", "steel"]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "smex:hopperbell"
+    }
+  }
+]

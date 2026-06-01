@@ -1,0 +1,30 @@
+{
+  "code": "slag",
+  "class": "smex.BlockSlag",
+  "entityClass": "smex.BlockEntitySlag",
+  "blockmaterial": "Stone",
+  "creativeinventory": {
+    "general": ["*"],
+    "smex": ["*"]
+  },
+  "shape": { "base": "game:block/basic/cube" },
+  "textures": {
+    "all": { "base": "game:block/stone/gravel/phyllite" }
+  },
+  "resistance": 3.0,
+  "maxstacksize": 64,
+  "requiredMiningTier": 2,
+  "mineTool": "pickaxe",
+  "sounds": {
+    "place": "game:block/stone",
+    "break": "game:block/stone",
+    "hit": "game:block/stone",
+    "walk": "game:walk/stone"
+  },
+  "combustibleProps": {
+    "meltingPoint": 720,
+    "meltingDuration": 30,
+    "smeltedRatio": 1,
+    "smeltedStack": { "type": "item", "code": "smex:slag" }
+  }
+}

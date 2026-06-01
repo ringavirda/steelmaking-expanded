@@ -1,0 +1,84 @@
+[
+  {
+    "file": "game:itemtypes/resource/crushed/crushed.json",
+    "op": "add",
+    "path": "/variantgroups/0/states/-",
+    "value": "coke",
+    "side": "Server"
+  },
+  {
+    "file": "game:itemtypes/resource/crushed/crushed.json",
+    "op": "remove",
+    "path": "/textureByType/*",
+    "side": "Server"
+  },
+  {
+    "file": "game:itemtypes/resource/crushed/crushed.json",
+    "op": "add",
+    "path": "/textureByType/*-coke",
+    "value": { "base": "game:block/coal/coke" },
+    "side": "Server"
+  },
+  {
+    "file": "game:itemtypes/resource/crushed/crushed.json",
+    "op": "add",
+    "path": "/textureByType/*",
+    "value": { "base": "item/resource/crushed/{material}" },
+    "side": "Server"
+  },
+  {
+    "file": "game:itemtypes/resource/crushed/crushed.json",
+    "op": "add",
+    "path": "/combustiblePropsByType/*-coke",
+    "value": {
+      "burnTemperature": 1400,
+      "burnDuration": 40
+    },
+    "side": "Server"
+  },
+  {
+    "file": "game:itemtypes/resource/coke.json",
+    "op": "add",
+    "path": "/crushingProps",
+    "value": {
+      "crushedStack": { "type": "item", "code": "game:crushed-coke" },
+      "quantity": { "avg": 2 },
+      "hardnessTier": 1
+    },
+    "side": "Server"
+  },
+  {
+    "op": "addmerge",
+    "path": "/combustiblePropsByType/*-iron",
+    "value": {
+      "meltingPoint": 1482,
+      "meltingDuration": 30,
+      "smeltedRatio": 20,
+      "smeltedStack": { "type": "item", "code": "game:ironbloom" }
+    },
+    "file": "game:itemtypes/resource/crushed/crushed.json",
+    "side": "Server"
+  },
+  {
+    "file": "game:itemtypes/resource/crushed/crushed.json",
+    "op": "replace",
+    "path": "/maxstacksize",
+    "value": 128,
+    "side": "Server"
+  },
+  {
+    "file": "game:itemtypes/resource/crushed/crushed.json",
+    "side": "Server",
+    "dependsOn": [{ "modid": "em" }],
+    "op": "add",
+    "path": "/grindingPropsByType",
+    "value": {
+      "*-coke": {
+        "groundStack": {
+          "type": "item",
+          "code": "em:powdered-ore-coal"
+        }
+      }
+    }
+  }
+]

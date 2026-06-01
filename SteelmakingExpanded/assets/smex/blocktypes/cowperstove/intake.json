@@ -1,0 +1,127 @@
+{
+  "code": "cowperstove",
+  "class": "smex.BlockCowperStoveIntake",
+  "entityClass": "smex.BlockEntityCowperStove",
+  "blockmaterial": "Ceramic",
+  "maxstacksize": 1,
+  "attributes": {
+    "maxTemperature": 1240.0,
+    "heatingSpeedAnthracite": 0.0128,
+    "heatingSpeedOtherCoal": 0.0085,
+    "heatingSpeedDefault": 0.0064,
+    "coolingSpeedExhaust": 0.3,
+    "coolingSpeedAir": 0.005,
+    "multiblockStructure": {
+      "blockNumbers": {
+        "game:refractorybricks-good-tier3": 1,
+        "smex:cowperstove-intake*": 2,
+        "smex:gaspipe-outlet*": 3,
+        "smex:gaspipe-passthrough*": 4,
+        "smex:cowperstoveheatsink*": 5,
+        "game:cokeovendoor*": 6,
+        "game:air": 7,
+        "@(air|coalpile)": 8
+      },
+      "offsets": [
+        { "x": 1, "y": -1, "z": 0, "w": 1 },
+        { "x": 0, "y": -1, "z": 0, "w": 8 },
+        { "x": -1, "y": -1, "z": 0, "w": 1 },
+        { "x": 1, "y": -1, "z": 1, "w": 1 },
+        { "x": 0, "y": -1, "z": 1, "w": 1 },
+        { "x": -1, "y": -1, "z": 1, "w": 1 },
+        { "x": 1, "y": -1, "z": 2, "w": 1 },
+        { "x": 0, "y": -1, "z": 2, "w": 1 },
+        { "x": -1, "y": -1, "z": 2, "w": 1 },
+
+        { "x": 1, "y": 0, "z": 0, "w": 1 },
+        { "x": 0, "y": 0, "z": 0, "w": 2 },
+        { "x": -1, "y": 0, "z": 0, "w": 1 },
+        { "x": 1, "y": 0, "z": 1, "w": 1 },
+        { "x": 0, "y": 0, "z": 1, "w": 5 },
+        { "x": -1, "y": 0, "z": 1, "w": 6 },
+        { "x": 1, "y": 0, "z": 2, "w": 1 },
+        { "x": 0, "y": 0, "z": 2, "w": 3 },
+        { "x": -1, "y": 0, "z": 2, "w": 1 },
+
+        { "x": 1, "y": 1, "z": 0, "w": 1 },
+        { "x": 0, "y": 1, "z": 0, "w": 3 },
+        { "x": -1, "y": 1, "z": 0, "w": 1 },
+        { "x": 1, "y": 1, "z": 1, "w": 1 },
+        { "x": 0, "y": 1, "z": 1, "w": 5 },
+        { "x": -1, "y": 1, "z": 1, "w": 1 },
+        { "x": 1, "y": 1, "z": 2, "w": 1 },
+        { "x": 0, "y": 1, "z": 2, "w": 4 },
+        { "x": -1, "y": 1, "z": 2, "w": 1 },
+
+        { "x": 1, "y": 2, "z": 0, "w": 1 },
+        { "x": 0, "y": 2, "z": 0, "w": 1 },
+        { "x": -1, "y": 2, "z": 0, "w": 1 },
+        { "x": 1, "y": 2, "z": 1, "w": 1 },
+        { "x": 0, "y": 2, "z": 1, "w": 5 },
+        { "x": -1, "y": 2, "z": 1, "w": 1 },
+        { "x": 1, "y": 2, "z": 2, "w": 1 },
+        { "x": 0, "y": 2, "z": 2, "w": 1 },
+        { "x": -1, "y": 2, "z": 2, "w": 1 },
+
+        { "x": 1, "y": 3, "z": 0, "w": 1 },
+        { "x": 0, "y": 3, "z": 0, "w": 1 },
+        { "x": -1, "y": 3, "z": 0, "w": 1 },
+        { "x": 1, "y": 3, "z": 1, "w": 1 },
+        { "x": 0, "y": 3, "z": 1, "w": 5 },
+        { "x": -1, "y": 3, "z": 1, "w": 1 },
+        { "x": 1, "y": 3, "z": 2, "w": 1 },
+        { "x": 0, "y": 3, "z": 2, "w": 1 },
+        { "x": -1, "y": 3, "z": 2, "w": 1 },
+
+        { "x": 1, "y": 4, "z": 0, "w": 1 },
+        { "x": 0, "y": 4, "z": 0, "w": 1 },
+        { "x": -1, "y": 4, "z": 0, "w": 1 },
+        { "x": 1, "y": 4, "z": 1, "w": 1 },
+        { "x": 0, "y": 4, "z": 1, "w": 7 },
+        { "x": -1, "y": 4, "z": 1, "w": 1 },
+        { "x": 1, "y": 4, "z": 2, "w": 1 },
+        { "x": 0, "y": 4, "z": 2, "w": 1 },
+        { "x": -1, "y": 4, "z": 2, "w": 1 },
+
+        { "x": 0, "y": 5, "z": 0, "w": 1 },
+        { "x": 1, "y": 5, "z": 1, "w": 1 },
+        { "x": 0, "y": 5, "z": 1, "w": 1 },
+        { "x": -1, "y": 5, "z": 1, "w": 1 },
+        { "x": 0, "y": 5, "z": 2, "w": 1 }
+      ]
+    }
+  },
+  "creativeinventory": {
+    "general": ["*-intake-s"],
+    "smex": ["*-intake-s"]
+  },
+  "behaviors": [{ "name": "Lockable" }],
+  "variantgroups": [
+    { "code": "type", "states": ["intake"] },
+    { "code": "orientation", "states": ["n", "s", "w", "e"] }
+  ],
+  "shapebytype": {
+    "*-intake-n": {
+      "base": "smex:gas/machines/heatedintake",
+      "rotateY": 180
+    },
+    "*-intake-w": {
+      "base": "smex:gas/machines/heatedintake",
+      "rotateY": 270
+    },
+    "*-intake-s": {
+      "base": "smex:gas/machines/heatedintake",
+      "rotateY": 0
+    },
+    "*-intake-e": {
+      "base": "smex:gas/machines/heatedintake",
+      "rotateY": 90
+    }
+  },
+  "sidesolid": {
+    "all": true
+  },
+  "sideopaque": {
+    "all": false
+  }
+}

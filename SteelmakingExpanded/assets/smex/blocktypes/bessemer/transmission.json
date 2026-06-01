@@ -1,0 +1,36 @@
+{
+  "code": "bessemertransmission",
+  "class": "smex.BlockBessemerTransmission",
+  "entityClass": "smex.BlockEntityBessemerTransmission",
+  "entityBehaviors": [{ "name": "smex.BEBehaviorMPBessemerTransmission" }],
+  "blockmaterial": "Metal",
+  "maxstacksize": 1,
+  "creativeinventory": {
+    "general": ["*-north"],
+    "smex": ["*-north"]
+  },
+  "behaviors": [{ "name": "HorizontalOrientable" }],
+  "variantgroups": [
+    { "code": "side", "loadFromProperties": "abstract/horizontalorientation" }
+  ],
+  "shapebytype": {
+    "*-north": {
+      "base": "smex:bessemer/transmission",
+      "rotateY": 180
+    },
+    "*-east": {
+      "base": "smex:bessemer/transmission",
+      "rotateY": 90
+    },
+    "*-south": {
+      "base": "smex:bessemer/transmission",
+      "rotateY": 0
+    },
+    "*-west": {
+      "base": "smex:bessemer/transmission",
+      "rotateY": 270
+    }
+  },
+  "sidesolid": { "all": false },
+  "sideopaque": { "all": false }
+}

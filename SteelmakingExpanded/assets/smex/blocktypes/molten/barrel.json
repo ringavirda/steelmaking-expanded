@@ -1,0 +1,28 @@
+{
+  "code": "moltenbarrel",
+  "class": "smex.BlockMoltenBarrel",
+  "entityClass": "smex.BlockEntityMoltenBarrel",
+  "maxStackSize": 1,
+  "storageFlags": 2,
+  "blockmaterial": "Metal",
+  "creativeinventory": {
+    "general": ["*"],
+    "smex": ["*"]
+  },
+  "heldTpIdleAnimation": "holdbothhandslarge",
+  "attributes": {
+    "maxUnits": 800,
+    "fillHeight": 8,
+    "fillStart": 2,
+    "fillQuadsByLevel": [{ "x1": 4, "z1": 4, "x2": 12, "z2": 12 }]
+  },
+  "behaviors": [{ "name": "Lockable" }, { "name": "UnstableFalling" }],
+  "shape": { "base": "smex:molten/barrel" },
+  "sidesolid": { "all": false },
+  "sideopaque": { "all": false },
+  "tpHandTransform": {
+    "translation": { "x": -0.8, "y": -1, "z": -0.55 },
+    "rotation": { "x": 20, "y": 14, "z": -90 },
+    "scale": 0.75
+  }
+}

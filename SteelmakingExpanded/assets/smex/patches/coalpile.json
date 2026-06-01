@@ -1,0 +1,10 @@
+[
+  {
+    "file": "game:blocktypes/coalpile.json",
+    "op": "add",
+    "path": "/textures/blastmix",
+    "value": {
+      "base": "game:block/coal/orecoalmix"
+    }
+  }
+]

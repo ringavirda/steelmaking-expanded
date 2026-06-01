@@ -1,0 +1,41 @@
+{
+  "code": "blastfurnacetap",
+  "class": "smex.BlockBlastFurnaceTap",
+  "entityClass": "smex.BlockEntityBlastFurnaceTap",
+  "entityBehaviors": [{ "name": "Animatable" }],
+  "blockmaterial": "Ceramic",
+  "maxstacksize": 1,
+  "behaviors": [{ "name": "HorizontalOrientable" }],
+  "variantgroups": [
+    { "code": "side", "loadFromProperties": "abstract/horizontalorientation" }
+  ],
+  "shapebytype": {
+    "*-north": { "base": "smex:blastfurnace/tap", "rotateY": 0 },
+    "*-east": { "base": "smex:blastfurnace/tap", "rotateY": 270 },
+    "*-south": { "base": "smex:blastfurnace/tap", "rotateY": 180 },
+    "*-west": { "base": "smex:blastfurnace/tap", "rotateY": 90 }
+  },
+  "creativeinventory": {
+    "general": ["*-south"],
+    "smex": ["*-south"]
+  },
+  "replaceable": 400,
+  "resistance": 3.5,
+  "lightAbsorption": 3,
+  "sounds": {
+    "walk": "walk/stone",
+    "place": "block/ceramicplace",
+    "byTool": {
+      "Pickaxe": {
+        "hit": "block/rock-hit-pickaxe",
+        "break": "block/rock-break-pickaxe"
+      }
+    }
+  },
+  "sidesolid": {
+    "all": false
+  },
+  "sideopaque": {
+    "all": false
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "code": "cowperstoveheatsink",
+  "class": "smex.BlockHeatSink",
+  "entityClass": "smex.BlockEntityHeatSink",
+  "shape": { "base": "smex:cowperstove/heatsink" },
+  "blockmaterial": "Metal",
+  "maxstacksize": 4,
+  "lightAbsorption": 99,
+  "creativeinventory": {
+    "general": ["*-north"],
+    "smex": ["*-north"]
+  },
+  "behaviors": [{ "name": "HorizontalOrientable" }],
+  "variantgroups": [
+    { "code": "side", "loadFromProperties": "abstract/horizontalorientation" }
+  ],
+  "shapebytype": {
+    "*-north": {
+      "base": "smex:cowperstove/heatsink",
+      "rotateY": 0
+    },
+    "*-east": {
+      "base": "smex:cowperstove/heatsink",
+      "rotateY": 270
+    },
+    "*-south": {
+      "base": "smex:cowperstove/heatsink",
+      "rotateY": 180
+    },
+    "*-west": {
+      "base": "smex:cowperstove/heatsink",
+      "rotateY": 90
+    }
+  },
+  "sidesolid": {
+    "all": false
+  },
+  "sideopaque": {
+    "all": false
+  }
+}

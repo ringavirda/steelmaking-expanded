@@ -1,0 +1,35 @@
+{
+  "code": "bessemer",
+  "class": "smex.BlockBessemerGasIntake",
+  "entityClass": "smex.BlockEntityBessemerGasIntake",
+  "blockmaterial": "Metal",
+  "maxstacksize": 1,
+  "creativeinventory": {
+    "general": ["*-s"],
+    "smex": ["*-s"]
+  },
+  "variantgroups": [
+    { "code": "type", "states": ["gasintake"] },
+    { "code": "orientation", "states": ["n", "s", "w", "e"] }
+  ],
+  "shapebytype": {
+    "*-n": {
+      "base": "smex:bessemer/gasintake",
+      "rotateY": 0
+    },
+    "*-w": {
+      "base": "smex:bessemer/gasintake",
+      "rotateY": 90
+    },
+    "*-s": {
+      "base": "smex:bessemer/gasintake",
+      "rotateY": 180
+    },
+    "*-e": {
+      "base": "smex:bessemer/gasintake",
+      "rotateY": 270
+    }
+  },
+  "sidesolid": { "all": false },
+  "sideopaque": { "all": false }
+}

@@ -1,0 +1,39 @@
+{
+  "code": "gaspipe",
+  "class": "smex.BlockGasPassthrough",
+  "entityClass": "smex.BlockEntityGasPassthrough",
+  "blockmaterial": "Ceramic",
+  "maxstacksize": 1,
+  "creativeinventory": {
+    "general": ["*-passthrough-ns"],
+    "smex": ["*-passthrough-ns"]
+  },
+  "behaviors": [{ "name": "Lockable" }],
+  "variantgroups": [
+    { "code": "type", "states": ["passthrough"] },
+    { "code": "orientation", "states": ["ns", "we", "ud"] }
+  ],
+  "shapebytype": {
+    "*-passthrough-ns": {
+      "base": "smex:gas/pipes/passthrough",
+      "rotateY": 0
+    },
+    "*-passthrough-we": {
+      "base": "smex:gas/pipes/passthrough",
+      "rotateY": 90
+    },
+    "*-passthrough-ud": {
+      "base": "smex:gas/pipes/passthrough",
+      "rotateX": 90
+    }
+  },
+  "renderpass": "OpaqueNoCull",
+  "faceCullMode": "NeverCull",
+  "lightAbsorption": 0,
+  "sidesolid": {
+    "all": true
+  },
+  "sideopaque": {
+    "all": false
+  }
+}

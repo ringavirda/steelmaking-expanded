@@ -1,0 +1,39 @@
+{
+  "code": "moltencanal",
+  "class": "smex.BlockMoltenCanal",
+  "entityClass": "smex.BlockEntityMoltenCanal",
+  "blockmaterial": "Stone",
+  "maxstacksize": 8,
+  "creativeinventory": {
+    "general": ["*-straight-*-ns"],
+    "smex": ["*-straight-*-ns"]
+  },
+  "attributes": {
+    "maxUnits": 10,
+    "fillHeight": 1,
+    "fillStart": 14,
+    "fillQuadsByLevel": [{ "x1": 7, "z1": 0, "x2": 9, "z2": 16 }],
+    "handbook": { "groupBy": ["moltencanal-straight-*"] }
+  },
+  "textures": {
+    "granite1": { "base": "game:block/stone/cobblestone/{rock}1" }
+  },
+  "behaviors": [{ "name": "Lockable" }],
+  "variantgroups": [
+    { "code": "type", "states": ["straight"] },
+    { "code": "rock", "loadFromProperties": "block/rockwithdeposit" },
+    { "code": "orientation", "states": ["ns", "we"] }
+  ],
+  "skipVariants": ["*-halite-*", "*-scoria-*", "*-tuff-*", "*-travertine-*"],
+  "shapebytype": {
+    "*-straight-*-ns": {
+      "base": "smex:molten/canal/straight"
+    },
+    "*-straight-*-we": {
+      "base": "smex:molten/canal/straight",
+      "rotateY": 90
+    }
+  },
+  "sidesolid": { "all": false },
+  "sideopaque": { "all": false }
+}

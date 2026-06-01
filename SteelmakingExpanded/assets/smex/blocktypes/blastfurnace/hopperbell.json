@@ -1,0 +1,35 @@
+{
+  "code": "hopperbell",
+  "class": "smex.BlockHopperBell",
+  "entityclass": "smex.BlockEntityHopperBell",
+  "behaviors": [{ "name": "Lockable" }],
+  "attributes": {
+    "maxMagazineCapacity": 64,
+    "ironOreRequired": 12,
+    "cokeRequired": 3,
+    "limeRequired": 1,
+    "blastmixProduced": 16,
+    "dropAmount": 4
+  },
+  "creativeinventory": {
+    "general": ["*"],
+    "smex": ["*"]
+  },
+  "blockmaterial": "Metal",
+  "maxstacksize": 1,
+  "lightAbsorption": 0,
+  "shape": { "base": "smex:blastfurnace/hopper-bell" },
+  "sidesolid": {
+    "all": false
+  },
+  "sideopaque": {
+    "all": false
+  },
+  "resistance": 1.75,
+  "sounds": {
+    "place": "game:block/chute",
+    "break": "game:block/chute",
+    "hit": "game:block/chute",
+    "walk": "game:walk/stone"
+  }
+}

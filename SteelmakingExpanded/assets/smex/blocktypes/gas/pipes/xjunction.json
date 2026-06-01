@@ -1,0 +1,85 @@
+{
+  "code": "gaspipe",
+  "class": "smex.BlockGasPipe",
+  "entityClass": "smex.BlockEntityGasPipe",
+  "blockmaterial": "Metal",
+  "maxstacksize": 8,
+  "creativeinventory": {
+    "general": ["*-xjunction-nswe"],
+    "smex": ["*-xjunction-nswe"]
+  },
+  "attributes": {
+    "handbook": {
+      "groupBy": [
+        "gaspipe-straight-*",
+        "gaspipe-bend-*",
+        "gaspipe-tjunction-*",
+        "gaspipe-xjunction-*"
+      ]
+    }
+  },
+  "behaviors": [{ "name": "Lockable" }],
+  "variantgroups": [
+    { "code": "type", "states": ["xjunction"] },
+    { "code": "orientation", "states": ["nswe", "nsud", "weud"] }
+  ],
+  "shapebytype": {
+    "*-xjunction-nswe": {
+      "base": "smex:gas/pipes/xjunction"
+    },
+    "*-xjunction-nsud": {
+      "base": "smex:gas/pipes/xjunction",
+      "rotateZ": 90
+    },
+    "*-xjunction-weud": {
+      "base": "smex:gas/pipes/xjunction",
+      "rotateZ": 90,
+      "rotateY": 90
+    }
+  },
+  "collisionboxes": [
+    {
+      "x1": 0,
+      "y1": 0.3125,
+      "z1": 0.3125,
+      "x2": 1,
+      "y2": 0.6875,
+      "z2": 0.6875
+    },
+    {
+      "x1": 0.3125,
+      "y1": 0.3125,
+      "z1": 0,
+      "x2": 0.6875,
+      "y2": 0.6875,
+      "z2": 1
+    }
+  ],
+  "selectionboxes": [
+    {
+      "x1": 0,
+      "y1": 0.3125,
+      "z1": 0.3125,
+      "x2": 1,
+      "y2": 0.6875,
+      "z2": 0.6875
+    },
+    {
+      "x1": 0.3125,
+      "y1": 0.3125,
+      "z1": 0,
+      "x2": 0.6875,
+      "y2": 0.6875,
+      "z2": 1
+    }
+  ],
+  "renderpass": "OpaqueNoCull",
+  "faceCullMode": "NeverCull",
+  "lightAbsorption": 0,
+  "sidesolid": {
+    "all": false
+  },
+  "sideopaque": {
+    "all": false
+  }
+}

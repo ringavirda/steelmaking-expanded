@@ -1,0 +1,24 @@
+{
+  "code": "solidifiediron",
+  "class": "smex.BlockSolidifiedIron",
+  "entityClass": "smex.BlockEntitySolidifiedIron",
+  "blockmaterial": "Metal",
+  "creativeinventory": {
+    "general": ["*"],
+    "smex": ["*"]
+  },
+  "shape": { "base": "game:block/basic/cube" },
+  "textures": {
+    "all": { "base": "game:block/metal/sheet-plain/iron5" }
+  },
+  "resistance": 15.0,
+  "maxstacksize": 8,
+  "requiredMiningTier": 5,
+  "mineTool": "pickaxe",
+  "sounds": {
+    "place": "game:block/anvil",
+    "break": "game:block/anvil",
+    "hit": "game:block/anvil",
+    "walk": "game:walk/stone"
+  }
+}

@@ -1,0 +1,131 @@
+[
+  {
+    "name": "Converter Control",
+    "ingredientPattern": "H_R,NPP,PPR",
+    "ingredients": {
+      "R": {
+        "type": "item",
+        "code": "game:rod-{metal}",
+        "quantity": 12
+      },
+      "P": {
+        "type": "item",
+        "code": "game:metalplate-{metal}",
+        "quantity": 4
+      },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      },
+      "N": {
+        "type": "item",
+        "code": "game:metalnailsandstrips-{metal}",
+        "quantity": 8
+      }
+    },
+    "allowedVariants": {
+      "metal": [
+        "iron",
+        "steel"
+      ]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "smex:bessemercontrol-north"
+    }
+  },
+  {
+    "name": "Converter Transmission",
+    "ingredientPattern": "HPR,AGP,NPR",
+    "ingredients": {
+      "R": {
+        "type": "item",
+        "code": "game:rod-{metal}",
+        "quantity": 12
+      },
+      "P": {
+        "type": "item",
+        "code": "game:metalplate-{metal}",
+        "quantity": 4
+      },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      },
+      "N": {
+        "type": "item",
+        "code": "game:metalnailsandstrips-{metal}",
+        "quantity": 8
+      },
+      "G": {
+        "type": "item",
+        "code": "game:jonasframes-gearbox02",
+        "quantity": 2
+      },
+      "A": {
+        "type": "block",
+        "code": "game:woodenaxle-ns",
+        "quantity": 1
+      }
+    },
+    "allowedVariants": {
+      "metal": [
+        "iron",
+        "steel"
+      ]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "smex:bessemertransmission-north"
+    }
+  },
+  {
+    "name": "Converter Gas Intake",
+    "ingredientPattern": "HP_,LPP,RN_",
+    "ingredients": {
+      "R": {
+        "type": "item",
+        "code": "game:rod-{metal}",
+        "quantity": 24
+      },
+      "P": {
+        "type": "item",
+        "code": "game:metalplate-{metal}",
+        "quantity": 4
+      },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      },
+      "N": {
+        "type": "item",
+        "code": "game:metalnailsandstrips-{metal}",
+        "quantity": 8
+      },
+      "L": {
+        "type": "block",
+        "code": "smex:gaspipe-straight*",
+        "quantity": 1
+      }
+    },
+    "allowedVariants": {
+      "metal": [
+        "iron",
+        "steel"
+      ]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "smex:bessemer-gasintake-s"
+    }
+  }
+]

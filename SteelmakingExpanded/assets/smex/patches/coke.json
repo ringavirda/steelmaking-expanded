@@ -1,0 +1,16 @@
+[
+  {
+    "file": "game:itemtypes/resource/coke.json",
+    "op": "add",
+    "path": "/crushingProps",
+    "value": {
+      "crushedStack": {
+        "type": "item",
+        "code": "game:crushed-coke",
+        "stacksize": 2
+      },
+      "hardnessTier": 2
+    },
+    "side": "Server"
+  }
+]

@@ -1,0 +1,276 @@
+[
+  {
+    "name": "Molten Canal (Straight)",
+    "ingredientPattern": "H_K,FCF",
+    "ingredients": {
+      "C": {
+        "type": "block",
+        "code": "game:cobblestone-*",
+        "name": "rock",
+        "allowedVariants": [
+          "andesite",
+          "chalk",
+          "chert",
+          "conglomerate",
+          "limestone",
+          "claystone",
+          "granite",
+          "sandstone",
+          "shale",
+          "basalt",
+          "peridotite",
+          "phyllite",
+          "slate",
+          "obsidian",
+          "kimberlite",
+          "bauxite",
+          "suevite",
+          "whitemarble",
+          "redmarble",
+          "greenmarble"
+        ]
+      },
+      "F": { "type": "item", "code": "game:clay-fire", "quantity": 2 },
+      "H": { "type": "item", "code": "game:hammer-*", "isTool": true },
+      "K": { "type": "item", "code": "game:chisel-*", "isTool": true }
+    },
+    "width": 3,
+    "height": 2,
+    "output": {
+      "type": "block",
+      "code": "smex:moltencanal-straight-{rock}-ns",
+      "quantity": 1
+    }
+  },
+  {
+    "name": "Molten Canal (Bend)",
+    "ingredientPattern": "HFK,FC_",
+    "ingredients": {
+      "C": {
+        "type": "block",
+        "code": "game:cobblestone-*",
+        "name": "rock",
+        "allowedVariants": [
+          "andesite",
+          "chalk",
+          "chert",
+          "conglomerate",
+          "limestone",
+          "claystone",
+          "granite",
+          "sandstone",
+          "shale",
+          "basalt",
+          "peridotite",
+          "phyllite",
+          "slate",
+          "obsidian",
+          "kimberlite",
+          "bauxite",
+          "suevite",
+          "whitemarble",
+          "redmarble",
+          "greenmarble"
+        ]
+      },
+      "F": { "type": "item", "code": "game:clay-fire", "quantity": 2 },
+      "H": { "type": "item", "code": "game:hammer-*", "isTool": true },
+      "K": { "type": "item", "code": "game:chisel-*", "isTool": true }
+    },
+    "width": 3,
+    "height": 2,
+    "output": {
+      "type": "block",
+      "code": "smex:moltencanal-bend-{rock}-nw",
+      "quantity": 1
+    }
+  },
+  {
+    "name": "Molten Canal (T-Junction)",
+    "ingredientPattern": "HFK,FCF",
+    "ingredients": {
+      "C": {
+        "type": "block",
+        "code": "game:cobblestone-*",
+        "name": "rock",
+        "allowedVariants": [
+          "andesite",
+          "chalk",
+          "chert",
+          "conglomerate",
+          "limestone",
+          "claystone",
+          "granite",
+          "sandstone",
+          "shale",
+          "basalt",
+          "peridotite",
+          "phyllite",
+          "slate",
+          "obsidian",
+          "kimberlite",
+          "bauxite",
+          "suevite",
+          "whitemarble",
+          "redmarble",
+          "greenmarble"
+        ]
+      },
+      "F": { "type": "item", "code": "game:clay-fire", "quantity": 2 },
+      "H": { "type": "item", "code": "game:hammer-*", "isTool": true },
+      "K": { "type": "item", "code": "game:chisel-*", "isTool": true }
+    },
+    "width": 3,
+    "height": 2,
+    "output": {
+      "type": "block",
+      "code": "smex:moltencanal-tjunction-{rock}-nes",
+      "quantity": 1
+    }
+  },
+  {
+    "name": "Molten Canal (X-Junction)",
+    "ingredientPattern": "HFK,FCF,_F_",
+    "ingredients": {
+      "C": {
+        "type": "block",
+        "code": "game:cobblestone-*",
+        "name": "rock",
+        "allowedVariants": [
+          "andesite",
+          "chalk",
+          "chert",
+          "conglomerate",
+          "limestone",
+          "claystone",
+          "granite",
+          "sandstone",
+          "shale",
+          "basalt",
+          "peridotite",
+          "phyllite",
+          "slate",
+          "obsidian",
+          "kimberlite",
+          "bauxite",
+          "suevite",
+          "whitemarble",
+          "redmarble",
+          "greenmarble"
+        ]
+      },
+      "F": { "type": "item", "code": "game:clay-fire", "quantity": 2 },
+      "H": { "type": "item", "code": "game:hammer-*", "isTool": true },
+      "K": { "type": "item", "code": "game:chisel-*", "isTool": true }
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "smex:moltencanal-xjunction-{rock}-nswe",
+      "quantity": 1
+    }
+  },
+  {
+    "name": "Molten Canal (Start)",
+    "ingredientPattern": "HCK,FFF",
+    "ingredients": {
+      "C": {
+        "type": "block",
+        "code": "game:cobblestone-*",
+        "name": "rock",
+        "allowedVariants": [
+          "andesite",
+          "chalk",
+          "chert",
+          "conglomerate",
+          "limestone",
+          "claystone",
+          "granite",
+          "sandstone",
+          "shale",
+          "basalt",
+          "peridotite",
+          "phyllite",
+          "slate",
+          "obsidian",
+          "kimberlite",
+          "bauxite",
+          "suevite",
+          "whitemarble",
+          "redmarble",
+          "greenmarble"
+        ]
+      },
+      "F": { "type": "item", "code": "game:clay-fire", "quantity": 2 },
+      "H": { "type": "item", "code": "game:hammer-*", "isTool": true },
+      "K": { "type": "item", "code": "game:chisel-*", "isTool": true }
+    },
+    "width": 3,
+    "height": 2,
+    "output": {
+      "type": "block",
+      "code": "smex:moltencanal-start-{rock}-s",
+      "quantity": 1
+    }
+  },
+  {
+    "name": "Molten Canal (Mold Pedestal)",
+    "ingredientPattern": "HFK,CFC",
+    "ingredients": {
+      "C": {
+        "type": "block",
+        "code": "game:cobblestone-*",
+        "name": "rock",
+        "allowedVariants": [
+          "andesite",
+          "chalk",
+          "chert",
+          "conglomerate",
+          "limestone",
+          "claystone",
+          "granite",
+          "sandstone",
+          "shale",
+          "basalt",
+          "peridotite",
+          "phyllite",
+          "slate",
+          "obsidian",
+          "kimberlite",
+          "bauxite",
+          "suevite",
+          "whitemarble",
+          "redmarble",
+          "greenmarble"
+        ]
+      },
+      "F": { "type": "item", "code": "game:clay-fire", "quantity": 2 },
+      "H": { "type": "item", "code": "game:hammer-*", "isTool": true },
+      "K": { "type": "item", "code": "game:chisel-*", "isTool": true }
+    },
+    "width": 3,
+    "height": 2,
+    "output": {
+      "type": "block",
+      "code": "smex:moltencanal-moldpedestal-{rock}-s",
+      "quantity": 1
+    }
+  },
+  {
+    "name": "Molten Canal (Tap)",
+    "ingredientPattern": "HFK",
+    "ingredients": {
+      "F": { "type": "item", "code": "game:clay-fire", "quantity": 4 },
+      "H": { "type": "item", "code": "game:hammer-*", "isTool": true },
+      "K": { "type": "item", "code": "game:chisel-*", "isTool": true }
+    },
+    "width": 3,
+    "height": 1,
+    "output": {
+      "type": "block",
+      "code": "smex:moltencanal-tap-s",
+      "quantity": 1
+    }
+  }
+]

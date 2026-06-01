@@ -1,0 +1,172 @@
+[
+  {
+    "op": "add",
+    "file": "game:blocktypes/clay/raw/toolmold.json",
+    "path": "/variantgroups/2/states/-",
+    "value": "plate"
+  },
+  {
+    "op": "add",
+    "file": "game:blocktypes/clay/raw/toolmold.json",
+    "path": "/variantgroups/2/states/-",
+    "value": "doubleingot"
+  },
+  {
+    "op": "add",
+    "file": "game:blocktypes/clay/raw/toolmold.json",
+    "path": "/variantgroups/2/states/-",
+    "value": "quadrod"
+  },
+
+  {
+    "op": "remove",
+    "file": "game:blocktypes/clay/raw/toolmold.json",
+    "path": "/shapebytype/*"
+  },
+  {
+    "op": "add",
+    "file": "game:blocktypes/clay/raw/toolmold.json",
+    "path": "/shapebytype/*-plate",
+    "value": { "base": "smex:molten/molds/plate", "rotateY": 90 }
+  },
+  {
+    "op": "add",
+    "file": "game:blocktypes/clay/raw/toolmold.json",
+    "path": "/shapebytype/*-doubleingot",
+    "value": { "base": "smex:molten/molds/doubleingot", "rotateY": 90 }
+  },
+  {
+    "op": "add",
+    "file": "game:blocktypes/clay/raw/toolmold.json",
+    "path": "/shapebytype/*-quadrod",
+    "value": { "base": "smex:molten/molds/quadrod", "rotateY": 90 }
+  },
+  {
+    "op": "add",
+    "file": "game:blocktypes/clay/raw/toolmold.json",
+    "path": "/shapebytype/*",
+    "value": { "base": "block/clay/mold/{tooltype}", "rotateY": 90 }
+  },
+
+  {
+    "op": "add",
+    "file": "game:blocktypes/clay/fired/toolmold.json",
+    "path": "/variantgroups/2/states/-",
+    "value": "plate"
+  },
+  {
+    "op": "add",
+    "file": "game:blocktypes/clay/fired/toolmold.json",
+    "path": "/variantgroups/2/states/-",
+    "value": "doubleingot"
+  },
+  {
+    "op": "add",
+    "file": "game:blocktypes/clay/fired/toolmold.json",
+    "path": "/variantgroups/2/states/-",
+    "value": "quadrod"
+  },
+  {
+    "op": "add",
+    "file": "game:blocktypes/clay/fired/toolmold.json",
+    "path": "/heldTpIdleAnimation",
+    "value": "holdbothhandslarge"
+  },
+
+  {
+    "op": "replace",
+    "file": "game:blocktypes/clay/fired/toolmold.json",
+    "path": "/tpHandTransformByType/*",
+    "value": {
+      "translation": { "x": -1.6, "y": -1, "z": -0.5 },
+      "rotation": { "x": 102, "y": -16, "z": -77 },
+      "scale": 0.55
+    }
+  },
+  {
+    "op": "remove",
+    "file": "game:blocktypes/clay/fired/toolmold.json",
+    "path": "/shapebytype/*"
+  },
+  {
+    "op": "add",
+    "file": "game:blocktypes/clay/fired/toolmold.json",
+    "path": "/shapebytype/*-plate",
+    "value": { "base": "smex:molten/molds/plate", "rotateY": 90 }
+  },
+  {
+    "op": "add",
+    "file": "game:blocktypes/clay/fired/toolmold.json",
+    "path": "/shapebytype/*-doubleingot",
+    "value": { "base": "smex:molten/molds/doubleingot", "rotateY": 90 }
+  },
+  {
+    "op": "add",
+    "file": "game:blocktypes/clay/fired/toolmold.json",
+    "path": "/shapebytype/*-quadrod",
+    "value": { "base": "smex:molten/molds/quadrod", "rotateY": 90 }
+  },
+  {
+    "op": "add",
+    "file": "game:blocktypes/clay/fired/toolmold.json",
+    "path": "/shapebytype/*",
+    "value": { "base": "block/clay/mold/{tooltype}", "rotateY": 90 }
+  },
+
+  {
+    "op": "remove",
+    "file": "game:blocktypes/clay/fired/toolmold.json",
+    "path": "/attributesByType/toolmold-*-fired-*"
+  },
+  {
+    "op": "add",
+    "file": "game:blocktypes/clay/fired/toolmold.json",
+    "path": "/attributesByType/toolmold-*-fired-plate",
+    "value": {
+      "requiredUnits": 200,
+      "fillHeight": 1,
+      "moldrackable": true,
+      "onmoldrackTransform": { "rotation": { "z": 90 } },
+      "fillQuadsByLevel": [{ "x1": 2, "z1": 2, "x2": 14, "z2": 14 }],
+      "drop": { "type": "item", "code": "metalplate-{metal}" }
+    }
+  },
+  {
+    "op": "add",
+    "file": "game:blocktypes/clay/fired/toolmold.json",
+    "path": "/attributesByType/toolmold-*-fired-doubleingot",
+    "value": {
+      "requiredUnits": 200,
+      "fillHeight": 1,
+      "moldrackable": true,
+      "onmoldrackTransform": { "rotation": { "z": 90 } },
+      "fillQuadsByLevel": [{ "x1": 2, "z1": 2, "x2": 14, "z2": 14 }],
+      "drop": { "type": "item", "code": "ingot-{metal}", "quantity": 2 }
+    }
+  },
+  {
+    "op": "add",
+    "file": "game:blocktypes/clay/fired/toolmold.json",
+    "path": "/attributesByType/toolmold-*-fired-quadrod",
+    "value": {
+      "requiredUnits": 200,
+      "fillHeight": 1,
+      "moldrackable": true,
+      "onmoldrackTransform": { "rotation": { "z": 90 } },
+      "fillQuadsByLevel": [{ "x1": 2, "z1": 2, "x2": 14, "z2": 14 }],
+      "drop": { "type": "item", "code": "metalrod-{metal}", "quantity": 4 }
+    }
+  },
+  {
+    "op": "add",
+    "file": "game:blocktypes/clay/fired/toolmold.json",
+    "path": "/attributesByType/toolmold-*-fired-*",
+    "value": {
+      "requiredUnits": 100,
+      "fillHeight": 1,
+      "moldrackable": true,
+      "onmoldrackTransform": { "rotation": { "z": 90 } },
+      "drop": { "type": "item", "code": "{tooltype}head-{metal}" }
+    }
+  }
+]

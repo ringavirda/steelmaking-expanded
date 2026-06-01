@@ -1,0 +1,39 @@
+{
+  "code": "moltencanal",
+  "class": "smex.BlockMoltenCanal",
+  "entityClass": "smex.BlockEntityMoltenCanal",
+  "blockmaterial": "Stone",
+  "maxstacksize": 4,
+  "creativeinventory": {
+    "general": ["*-xjunction-*-nswe"],
+    "smex": ["*-xjunction-*-nswe"]
+  },
+  "attributes": {
+    "maxUnits": 10,
+    "fillHeight": 1,
+    "fillStart": 14,
+    "fillQuadsByLevel": [
+      { "x1": 0, "z1": 7, "x2": 16, "z2": 9 },
+      { "x1": 7, "z1": 0, "x2": 9, "z2": 7 },
+      { "x1": 7, "z1": 9, "x2": 9, "z2": 16 }
+    ],
+    "handbook": { "groupBy": ["moltencanal-xjunction-*"] }
+  },
+  "textures": {
+    "granite1": { "base": "game:block/stone/cobblestone/{rock}1" }
+  },
+  "behaviors": [{ "name": "Lockable" }],
+  "variantgroups": [
+    { "code": "type", "states": ["xjunction"] },
+    { "code": "rock", "loadFromProperties": "block/rockwithdeposit" },
+    { "code": "orientation", "states": ["nswe"] }
+  ],
+  "skipVariants": ["*-halite-*", "*-scoria-*", "*-tuff-*", "*-travertine-*"],
+  "shapebytype": {
+    "*-xjunction-*-nswe": {
+      "base": "smex:molten/canal/xjunction"
+    }
+  },
+  "sidesolid": { "all": false },
+  "sideopaque": { "all": false }
+}

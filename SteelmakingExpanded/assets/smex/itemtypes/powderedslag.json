@@ -1,0 +1,39 @@
+{
+  "code": "powderedslag",
+  "maxstacksize": 64,
+  "shape": { "base": "game:item/food/flour" },
+  "textures": {
+    "all": { "base": "game:block/stone/gravel/phyllite" }
+  },
+  "creativeinventory": {
+    "general": ["*"],
+    "smex": ["*"]
+  },
+  "materialDensity": 500,
+  "attributes": {
+    "dissolveInWater": true,
+    "fertilizerProps": {
+      "n": 0,
+      "p": 20,
+      "k": 5,
+      "permaboost": { "n": 0, "p": 5, "k": 0, "code": "powderedslag" }
+    },
+    "fertilizerTextureCode": "potash"
+  },
+  "guiTransform": {
+    "translation": { "x": 0, "y": 0, "z": 0 },
+    "rotation": { "x": 149, "y": 12, "z": 0 },
+    "origin": { "x": 0.41, "y": -0.1, "z": 0.8 },
+    "scale": 2.54
+  },
+  "tpHandTransform": {
+    "translation": { "x": -1.87, "y": -1.25, "z": -0.8 },
+    "rotation": { "x": 70, "y": 11, "z": -65 },
+    "scale": 0.41
+  },
+  "groundTransform": {
+    "translation": { "x": 0, "y": 0.45, "z": 0 },
+    "rotation": { "x": 0.1, "y": 8, "z": -0.1 },
+    "scale": 4.5
+  }
+}

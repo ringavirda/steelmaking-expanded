@@ -1,0 +1,50 @@
+{
+  "code": "moltencanal",
+  "class": "smex.BlockMoltenCanal",
+  "entityClass": "smex.BlockEntityMoltenCanal",
+  "blockmaterial": "Stone",
+  "maxstacksize": 4,
+  "creativeinventory": {
+    "general": ["*-bend-*-nw"],
+    "smex": ["*-bend-*-nw"]
+  },
+  "attributes": {
+    "maxUnits": 5,
+    "fillHeight": 1,
+    "fillStart": 14,
+    "fillQuadsByLevel": [
+      { "x1": 7, "z1": 0, "x2": 9, "z2": 9 },
+      { "x1": 0, "z1": 7, "x2": 7, "z2": 9 }
+    ],
+    "handbook": { "groupBy": ["moltencanal-bend-*"] }
+  },
+  "textures": {
+    "granite1": { "base": "game:block/stone/cobblestone/{rock}1" }
+  },
+  "behaviors": [{ "name": "Lockable" }],
+  "variantgroups": [
+    { "code": "type", "states": ["bend"] },
+    { "code": "rock", "loadFromProperties": "block/rockwithdeposit" },
+    { "code": "orientation", "states": ["nw", "se", "en", "ws"] }
+  ],
+  "skipVariants": ["*-halite-*", "*-scoria-*", "*-tuff-*", "*-travertine-*"],
+  "shapebytype": {
+    "*-bend-*-nw": {
+      "base": "smex:molten/canal/bend"
+    },
+    "*-bend-*-en": {
+      "base": "smex:molten/canal/bend",
+      "rotateY": 270
+    },
+    "*-bend-*-se": {
+      "base": "smex:molten/canal/bend",
+      "rotateY": 180
+    },
+    "*-bend-*-ws": {
+      "base": "smex:molten/canal/bend",
+      "rotateY": 90
+    }
+  },
+  "sidesolid": { "all": false },
+  "sideopaque": { "all": false }
+}

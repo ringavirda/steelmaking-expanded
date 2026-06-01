@@ -1,0 +1,53 @@
+{
+  "code": "blastfurnace",
+  "class": "smex.BlockTuyere",
+  "entityClass": "smex.BlockEntityTuyere",
+  "blockmaterial": "Ceramic",
+  "maxstacksize": 1,
+  "behaviors": [{ "name": "Lockable" }],
+  "variantgroups": [
+    { "code": "type", "states": ["tuyere"] },
+    { "code": "orientation", "states": ["s", "n", "w", "e"] }
+  ],
+  "shapebytype": {
+    "*-tuyere-s": {
+      "base": "smex:blastfurnace/tuyere",
+      "rotateY": 0
+    },
+    "*-tuyere-e": {
+      "base": "smex:blastfurnace/tuyere",
+      "rotateY": 90
+    },
+    "*-tuyere-n": {
+      "base": "smex:blastfurnace/tuyere",
+      "rotateY": 180
+    },
+    "*-tuyere-w": {
+      "base": "smex:blastfurnace/tuyere",
+      "rotateY": -90
+    }
+  },
+  "creativeinventory": {
+    "general": ["*-tuyere-s"],
+    "smex": ["*-tuyere-s"]
+  },
+  "replaceable": 400,
+  "resistance": 3.5,
+  "lightAbsorption": 3,
+  "sounds": {
+    "walk": "walk/stone",
+    "place": "block/ceramicplace",
+    "byTool": {
+      "Pickaxe": {
+        "hit": "block/rock-hit-pickaxe",
+        "break": "block/rock-break-pickaxe"
+      }
+    }
+  },
+  "sidesolid": {
+    "all": true
+  },
+  "sideopaque": {
+    "all": false
+  }
+}

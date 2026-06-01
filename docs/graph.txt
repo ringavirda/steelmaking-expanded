@@ -1,0 +1,82 @@
+SteelmakingExpanded — FULL PRODUCTION CHAIN (survival)
+========================================================
+Legend:  ▶ item/material flow    ⇢ gas flow    ↯ mechanical power
+         [ ] block/structure     ( ) network/state     {peripheral @ offset}
+
+────────────────────────────────────────────────────────────────────────────
+0. INPUT PREP  (vanilla crushing — crushing props added via patches/AssetsFinalize)
+────────────────────────────────────────────────────────────────────────────
+   iron ore   ──crush──▶ crushed-iron ─┐
+   coke       ──crush──▶ crushed-coke ─┤   (coke itself: coke oven, vanilla)
+   limestone  ──crush──▶ lime ─────────┘
+                                        ▼
+                       [REINFORCED HOPPER]  player loads 3 inputs (iron/coke/flux slots)
+                       [BELL HOPPER]   12 crushed-iron + 3 coke + 1 lime ▶ 16 blastmix
+                            │ (Ctrl+RMB hopper = toggle dropping)
+                            ▼ drops 8/tick down the shaft as coalpiles
+                       hearth coalpiles (the furnace fuel/charge bed)
+
+────────────────────────────────────────────────────────────────────────────
+1. BLAST FURNACE  (multiblock)
+────────────────────────────────────────────────────────────────────────────
+   Requires: 320 blastmix loaded · door CLOSED · NOT choked · all hearth piles LIT
+   Idle ──ignite──▶ FIRING (caps 1400°C on its own)
+   FIRING + Blast ≥800°C at tuyeres ──▶ 1700°C ──(>1482°C iron m.p. for 300s)──▶ MELTING
+   MELTING: consumes blastmix ▶ _moltenIron (+60 / 10s)  &  _moltenSlag (+10 / 10s)
+
+        gas OUTLETS (top) ⇢ Exhaust            TUYERES (bottom) ⇠ Blast
+                │                                       ▲
+   ┌────────────┴───────────── EXHAUST (gas net) ───────┼──────────────┐
+   ▼                                                    │              │
+ [SMOKE STACK]  vent (sink, prevents choke)             │      iron ▼  ▼ slag  (2 taps, IsPouring)
+                                                         │   [BLAST FURNACE TAP ×2]
+                                ┌────────────────────────┘            │ TryPourMetal
+2. HOT-BLAST LOOP               │ hot Blast ≥800°C                     ▼
+────────────────────────       │                          [MOLTEN CANAL START]  ← (≥1 allowed)
+ [GAS INTAKE] ⇢ Air             │                                      │  ILiquidMetalSink
+      │                  ┌──────┴───────┐                              ▼
+ ↯[GAS BLOWER] Air→Blast │ COWPER STOVE │   ( MOLTEN NETWORK )  20u/canal,100u/start,10u/tap
+   (≥3 RPS, MP-driven)   │  (multiblock)│        carries metal + real temperature;
+      │ Blast            │ ph1 store hot│        cools (cooldownSpeed 40), SOLIDIFIES if cold.
+      ▼                  │ ph2 heat air │        Fracture now splits metal proportionally.
+ [COWPER PASSTHROUGH] ⇢──┤ off exhaust  │              │ flows: canal / bend / T / X / tap
+   heated Blast ⇢ tuyeres│ (now a gas   │              │
+                         │  node — fix) │     ┌────────┼───────────────────────┐
+                         └──────────────┘     ▼                                ▼
+                          heatsinks glow   2a. DIRECT IRON CAST            2b. STEEL (Bessemer)
+                                            ───────────────────            ───────────────────
+                                          [MOLD PEDESTAL]+small mold   network reaches Bessemer
+                                          [CANAL TAP]+barrel/large mold {INPUT TAP @ ctrl+(1,1,2)}
+                                            drains net into mold (200u)         │ Filling drains iron in
+                                            │ harden → RMB                      ▼
+                                            ▼                          ┌─────────────────────────┐
+                                  iron PLATE / 2×INGOT / 4×ROD         │ BESSEMER CONVERTER       │
+                                  (tool-mold drop {metal})            │  control = "brain"        │
+                                                                       │  Filling→Normal→Pouring   │
+3. BESSEMER (multiblock)                                         │  Normal: refine 300s      │
+────────────────────────────                                          │   needs Blast @ gasintake │
+ peripherals (control-local offsets):                                 │   + ↯ MP on transmission  │
+   transmission ↯ (0,-1,0)   converter shell (0,0,2)                  │   ⇒ ingot-iron → ingot-steel│
+   gas intake ⇢ (0,0,4)  [must face same way as control]             └─────────────┬─────────────┘
+   INPUT  tap  (1, 1,2)  ← molten iron in                                           │ Pouring
+   OUTPUT start(1,-2,2)  → molten steel out                                         ▼
+                                                                        [OUTPUT MOLTEN CANAL START]
+                                                                          ( 2nd MOLTEN NETWORK )
+                                                                                    │
+                                                                          [MOLD PEDESTAL] + plate/
+                                                                           ingot/rod mold (steel)
+                                                                                    │ harden → RMB
+                                                                                    ▼
+                                                                        STEEL PLATE / 2×STEEL INGOT
+                                                                              / 4×STEEL ROD
+
+────────────────────────────────────────────────────────────────────────────
+GATING SUMMARY
+────────────────────────────────────────────────────────────────────────────
+ • Iron at all          : blast furnace MELTING ⇒ requires hot blast ≥800°C (cowper loop)
+ • Mechanical power (↯)  : blower (≥3 RPS) AND bessemer transmission
+ • Blast gas            : intake → blower(Air→Blast) → cowper(heats) → consumer
+ • Steel               : Bessemer needs Blast + MP + molten iron arriving >~1186°C
+ • Keep metal hot       : long canals cool/solidify; route short or rely on bessemer reheat
+ • Molds               : clayform plate/doubleingot/quadrod (200u, fired); small=pedestal,
+                         large (anvil/helvehammer)=canal tap; molten mold spills unless held

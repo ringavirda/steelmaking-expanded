@@ -1,0 +1,39 @@
+{
+  "code": "gaspipe",
+  "class": "smex.BlockGasOutlet",
+  "entityClass": "smex.BlockEntityGasOutlet",
+  "blockmaterial": "Ceramic",
+  "maxstacksize": 1,
+  "creativeinventory": {
+    "general": ["*-outlet-n"],
+    "smex": ["*-outlet-n"]
+  },
+  "behaviors": [{ "name": "Lockable" }],
+  "variantgroups": [
+    { "code": "type", "states": ["outlet"] },
+    { "code": "orientation", "states": ["s", "n", "w", "e"] }
+  ],
+  "shapebytype": {
+    "*-outlet-s": {
+      "base": "smex:gas/pipes/outlet"
+    },
+    "*-outlet-n": {
+      "base": "smex:gas/pipes/outlet",
+      "rotateY": 180
+    },
+    "*-outlet-e": {
+      "base": "smex:gas/pipes/outlet",
+      "rotateY": 90
+    },
+    "*-outlet-w": {
+      "base": "smex:gas/pipes/outlet",
+      "rotateY": -90
+    }
+  },
+  "sidesolid": {
+    "all": true
+  },
+  "sideopaque": {
+    "all": false
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "Molten Barrel",
+  "ingredientPattern": "PHP,PCP,PNP",
+  "ingredients": {
+    "P": { "type": "item", "code": "game:metalplate-{metal}", "quantity": 1 },
+    "C": { "type": "item", "code": "game:clay-fire", "quantity": 4 },
+    "N": {
+      "type": "item",
+      "code": "game:metalnailsandstrips-{metal}",
+      "quantity": 4
+    },
+    "H": { "type": "item", "code": "game:hammer-*", "isTool": true }
+  },
+  "allowedVariants": {
+    "metal": ["iron", "steel"]
+  },
+  "width": 3,
+  "height": 3,
+  "output": {
+    "type": "block",
+    "code": "smex:moltenbarrel"
+  }
+}

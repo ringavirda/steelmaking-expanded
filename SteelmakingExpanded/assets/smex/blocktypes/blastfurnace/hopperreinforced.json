@@ -1,0 +1,44 @@
+{
+  "code": "hopperreinforced",
+  "class": "smex.BlockHopperReinforced",
+  "entityclass": "smex.BlockEntityHopperReinforced",
+  "behaviors": [{ "name": "Lockable" }, { "name": "Container" }],
+  "attributes": {
+    "inventoryClassName": "hopperreinforced",
+    "pullFaces": [],
+    "acceptFromFaces": ["up"],
+    "pushFaces": ["down"],
+    "quantitySlots": 8,
+    "openSound": {
+      "path": "block/hopperopen",
+      "pitch": { "avg": 1.0, "var": 0.25 }
+    },
+    "tumbleSound": {
+      "path": "block/hoppertumble",
+      "pitch": { "avg": 1.0, "var": 0.25 },
+      "range": 8,
+      "volume": { "avg": 0.5, "var": 0.0 }
+    }
+  },
+  "creativeinventory": {
+    "general": ["*"],
+    "smex": ["*"]
+  },
+  "blockmaterial": "Metal",
+  "maxstacksize": 1,
+  "lightAbsorption": 0,
+  "shape": { "base": "smex:blastfurnace/hopper-reinforced" },
+  "sidesolid": {
+    "all": false
+  },
+  "sideopaque": {
+    "all": false
+  },
+  "resistance": 1.75,
+  "sounds": {
+    "place": "game:block/chute",
+    "break": "game:block/chute",
+    "hit": "game:block/chute",
+    "walk": "game:walk/stone"
+  }
+}

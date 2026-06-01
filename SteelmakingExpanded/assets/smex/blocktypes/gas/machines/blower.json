@@ -1,0 +1,32 @@
+{
+  "code": "gaspipe",
+  "class": "smex.BlockGasBlower",
+  "entityClass": "smex.BlockEntityGasBlower",
+  "entityBehaviors": [{ "name": "smex.BEBehaviorMPBlower" }],
+  "blockmaterial": "Metal",
+  "maxstacksize": 1,
+  "creativeinventory": {
+    "general": ["*-blower-ns"],
+    "smex": ["*-blower-ns"]
+  },
+  "behaviors": [{ "name": "Lockable" }],
+  "variantgroups": [
+    { "code": "type", "states": ["blower"] },
+    { "code": "orientation", "states": ["ns", "we"] }
+  ],
+  "shapebytype": {
+    "*-blower-ns": {
+      "base": "smex:gas/machines/blower",
+      "rotateY": 0
+    },
+    "*-blower-we": {
+      "base": "smex:gas/machines/blower",
+      "rotateY": 90
+    }
+  },
+  "renderpass": "OpaqueNoCull",
+  "faceCullMode": "NeverCull",
+  "lightAbsorption": 0,
+  "sidesolid": { "all": false },
+  "sideopaque": { "all": false }
+}

@@ -1,0 +1,40 @@
+{
+  "code": "gaspipe",
+  "class": "smex.BlockGasHeatedIntake",
+  "entityClass": "smex.BlockEntityGasHeatedIntake",
+  "blockmaterial": "Ceramic",
+  "maxstacksize": 1,
+  "creativeinventory": {
+    "general": ["*-heated-ns"],
+    "smex": ["*-heated-ns"]
+  },
+  "behaviors": [{ "name": "Lockable" }],
+  "variantgroups": [
+    { "code": "type", "states": ["heated"] },
+    { "code": "orientation", "states": ["ns", "sn", "we", "ew"] }
+  ],
+  "shapebytype": {
+    "*-heated-ns": {
+      "base": "smex:gas/machines/heatedintake",
+      "rotateY": 0
+    },
+    "*-heated-we": {
+      "base": "smex:gas/machines/heatedintake",
+      "rotateY": 270
+    },
+    "*-heated-sn": {
+      "base": "smex:gas/machines/heatedintake",
+      "rotateY": 180
+    },
+    "*-heated-ew": {
+      "base": "smex:gas/machines/heatedintake",
+      "rotateY": 90
+    }
+  },
+  "sidesolid": {
+    "all": true
+  },
+  "sideopaque": {
+    "all": false
+  }
+}

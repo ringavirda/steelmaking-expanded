@@ -1,0 +1,142 @@
+[
+  {
+    "name": "Gas Piping (Heated)",
+    "ingredientPattern": "BHB,BPB,BNB",
+    "ingredients": {
+      "B": {
+        "type": "item",
+        "code": "game:refractorybrick-fired-tier3",
+        "quantity": 2
+      },
+      "N": {
+        "type": "item",
+        "code": "game:metalnailsandstrips-{metal}",
+        "quantity": 2
+      },
+      "P": { "type": "block", "code": "smex:gaspipe-straight*", "quantity": 1 },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      }
+    },
+    "allowedVariants": {
+      "metal": ["iron", "steel"]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "smex:gaspipe-heated-ns"
+    }
+  },
+  {
+    "name": "Gas Piping (Valve)",
+    "ingredientPattern": "H__,NPR,L__",
+    "ingredients": {
+      "N": {
+        "type": "item",
+        "code": "game:metalnailsandstrips-{metal}",
+        "quantity": 2
+      },
+      "R": { "type": "item", "code": "game:rod-{metal}", "quantity": 2 },
+      "P": { "type": "block", "code": "smex:gaspipe-straight*", "quantity": 1 },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      },
+      "L": { "type": "item", "code": "game:metalplate-{metal}", "quantity": 1 }
+    },
+    "allowedVariants": {
+      "metal": ["iron", "steel"]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "smex:gaspipe-valve-sn"
+    }
+  },
+  {
+    "name": "Gas Piping (Pressure Valve)",
+    "ingredientPattern": "__H,LPL,__N",
+    "ingredients": {
+      "N": {
+        "type": "item",
+        "code": "game:metalnailsandstrips-{metal}",
+        "quantity": 2
+      },
+      "P": { "type": "block", "code": "smex:gaspipe-straight*", "quantity": 1 },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      },
+      "L": { "type": "item", "code": "game:metalplate-{metal}", "quantity": 1 }
+    },
+    "allowedVariants": {
+      "metal": ["iron", "steel"]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "smex:gaspipe-pressurevalve-sn"
+    }
+  },
+  {
+    "name": "Gas Blower",
+    "ingredientPattern": "HNR,ALA,S_S",
+    "ingredients": {
+      "N": {
+        "type": "item",
+        "code": "game:metalnailsandstrips-{metal}",
+        "quantity": 4
+      },
+      "A": {"type":"block", "code": "game:woodenaxle-ns", "quantity": 1},
+      "S": { "type": "block", "code": "game:supportbeam-*", "quantity": 4 },
+      "R": { "type": "item", "code": "game:rod-{metal}", "quantity": 4 },
+      "P": { "type": "block", "code": "smex:gaspipe-straight*", "quantity": 1 },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      },
+      "L": { "type": "item", "code": "game:metalplate-{metal}", "quantity": 6 }
+    },
+    "allowedVariants": {
+      "metal": ["iron", "steel"]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "smex:gaspipe-blower-ns"
+    }
+  },
+  {
+    "name": "Gas Intake",
+    "ingredientPattern": "HR_,LLL,S_S",
+    "ingredients": {
+      "S": { "type": "block", "code": "game:supportbeam-*", "quantity": 4 },
+      "R": { "type": "item", "code": "game:rod-{metal}", "quantity": 4 },
+      "P": { "type": "block", "code": "smex:gaspipe-straight*", "quantity": 1 },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      },
+      "L": { "type": "item", "code": "game:metalplate-{metal}", "quantity": 1 }
+    },
+    "allowedVariants": {
+      "metal": ["iron", "steel"]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "smex:gaspipe-intake-n"
+    }
+  }
+]
