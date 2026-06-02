@@ -4,6 +4,12 @@
   "entityClass": "smex.BlockEntityGasBlower",
   "entityBehaviors": [{ "name": "smex.BEBehaviorMPBlower" }],
   "blockmaterial": "Metal",
+  "sounds": {
+    "place": "game:block/anvil",
+    "break": "game:block/anvil",
+    "hit": "game:block/anvil",
+    "walk": "game:walk/stone"
+  },
   "maxstacksize": 1,
   "creativeinventory": {
     "general": ["*-blower-ns"],

@@ -4,6 +4,12 @@
   "entityClass": "smex.BlockEntityHeatSink",
   "shape": { "base": "smex:cowperstove/heatsink" },
   "blockmaterial": "Metal",
+  "sounds": {
+    "place": "game:block/anvil",
+    "break": "game:block/anvil",
+    "hit": "game:block/anvil",
+    "walk": "game:walk/stone"
+  },
   "maxstacksize": 4,
   "lightAbsorption": 99,
   "creativeinventory": {

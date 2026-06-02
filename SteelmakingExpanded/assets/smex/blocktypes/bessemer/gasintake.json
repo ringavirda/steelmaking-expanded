@@ -3,6 +3,12 @@
   "class": "smex.BlockBessemerGasIntake",
   "entityClass": "smex.BlockEntityBessemerGasIntake",
   "blockmaterial": "Metal",
+  "sounds": {
+    "place": "game:block/anvil",
+    "break": "game:block/anvil",
+    "hit": "game:block/anvil",
+    "walk": "game:walk/stone"
+  },
   "maxstacksize": 1,
   "creativeinventory": {
     "general": ["*-s"],

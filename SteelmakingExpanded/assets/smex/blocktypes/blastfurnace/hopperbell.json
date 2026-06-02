@@ -27,9 +27,9 @@
   },
   "resistance": 1.75,
   "sounds": {
-    "place": "game:block/chute",
-    "break": "game:block/chute",
-    "hit": "game:block/chute",
+    "place": "game:block/anvil",
+    "break": "game:block/anvil",
+    "hit": "game:block/anvil",
     "walk": "game:walk/stone"
   }
 }

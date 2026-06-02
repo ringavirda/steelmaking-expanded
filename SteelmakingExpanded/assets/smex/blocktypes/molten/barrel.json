@@ -5,6 +5,12 @@
   "maxStackSize": 1,
   "storageFlags": 2,
   "blockmaterial": "Metal",
+  "sounds": {
+    "place": "game:block/anvil",
+    "break": "game:block/anvil",
+    "hit": "game:block/anvil",
+    "walk": "game:walk/stone"
+  },
   "creativeinventory": {
     "general": ["*"],
     "smex": ["*"]

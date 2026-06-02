@@ -3,6 +3,12 @@
   "class": "smex.BlockGasPipe",
   "entityClass": "smex.BlockEntityGasPipe",
   "blockmaterial": "Metal",
+  "sounds": {
+    "place": "game:block/anvil",
+    "break": "game:block/anvil",
+    "hit": "game:block/anvil",
+    "walk": "game:walk/stone"
+  },
   "maxstacksize": 8,
   "creativeinventory": {
     "general": ["*-xjunction-nswe"],

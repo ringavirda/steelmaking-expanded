@@ -3,6 +3,12 @@
   "class": "smex.BlockBessemerConverter",
   "entityClass": "smex.BlockEntityBessemerConverter",
   "blockmaterial": "Metal",
+  "sounds": {
+    "place": "game:block/anvil",
+    "break": "game:block/anvil",
+    "hit": "game:block/anvil",
+    "walk": "game:walk/stone"
+  },
   "requiredMiningTier": 5,
   "resistance": 45.0,
   "maxstacksize": 1,
