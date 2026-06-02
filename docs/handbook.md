@@ -97,7 +97,7 @@ air on their separate paths — if they mix inside a stove it cannot heat.
 <br>• 4 × Heat Sink
 <br>• 2 × Gas Outlet
 <br>• 1 × Gas Passthrough
-<br>• 1 × Coke Oven Door
+<br>• 1 × Iron Hatch Door
 <br><i>One interior slot is left open for the coal pile that charges the core.</i>
 <br>
 <br><strong>3. The Gas Network</strong>
