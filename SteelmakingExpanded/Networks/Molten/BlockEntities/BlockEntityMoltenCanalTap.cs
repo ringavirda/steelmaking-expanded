@@ -41,7 +41,8 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
   // A closed tap severs itself from the run (it's a single-connector leaf) so no
   // metal flows into its own cell — IsPouring otherwise only gates the tap's own
   // draining into parked content, leaving the cell to keep filling from the network.
-  public override bool IsConnectionBroken() => base.IsConnectionBroken() || !IsPouring;
+  public override bool IsConnectionBroken() =>
+    base.IsConnectionBroken() || !IsPouring;
 
   /// <summary> Canal tap by itself has low capacity. </summary>
   public override int MaxUnitCapacity =>

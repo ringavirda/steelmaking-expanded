@@ -62,7 +62,10 @@ public class BlockEntityMoltenBarrel : BlockEntity, ILiquidMetalSink
     {
       if (Api?.World == null || MetalContent == null || CurrentUnitAmount <= 0)
         return 0;
-      float t = MetalContent.Collectible.GetTemperature(Api.World, MetalContent);
+      float t = MetalContent.Collectible.GetTemperature(
+        Api.World,
+        MetalContent
+      );
       return t > GlowMinTemp
         ? (byte)GameMath.Clamp((t - GlowMinTemp) / 30f, 0, 24)
         : (byte)0;

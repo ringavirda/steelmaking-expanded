@@ -44,7 +44,8 @@ public class BlockEntityMoltenCanalMoldPedestal : BlockEntityMoltenCanal
   // A closed pedestal severs itself from the run (it's a single-connector leaf) so
   // no metal flows into its cell — IsPouring otherwise only gates its own draining
   // into the mold, leaving the cell to keep filling from the network.
-  public override bool IsConnectionBroken() => base.IsConnectionBroken() || !IsPouring;
+  public override bool IsConnectionBroken() =>
+    base.IsConnectionBroken() || !IsPouring;
 
   /// <summary>The placed mold item, or <c>null</c> when empty.</summary>
   public ItemStack? MoldStack { get; private set; }
