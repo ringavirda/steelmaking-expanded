@@ -183,6 +183,7 @@
   "bessemer-status-refining-paused": "Refining paused — needs blast ({0})",
   "bessemer-status-refining": "Refining… {0}",
   "bessemer-status-filling-nometal": "Filling — no metal in input tap",
+  "bessemer-status-filling-tapclosed": "Filling — input tap is closed",
   "bessemer-status-filling-full": "Filling — converter full",
   "bessemer-status-filling-mismatch": "Filling — metal type mismatch",
   "bessemer-status-filling": "Filling… {0}/{1}",

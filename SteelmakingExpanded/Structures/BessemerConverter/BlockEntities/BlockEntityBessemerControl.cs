@@ -232,6 +232,16 @@ public class BlockEntityBessemerControl : BlockEntityMultiblockStructure
     }
 
     var inputCell = GetMoltenCell(InputTapLocal);
+
+    // Respect the tap's open/closed state. A closed tap's cell keeps receiving
+    // metal from the network (IsPouring only gates the tap's own draining), so we
+    // must check it here or the vessel would fill straight through a shut tap.
+    if (inputCell is BlockEntityMoltenCanalTap { IsPouring: false })
+    {
+      SetStatus(Lang.Get("smex:bessemer-status-filling-tapclosed"));
+      return;
+    }
+
     if (inputCell == null || !inputCell.HasMoltenMetal)
     {
       SetStatus(Lang.Get("smex:bessemer-status-filling-nometal"));
