@@ -5,7 +5,7 @@
   "name": "Steelmaking Expanded",
   "authors": ["fallenstar"],
   "description": "Adds an industrial iron and steel production chain: a multiblock blast furnace, gas and molten-metal pipe networks, a cowper stove hot-blast loop, and a Bessemer converter for making steel.",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "dependencies": {
     "game": "1.22.0"
   }
