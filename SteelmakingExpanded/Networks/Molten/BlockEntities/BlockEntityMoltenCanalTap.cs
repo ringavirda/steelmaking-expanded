@@ -383,7 +383,7 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
         MarkDirty(true);
       }
     }
-    else if (IsMold && !IsHardened(MoldMetalContent))
+    else if (IsMold && !IsContentHardened(MoldMetalContent))
     {
       var content = MoldMetalContent;
       int drained = DrainInto(
@@ -464,7 +464,7 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
     return (int)drained;
   }
 
-  private bool IsHardened(ItemStack? content)
+  private bool IsContentHardened(ItemStack? content)
   {
     if (content == null)
       return false;

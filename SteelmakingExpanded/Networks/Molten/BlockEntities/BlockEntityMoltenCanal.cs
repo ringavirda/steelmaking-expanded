@@ -69,6 +69,31 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode
   /// <summary>Whether this cell currently holds liquid (not solidified) metal.</summary>
   public bool HasMoltenMetal => !Solidified && CellAmount > 0f;
 
+  /// <summary>
+  /// Whether this cell's metal has cooled enough to be chiselled out — fully
+  /// hardened below 0.3 × its melting point. A just-solidified cell (below the
+  /// melting point yet still glowing hot) already blocks flow, but is too hot to
+  /// chip out until it reaches this point. Works on both sides (melting point is
+  /// resolved from <see cref="CellMetalType"/>, which is synced).
+  /// </summary>
+  public bool IsHardened
+  {
+    get
+    {
+      if (Api?.World == null || CellAmount <= 0 || CellMetalType.Length == 0)
+        return false;
+      Item? item = Api.World.GetItem(new AssetLocation(CellMetalType));
+      if (item == null)
+        return false;
+      float meltPoint = item.GetMeltingPoint(
+        Api.World,
+        null,
+        new DummySlot(new ItemStack(item))
+      );
+      return _cellTemperature < 0.3f * meltPoint;
+    }
+  }
+
   #region Incandescent block light
   /// <summary>Below this temperature (°C) the metal emits no block light.</summary>
   private const float GlowMinTemp = 500f;
@@ -294,7 +319,7 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode
   /// </summary>
   public ItemStack? ClearSolidified()
   {
-    if (Api?.Side != EnumAppSide.Server || !Solidified)
+    if (Api?.Side != EnumAppSide.Server || !Solidified || !IsHardened)
       return null;
 
     ItemStack? recovered = GetSolidifiedDrop(Api.World);

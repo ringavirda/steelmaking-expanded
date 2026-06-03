@@ -211,6 +211,18 @@ public class BlockMoltenCanal : BlockNetworkNode
       if (!IsTool(held, EnumTool.Chisel) || !IsTool(offhand, EnumTool.Hammer))
         return base.OnBlockInteractStart(world, byPlayer, blockSel);
 
+      // The metal blocks flow as soon as it solidifies, but it can't be chipped
+      // out until it has fully hardened (below 0.3 × melting point).
+      if (!be.IsHardened)
+      {
+        if (world.Side == EnumAppSide.Server)
+          (byPlayer as IServerPlayer)?.SendIngameError(
+            "canaltoohot",
+            "smex:canal-err-toohot"
+          );
+        return true;
+      }
+
       if (world.Side == EnumAppSide.Server)
       {
         ItemStack? recovered = be.ClearSolidified();
@@ -324,8 +336,9 @@ public class BlockMoltenCanal : BlockNetworkNode
       world.BlockAccessor.GetBlockEntity(selection.Position)
       as BlockEntityMoltenCanal;
 
-    // A solidified canal (any shape) is chipped clear with a chisel + hammer.
-    if (be?.Solidified == true)
+    // A solidified canal (any shape) is chipped clear with a chisel + hammer, but
+    // only once its metal has fully hardened (below 0.3 × melting point).
+    if (be?.IsHardened == true)
       return
       [
         .. baseHelp,
