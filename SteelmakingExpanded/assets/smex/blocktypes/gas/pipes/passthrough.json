@@ -15,26 +15,59 @@
   },
   "maxstacksize": 1,
   "creativeinventory": {
-    "general": ["*-passthrough-ns"],
-    "smex": ["*-passthrough-ns"]
+    "general": ["*-passthrough-*-ns"],
+    "smex": ["*-passthrough-*-ns"]
+  },
+  "attributes": {
+    "handbook": { "groupBy": ["gaspipe-passthrough-*"] }
   },
   "behaviors": [{ "name": "Lockable" }],
   "variantgroups": [
     { "code": "type", "states": ["passthrough"] },
+    {
+      "code": "brick",
+      "states": [
+        "fire",
+        "black",
+        "brown",
+        "cream",
+        "gray",
+        "orange",
+        "red",
+        "tan",
+        "refractorytier1",
+        "refractorytier2",
+        "refractorytier3"
+      ]
+    },
     { "code": "orientation", "states": ["ns", "we", "ud"] }
   ],
   "shapebytype": {
-    "*-passthrough-ns": {
+    "*-passthrough-*-ns": {
       "base": "smex:gas/pipes/passthrough-straight",
       "rotateY": 0
     },
-    "*-passthrough-we": {
+    "*-passthrough-*-we": {
       "base": "smex:gas/pipes/passthrough-straight",
       "rotateY": 90
     },
-    "*-passthrough-ud": {
+    "*-passthrough-*-ud": {
       "base": "smex:gas/pipes/passthrough-straight",
       "rotateX": 90
+    }
+  },
+  "texturesByType": {
+    "*-refractorytier1-*": {
+      "front1": { "base": "game:block/clay/refractory/tier1/front1" }
+    },
+    "*-refractorytier2-*": {
+      "front1": { "base": "game:block/clay/refractory/tier2/front1" }
+    },
+    "*-refractorytier3-*": {
+      "front1": { "base": "game:block/clay/refractory/tier3/front1" }
+    },
+    "*": {
+      "front1": { "base": "game:block/clay/brick/four/running/{brick}1" }
     }
   },
   "renderpass": "OpaqueNoCull",

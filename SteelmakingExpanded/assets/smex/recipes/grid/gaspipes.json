@@ -125,7 +125,7 @@
     "ingredients": {
       "B": {
         "type": "item",
-        "code": "game:refractorybrick-fired-tier3",
+        "code": "game:burnedbrick-{brick}",
         "quantity": 2
       },
       "P": {
@@ -135,13 +135,22 @@
       }
     },
     "allowedVariants": {
-      "metal": ["iron", "steel"]
+      "brick": [
+        "fire",
+        "black",
+        "brown",
+        "cream",
+        "gray",
+        "orange",
+        "red",
+        "tan"
+      ]
     },
     "width": 3,
     "height": 3,
     "output": {
       "type": "block",
-      "code": "smex:gaspipe-passthrough-ns"
+      "code": "smex:gaspipe-passthrough-{brick}-ns"
     }
   },
   {
@@ -150,7 +159,7 @@
     "ingredients": {
       "B": {
         "type": "item",
-        "code": "game:refractorybrick-fired-tier3",
+        "code": "game:burnedbrick-{brick}",
         "quantity": 2
       },
       "P": {
@@ -160,13 +169,72 @@
       }
     },
     "allowedVariants": {
-      "metal": ["iron", "steel"]
+      "brick": [
+        "fire",
+        "black",
+        "brown",
+        "cream",
+        "gray",
+        "orange",
+        "red",
+        "tan"
+      ]
     },
     "width": 3,
     "height": 3,
     "output": {
       "type": "block",
-      "code": "smex:gaspipe-passthroughbend-nw"
+      "code": "smex:gaspipe-passthroughbend-{brick}-nw"
+    }
+  },
+  {
+    "name": "Gas Passthrough (Straight, Refractory)",
+    "ingredientPattern": "B_B,BPB,B_B",
+    "ingredients": {
+      "B": {
+        "type": "item",
+        "code": "game:refractorybrick-fired-{tier}",
+        "quantity": 2
+      },
+      "P": {
+        "type": "block",
+        "code": "smex:gaspipe-straight-*",
+        "quantity": 1
+      }
+    },
+    "allowedVariants": {
+      "tier": ["tier1", "tier2", "tier3"]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "smex:gaspipe-passthrough-refractory{tier}-ns"
+    }
+  },
+  {
+    "name": "Gas Passthrough (Bend, Refractory)",
+    "ingredientPattern": "BPB,P_B,B_B",
+    "ingredients": {
+      "B": {
+        "type": "item",
+        "code": "game:refractorybrick-fired-{tier}",
+        "quantity": 2
+      },
+      "P": {
+        "type": "block",
+        "code": "smex:gaspipe-straight-*",
+        "quantity": 1
+      }
+    },
+    "allowedVariants": {
+      "tier": ["tier1", "tier2", "tier3"]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "smex:gaspipe-passthroughbend-refractory{tier}-nw"
     }
   },
   {

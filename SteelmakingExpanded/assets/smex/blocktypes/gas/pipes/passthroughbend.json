@@ -15,12 +15,31 @@
   },
   "maxstacksize": 1,
   "creativeinventory": {
-    "general": ["*-passthroughbend-nw"],
-    "smex": ["*-passthroughbend-nw"]
+    "general": ["*-passthroughbend-*-nw"],
+    "smex": ["*-passthroughbend-*-nw"]
+  },
+  "attributes": {
+    "handbook": { "groupBy": ["gaspipe-passthroughbend-*"] }
   },
   "behaviors": [{ "name": "Lockable" }],
   "variantgroups": [
     { "code": "type", "states": ["passthroughbend"] },
+    {
+      "code": "brick",
+      "states": [
+        "fire",
+        "black",
+        "brown",
+        "cream",
+        "gray",
+        "orange",
+        "red",
+        "tan",
+        "refractorytier1",
+        "refractorytier2",
+        "refractorytier3"
+      ]
+    },
     {
       "code": "orientation",
       "states": [
@@ -40,60 +59,74 @@
     }
   ],
   "shapebytype": {
-    "*-passthroughbend-nw": {
+    "*-passthroughbend-*-nw": {
       "base": "smex:gas/pipes/passthrough-bend"
     },
-    "*-passthroughbend-en": {
+    "*-passthroughbend-*-en": {
       "base": "smex:gas/pipes/passthrough-bend",
       "rotateY": 270
     },
-    "*-passthroughbend-se": {
+    "*-passthroughbend-*-se": {
       "base": "smex:gas/pipes/passthrough-bend",
       "rotateY": 180
     },
-    "*-passthroughbend-ws": {
+    "*-passthroughbend-*-ws": {
       "base": "smex:gas/pipes/passthrough-bend",
       "rotateY": 90
     },
 
-    "*-passthroughbend-dn": {
+    "*-passthroughbend-*-dn": {
       "base": "smex:gas/pipes/passthrough-bend",
       "rotateZ": 90
     },
-    "*-passthroughbend-de": {
+    "*-passthroughbend-*-de": {
       "base": "smex:gas/pipes/passthrough-bend",
       "rotateZ": 90,
       "rotateY": 270
     },
-    "*-passthroughbend-ds": {
+    "*-passthroughbend-*-ds": {
       "base": "smex:gas/pipes/passthrough-bend",
       "rotateZ": 90,
       "rotateY": 180
     },
-    "*-passthroughbend-dw": {
+    "*-passthroughbend-*-dw": {
       "base": "smex:gas/pipes/passthrough-bend",
       "rotateZ": 90,
       "rotateY": 90
     },
 
-    "*-passthroughbend-un": {
+    "*-passthroughbend-*-un": {
       "base": "smex:gas/pipes/passthrough-bend",
       "rotateZ": 270
     },
-    "*-passthroughbend-ue": {
+    "*-passthroughbend-*-ue": {
       "base": "smex:gas/pipes/passthrough-bend",
       "rotateZ": 270,
       "rotateY": 270
     },
-    "*-passthroughbend-us": {
+    "*-passthroughbend-*-us": {
       "base": "smex:gas/pipes/passthrough-bend",
       "rotateZ": 270,
       "rotateY": 180
     },
-    "*-passthroughbend-uw": {
+    "*-passthroughbend-*-uw": {
       "base": "smex:gas/pipes/passthrough-bend",
       "rotateZ": 270,
       "rotateY": 90
+    }
+  },
+  "texturesByType": {
+    "*-refractorytier1-*": {
+      "front1": { "base": "game:block/clay/refractory/tier1/front1" }
+    },
+    "*-refractorytier2-*": {
+      "front1": { "base": "game:block/clay/refractory/tier2/front1" }
+    },
+    "*-refractorytier3-*": {
+      "front1": { "base": "game:block/clay/refractory/tier3/front1" }
+    },
+    "*": {
+      "front1": { "base": "game:block/clay/brick/four/running/{brick}1" }
     }
   },
   "renderpass": "OpaqueNoCull",
