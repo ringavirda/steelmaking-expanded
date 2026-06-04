@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using BlockMigrationLib;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
 
-namespace BlockMigrationLib.Migrations;
+namespace SteelmakingExpanded.Migrations;
 
 /// <summary>
 /// Migrates pre-brick-variant gas passthroughs. The straight passthrough used the
