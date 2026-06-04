@@ -20,6 +20,7 @@ For the full survival production flow — what feeds what, gating, and tunables 
 | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `SteelmakingExpanded/`   | The mod itself: C# code + JSON/asset content.                                                                                                                                    |
 | `BlockNetworkLib/`       | Standalone library with the generic block-network framework (graph, nodes, per-tick dispatch). Compiled directly into the mod for now cause I don't want people crying just yet. |
+| `BlockMigrationLib/`     | Standalone library with the generic block-migration framework (auto-rewrites renamed/re-variantted blocks in old saves as chunks load). Also compiled directly into the mod.     |
 | `CakeBuild/`             | Cake build script project that packages the mod into a release zip.                                                                                                              |
 | `VintageStory.sln`       | Solution tying the projects together.                                                                                                                                            |
 | `build.ps1` / `build.sh` | Convenience wrappers that run the Cake build.                                                                                                                                    |
@@ -54,15 +55,72 @@ Structures/                The big multiblock machines
 Overrides/                 Drop-in replacements for vanilla classes
                            (coal pile, tool mold, mold rack) to add mod behavior
 
+Migrations/                Per-block save migrations (IBlockCodeMigration implementations)
+                           that rewrite old block codes when variants change
+
 SteelmakingExpandedModSystem.cs   Entry point: registers every block/BE/item/behavior class,
                                   the creative tab, network types, global player effects, patches
 SmexSounds.cs              Shared sound asset locations + server-side play helpers
+SmexValues.cs              Gameplay tunables (SmexConfig) loaded from ModConfig/smex.json,
+                           exposed through the static SmexValues accessor
 ```
 
-`BlockNetworkLib/` provides the reusable plumbing both networks build on:
-`BlockNetworkModSystem` (graph + BFS merge/fracture), `BlockNetwork` (abstract live
-network), `BlockNetworkNode` / `BlockEntityNetworkNode` (auto-orienting nodes), and
-`INetworkNode`.
+## Network system (`BlockNetworkLib/`)
+
+Both the gas and molten systems are instances of one generic block-network framework.
+A network is a connected graph of same-type nodes; the library owns only the
+**graph-level** work (which blocks belong together, how they merge when joined and
+fracture when broken, and per-tick dispatch), while each concrete network owns its
+typed state and rules.
+
+- `INetworkNode` — the block-entity-facing contract: reports its connector faces
+  (`Orientation`), its `NetworkType`, the open/leaking faces handed back by the tick,
+  and receives state pushes so clients can update their display.
+- `BlockNetworkNode` — the `Block` base for self-orienting nodes: reads the shape family
+  (`Type`) and connector faces (`Orientation`) from the block's variant code, computes
+  the valid orientations from neighbouring same-network blocks on placement, and supports
+  wrench rotation (`IWrenchOrientable`).
+- `BlockEntityNetworkNode` — the `BlockEntity` base that registers/unregisters the node
+  with the manager on load/removal, persists orientation and network state, and forwards
+  network updates to the concrete block entity.
+- `BlockNetwork` — the abstract live-network instance. Each subclass (`GasNetwork`,
+  `MoltenNetwork`) owns its typed `State`, its node set, and all type-specific operations
+  (producers/consumers, merge/split, tick); the manager never reaches into them.
+- `BlockNetworkModSystem` — the graph manager: holds every live network, resolves
+  `GetNetworkAt(pos)`, runs the BFS merge on `AddNode` and fracture detection on
+  `RemoveNode`, and drives the per-tick dispatch. Concrete network types register a
+  factory via `RegisterNetworkType("gas", …)` during `ModSystem.Start`.
+
+To add a new network type: implement a `BlockNetwork` subclass (typed state + rules)
+with matching `BlockNetworkNode` / `BlockEntityNetworkNode` blocks, and register its
+factory with `RegisterNetworkType`. The graph, merging, fracturing and ticking come for
+free.
+
+## Migration system (`BlockMigrationLib/` + `Migrations/`)
+
+When a block's code changes between mod versions — most often because a new variant
+group is added (e.g. giving the gas passthrough/outlet/heated-intake a `brick` variant,
+or the cowper/smoke-stack intake a refractory `tier`) — the engine keeps every already
+placed instance as a "missing" placeholder block that retains its **original** code, so
+no world data is lost. The migration system rewrites those placeholders to their current
+equivalent in-place as chunks load, server-side only.
+
+- `BlockMigrationLib/` is the generic, mod-agnostic framework:
+  - `IBlockCodeMigration` — declares `(oldCode → newCode)` remap pairs; implement it
+    (with a public parameterless constructor) for each set of renamed blocks.
+  - `IBlockEntityMigration` — optional opt-in for migrations that must also copy/reshape
+    the old block entity's saved state onto the new one (the default is a stateless swap).
+  - `BlockMigrationModSystem` — auto-discovers every `IBlockCodeMigration` in the mod
+    assembly, builds one merged remap table, and swaps matching blocks both in a one-time
+    sweep of already-loaded chunks and on every `ChunkColumnLoaded` afterwards. Pairs whose
+    old or new code is absent in the current world are skipped, so returning the full set
+    unconditionally is safe.
+- `SteelmakingExpanded/Migrations/` holds this mod's concrete migrations (e.g.
+  `BrickVariantMigration`), which only enumerate the old/new code pairs; all the chunk
+  scanning and block swapping lives in the library.
+
+To add a migration: drop a new `IBlockCodeMigration` into `Migrations/` returning the
+legacy→current code pairs. No registration is needed — discovery is by reflection.
 
 ## Overrides — these might conflict with other mod behavior
 
@@ -78,7 +136,7 @@ api.RegisterBlockClass("BlockMoldRack", typeof(CustomBlockMoldRack));
 ```
 
 **Purpose:** inject mod behavior into blocks the mod does not own, so it works on
-the *existing vanilla blocks* without re-skinning them or shipping a parallel copy:
+the _existing vanilla blocks_ without re-skinning them or shipping a parallel copy:
 
 - `CustomBlockEntityCoalPile` — a blast-mix pile burns down to slag unless a furnace is managing it.
 - `CustomBlockEntityToolMold` — restores a filled mold's contents when it is placed back in the world.
