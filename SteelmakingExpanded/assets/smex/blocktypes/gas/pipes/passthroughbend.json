@@ -126,7 +126,10 @@
       "front1": { "base": "game:block/clay/refractory/tier3/front1" }
     },
     "*": {
-      "front1": { "base": "game:block/clay/brick/four/running/{brick}1" }
+      "front1": {
+        "base": "game:block/clay/brick/four/running/cream1",
+        "overlays": ["game:block/clay/brick/four/running/{brick}1"]
+      }
     }
   },
   "renderpass": "OpaqueNoCull",
