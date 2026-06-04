@@ -370,18 +370,23 @@ public abstract class BlockNetworkNode : Block, IWrenchOrientable
 
   /// <summary>
   /// Returns the orientation cycle a wrench rotates through at <paramref name="pos"/>.
-  /// The cycle normally lives on the network-node BE (populated at placement);
-  /// multiblock-structure gas blocks (cowper/smoke-stack/bessemer intakes) use a
-  /// different BE that never stores it, so recompute the valid orientations from
-  /// neighbours on the fly — otherwise they could never be wrench-rotated.
-  /// <para>Passes null for the current orientation (as placement does) so the cycle
-  /// is constrained only by real network topology, not by solid walls the block
-  /// happens to rest against — otherwise an intake on the ground would lock.</para>
+  /// <para>Full-cube blocks (passthrough, outlet, heated intake, …) fill the whole cell and
+  /// are therefore supported in any orientation. For them the cycle is recomputed on the fly
+  /// passing null for the current orientation (as placement does), so it is constrained only
+  /// by real network topology — not by the solid walls/ground the block rests against, nor by
+  /// the clicked-face narrowing applied at placement. Otherwise a passthrough placed on the
+  /// ground (snapping to "ud") would store a single-orientation set in its BE and lock.</para>
+  /// <para>Thin-profile pipes cannot float on the side when the only support is the ground
+  /// below, so they keep the placement-time restriction: the narrowed cycle stored on the BE
+  /// (falling back to a topology recompute for multiblock BEs that never store it).</para>
   /// </summary>
   protected string[] GetWrenchOrientations(IWorldAccessor world, BlockPos pos)
   {
     if (Type == null)
       return [];
+
+    if (IsFullCube)
+      return ComputeValidOrientations(world.BlockAccessor, pos, Type, null);
 
     return
       world.BlockAccessor.GetBlockEntity(pos) is BlockEntityNetworkNode beNet
@@ -389,6 +394,24 @@ public abstract class BlockNetworkNode : Block, IWrenchOrientable
       ? beNet.PossibleOrientations
       : ComputeValidOrientations(world.BlockAccessor, pos, Type, null);
   }
+
+  /// <summary>
+  /// True when the block fills its whole cell (default full-cube collision box, i.e. no
+  /// custom <c>collisionboxes</c> in JSON). Such blocks are supported in any orientation,
+  /// so the wrench rotates them through the full topology-only cycle; thin-profile blocks
+  /// instead keep the orientation restriction chosen at placement. Virtual so a subclass
+  /// can opt in/out explicitly regardless of its collision geometry.
+  /// </summary>
+  protected virtual bool IsFullCube =>
+    CollisionBoxes is { Length: 1 } boxes && IsFullCubeBox(boxes[0]);
+
+  private static bool IsFullCubeBox(Cuboidf b) =>
+    b.X1 <= 0
+    && b.Y1 <= 0
+    && b.Z1 <= 0
+    && b.X2 >= 1
+    && b.Y2 >= 1
+    && b.Z2 >= 1;
 
   /// <summary>
   /// Whether a wrench can rotate this block at <paramref name="pos"/> right now.
