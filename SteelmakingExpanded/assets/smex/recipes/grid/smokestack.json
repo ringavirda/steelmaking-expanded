@@ -17,7 +17,7 @@
       "code": "game:hammer-*",
       "isTool": true
     },
-    "P": { "type": "block", "code": "smex:gaspipe-straight*", "quantity": 1 }
+    "P": { "type": "block", "code": "ppex:pipe-straight*", "quantity": 1 }
   },
   "allowedVariants": {
     "tier": ["tier1", "tier2", "tier3"],

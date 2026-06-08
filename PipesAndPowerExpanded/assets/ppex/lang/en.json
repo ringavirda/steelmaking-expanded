@@ -1,0 +1,65 @@
+{
+  "block-pipe-straight*": "Piping (Straight)",
+  "block-pipe-bend*": "Piping (Bend)",
+  "block-pipe-tjunction*": "Piping (T-Junction)",
+  "block-pipe-xjunction*": "Piping (X-Junction)",
+  "block-pipe-pressurevalve*": "Piping (Pressure Valve)",
+  "block-pipe-valve*": "Piping (Valve)",
+  "block-pipe-passthrough-*": "Pipe Passthrough (Straight)",
+  "block-pipe-passthroughbend-*": "Pipe Passthrough (Bend)",
+  "block-pipe-outlet*": "Pipe Outlet",
+  "block-pipe-fluidintake-*": "Fluid Intake",
+  "block-boilerlancashire-*": "Lancashire Boiler",
+  "block-boilercornish-*": "Cornish Boiler",
+  "block-boiler-steamoutlet-*": "Boiler Steam Outlet",
+  "block-cornishengine-*": "Cornish Engine",
+  "block-enginecornish-*": "Cornish Engine",
+  "block-enginewatt-*": "Watt Engine",
+  "block-steamcondenser-*": "Steam Condenser",
+  "block-cornishfluidpump-*": "Cornish Fluid Pump",
+  "block-cornishmpgenerator-*": "Cornish MP Generator",
+  "block-structurefiller": "Machine",
+
+  "pipe-info-leaking": "Leaking ({0} openings)",
+  "pipe-info-status": "{0:F1} / {1} m³ of {2} at {3:F1} °C",
+  "pipe-info-flow": "Throughput: {0:F1} m³/s of {1} at {2:F1} °C",
+  "pipe-info-pressure": "Pressure: {0:F2} atm (gauge)",
+  "pipe-info-empty": "Empty",
+  "pipe-medium-condensed": "Condensed Water",
+
+  "boiler-info-state": "Firebox: {0:F0} °C — Water: {1:F2} m³ at {2:F0} °C",
+  "boiler-info-pressure": "Internal pressure: {0:F2} atm",
+  "boiler-info-lidopen": "Lid open — venting steam",
+  "boiler-info-firing": "Firing",
+  "boiler-info-overpressure": "⚠ Over-pressure — vent within {0:F0} s or it bursts!",
+
+  "engine-info-power": "Power: {0:F2} / {1:F2}",
+  "engine-info-running": "Running",
+  "engine-info-throttle": "Control rods: {0:F0}% — runs at {1:F1} atm, breaks above {2:F1} atm",
+  "engine-info-overpressure": "⚠ Over-pressure — breaks in {0:F0} s",
+  "engine-info-broken": "⚠ Broken — repair with a wrench and {0}",
+  "engine-repair-wrench": "Hold a wrench to repair the engine.",
+  "engine-repair-missing": "Missing materials: {0}",
+  "engine-repaired": "Engine repaired.",
+
+  "condenser-info-condensing": "Condensing steam into hot water",
+  "condenser-info-idle": "Idle (needs steam + coolant water)",
+
+  "gaspressurevalve-info-threshold": "Pressure Threshold: {0}%",
+  "gaspressurevalve-info-rating": "Relief pressure: {0:F1} atm (gauge)",
+  "gaspressurevalve-info-overflow": "Venting {0:F1} m³ of gas",
+
+  "structure-incomplete": "Structure incomplete!",
+  "structure-incomplete-count": "Structure is not complete. {0} blocks are missing or incorrect.",
+  "structure-complete": "Structure complete!",
+  "structure-missing-header": "Structure incomplete — still need:",
+  "structure-missing-line": "  {0} × {1}",
+
+  "blockhelp-mulblock-struc-show": "Show multiblock structure",
+
+  "valve-state": "Valve State: {0}",
+  "valve-open": "Open",
+  "valve-closed": "Closed",
+
+  "blockhelp-valve-toggle": "Toggle valve"
+}

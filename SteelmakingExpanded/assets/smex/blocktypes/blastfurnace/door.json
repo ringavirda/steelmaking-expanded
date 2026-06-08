@@ -3,6 +3,7 @@
   "class": "smex.BlockBlastFurnaceDoor",
   "entityClass": "smex.BlockEntityBlastFurnace",
   "behaviors": [
+    { "name": "MultiblockStructure" },
     { "name": "Door" },
     { "name": "BlockEntityInteract" },
     { "name": "Lockable" }
@@ -31,7 +32,7 @@
         "smex:blastfurnacedoor*": 3,
         "smex:blastfurnacetap*": 4,
         "smex:blastfurnace-tuyere*": 5,
-        "smex:gaspipe-outlet*": 7,
+        "ppex:pipe-outlet*": 7,
         "smex:hopperreinforced*": 8,
         "smex:hopperbell*": 9,
         "@(air|coalpile)": 10,

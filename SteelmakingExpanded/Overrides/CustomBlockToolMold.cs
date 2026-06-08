@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ExpandedLib.EntityRegistry;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
@@ -26,6 +27,7 @@ namespace SteelmakingExpanded.Overrides;
 /// <c>BlockEntityToolMold.OnPlayerInteract</c>, which can't be overridden from
 /// the block entity, so the logic lives here instead.
 /// </summary>
+[EntityRegister("BlockToolMold", PrefixModId = false)]
 public class CustomBlockToolMold : BlockToolMold
 {
   // Cache of baked held-item meshes (mold body + molten metal surface), keyed

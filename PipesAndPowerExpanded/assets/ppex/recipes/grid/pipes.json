@@ -1,0 +1,287 @@
+[
+  {
+    "name": "Gas Piping (Straight)",
+    "ingredientPattern": "H,P,N",
+    "ingredients": {
+      "P": {
+        "type": "item",
+        "code": "game:metalplate-{metal}",
+        "quantity": 1
+      },
+      "N": {
+        "type": "item",
+        "code": "game:metalplate-{metal}",
+        "quantity": 1
+      },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      }
+    },
+    "allowedVariants": {
+      "metal": ["copper", "brass", "iron", "steel"]
+    },
+    "width": 1,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "ppex:pipe-straight-ns-{metal}"
+    }
+  },
+  {
+    "name": "Gas Piping (Bend)",
+    "ingredientPattern": "_H,NP,_N",
+    "ingredients": {
+      "P": {
+        "type": "item",
+        "code": "game:metalplate-{metal}",
+        "quantity": 1
+      },
+      "N": {
+        "type": "item",
+        "code": "game:metalplate-{metal}",
+        "quantity": 1
+      },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      }
+    },
+    "allowedVariants": {
+      "metal": ["copper", "brass", "iron", "steel"]
+    },
+    "width": 2,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "ppex:pipe-bend-nw-{metal}"
+    }
+  },
+  {
+    "name": "Gas Piping (TJunction)",
+    "ingredientPattern": "_H_,NPN,_N_",
+    "ingredients": {
+      "P": {
+        "type": "item",
+        "code": "game:metalplate-{metal}",
+        "quantity": 1
+      },
+      "N": {
+        "type": "item",
+        "code": "game:metalplate-{metal}",
+        "quantity": 1
+      },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      }
+    },
+    "allowedVariants": {
+      "metal": ["copper", "brass", "iron", "steel"]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "ppex:pipe-tjunction-uns-{metal}"
+    }
+  },
+  {
+    "name": "Gas Piping (XJunction)",
+    "ingredientPattern": "HN_,NPN,_N_",
+    "ingredients": {
+      "P": {
+        "type": "item",
+        "code": "game:metalplate-{metal}",
+        "quantity": 1
+      },
+      "N": {
+        "type": "item",
+        "code": "game:metalplate-{metal}",
+        "quantity": 1
+      },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      }
+    },
+    "allowedVariants": {
+      "metal": ["copper", "brass", "iron", "steel"]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "ppex:pipe-xjunction-nswe-{metal}"
+    }
+  },
+  {
+    "name": "Gas Passthrough (Straight)",
+    "ingredientPattern": "B_B,BPB,B_B",
+    "ingredients": {
+      "B": {
+        "type": "item",
+        "code": "game:burnedbrick-{brick}",
+        "quantity": 2
+      },
+      "P": {
+        "type": "block",
+        "code": "ppex:pipe-straight-*",
+        "quantity": 1
+      }
+    },
+    "allowedVariants": {
+      "brick": [
+        "fire",
+        "black",
+        "brown",
+        "cream",
+        "gray",
+        "orange",
+        "red",
+        "tan"
+      ]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "ppex:pipe-passthrough-{brick}-ns"
+    }
+  },
+  {
+    "name": "Gas Passthrough (Bend)",
+    "ingredientPattern": "BPB,P_B,B_B",
+    "ingredients": {
+      "B": {
+        "type": "item",
+        "code": "game:burnedbrick-{brick}",
+        "quantity": 2
+      },
+      "P": {
+        "type": "block",
+        "code": "ppex:pipe-straight-*",
+        "quantity": 1
+      }
+    },
+    "allowedVariants": {
+      "brick": [
+        "fire",
+        "black",
+        "brown",
+        "cream",
+        "gray",
+        "orange",
+        "red",
+        "tan"
+      ]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "ppex:pipe-passthroughbend-{brick}-nw"
+    }
+  },
+  {
+    "name": "Gas Outlet",
+    "ingredientPattern": "BHB,BNB,BPB",
+    "ingredients": {
+      "B": {
+        "type": "item",
+        "code": "game:burnedbrick-{brick}",
+        "quantity": 2
+      },
+      "P": {
+        "type": "block",
+        "code": "ppex:pipe-straight-*",
+        "quantity": 1
+      },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      },
+      "N": {
+        "type": "item",
+        "code": "game:metalnailsandstrips-{metal}",
+        "quantity": 2
+      }
+    },
+    "allowedVariants": {
+      "brick": [
+        "fire",
+        "black",
+        "brown",
+        "cream",
+        "gray",
+        "orange",
+        "red",
+        "tan"
+      ],
+      "metal": ["iron", "steel"]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "ppex:pipe-outlet-{brick}-n"
+    }
+  },
+  {
+    "name": "Gas Piping (Valve)",
+    "ingredientPattern": "H__,LPL,L__",
+    "ingredients": {
+      "P": {
+        "type": "block",
+        "code": "ppex:pipe-straight-*-{metal}",
+        "quantity": 1
+      },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      },
+      "L": { "type": "item", "code": "game:metalplate-{metal}", "quantity": 1 }
+    },
+    "allowedVariants": {
+      "metal": ["copper", "brass", "iron", "steel"]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "ppex:pipe-valve-sn-{metal}"
+    }
+  },
+  {
+    "name": "Gas Piping (Pressure Valve)",
+    "ingredientPattern": "__H,LPL,L_L",
+    "ingredients": {
+      "P": {
+        "type": "block",
+        "code": "ppex:pipe-straight-*-{metal}",
+        "quantity": 1
+      },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      },
+      "L": { "type": "item", "code": "game:metalplate-{metal}", "quantity": 1 }
+    },
+    "allowedVariants": {
+      "metal": ["copper", "brass", "iron", "steel"]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "ppex:pipe-pressurevalve-sn-{metal}"
+    }
+  }
+]

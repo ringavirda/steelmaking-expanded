@@ -34,7 +34,7 @@
     "height": 3,
     "output": {
       "type": "block",
-      "code": "smex:bessemercontrol-north"
+      "code": "smex:convertercontrol-north"
     }
   },
   {
@@ -111,7 +111,7 @@
       },
       "L": {
         "type": "block",
-        "code": "smex:gaspipe-straight*",
+        "code": "ppex:pipe-straight*",
         "quantity": 1
       }
     },

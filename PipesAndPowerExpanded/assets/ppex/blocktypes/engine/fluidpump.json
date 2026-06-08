@@ -1,0 +1,35 @@
+{
+  "code": "enginefluidpump",
+  "class": "ppex.BlockEngineFluidPump",
+  "entityClass": "ppex.BlockEntityEngineFluidPump",
+  "behaviors": [{ "name": "HorizontalOrientable" }],
+  "entityBehaviors": [{ "name": "Animatable" }],
+  "blockmaterial": "Metal",
+  "variantgroups": [
+    { "code": "side", "loadFromProperties": "abstract/horizontalorientation" }
+  ],
+  "creativeinventory": {
+    "general": ["*-north"],
+    "ppex": ["*-north"]
+  },
+  "shapebytype": {
+    "*-north": {
+      "base": "ppex:engine/fluidpump",
+      "rotateY": 0
+    },
+    "*-east": {
+      "base": "ppex:engine/fluidpump",
+      "rotateY": 270
+    },
+    "*-south": {
+      "base": "ppex:engine/fluidpump",
+      "rotateY": 180
+    },
+    "*-west": {
+      "base": "ppex:engine/fluidpump",
+      "rotateY": 90
+    }
+  },
+  "sidesolid": { "all": false },
+  "sideopaque": { "all": false }
+}

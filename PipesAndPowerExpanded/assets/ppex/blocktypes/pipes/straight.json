@@ -1,0 +1,96 @@
+{
+  "code": "pipe",
+  "class": "ppex.BlockPipe",
+  "entityClass": "ppex.BlockEntityPipe",
+  "blockmaterial": "Metal",
+  "sounds": {
+    "place": "game:block/anvil",
+    "break": "game:block/anvil",
+    "hit": "game:block/anvil",
+    "walk": "game:walk/stone"
+  },
+  "maxstacksize": 16,
+  "creativeinventory": {
+    "general": ["*-straight-ns-*"],
+    "ppex": ["*-straight-ns-*"]
+  },
+  "attributes": {
+    "handbook": {
+      "groupBy": [
+        "pipe-straight-*",
+        "pipe-bend-*",
+        "pipe-tjunction-*",
+        "pipe-xjunction-*"
+      ]
+    }
+  },
+  "behaviors": [{ "name": "Lockable" }],
+  "variantgroups": [
+    { "code": "type", "states": ["straight"] },
+    { "code": "orientation", "states": ["ns", "we", "ud"] },
+    {
+      "code": "material",
+      "states": ["copper", "brass", "iron", "steel"]
+    }
+  ],
+  "shapebytype": {
+    "*-straight-ns-*": {
+      "base": "ppex:pipes/straight"
+    },
+    "*-straight-we-*": {
+      "base": "ppex:pipes/straight",
+      "rotateY": 90
+    },
+    "*-straight-ud-*": {
+      "base": "ppex:pipes/straight",
+      "rotateX": 90
+    }
+  },
+  "texturesByType": {
+    "*-copper": {
+      "normal4": { "base": "game:block/metal/sheet-plain/copper4" },
+      "iron4": { "base": "game:block/metal/sheet-plain/copper4" }
+    },
+    "*-brass": {
+      "normal4": { "base": "game:block/metal/sheet-plain/brass4" },
+      "iron4": { "base": "game:block/metal/sheet-plain/brass4" }
+    },
+    "*-iron": {
+      "normal4": { "base": "game:block/metal/sheet-plain/iron4" },
+      "iron4": { "base": "game:block/metal/sheet-plain/iron4" }
+    },
+    "*-steel": {
+      "normal4": { "base": "game:block/metal/sheet-plain/steel4" },
+      "iron4": { "base": "game:block/metal/sheet-plain/steel4" }
+    }
+  },
+  "collisionboxes": [
+    {
+      "x1": 0.3125,
+      "y1": 0.3125,
+      "z1": 0,
+      "x2": 0.6875,
+      "y2": 0.6875,
+      "z2": 1
+    }
+  ],
+  "selectionboxes": [
+    {
+      "x1": 0.3125,
+      "y1": 0.3125,
+      "z1": 0,
+      "x2": 0.6875,
+      "y2": 0.6875,
+      "z2": 1
+    }
+  ],
+  "renderpass": "OpaqueNoCull",
+  "faceCullMode": "NeverCull",
+  "lightAbsorption": 0,
+  "sidesolid": {
+    "all": false
+  },
+  "sideopaque": {
+    "all": false
+  }
+}

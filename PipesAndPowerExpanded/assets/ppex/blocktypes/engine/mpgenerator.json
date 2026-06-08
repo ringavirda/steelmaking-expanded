@@ -1,0 +1,35 @@
+{
+  "code": "enginempgenerator",
+  "class": "ppex.BlockEngineMPGenerator",
+  "entityClass": "ppex.BlockEntityEngineMpGenerator",
+  "behaviors": [{ "name": "HorizontalOrientable" }],
+  "entityBehaviors": [{ "name": "ppex.BEBehaviorEngineMPGenerator" }],
+  "blockmaterial": "Metal",
+  "variantgroups": [
+    { "code": "side", "loadFromProperties": "abstract/horizontalorientation" }
+  ],
+  "creativeinventory": {
+    "general": ["*-north"],
+    "ppex": ["*-north"]
+  },
+  "shapebytype": {
+    "*-north": {
+      "base": "ppex:engine/mpgenerator",
+      "rotateY": 0
+    },
+    "*-east": {
+      "base": "ppex:engine/mpgenerator",
+      "rotateY": 270
+    },
+    "*-south": {
+      "base": "ppex:engine/mpgenerator",
+      "rotateY": 180
+    },
+    "*-west": {
+      "base": "ppex:engine/mpgenerator",
+      "rotateY": 90
+    }
+  },
+  "sidesolid": { "all": false },
+  "sideopaque": { "all": false }
+}

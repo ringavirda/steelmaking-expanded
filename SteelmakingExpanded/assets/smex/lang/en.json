@@ -6,6 +6,8 @@
 
   "game:placefailure-notreplacable": "Space already occupied!",
 
+  "block-cornishairblower-*": "Cornish Air Blower",
+
   "game:item-crushed-coke": "Crushed Coke",
   "game:block-toolmold-*-raw-plate": "Raw plate ceramic mold",
   "game:block-toolmold-*-raw-doubleingot": "Raw double ingot ceramic mold",
@@ -25,23 +27,11 @@
 
   "block-smokestack-intake*": "Smoke Stack Intake",
 
-  "block-gaspipe-straight*": "Gas Piping (Straight)",
-  "block-gaspipe-heated*": "Gas Piping (Heated)",
-  "block-gaspipe-bend*": "Gas Piping (Bend)",
-  "block-gaspipe-tjunction*": "Gas Piping (T-Junction)",
-  "block-gaspipe-xjunction*": "Gas Piping (X-Junction)",
-  "block-gaspipe-pressurevalve*": "Gas Piping (Pressure Valve)",
-  "block-gaspipe-valve*": "Gas Piping (Valve)",
-  "block-gaspipe-passthrough-*": "Gas Passthrough (Straight)",
-  "block-gaspipe-passthroughbend-*": "Gas Passthrough (Bend)",
-  "block-gaspipe-outlet*": "Gas Outlet",
-  "block-gaspipe-blower*": "Gas Blower",
-  "block-gaspipe-intake*": "Gas Intake",
 
-  "block-bessemercontrol*": "Bessemer Control",
-  "block-bessemertransmission*": "Bessemer Transmission",
-  "block-bessemerconverter*": "Bessemer Converter",
-  "block-bessemer-gasintake*": "Bessemer Gas Intake",
+  "block-convertercontrol*": "Bessemer Control",
+  "block-convertertransmission*": "Bessemer Transmission",
+  "block-converterbessemer*": "Bessemer Converter",
+  "block-converter-intake*": "Bessemer Gas Intake",
 
   "blockdesc-blastfurnacedoor*": "The iron door of the blast furnace.",
   "blockdesc-hopperreinforced*": "Combines crushed ores into blast mix for the bell hopper below.",
@@ -56,18 +46,6 @@
 
   "blockdesc-smokestack-intake*": "Vents surplus furnace exhaust to the sky.",
 
-  "blockdesc-gaspipe-straight*": "A straight length of gas pipe.",
-  "blockdesc-gaspipe-bend*": "A 90° bend in a gas pipe run.",
-  "blockdesc-gaspipe-tjunction*": "A three-way gas pipe junction.",
-  "blockdesc-gaspipe-xjunction*": "A four-way gas pipe junction.",
-  "blockdesc-gaspipe-heated*": "A basic heater that can raise the temprerature of passing air.",
-  "blockdesc-gaspipe-passthroughbend*": "Routes a pipe around a corner through a solid block.",
-  "blockdesc-gaspipe-passthrough*": "Routes a straight pipe through a solid block.",
-  "blockdesc-gaspipe-valve*": "A hand-operated valve that opens or closes a gas line.",
-  "blockdesc-gaspipe-pressurevalve*": "Opens once there is enough gas pressure behind it.",
-  "blockdesc-gaspipe-blower*": "Axle-powered basic blower for pressuring air into blast.",
-  "blockdesc-gaspipe-intake*": "Draws fresh air into the gas network from outside.",
-  "blockdesc-gaspipe-outlet*": "Allows a sturcture to expell gas into the network.",
 
   "blockdesc-moltencanal-start*": "The anchor of a molten canal network.",
   "blockdesc-moltencanal-straight*": "Straight molten canal segment.",
@@ -78,10 +56,10 @@
   "blockdesc-moltencanal-moldpedestal*": "Holds a fired mold and fills it from the canal network.",
   "blockdesc-moltenbarrel*": "Bulk storage for liquid metal or slag.",
 
-  "blockdesc-bessemercontrol*": "Used to operate the bessemer converter.",
-  "blockdesc-bessemerconverter*": "Massive vessel that blows molten iron into steel.\n",
-  "blockdesc-bessemertransmission*": "Couples an axle's mechanical power to the converter so the vessel can tilt and blow.",
-  "blockdesc-bessemer-gasintake*": "The converter's blast intake.",
+  "blockdesc-convertercontrol*": "Used to operate the bessemer converter.",
+  "blockdesc-converterbessemer*": "Massive vessel that blows molten iron into steel.\n",
+  "blockdesc-convertertransmission*": "Couples an axle's mechanical power to the converter so the vessel can tilt and blow.",
+  "blockdesc-converter-intake*": "The converter's blast intake.",
 
   "itemdesc-blastmix*": "The blast furnace's charge.",
   "itemdesc-slag*": "A by-product tapped from the blast furnace. ",
@@ -134,7 +112,6 @@
   "solidifiediron-info-count": "Iron bits: {0}",
   "slag-info-count": "Slag: {0}",
 
-  "blockhelp-valve-toggle": "Toggle valve",
   "blockhelp-tap-toggle": "Toggle tap pouring",
   "blockhelp-canalstart-pour": "Pour molten metal",
   "blockhelp-canal-seal": "Seal canal",
@@ -144,7 +121,6 @@
   "blockhelp-hopper-toggle": "Toggle blastmix dropping",
   "blockhelp-pressurevalve-cycle": "Cycle pressure threshold",
   "blockhelp-mulblock-struc-show": "Show multiblock structure",
-  "blockhelp-mulblock-struc-hide": "Hide multiblock structure",
 
   "bf-info-incomplete": "Structure is incomplete!",
   "bf-info-mixloaded": "Blast Mix loaded: {0} / {1}",
@@ -168,9 +144,6 @@
   "structure-incomplete": "Structure incomplete!",
   "structure-incomplete-count": "Structure is not complete. {0} blocks are missing or incorrect.",
 
-  "valve-state": "Valve State: {0}",
-  "valve-open": "Open",
-  "valve-closed": "Closed",
   "tap-state": "Tap is {0}",
   "tap-open": "Open",
   "tap-closed": "Closed",
@@ -197,14 +170,8 @@
   "bessemer-status-steelready": "Steel ready — pour it out",
   "bessemer-status-foreign": "Foreign metal — pour it out",
 
-  "gaspipe-info-leaking": "Leaking ({0} openings)",
-  "gaspipe-info-status": "{0:F1} / {1} m³ of {2} at {3:F1} °C",
-  "gaspipe-info-flow": "Throughput: {0:F1} m³/s of {1} at {2:F1} °C",
-  "gaspipe-info-empty": "Empty",
   "gasblower-info-blowing": "Blowing {0:F1} m³/s of {1}",
   "gasheated-info-passing": "Passing {0:F1} m³/s of {1}",
-  "gaspressurevalve-info-threshold": "Pressure Threshold: {0}%",
-  "gaspressurevalve-info-overflow": "Overflowing {0:F1} m³ of Gas",
 
   "structure-missing-header": "Structure incomplete — still need:",
   "structure-missing-line": "  {0} × {1}",

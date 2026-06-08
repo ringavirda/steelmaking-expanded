@@ -13,7 +13,7 @@
         "code": "game:metalnailsandstrips-{metal}",
         "quantity": 2
       },
-      "P": { "type": "block", "code": "smex:gaspipe-straight*", "quantity": 1 },
+      "P": { "type": "block", "code": "ppex:pipe-straight*", "quantity": 1 },
       "H": {
         "type": "item",
         "code": "game:hammer-*",
@@ -45,7 +45,7 @@
         "code": "game:hammer-*",
         "isTool": true
       },
-      "P": { "type": "block", "code": "smex:gaspipe-straight*", "quantity": 1 }
+      "P": { "type": "block", "code": "ppex:pipe-straight*", "quantity": 1 }
     },
     "allowedVariants": {
       "metal": ["iron", "steel"]

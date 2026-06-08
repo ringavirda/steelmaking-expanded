@@ -1,0 +1,42 @@
+{
+  "code": "convertertransmission",
+  "class": "smex.BlockConverterTransmission",
+  "entityClass": "smex.BlockEntityConverterTransmission",
+  "entityBehaviors": [{ "name": "smex.BEBehaviorMPConverterTransmission" }],
+  "blockmaterial": "Metal",
+  "sounds": {
+    "place": "game:block/anvil",
+    "break": "game:block/anvil",
+    "hit": "game:block/anvil",
+    "walk": "game:walk/stone"
+  },
+  "maxstacksize": 1,
+  "creativeinventory": {
+    "general": ["*-north"],
+    "smex": ["*-north"]
+  },
+  "behaviors": [{ "name": "HorizontalOrientable" }],
+  "variantgroups": [
+    { "code": "side", "loadFromProperties": "abstract/horizontalorientation" }
+  ],
+  "shapebytype": {
+    "*-north": {
+      "base": "smex:converter/transmission",
+      "rotateY": 180
+    },
+    "*-east": {
+      "base": "smex:converter/transmission",
+      "rotateY": 90
+    },
+    "*-south": {
+      "base": "smex:converter/transmission",
+      "rotateY": 0
+    },
+    "*-west": {
+      "base": "smex:converter/transmission",
+      "rotateY": 270
+    }
+  },
+  "sidesolid": { "all": false },
+  "sideopaque": { "all": false }
+}

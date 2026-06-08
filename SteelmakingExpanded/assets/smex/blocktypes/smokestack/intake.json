@@ -114,7 +114,7 @@
     "general": ["*-intake-*-n"],
     "smex": ["*-intake-*-n"]
   },
-  "behaviors": [{ "name": "Lockable" }],
+  "behaviors": [{ "name": "MultiblockStructure" }, { "name": "Lockable" }],
   "variantgroups": [
     { "code": "type", "states": ["intake"] },
     { "code": "refractory", "states": ["tier1", "tier2", "tier3"] },
@@ -122,18 +122,18 @@
   ],
   "shapebytype": {
     "*-intake-*-s": {
-      "base": "smex:gas/pipes/outlet"
+      "base": "ppex:pipes/outlet"
     },
     "*-intake-*-e": {
-      "base": "smex:gas/pipes/outlet",
+      "base": "ppex:pipes/outlet",
       "rotateY": 90
     },
     "*-intake-*-n": {
-      "base": "smex:gas/pipes/outlet",
+      "base": "ppex:pipes/outlet",
       "rotateY": 180
     },
     "*-intake-*-w": {
-      "base": "smex:gas/pipes/outlet",
+      "base": "ppex:pipes/outlet",
       "rotateY": 270
     }
   },

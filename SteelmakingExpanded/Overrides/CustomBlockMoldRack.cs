@@ -1,4 +1,5 @@
-using SteelmakingExpanded.Networks.Molten.Blocks;
+using ExpandedLib.EntityRegistry;
+using SteelmakingExpanded.BlockNetworkMolten.Blocks;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
@@ -11,6 +12,7 @@ namespace SteelmakingExpanded.Overrides;
 /// internal inventory (no opened GUI), so the player-inventory scan can't see
 /// it — this catches the racked mold right after the vanilla put logic runs.
 /// </summary>
+[EntityRegister("BlockMoldRack", PrefixModId = false)]
 public class CustomBlockMoldRack : BlockMoldRack
 {
   public override bool OnBlockInteractStart(

@@ -1,0 +1,41 @@
+{
+  "code": "converter",
+  "class": "smex.BlockConverterIntake",
+  "behaviors": [{ "name": "HorizontalOrientable" }],
+  "blockmaterial": "Metal",
+  "sounds": {
+    "place": "game:block/anvil",
+    "break": "game:block/anvil",
+    "hit": "game:block/anvil",
+    "walk": "game:walk/stone"
+  },
+  "maxstacksize": 1,
+  "creativeinventory": {
+    "general": ["*-north"],
+    "smex": ["*-north"]
+  },
+  "variantgroups": [
+    { "code": "type", "states": ["intake"] },
+    { "code": "side", "loadFromProperties": "abstract/horizontalorientation" }
+  ],
+  "shapebytype": {
+    "*-north": {
+      "base": "smex:converter/intake",
+      "rotateY": 0
+    },
+    "*-east": {
+      "base": "smex:converter/intake",
+      "rotateY": 270
+    },
+    "*-south": {
+      "base": "smex:converter/intake",
+      "rotateY": 180
+    },
+    "*-west": {
+      "base": "smex:converter/intake",
+      "rotateY": 90
+    }
+  },
+  "sidesolid": { "all": false },
+  "sideopaque": { "all": false }
+}

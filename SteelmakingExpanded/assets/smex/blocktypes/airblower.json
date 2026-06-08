@@ -1,0 +1,35 @@
+{
+  "code": "engineairblower",
+  "class": "smex.BlockEngineAirBlower",
+  "entityClass": "smex.BlockEntityEngineAirBlower",
+  "behaviors": [{ "name": "HorizontalOrientable" }],
+  "entityBehaviors": [{ "name": "Animatable" }],
+  "blockmaterial": "Metal",
+  "variantgroups": [
+    { "code": "side", "loadFromProperties": "abstract/horizontalorientation" }
+  ],
+  "creativeinventory": {
+    "general": ["*-north"],
+    "smex": ["*-north"]
+  },
+  "shapebytype": {
+    "*-north": {
+      "base": "smex:engine/airblower",
+      "rotateY": 0
+    },
+    "*-east": {
+      "base": "smex:engine/airblower",
+      "rotateY": 270
+    },
+    "*-south": {
+      "base": "smex:engine/airblower",
+      "rotateY": 180
+    },
+    "*-west": {
+      "base": "smex:engine/airblower",
+      "rotateY": 90
+    }
+  },
+  "sidesolid": { "all": false },
+  "sideopaque": { "all": false }
+}

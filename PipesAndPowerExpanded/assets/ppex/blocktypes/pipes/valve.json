@@ -1,0 +1,86 @@
+{
+  "code": "pipe",
+  "class": "ppex.BlockValve",
+  "entityClass": "ppex.BlockEntityValve",
+  "entityBehaviors": [{ "name": "Animatable" }],
+  "blockmaterial": "Metal",
+  "sounds": {
+    "place": "game:block/anvil",
+    "break": "game:block/anvil",
+    "hit": "game:block/anvil",
+    "walk": "game:walk/stone"
+  },
+  "maxstacksize": 1,
+  "creativeinventory": {
+    "general": ["*-valve-sn-*"],
+    "ppex": ["*-valve-sn-*"]
+  },
+  "behaviors": [{ "name": "Lockable" }],
+  "variantgroups": [
+    { "code": "type", "states": ["valve"] },
+    { "code": "orientation", "states": ["ns", "we", "ud", "sn", "ew", "du"] },
+    {
+      "code": "material",
+      "states": ["copper", "brass", "iron", "steel"]
+    }
+  ],
+  "shapebytype": {
+    "*-valve-ns-*": { "base": "ppex:pipes/valve" },
+    "*-valve-we-*": { "base": "ppex:pipes/valve", "rotateY": 90 },
+    "*-valve-ud-*": { "base": "ppex:pipes/valve", "rotateX": 90 },
+    "*-valve-sn-*": { "base": "ppex:pipes/valve", "rotateY": 180 },
+    "*-valve-ew-*": { "base": "ppex:pipes/valve", "rotateY": -90 },
+    "*-valve-du-*": {
+      "base": "ppex:pipes/valve",
+      "rotateX": 90,
+      "rotateY": 180
+    }
+  },
+  "texturesByType": {
+    "*-copper": {
+      "normal4": { "base": "game:block/metal/sheet-plain/copper4" },
+      "iron4": { "base": "game:block/metal/sheet-plain/copper4" }
+    },
+    "*-brass": {
+      "normal4": { "base": "game:block/metal/sheet-plain/brass4" },
+      "iron4": { "base": "game:block/metal/sheet-plain/brass4" }
+    },
+    "*-iron": {
+      "normal4": { "base": "game:block/metal/sheet-plain/iron4" },
+      "iron4": { "base": "game:block/metal/sheet-plain/iron4" }
+    },
+    "*-steel": {
+      "normal4": { "base": "game:block/metal/sheet-plain/steel4" },
+      "iron4": { "base": "game:block/metal/sheet-plain/steel4" }
+    }
+  },
+  "collisionboxes": [
+    {
+      "x1": 0.3125,
+      "y1": 0.3125,
+      "z1": 0,
+      "x2": 0.6875,
+      "y2": 0.6875,
+      "z2": 1
+    }
+  ],
+  "selectionboxes": [
+    {
+      "x1": 0.3125,
+      "y1": 0.3125,
+      "z1": 0,
+      "x2": 0.6875,
+      "y2": 0.6875,
+      "z2": 1
+    }
+  ],
+  "renderpass": "OpaqueNoCull",
+  "faceCullMode": "NeverCull",
+  "lightAbsorption": 0,
+  "sidesolid": {
+    "all": false
+  },
+  "sideopaque": {
+    "all": false
+  }
+}

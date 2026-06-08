@@ -1,0 +1,307 @@
+[
+  {
+    "op": "add",
+    "file": "ppex:blocktypes/pipes/passthrough.json",
+    "path": "/variantgroups/1/states/-",
+    "value": "refractorytier1",
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+  {
+    "op": "add",
+    "file": "ppex:blocktypes/pipes/passthrough.json",
+    "path": "/variantgroups/1/states/-",
+    "value": "refractorytier2",
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+  {
+    "op": "add",
+    "file": "ppex:blocktypes/pipes/passthrough.json",
+    "path": "/variantgroups/1/states/-",
+    "value": "refractorytier3",
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+  {
+    "op": "remove",
+    "file": "ppex:blocktypes/pipes/passthrough.json",
+    "path": "/texturesByType/*",
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+  {
+    "op": "add",
+    "file": "ppex:blocktypes/pipes/passthrough.json",
+    "path": "/texturesByType/*-refractorytier1-*",
+    "value": {
+      "front1": { "base": "game:block/clay/refractory/tier1/front1" }
+    },
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+  {
+    "op": "add",
+    "file": "ppex:blocktypes/pipes/passthrough.json",
+    "path": "/texturesByType/*-refractorytier2-*",
+    "value": {
+      "front1": { "base": "game:block/clay/refractory/tier2/front1" }
+    },
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+  {
+    "op": "add",
+    "file": "ppex:blocktypes/pipes/passthrough.json",
+    "path": "/texturesByType/*-refractorytier3-*",
+    "value": {
+      "front1": { "base": "game:block/clay/refractory/tier3/front1" }
+    },
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+  {
+    "op": "add",
+    "file": "ppex:blocktypes/pipes/passthrough.json",
+    "path": "/texturesByType/*",
+    "value": {
+      "front1": {
+        "base": "game:block/clay/brick/four/running/cream1",
+        "overlays": ["game:block/clay/brick/four/running/{brick}1"]
+      }
+    },
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+
+  {
+    "op": "add",
+    "file": "ppex:blocktypes/pipes/passthroughbend.json",
+    "path": "/variantgroups/1/states/-",
+    "value": "refractorytier1",
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+  {
+    "op": "add",
+    "file": "ppex:blocktypes/pipes/passthroughbend.json",
+    "path": "/variantgroups/1/states/-",
+    "value": "refractorytier2",
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+  {
+    "op": "add",
+    "file": "ppex:blocktypes/pipes/passthroughbend.json",
+    "path": "/variantgroups/1/states/-",
+    "value": "refractorytier3",
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+  {
+    "op": "remove",
+    "file": "ppex:blocktypes/pipes/passthroughbend.json",
+    "path": "/texturesByType/*",
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+  {
+    "op": "add",
+    "file": "ppex:blocktypes/pipes/passthroughbend.json",
+    "path": "/texturesByType/*-refractorytier1-*",
+    "value": {
+      "front1": { "base": "game:block/clay/refractory/tier1/front1" }
+    },
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+  {
+    "op": "add",
+    "file": "ppex:blocktypes/pipes/passthroughbend.json",
+    "path": "/texturesByType/*-refractorytier2-*",
+    "value": {
+      "front1": { "base": "game:block/clay/refractory/tier2/front1" }
+    },
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+  {
+    "op": "add",
+    "file": "ppex:blocktypes/pipes/passthroughbend.json",
+    "path": "/texturesByType/*-refractorytier3-*",
+    "value": {
+      "front1": { "base": "game:block/clay/refractory/tier3/front1" }
+    },
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+  {
+    "op": "add",
+    "file": "ppex:blocktypes/pipes/passthroughbend.json",
+    "path": "/texturesByType/*",
+    "value": {
+      "front1": {
+        "base": "game:block/clay/brick/four/running/cream1",
+        "overlays": ["game:block/clay/brick/four/running/{brick}1"]
+      }
+    },
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+
+  {
+    "op": "add",
+    "file": "ppex:blocktypes/pipes/outlet.json",
+    "path": "/variantgroups/1/states/-",
+    "value": "refractorytier1",
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+  {
+    "op": "add",
+    "file": "ppex:blocktypes/pipes/outlet.json",
+    "path": "/variantgroups/1/states/-",
+    "value": "refractorytier2",
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+  {
+    "op": "add",
+    "file": "ppex:blocktypes/pipes/outlet.json",
+    "path": "/variantgroups/1/states/-",
+    "value": "refractorytier3",
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+  {
+    "op": "remove",
+    "file": "ppex:blocktypes/pipes/outlet.json",
+    "path": "/texturesByType/*",
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+  {
+    "op": "add",
+    "file": "ppex:blocktypes/pipes/outlet.json",
+    "path": "/texturesByType/*-refractorytier1-*",
+    "value": {
+      "front1": { "base": "game:block/clay/refractory/tier1/front1" }
+    },
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+  {
+    "op": "add",
+    "file": "ppex:blocktypes/pipes/outlet.json",
+    "path": "/texturesByType/*-refractorytier2-*",
+    "value": {
+      "front1": { "base": "game:block/clay/refractory/tier2/front1" }
+    },
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+  {
+    "op": "add",
+    "file": "ppex:blocktypes/pipes/outlet.json",
+    "path": "/texturesByType/*-refractorytier3-*",
+    "value": {
+      "front1": { "base": "game:block/clay/refractory/tier3/front1" }
+    },
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+  {
+    "op": "add",
+    "file": "ppex:blocktypes/pipes/outlet.json",
+    "path": "/texturesByType/*",
+    "value": {
+      "front1": {
+        "base": "game:block/clay/brick/four/running/cream1",
+        "overlays": ["game:block/clay/brick/four/running/{brick}1"]
+      }
+    },
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+
+  {
+    "op": "add",
+    "file": "ppex:recipes/grid/pipes.json",
+    "path": "/-",
+    "value": {
+      "name": "Pipe Passthrough (Straight, Refractory)",
+      "ingredientPattern": "B_B,BPB,B_B",
+      "ingredients": {
+        "B": {
+          "type": "item",
+          "code": "game:refractorybrick-fired-{tier}",
+          "quantity": 2
+        },
+        "P": {
+          "type": "block",
+          "code": "ppex:pipe-straight-*",
+          "quantity": 1
+        }
+      },
+      "allowedVariants": {
+        "tier": ["tier1", "tier2", "tier3"]
+      },
+      "width": 3,
+      "height": 3,
+      "output": {
+        "type": "block",
+        "code": "ppex:pipe-passthrough-refractory{tier}-ns"
+      }
+    },
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+  {
+    "op": "add",
+    "file": "ppex:recipes/grid/pipes.json",
+    "path": "/-",
+    "value": {
+      "name": "Pipe Passthrough (Bend, Refractory)",
+      "ingredientPattern": "BPB,P_B,B_B",
+      "ingredients": {
+        "B": {
+          "type": "item",
+          "code": "game:refractorybrick-fired-{tier}",
+          "quantity": 2
+        },
+        "P": {
+          "type": "block",
+          "code": "ppex:pipe-straight-*",
+          "quantity": 1
+        }
+      },
+      "allowedVariants": {
+        "tier": ["tier1", "tier2", "tier3"]
+      },
+      "width": 3,
+      "height": 3,
+      "output": {
+        "type": "block",
+        "code": "ppex:pipe-passthroughbend-refractory{tier}-nw"
+      }
+    },
+    "dependsOn": [{ "modid": "ppex" }]
+  },
+  {
+    "op": "add",
+    "file": "ppex:recipes/grid/pipes.json",
+    "path": "/-",
+    "value": {
+      "name": "Pipe Outlet (Refractory)",
+      "ingredientPattern": "BHB,BNB,BPB",
+      "ingredients": {
+        "B": {
+          "type": "item",
+          "code": "game:refractorybrick-fired-{tier}",
+          "quantity": 2
+        },
+        "P": {
+          "type": "block",
+          "code": "ppex:pipe-straight-*",
+          "quantity": 1
+        },
+        "H": {
+          "type": "item",
+          "code": "game:hammer-*",
+          "isTool": true
+        },
+        "N": {
+          "type": "item",
+          "code": "game:metalnailsandstrips-{metal}",
+          "quantity": 2
+        }
+      },
+      "allowedVariants": {
+        "tier": ["tier1", "tier2", "tier3"],
+        "metal": ["iron", "steel"]
+      },
+      "width": 3,
+      "height": 3,
+      "output": {
+        "type": "block",
+        "code": "ppex:pipe-outlet-refractory{tier}-n"
+      }
+    },
+    "dependsOn": [{ "modid": "ppex" }]
+  }
+]

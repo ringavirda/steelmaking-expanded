@@ -1,3 +1,4 @@
+using ExpandedLib.EntityRegistry;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using Vintagestory.GameContent;
@@ -16,6 +17,7 @@ namespace SteelmakingExpanded.Overrides;
 /// mold is placed as a normal block. This mirrors what
 /// <c>BlockMoltenBarrel.OnBlockPlaced</c> does for barrels.
 /// </summary>
+[EntityRegister("ToolMold", PrefixModId = false)]
 public class CustomBlockEntityToolMold : BlockEntityToolMold
 {
   public override void OnBlockPlaced(ItemStack? byItemStack = null)

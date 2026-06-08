@@ -1,0 +1,34 @@
+{
+  "code": "pipe",
+  "class": "ppex.BlockFluidIntake",
+  "classEntity": "ppex.BlockEntityFluidIntake",
+  "blockmaterial": "Metal",
+  "variantgroups": [
+    { "code": "type", "states": ["fluidintake"] },
+    { "code": "orientations", "states": ["n", "s", "w", "e"] }
+  ],
+  "creativeinventory": {
+    "general": ["*-fluidintake-s"],
+    "ppex": ["*-fluidintake-s"]
+  },
+  "shapebytype": {
+    "*-n": {
+      "base": "ppex:pipes/fluidintake",
+      "rotateY": 180
+    },
+    "*-e": {
+      "base": "ppex:pipes/fluidintake",
+      "rotateY": 90
+    },
+    "*-s": {
+      "base": "ppex:pipes/fluidintake",
+      "rotateY": 0
+    },
+    "*-w": {
+      "base": "ppex:pipes/fluidintake",
+      "rotateY": 270
+    }
+  },
+  "sidesolid": { "all": false },
+  "sideopaque": { "all": false }
+}

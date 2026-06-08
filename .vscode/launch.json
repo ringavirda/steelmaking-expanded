@@ -2,17 +2,31 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Vintagestory Client",
+      "name": "Steelmaking Expanded (smex + ppex)",
       "type": "coreclr",
       "request": "launch",
-      "preLaunchTask": "build",
+      "preLaunchTask": "launch-prep-smex",
       "program": "${env:VINTAGE_STORY}/Vintagestory.dll",
       "args": [
         "--tracelog",
         "--addModPath",
-        "${workspaceFolder}/SteelmakingExpanded/bin/Debug/Mods",
-        "--addOrigin",
-        "${workspaceFolder}/SteelmakingExpanded/assets"
+        "${workspaceFolder}/bin/Mods"
+      ],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      "console": "internalConsole",
+      "requireExactSource": false
+    },
+    {
+      "name": "Pipes and Power Expanded (ppex only)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "launch-prep-ppex",
+      "program": "${env:VINTAGE_STORY}/Vintagestory.dll",
+      "args": [
+        "--tracelog",
+        "--addModPath",
+        "${workspaceFolder}/bin/Mods"
       ],
       "cwd": "${workspaceFolder}",
       "stopAtEntry": false,

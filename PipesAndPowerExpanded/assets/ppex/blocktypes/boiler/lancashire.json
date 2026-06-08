@@ -1,0 +1,248 @@
+{
+  "code": "boilerlancashire",
+  "class": "ppex.BlockBoilerLancashire",
+  "entityClass": "ppex.BlockEntityBoilerLancashire",
+  "blockmaterial": "Metal",
+  "sounds": {
+    "place": "game:block/anvil",
+    "break": "game:block/anvil",
+    "hit": "game:block/anvil",
+    "walk": "game:walk/stone"
+  },
+  "requiredMiningTier": 5,
+  "resistance": 45.0,
+  "maxstacksize": 1,
+  "behaviors": [
+    { "name": "MultiblockStructure" },
+    { "name": "HorizontalOrientable" },
+    { "name": "BlockEntityInteract" }
+  ],
+  "entityBehaviors": [
+    { "name": "Animatable" },
+    {
+      "name": "RightClickConstructable",
+      "properties": {
+        "brokenDropsRatio": 0.8,
+        "stages": [
+          {
+            "addElements": ["Root/Base"]
+          },
+          {
+            "requireStacks": [
+              {
+                "type": "item",
+                "code": "metalplate-steel",
+                "quantity": 36
+              },
+              {
+                "type": "item",
+                "code": "metalnailsandstrips-{metal}",
+                "allowedVariants": ["iron", "steel"],
+                "storeWildCard": "metal",
+                "quantity": 18
+              },
+              {
+                "type": "item",
+                "code": "game:burnedbrick-fire",
+                "quantity": 64
+              }
+            ],
+            "addElements": ["Root/BaseExtension"]
+          },
+          {
+            "requireStacks": [
+              {
+                "type": "item",
+                "code": "metalplate-steel",
+                "quantity": 18
+              },
+              {
+                "type": "item",
+                "code": "rod-{metal}",
+                "allowedVariants": ["iron", "steel"],
+                "storeWildCard": "metal",
+                "quantity": 12
+              },
+              {
+                "type": "item",
+                "code": "metalnailsandstrips-{metal}",
+                "allowedVariants": ["iron", "steel"],
+                "storeWildCard": "metal",
+                "quantity": 12
+              }
+            ],
+            "addElements": ["Root/Flues"]
+          },
+          {
+            "requireStacks": [
+              {
+                "type": "item",
+                "code": "metalplate-steel",
+                "quantity": 48
+              },
+              {
+                "type": "item",
+                "code": "metalnailsandstrips-{metal}",
+                "allowedVariants": ["iron", "steel"],
+                "storeWildCard": "metal",
+                "quantity": 24
+              },
+              {
+                "type": "item",
+                "code": "metalnailsandstrips-{metal}",
+                "allowedVariants": ["iron", "steel"],
+                "storeWildCard": "metal",
+                "quantity": 12
+              }
+            ],
+            "addElements": ["Root/Casing"]
+          }
+        ]
+      }
+    }
+  ],
+  "attributes": {
+    "outletOffset": { "x": 0, "y": 2, "z": 2 },
+    "fuelOffset": { "x": 0, "y": 0, "z": -1 },
+    "gasOutletOffset": { "x": 0, "y": 1, "z": 4 },
+    "waterRendererBox": {
+      "x1": -16,
+      "y1": 0,
+      "z1": 0,
+      "x2": 16,
+      "y2": 16,
+      "z2": 48
+    },
+    "fillerOffsets": [
+      { "x": -1, "y": 0, "z": 0, "allowAttach": true },
+      { "x": 1, "y": 0, "z": 0, "allowAttach": true },
+      { "x": -1, "y": 1, "z": 0 },
+      { "x": 0, "y": 1, "z": 0, "allowAttach": true },
+      { "x": 1, "y": 1, "z": 0 },
+      { "x": -1, "y": 0, "z": 1, "allowAttach": true },
+      { "x": 0, "y": 0, "z": 1, "allowAttach": true },
+      { "x": 1, "y": 0, "z": 1, "allowAttach": true },
+      { "x": -1, "y": 1, "z": 1 },
+      { "x": 0, "y": 1, "z": 1, "allowAttach": true },
+      { "x": 1, "y": 1, "z": 1 },
+      { "x": -1, "y": 0, "z": 2, "allowAttach": true },
+      { "x": 0, "y": 0, "z": 2, "allowAttach": true },
+      { "x": 1, "y": 0, "z": 2, "allowAttach": true },
+      { "x": -1, "y": 1, "z": 2 },
+      { "x": 0, "y": 1, "z": 2, "allowAttach": true },
+      { "x": 1, "y": 1, "z": 2 },
+      { "x": -1, "y": 0, "z": 3, "allowAttach": true },
+      { "x": 0, "y": 0, "z": 3, "allowAttach": true },
+      { "x": 1, "y": 0, "z": 3, "allowAttach": true },
+      { "x": -1, "y": 1, "z": 3 },
+      { "x": 0, "y": 1, "z": 3, "allowAttach": true },
+      { "x": 1, "y": 1, "z": 3 }
+    ],
+    "multiblockStructure": {
+      "blockNumbers": {
+        "ppex:boilerlancashire*": 1,
+        "ppex:pipe-passthrough-fire-*": 2,
+        "ppex:pipe-passthroughbend-fire-u*": 3,
+        "game:claybricks-good-fire": 4,
+        "ppex:boiler-steamoutlet*": 5,
+        "game:air*": 6,
+        "@(air|colpile)": 7,
+        "ppex:structurefiller": 8,
+        "game:cokeovendoor*": 9,
+        "ppex:pipe-outlet-fire-u": 10
+      },
+      "offsets": [
+        { "x": -1, "y": 0, "z": 0, "w": 8 },
+        { "x": 0, "y": 0, "z": 0, "w": 1 },
+        { "x": 1, "y": 0, "z": 0, "w": 8 },
+        { "x": -1, "y": 1, "z": 0, "w": 8 },
+        { "x": 0, "y": 1, "z": 0, "w": 8 },
+        { "x": 1, "y": 1, "z": 0, "w": 8 },
+        { "x": -1, "y": 0, "z": 1, "w": 8 },
+        { "x": 0, "y": 0, "z": 1, "w": 8 },
+        { "x": 1, "y": 0, "z": 1, "w": 8 },
+        { "x": -1, "y": 1, "z": 1, "w": 8 },
+        { "x": 0, "y": 1, "z": 1, "w": 8 },
+        { "x": 1, "y": 1, "z": 1, "w": 8 },
+        { "x": -1, "y": 0, "z": 2, "w": 8 },
+        { "x": 0, "y": 0, "z": 2, "w": 8 },
+        { "x": 1, "y": 0, "z": 2, "w": 8 },
+        { "x": -1, "y": 1, "z": 2, "w": 8 },
+        { "x": 0, "y": 1, "z": 2, "w": 8 },
+        { "x": 1, "y": 1, "z": 2, "w": 8 },
+        { "x": -1, "y": 0, "z": 3, "w": 8 },
+        { "x": 0, "y": 0, "z": 3, "w": 8 },
+        { "x": 1, "y": 0, "z": 3, "w": 8 },
+        { "x": -1, "y": 1, "z": 3, "w": 8 },
+        { "x": 0, "y": 1, "z": 3, "w": 8 },
+        { "x": 1, "y": 1, "z": 3, "w": 8 },
+
+        { "x": -1, "y": -1, "z": -2, "w": 4 },
+        { "x": 0, "y": -1, "z": -2, "w": 2 },
+        { "x": 1, "y": -1, "z": -2, "w": 4 },
+        { "x": -1, "y": 0, "z": -2, "w": 4 },
+        { "x": 0, "y": 0, "z": -2, "w": 9 },
+        { "x": 1, "y": 0, "z": -2, "w": 4 },
+        { "x": 0, "y": 1, "z": -2, "w": 4 },
+        { "x": -1, "y": -1, "z": -1, "w": 4 },
+        { "x": 0, "y": -1, "z": -1, "w": 2 },
+        { "x": 1, "y": -1, "z": -1, "w": 4 },
+        { "x": -1, "y": 0, "z": -1, "w": 4 },
+        { "x": 0, "y": 0, "z": -1, "w": 7 },
+        { "x": 1, "y": 0, "z": -1, "w": 4 },
+        { "x": 0, "y": 1, "z": -1, "w": 4 },
+
+        { "x": -1, "y": -1, "z": 0, "w": 4 },
+        { "x": 0, "y": -1, "z": 0, "w": 3 },
+        { "x": 1, "y": -1, "z": 0, "w": 4 },
+        { "x": -1, "y": -1, "z": 1, "w": 4 },
+        { "x": 0, "y": -1, "z": 1, "w": 4 },
+        { "x": 1, "y": -1, "z": 1, "w": 4 },
+        { "x": -1, "y": -1, "z": 2, "w": 4 },
+        { "x": 0, "y": -1, "z": 2, "w": 4 },
+        { "x": 1, "y": -1, "z": 2, "w": 4 },
+        { "x": -1, "y": -1, "z": 3, "w": 4 },
+        { "x": 0, "y": -1, "z": 3, "w": 4 },
+        { "x": 1, "y": -1, "z": 3, "w": 4 },
+
+        { "x": -1, "y": -1, "z": 4, "w": 4 },
+        { "x": 0, "y": -1, "z": 4, "w": 4 },
+        { "x": 1, "y": -1, "z": 4, "w": 4 },
+        { "x": -1, "y": 0, "z": 4, "w": 4 },
+        { "x": 0, "y": 0, "z": 4, "w": 6 },
+        { "x": 1, "y": 0, "z": 4, "w": 4 },
+        { "x": 0, "y": 1, "z": 4, "w": 10 },
+        { "x": -1, "y": -1, "z": 5, "w": 4 },
+        { "x": 0, "y": -1, "z": 5, "w": 4 },
+        { "x": 1, "y": -1, "z": 5, "w": 4 },
+        { "x": -1, "y": 0, "z": 5, "w": 4 },
+        { "x": 0, "y": 0, "z": 5, "w": 4 },
+        { "x": 1, "y": 0, "z": 5, "w": 4 },
+        { "x": 0, "y": 1, "z": 5, "w": 4 },
+
+        { "x": 0, "y": 2, "z": 2, "w": 5 }
+      ]
+    }
+  },
+  "variantgroups": [
+    { "code": "side", "loadFromProperties": "abstract/horizontalorientation" }
+  ],
+  "creativeinventory": {
+    "general": ["*-north"],
+    "ppex": ["*-north"]
+  },
+  "shape": {
+    "base": "ppex:boiler/lancashire",
+    "rotateYByType": {
+      "*-north": 0,
+      "*-east": 270,
+      "*-south": 180,
+      "*-west": 90
+    },
+    "selectiveElements": ["Root/Base/*"]
+  },
+  "selectionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 },
+  "collisionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 },
+  "sidesolid": { "all": false },
+  "sideopaque": { "all": false }
+}

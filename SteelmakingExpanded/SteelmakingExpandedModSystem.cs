@@ -1,24 +1,12 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Reflection;
-using BlockNetworkLib;
+using ExpandedLib.BlockNetworks;
+using ExpandedLib.EntityRegistry;
+using SteelmakingExpanded.BlockNetworkMolten;
+using SteelmakingExpanded.BlockNetworkMolten.Blocks;
 using SteelmakingExpanded.Compat;
-using SteelmakingExpanded.Networks.Gas;
-using SteelmakingExpanded.Networks.Gas.BlockEntities;
-using SteelmakingExpanded.Networks.Gas.Blocks;
-using SteelmakingExpanded.Networks.Molten;
-using SteelmakingExpanded.Networks.Molten.BlockEntities;
-using SteelmakingExpanded.Networks.Molten.Blocks;
 using SteelmakingExpanded.Overrides;
-using SteelmakingExpanded.Structures.BessemerConverter.BlockEntities;
-using SteelmakingExpanded.Structures.BessemerConverter.Blocks;
-using SteelmakingExpanded.Structures.BlastFurnace.BlockEntities;
-using SteelmakingExpanded.Structures.BlastFurnace.Blocks;
-using SteelmakingExpanded.Structures.BlastFurnace.Items;
-using SteelmakingExpanded.Structures.CowperStove.BlockEntities;
-using SteelmakingExpanded.Structures.CowperStove.Blocks;
-using SteelmakingExpanded.Structures.SmokeStack.BlockEntities;
-using SteelmakingExpanded.Structures.SmokeStack.Blocks;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -29,10 +17,11 @@ using Vintagestory.GameContent;
 namespace SteelmakingExpanded;
 
 /// <summary>
-/// Main mod system for Steelmaking Expanded. Registers all block, block-entity, item
-/// and behavior classes; adds the mod's creative tab; wires up global player-side
-/// effects (molten-mold burns and spills); registers the gas and molten network
-/// types; and patches a few vanilla collectibles (coke crushing).
+/// Main mod system for Steelmaking Expanded. Auto-registers every block, block-entity, item
+/// and behavior class via <see cref="EntityRegistry"/>; adds the mod's creative tab; wires up
+/// global player-side effects (molten-mold burns and spills); registers the molten network
+/// type; and patches a few vanilla collectibles (coke crushing). The pipe network and all
+/// pipe/steam-power content now live in the Pipes and Power Expanded mod (ppex).
 /// </summary>
 public class SteelmakingExpandedModSystem : ModSystem
 {
@@ -179,7 +168,7 @@ public class SteelmakingExpandedModSystem : ModSystem
   }
   #endregion
 
-  #region Entity register/override
+  #region Registration
   public override void Start(ICoreAPI api)
   {
     // Load gameplay tunables from ModConfig/smex.json (writes defaults on first
@@ -189,99 +178,15 @@ public class SteelmakingExpandedModSystem : ModSystem
     // Register other mod's iron ore types.
     IronOreCompat.Init(api);
 
-    // Blocks
-    RegisterBlock<BlockBlastFurnaceDoor>(api);
-    RegisterBlock<BlockHopperReinforced>(api);
-    RegisterBlock<BlockHopperBell>(api);
-    RegisterBlock<BlockTuyere>(api);
-    RegisterBlock<BlockBlastFurnaceTap>(api);
-    RegisterBlock<BlockSlag>(api);
-    RegisterBlock<BlockSolidifiedIron>(api);
+    // The shared structure-filler block lives in ppex (a hard dependency); ppex points the
+    // StructureFillers helper at ppex:structurefiller, which this mod's mega-blocks reuse.
 
-    RegisterBlock<BlockBessemerConverter>(api);
-    RegisterBlock<BlockBessemerGasIntake>(api);
-    RegisterBlock<BlockBessemerControl>(api);
-    RegisterBlock<BlockBessemerTransmission>(api);
+    // Auto-register every [EntityRegister] block / block entity / item / behavior
+    // (and the vanilla-class overrides) declared in this assembly.
+    EntityRegistry.RegisterAll(api, Mod, GetType().Assembly);
 
-    RegisterBlock<BlockGasPipe>(api);
-    RegisterBlock<BlockGasPassthrough>(api);
-    RegisterBlock<BlockGasOutlet>(api);
-    RegisterBlock<BlockGasValve>(api);
-    RegisterBlock<BlockGasPressureValve>(api);
-    RegisterBlock<BlockGasHeatedIntake>(api);
-    RegisterBlock<BlockGasBlower>(api);
-    RegisterBlock<BlockGasIntake>(api);
-
-    RegisterBlock<BlockSmokeStackIntake>(api);
-    RegisterBlock<BlockCowperStoveIntake>(api);
-    RegisterBlock<BlockHeatSink>(api);
-
-    RegisterBlock<BlockMoltenCanal>(api);
-    RegisterBlock<BlockMoltenCanalStart>(api);
-    RegisterBlock<BlockMoltenCanalTap>(api);
-    RegisterBlock<BlockMoltenCanalMoldPedestal>(api);
-    RegisterBlock<BlockMoltenBarrel>(api);
-
-    // Entities
-    RegisterBlockEntity<BlockEntityBlastFurnace>(api);
-    RegisterBlockEntity<BlockEntityTuyere>(api);
-    RegisterBlockEntity<BlockEntityHopperReinforced>(api);
-    RegisterBlockEntity<BlockEntityHopperBell>(api);
-    RegisterBlockEntity<BlockEntityBlastFurnaceTap>(api);
-    RegisterBlockEntity<BlockEntitySlag>(api);
-    RegisterBlockEntity<BlockEntitySolidifiedIron>(api);
-
-    RegisterBlockEntity<BlockEntityBessemerConverter>(api);
-    RegisterBlockEntity<BlockEntityBessemerGasIntake>(api);
-    RegisterBlockEntity<BlockEntityBessemerControl>(api);
-    RegisterBlockEntity<BlockEntityBessemerTransmission>(api);
-
-    RegisterBlockEntity<BlockEntityCowperStove>(api);
-    RegisterBlockEntity<BlockEntityHeatSink>(api);
-
-    RegisterBlockEntity<BlockEntityGasPipe>(api);
-    RegisterBlockEntity<BlockEntityGasPassthrough>(api);
-    RegisterBlockEntity<BlockEntityGasOutlet>(api);
-    RegisterBlockEntity<BlockEntityGasValve>(api);
-    RegisterBlockEntity<BlockEntityGasPressureValve>(api);
-    RegisterBlockEntity<BlockEntityGasHeatedIntake>(api);
-    RegisterBlockEntity<BlockEntityGasBlower>(api);
-    RegisterBlockEntity<BlockEntityGasIntake>(api);
-
-    RegisterBlockEntity<BlockEntitySmokeStack>(api);
-
-    RegisterBlockEntity<BlockEntityMoltenCanal>(api);
-    RegisterBlockEntity<BlockEntityMoltenCanalStart>(api);
-    RegisterBlockEntity<BlockEntityMoltenCanalTap>(api);
-    RegisterBlockEntity<BlockEntityMoltenCanalMoldPedestal>(api);
-    RegisterBlockEntity<BlockEntityMoltenBarrel>(api);
-
-    // Items
-    RegisterItem<ItemBlastmix>(api);
-
-    // Behaviors
-    RegisterEntityBehavior<BEBehaviorMPBlower>(api);
-    RegisterEntityBehavior<BEBehaviorMPBessemerTransmission>(api);
-
-    // Override vanilla CoalPile to globally inject Blast Mix burn logic
-    api.RegisterBlockEntityClass("CoalPile", typeof(CustomBlockEntityCoalPile));
-
-    // Override vanilla ToolMold so a filled mold handed back by the pedestal
-    // restores its contents when placed in the world (vanilla ignores the
-    // stored blockEntityAttributes on placement).
-    api.RegisterBlockEntityClass("ToolMold", typeof(CustomBlockEntityToolMold));
-
-    // Override vanilla BlockToolMold to refine the right-click pickup flow:
-    // extract the cast item first, then pick the mold up (allowed even before
-    // it hardens, carrying any remaining contents).
-    api.RegisterBlockClass("BlockToolMold", typeof(CustomBlockToolMold));
-
-    // Override vanilla BlockMoldRack so a molten mold spills when racked.
-    api.RegisterBlockClass("BlockMoldRack", typeof(CustomBlockMoldRack));
-
-    // Register typed network factories — each creates the correct BlockNetwork subclass.
+    // The molten-metal network. The unified "pipe" network is registered by ppex.
     var netManager = api.ModLoader.GetModSystem<BlockNetworkModSystem>();
-    netManager.RegisterNetworkType("gas", () => new GasNetwork(netManager));
     netManager.RegisterNetworkType(
       "molten",
       () => new MoltenNetwork(netManager)
@@ -315,49 +220,5 @@ public class SteelmakingExpandedModSystem : ModSystem
       };
     }
   }
-  #endregion
-
-  #region Helper methods
-  private void RegisterBlock<T>(ICoreAPI api)
-    where T : Block
-  {
-    var className = typeof(T).Name;
-    var fullBlockId = PrefixModId(className);
-    api.RegisterBlockClass(fullBlockId, typeof(T));
-  }
-
-  private void RegisterBlockEntity<T>(ICoreAPI api)
-    where T : BlockEntity
-  {
-    var blockId = typeof(T).Name;
-    var fullBlockId = PrefixModId(blockId);
-    api.RegisterBlockEntityClass(fullBlockId, typeof(T));
-
-    if (blockId.StartsWith("BlockEntity"))
-    {
-      var shortId = blockId.Substring(11);
-      api.RegisterBlockEntityClass(PrefixModId(shortId), typeof(T));
-      api.RegisterBlockEntityClass(shortId, typeof(T));
-      api.RegisterBlockEntityClass(shortId.ToLowerInvariant(), typeof(T));
-    }
-  }
-
-  private void RegisterItem<T>(ICoreAPI api)
-    where T : Item
-  {
-    var itemId = typeof(T).Name;
-    var fullItemId = PrefixModId(itemId);
-    api.RegisterItemClass(fullItemId, typeof(T));
-  }
-
-  private void RegisterEntityBehavior<T>(ICoreAPI api)
-    where T : BlockEntityBehavior
-  {
-    var className = typeof(T).Name;
-    var fullClassName = PrefixModId(className);
-    api.RegisterBlockEntityBehaviorClass(fullClassName, typeof(T));
-  }
-
-  private string PrefixModId(string entityId) => $"{Mod.Info.ModID}.{entityId}";
   #endregion
 }

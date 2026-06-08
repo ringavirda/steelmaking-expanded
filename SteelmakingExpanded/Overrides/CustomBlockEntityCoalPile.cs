@@ -1,4 +1,5 @@
-using SteelmakingExpanded.Structures.BlastFurnace.BlockEntities;
+using ExpandedLib.EntityRegistry;
+using SteelmakingExpanded.BlockStructures.BlastFurnace.BlockEntities;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using Vintagestory.GameContent;
@@ -10,6 +11,7 @@ namespace SteelmakingExpanded.Overrides;
 /// blast mix that burns down into a solidified-slag block after a fixed time, unless
 /// the pile is being managed (consumed) directly by a blast furnace.
 /// </summary>
+[EntityRegister("CoalPile", PrefixModId = false)]
 public class CustomBlockEntityCoalPile : BlockEntityCoalPile
 {
   private int _blastmixBurnTimer = 0;

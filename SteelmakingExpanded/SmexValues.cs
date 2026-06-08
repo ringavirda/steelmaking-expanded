@@ -60,9 +60,15 @@ public class SmexConfig
   public int BessemerRequiredRods { get; set; } = 12;
   #endregion
 
-  #region Gas system
-  /// <summary>Minimum mechanical RPS for a blower to push blast into the gas network.</summary>
-  public float BlowerMinRPSForBlast { get; set; } = 1.5f;
+  #region Air blower / blast
+  /// <summary>Pressure (atm) at or above which air in a pipe network counts as "blast".</summary>
+  public float BlastPressureThreshold { get; set; } = 3.0f;
+
+  /// <summary>Air-line pressure multiplier the air blower can reach per unit of engine power.</summary>
+  public float AirCompressionRatio { get; set; } = 6f;
+
+  /// <summary>Air (m³/s) the air blower injects at full power.</summary>
+  public float AirBlowerOutputPerSecond { get; set; } = 3f;
   #endregion
 
   #region Player safety
@@ -243,8 +249,11 @@ public static class SmexValues
   public static int BessemerRequiredRods => _config.BessemerRequiredRods;
   #endregion
 
-  #region Gas system
-  public static float BlowerMinRPSForBlast => _config.BlowerMinRPSForBlast;
+  #region Air blower / blast
+  public static float BlastPressureThreshold => _config.BlastPressureThreshold;
+  public static float AirCompressionRatio => _config.AirCompressionRatio;
+  public static float AirBlowerOutputPerSecond =>
+    _config.AirBlowerOutputPerSecond;
   #endregion
 
   #region Player safety

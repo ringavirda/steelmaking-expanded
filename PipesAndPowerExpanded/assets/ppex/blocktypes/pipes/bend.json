@@ -1,0 +1,132 @@
+{
+  "code": "pipe",
+  "class": "ppex.BlockPipe",
+  "entityClass": "ppex.BlockEntityPipe",
+  "blockmaterial": "Metal",
+  "sounds": {
+    "place": "game:block/anvil",
+    "break": "game:block/anvil",
+    "hit": "game:block/anvil",
+    "walk": "game:walk/stone"
+  },
+  "maxstacksize": 8,
+  "creativeinventory": {
+    "general": ["*-bend-nw-*"],
+    "ppex": ["*-bend-nw-*"]
+  },
+  "attributes": {
+    "handbook": {
+      "groupBy": [
+        "pipe-straight-*",
+        "pipe-bend-*",
+        "pipe-tjunction-*",
+        "pipe-xjunction-*"
+      ]
+    }
+  },
+  "behaviors": [{ "name": "Lockable" }],
+  "variantgroups": [
+    { "code": "type", "states": ["bend"] },
+    {
+      "code": "orientation",
+      "states": [
+        "nw",
+        "se",
+        "en",
+        "ws",
+        "un",
+        "us",
+        "uw",
+        "ue",
+        "dn",
+        "ds",
+        "dw",
+        "de"
+      ]
+    },
+    { "code": "material", "states": ["copper", "brass", "iron", "steel"] }
+  ],
+  "shapebytype": {
+    "*-bend-nw-*": { "base": "ppex:pipes/bend" },
+    "*-bend-en-*": { "base": "ppex:pipes/bend", "rotateY": 270 },
+    "*-bend-se-*": { "base": "ppex:pipes/bend", "rotateY": 180 },
+    "*-bend-ws-*": { "base": "ppex:pipes/bend", "rotateY": 90 },
+
+    "*-bend-dn-*": { "base": "ppex:pipes/bend", "rotateZ": 90 },
+    "*-bend-de-*": { "base": "ppex:pipes/bend", "rotateZ": 90, "rotateY": 270 },
+    "*-bend-ds-*": { "base": "ppex:pipes/bend", "rotateZ": 90, "rotateY": 180 },
+    "*-bend-dw-*": { "base": "ppex:pipes/bend", "rotateZ": 90, "rotateY": 90 },
+
+    "*-bend-un-*": { "base": "ppex:pipes/bend", "rotateZ": 270 },
+    "*-bend-ue-*": {
+      "base": "ppex:pipes/bend",
+      "rotateZ": 270,
+      "rotateY": 270
+    },
+    "*-bend-us-*": {
+      "base": "ppex:pipes/bend",
+      "rotateZ": 270,
+      "rotateY": 180
+    },
+    "*-bend-uw-*": { "base": "ppex:pipes/bend", "rotateZ": 270, "rotateY": 90 }
+  },
+  "texturesByType": {
+    "*-copper": {
+      "normal4": { "base": "game:block/metal/sheet-plain/copper4" },
+      "iron4": { "base": "game:block/metal/sheet-plain/copper4" }
+    },
+    "*-brass": {
+      "normal4": { "base": "game:block/metal/sheet-plain/brass4" },
+      "iron4": { "base": "game:block/metal/sheet-plain/brass4" }
+    },
+    "*-iron": {
+      "normal4": { "base": "game:block/metal/sheet-plain/iron4" },
+      "iron4": { "base": "game:block/metal/sheet-plain/iron4" }
+    },
+    "*-steel": {
+      "normal4": { "base": "game:block/metal/sheet-plain/steel4" },
+      "iron4": { "base": "game:block/metal/sheet-plain/steel4" }
+    }
+  },
+  "collisionboxes": [
+    {
+      "x1": 0.3125,
+      "y1": 0.3125,
+      "z1": 0.0,
+      "x2": 0.6875,
+      "y2": 0.6875,
+      "z2": 0.6875
+    },
+    {
+      "x1": 0.0,
+      "y1": 0.3125,
+      "z1": 0.3125,
+      "x2": 0.6875,
+      "y2": 0.6875,
+      "z2": 0.6875
+    }
+  ],
+  "selectionboxes": [
+    {
+      "x1": 0.3125,
+      "y1": 0.3125,
+      "z1": 0.0,
+      "x2": 0.6875,
+      "y2": 0.6875,
+      "z2": 0.6875
+    },
+    {
+      "x1": 0.0,
+      "y1": 0.3125,
+      "z1": 0.3125,
+      "x2": 0.6875,
+      "y2": 0.6875,
+      "z2": 0.6875
+    }
+  ],
+  "renderpass": "OpaqueNoCull",
+  "faceCullMode": "NeverCull",
+  "lightAbsorption": 0,
+  "sidesolid": { "all": false },
+  "sideopaque": { "all": false }
+}

@@ -1,0 +1,111 @@
+{
+  "code": "pipe",
+  "class": "ppex.BlockPipe",
+  "entityClass": "ppex.BlockEntityPipe",
+  "blockmaterial": "Metal",
+  "sounds": {
+    "place": "game:block/anvil",
+    "break": "game:block/anvil",
+    "hit": "game:block/anvil",
+    "walk": "game:walk/stone"
+  },
+  "maxstacksize": 8,
+  "creativeinventory": {
+    "general": ["*-xjunction-nswe-*"],
+    "ppex": ["*-xjunction-nswe-*"]
+  },
+  "attributes": {
+    "handbook": {
+      "groupBy": [
+        "pipe-straight-*",
+        "pipe-bend-*",
+        "pipe-tjunction-*",
+        "pipe-xjunction-*"
+      ]
+    }
+  },
+  "behaviors": [{ "name": "Lockable" }],
+  "variantgroups": [
+    { "code": "type", "states": ["xjunction"] },
+    { "code": "orientation", "states": ["nswe", "nsud", "weud"] },
+    {
+      "code": "material",
+      "states": ["copper", "brass", "iron", "steel"]
+    }
+  ],
+  "shapebytype": {
+    "*-xjunction-nswe-*": { "base": "ppex:pipes/xjunction" },
+    "*-xjunction-nsud-*": {
+      "base": "ppex:pipes/xjunction",
+      "rotateZ": 90
+    },
+    "*-xjunction-weud-*": {
+      "base": "ppex:pipes/xjunction",
+      "rotateZ": 90,
+      "rotateY": 90
+    }
+  },
+  "texturesByType": {
+    "*-copper": {
+      "normal4": { "base": "game:block/metal/sheet-plain/copper4" },
+      "iron4": { "base": "game:block/metal/sheet-plain/copper4" }
+    },
+    "*-brass": {
+      "normal4": { "base": "game:block/metal/sheet-plain/brass4" },
+      "iron4": { "base": "game:block/metal/sheet-plain/brass4" }
+    },
+    "*-iron": {
+      "normal4": { "base": "game:block/metal/sheet-plain/iron4" },
+      "iron4": { "base": "game:block/metal/sheet-plain/iron4" }
+    },
+    "*-steel": {
+      "normal4": { "base": "game:block/metal/sheet-plain/steel4" },
+      "iron4": { "base": "game:block/metal/sheet-plain/steel4" }
+    }
+  },
+  "collisionboxes": [
+    {
+      "x1": 0,
+      "y1": 0.3125,
+      "z1": 0.3125,
+      "x2": 1,
+      "y2": 0.6875,
+      "z2": 0.6875
+    },
+    {
+      "x1": 0.3125,
+      "y1": 0.3125,
+      "z1": 0,
+      "x2": 0.6875,
+      "y2": 0.6875,
+      "z2": 1
+    }
+  ],
+  "selectionboxes": [
+    {
+      "x1": 0,
+      "y1": 0.3125,
+      "z1": 0.3125,
+      "x2": 1,
+      "y2": 0.6875,
+      "z2": 0.6875
+    },
+    {
+      "x1": 0.3125,
+      "y1": 0.3125,
+      "z1": 0,
+      "x2": 0.6875,
+      "y2": 0.6875,
+      "z2": 1
+    }
+  ],
+  "renderpass": "OpaqueNoCull",
+  "faceCullMode": "NeverCull",
+  "lightAbsorption": 0,
+  "sidesolid": {
+    "all": false
+  },
+  "sideopaque": {
+    "all": false
+  }
+}
