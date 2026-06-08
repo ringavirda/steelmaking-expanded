@@ -262,6 +262,30 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode
     );
   }
 
+  /// <summary>
+  /// Raises this cell's temperature toward <paramref name="incomingTemp"/> without
+  /// adding any volume. Models hot metal poured over an already-full cell: the pour
+  /// keeps bathing the surface, so a continuously-fed fitting stays molten instead
+  /// of cooling to a solid plug once it can no longer accept more metal. Returns
+  /// true if the temperature was raised. Server-side.
+  /// </summary>
+  internal bool SoakHeat(IWorldAccessor world, float incomingTemp)
+  {
+    if (
+      CellAmount <= 0f
+      || _cellMetalStack == null
+      || incomingTemp <= _cellTemperature + 1f
+    )
+      return false;
+
+    byte oldGlow = GlowLightLevel;
+    _cellTemperature = incomingTemp;
+    SetStackTemperature(world, _cellTemperature);
+    RelightIfGlowChanged(oldGlow);
+    MarkDirty();
+    return true;
+  }
+
   /// <summary>Rebuilds the server temperature carrier after a world load (To/FromTreeAttributes only persist type + temperature).</summary>
   internal void EnsureMetalStack(IWorldAccessor world)
   {

@@ -147,7 +147,9 @@ public class BlockEntityBlastFurnaceTap : BlockEntity
     )
       return 0;
 
-    if (!startCanal.CanReceive(moltenMetal))
+    // Use the looser predicate so a brim-full start still receives the pour and
+    // soaks its heat (keeping it molten) instead of stalling and cooling.
+    if (!startCanal.CanReceiveOrSoak(moltenMetal))
       return 0;
 
     startCanal.BeginFill(Pos.ToVec3d());

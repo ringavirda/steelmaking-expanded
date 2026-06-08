@@ -37,6 +37,16 @@ public class BlockEntityMoltenCanalStart
     && CellAmount < MaxUnitCapacity
     && (CellAmount <= 0f || CellMetalType == metal.Collectible.Code.ToString());
 
+  /// <summary>
+  /// Looser than <see cref="CanReceive"/>: also true when the cell is FULL of the
+  /// same metal. The furnace tap uses this so it keeps pouring (transferring heat
+  /// via <see cref="ReceiveLiquidMetal"/>'s soak path) into a brim-full start
+  /// instead of stopping and letting it cool to a plug.
+  /// </summary>
+  public bool CanReceiveOrSoak(ItemStack metal) =>
+    !Solidified
+    && (CellAmount <= 0f || CellMetalType == metal.Collectible.Code.ToString());
+
   /// <inheritdoc/>
   public void BeginFill(Vec3d hitPosition) { }
 
@@ -58,13 +68,24 @@ public class BlockEntityMoltenCanalStart
       return;
     }
 
-    if (!CanReceive(metal))
+    string type = metal.Collectible.Code.ToString();
+    // Reject only on solidification or a metal-type mismatch. A FULL cell must NOT
+    // bail here: hot metal poured over it still soaks heat in (below), so a start
+    // fed by the furnace stays molten even while it can't accept more volume.
+    if (Solidified || (CellAmount > 0f && CellMetalType != type))
       return;
 
-    float accepted = PushMetal(amount, metal, Api!.World);
-    amount -= (int)accepted;
+    // Use the pour temperature directly (the furnace tap passes the live tap temp),
+    // rather than re-deriving it from the stack.
+    int accepted = PushMetalRaw(amount, type, temperature, Api!.World);
+    amount -= accepted;
 
-    if (accepted > 0f)
+    // Whatever could not be accepted (cell already full) still bathes the cell in
+    // fresh hot metal — soak that heat in so the start never cools to a plug while
+    // the furnace keeps tapping.
+    bool soaked = amount > 0 && SoakHeat(Api.World, temperature);
+
+    if (accepted > 0 || soaked)
       SmexSounds.PlayThrottled(
         Api,
         Pos,

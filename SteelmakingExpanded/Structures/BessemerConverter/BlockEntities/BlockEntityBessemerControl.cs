@@ -343,6 +343,13 @@ public class BlockEntityBessemerControl : BlockEntityMultiblockStructure
     float accepted = outputCell.PushMetal(amount, _content, Api.World);
     if (accepted <= 0f)
     {
+      // Output canal is brim-full: keep bathing it in our hot content so it stays
+      // molten and keeps feeding downstream, instead of cooling to a plug while we
+      // wait for it to drain. Mirrors the furnace tap's full-cell heat soak.
+      outputCell.SoakHeat(
+        Api.World,
+        _content.Collectible.GetTemperature(Api.World, _content)
+      );
       SetStatus(Lang.Get("smex:bessemer-status-pouring-full"));
       return;
     }
