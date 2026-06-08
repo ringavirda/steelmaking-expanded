@@ -1,7 +1,7 @@
 [
   {
     "name": "Gas Piping (Heated)",
-    "ingredientPattern": "BHB,BPB,BNB",
+    "ingredientPattern": "_H_,BPB,BNB",
     "ingredients": {
       "B": {
         "type": "item",
@@ -42,7 +42,7 @@
   },
   {
     "name": "Gas Piping (Heated, Refractory)",
-    "ingredientPattern": "BHB,BPB,BNB",
+    "ingredientPattern": "_H_,BPB,BNB",
     "ingredients": {
       "B": {
         "type": "item",
