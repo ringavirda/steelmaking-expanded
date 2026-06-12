@@ -275,7 +275,6 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
 
     bool dirty = false;
 
-    // --- Gas outlets ---
     bool failedAny = false;
     if (State != BlastFurnaceState.Idle)
     {
@@ -308,7 +307,6 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
     _cachedMixCount = mixCount;
     _cachedIsFull = isFull;
 
-    // --- Tuyeres ---
     bool tuyeresReceiveExhaust = false;
     float hotBlastTemp = 20f;
     bool receivingBlast = false;
@@ -343,7 +341,6 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
     bool isLiquidCapacityReached =
       _moltenIron >= _maxMoltenIron || _moltenSlag >= _maxMoltenSlag;
 
-    // --- Ignition ---
     if (
       State == BlastFurnaceState.Idle
       && StructureComplete
@@ -364,7 +361,6 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
       }
     }
 
-    // --- Disruption / extinguish check ---
     if (State != BlastFurnaceState.Idle)
     {
       int disruptionCount = 0;
@@ -404,7 +400,6 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
       }
     }
 
-    // --- Temperature and production ---
     if (State == BlastFurnaceState.Firing || State == BlastFurnaceState.Melting)
     {
       // Roaring furnace ambience while lit.
@@ -427,15 +422,12 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
       float heatRate = receivingBlast ? 4f : 2f;
 
       if (_internalTemp < targetTemp)
-        _internalTemp = System.Math.Min(
-          _internalTemp + heatRate * dt,
-          targetTemp
-        );
+        _internalTemp = Math.Min(_internalTemp + heatRate * dt, targetTemp);
       else if (_internalTemp > targetTemp)
-        _internalTemp = System.Math.Max(_internalTemp - 4f * dt, targetTemp);
+        _internalTemp = Math.Max(_internalTemp - 4f * dt, targetTemp);
 
       _internalTemp = GameMath.Clamp(_internalTemp, 20f, 1700f);
-      if (System.Math.Abs(_internalTemp - oldTemp) > 0.1f)
+      if (Math.Abs(_internalTemp - oldTemp) > 0.1f)
         dirty = true;
 
       if (State == BlastFurnaceState.Firing)
