@@ -25,16 +25,13 @@
       }
     },
     "allowedVariants": {
-      "metal": [
-        "iron",
-        "steel"
-      ]
+      "metal": ["iron", "steel"]
     },
     "width": 3,
     "height": 3,
     "output": {
       "type": "block",
-      "code": "smex:bessemercontrol-north"
+      "code": "smex:convertercontrol-north"
     }
   },
   {
@@ -63,8 +60,8 @@
       },
       "G": {
         "type": "item",
-        "code": "game:jonasframes-gearbox02",
-        "quantity": 2
+        "code": "game:gear-rusty",
+        "quantity": 16
       },
       "A": {
         "type": "block",
@@ -73,16 +70,13 @@
       }
     },
     "allowedVariants": {
-      "metal": [
-        "iron",
-        "steel"
-      ]
+      "metal": ["iron", "steel"]
     },
     "width": 3,
     "height": 3,
     "output": {
       "type": "block",
-      "code": "smex:bessemertransmission-north"
+      "code": "smex:convertertransmission-north"
     }
   },
   {
@@ -111,21 +105,18 @@
       },
       "L": {
         "type": "block",
-        "code": "smex:gaspipe-straight*",
+        "code": "ppex:pipe-straight*",
         "quantity": 1
       }
     },
     "allowedVariants": {
-      "metal": [
-        "iron",
-        "steel"
-      ]
+      "metal": ["iron", "steel"]
     },
     "width": 3,
     "height": 3,
     "output": {
       "type": "block",
-      "code": "smex:bessemer-gasintake-s"
+      "code": "smex:converter-intake-north"
     }
   }
 ]

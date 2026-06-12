@@ -1,0 +1,15 @@
+[
+  {
+    "file": "game:itemtypes/resource/metalbit.json",
+    "op": "add",
+    "path": "/crushingPropsByType",
+    "value": {
+      "*-iron": {
+        "crushedStack": { "type": "item", "code": "game:crushed-iron" },
+        "quantity": { "avg": 1 },
+        "hardnessTier": 1
+      }
+    },
+    "side": "Server"
+  }
+]

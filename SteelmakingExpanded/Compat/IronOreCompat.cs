@@ -26,6 +26,14 @@ public static class IronOreCompat
       ExtraIronOrePaths.Add("crushed-magnetite");
       ExtraIronOrePaths.Add("roasted-crushed-iron");
     }
+
+    // Expanded Matter per-ore crushed iron variants (all smelt to ironbloom).
+    if (api.ModLoader.IsModEnabled("em"))
+    {
+      ExtraIronOrePaths.Add("crushed-ore-hematite");
+      ExtraIronOrePaths.Add("crushed-ore-limonite");
+      ExtraIronOrePaths.Add("crushed-ore-magnetite");
+    }
   }
 
   /// <summary>

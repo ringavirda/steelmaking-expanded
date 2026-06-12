@@ -4,9 +4,11 @@
   "modid": "smex",
   "name": "Steelmaking Expanded",
   "authors": ["fallenstar"],
-  "description": "Adds an industrial iron and steel production chain: a multiblock blast furnace, gas and molten-metal pipe networks, a cowper stove hot-blast loop, and a Bessemer converter for making steel.",
-  "version": "0.8.7",
+  "description": "Industrial iron and steel production using blast furnace and Bessemer process!",
+  "version": "0.9.0",
   "dependencies": {
-    "game": "1.22.0"
+    "game": "1.22.0",
+    "exlib": "0.1.0",
+    "ppex": "0.1.0"
   }
 }

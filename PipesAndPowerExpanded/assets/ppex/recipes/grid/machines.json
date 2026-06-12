@@ -1,0 +1,306 @@
+[
+  {
+    "name": "Fluid Intake",
+    "ingredientPattern": "_H_,PIP,NPN",
+    "ingredients": {
+      "I": {
+        "type": "block",
+        "code": "ppex:pipe-straight-*",
+        "quantity": 1
+      },
+      "P": {
+        "type": "item",
+        "code": "game:metalplate-{metal}",
+        "quantity": 1
+      },
+      "N": {
+        "type": "item",
+        "code": "game:metalnailsandstrips-{metal}",
+        "quantity": 2
+      },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      }
+    },
+    "allowedVariants": {
+      "metal": ["iron", "steel"]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "ppex:pipe-fluidintake-s"
+    }
+  },
+  {
+    "name": "Steam Condenser",
+    "ingredientPattern": "_H_,IPI,NP_",
+    "ingredients": {
+      "I": {
+        "type": "block",
+        "code": "ppex:pipe-straight-*",
+        "quantity": 1
+      },
+      "P": {
+        "type": "item",
+        "code": "game:metalplate-{metal}",
+        "quantity": 1
+      },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      },
+      "N": {
+        "type": "item",
+        "code": "game:metalnailsandstrips-{metal}",
+        "quantity": 2
+      }
+    },
+    "allowedVariants": {
+      "metal": ["iron", "steel"]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "ppex:steamcondenser-north"
+    }
+  },
+  {
+    "name": "Cornish Boiler",
+    "ingredientPattern": "PHP,BNB",
+    "ingredients": {
+      "P": {
+        "type": "item",
+        "code": "game:metalplate-{metal}",
+        "quantity": 1
+      },
+      "B": {
+        "type": "item",
+        "code": "game:burnedbrick-fire",
+        "quantity": 2
+      },
+      "I": {
+        "type": "block",
+        "code": "ppex:pipe-straight-*",
+        "quantity": 1
+      },
+      "N": {
+        "type": "item",
+        "code": "game:metalnailsandstrips-{metal}",
+        "quantity": 2
+      },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      }
+    },
+    "allowedVariants": {
+      "metal": ["iron", "steel"]
+    },
+    "width": 3,
+    "height": 2,
+    "output": {
+      "type": "block",
+      "code": "ppex:boilercornish-north"
+    }
+  },
+  {
+    "name": "Lancashire Boiler",
+    "ingredientPattern": "BHB,PRP",
+    "ingredients": {
+      "P": {
+        "type": "item",
+        "code": "game:metalplate-steel",
+        "quantity": 1
+      },
+      "B": {
+        "type": "item",
+        "code": "game:burnedbrick-fire",
+        "quantity": 2
+      },
+      "R": {
+        "type": "item",
+        "code": "game:rod-steel",
+        "quantity": 2
+      },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      }
+    },
+    "width": 3,
+    "height": 2,
+    "output": {
+      "type": "block",
+      "code": "ppex:boilerlancashire-north"
+    }
+  },
+  {
+    "name": "Cornish Engine",
+    "ingredientPattern": "GHR,PNP,PIP",
+    "ingredients": {
+      "P": {
+        "type": "item",
+        "code": "game:metalplate-steel",
+        "quantity": 1
+      },
+      "R": {
+        "type": "item",
+        "code": "game:rod-steel",
+        "quantity": 4
+      },
+      "G": {
+        "type": "item",
+        "code": "game:gear-rusty",
+        "quantity": 4
+      },
+      "I": {
+        "type": "block",
+        "code": "ppex:pipe-straight-*-steel",
+        "quantity": 2
+      },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      },
+      "N": {
+        "type": "item",
+        "code": "game:metalnailsandstrips-steel",
+        "quantity": 4
+      }
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "ppex:enginecornish-north"
+    }
+  },
+  {
+    "name": "Watt Engine",
+    "ingredientPattern": "_H_,PRP,PIP",
+    "ingredients": {
+      "P": {
+        "type": "item",
+        "code": "game:metalplate-{metal}",
+        "quantity": 1
+      },
+      "R": {
+        "type": "item",
+        "code": "game:rod-{metal}",
+        "quantity": 2
+      },
+      "G": {
+        "type": "item",
+        "code": "game:gear-rusty",
+        "quantity": 2
+      },
+      "I": {
+        "type": "block",
+        "code": "ppex:pipe-straight-*",
+        "quantity": 1
+      },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      }
+    },
+    "allowedVariants": {
+      "metal": ["iron", "steel"]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "ppex:enginewatt-north"
+    }
+  },
+  {
+    "name": "Fluid Pump",
+    "ingredientPattern": "_HG,PIP,RIR",
+    "ingredients": {
+      "P": {
+        "type": "item",
+        "code": "game:metalplate-{metal}",
+        "quantity": 1
+      },
+      "G": {
+        "type": "item",
+        "code": "game:gear-rusty",
+        "quantity": 1
+      },
+      "I": {
+        "type": "block",
+        "code": "ppex:pipe-straight-*",
+        "quantity": 1
+      },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      },
+      "R": {
+        "type": "item",
+        "code": "game:rod-{metal}",
+        "quantity": 2
+      }
+    },
+    "allowedVariants": {
+      "metal": ["iron", "steel"]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "ppex:enginefluidpump-north"
+    }
+  },
+  {
+    "name": "Mechanical Power Generator",
+    "ingredientPattern": "_H_,GAG,PRP",
+    "ingredients": {
+      "P": {
+        "type": "item",
+        "code": "game:metalplate-{metal}",
+        "quantity": 2
+      },
+      "R": {
+        "type": "item",
+        "code": "game:rod-{metal}",
+        "quantity": 2
+      },
+      "G": {
+        "type": "item",
+        "code": "game:gear-rusty",
+        "quantity": 2
+      },
+      "A": {
+        "type": "block",
+        "code": "game:woodenaxle-ns",
+        "quantity": 1
+      },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      }
+    },
+    "allowedVariants": {
+      "metal": ["iron", "steel"]
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "ppex:enginempgenerator-north"
+    }
+  }
+]

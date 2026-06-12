@@ -1,0 +1,277 @@
+{
+  "code": "boilerlancashire",
+  "class": "ppex.BlockBoilerLancashire",
+  "entityClass": "ppex.BlockEntityBoilerLancashire",
+  "blockmaterial": "Metal",
+  "sounds": {
+    "place": "game:block/anvil",
+    "break": "game:block/anvil",
+    "hit": "game:block/anvil",
+    "walk": "game:walk/stone"
+  },
+  "requiredMiningTier": 5,
+  "resistance": 45.0,
+  "maxstacksize": 1,
+  "behaviors": [
+    { "name": "MultiblockStructure" },
+    { "name": "HorizontalOrientable" },
+    { "name": "BlockEntityInteract" }
+  ],
+  "entityBehaviors": [
+    { "name": "Animatable" },
+    {
+      "name": "RightClickConstructable",
+      "properties": {
+        "brokenDropsRatio": 0.8,
+        "stages": [
+          {
+            "addElements": ["Root/Base"]
+          },
+          {
+            "requireStacks": [
+              {
+                "type": "item",
+                "code": "metalplate-steel",
+                "quantity": 10
+              },
+              {
+                "type": "item",
+                "code": "metalnailsandstrips-{metal}",
+                "allowedVariants": ["iron", "steel"],
+                "storeWildCard": "metal",
+                "quantity": 8
+              },
+              {
+                "type": "item",
+                "code": "game:burnedbrick-fire",
+                "quantity": 12
+              }
+            ],
+            "addElements": ["Root/BaseExtension"]
+          },
+          {
+            "requireStacks": [
+              {
+                "type": "item",
+                "code": "metalplate-steel",
+                "quantity": 8
+              },
+              {
+                "type": "item",
+                "code": "rod-steel",
+                "quantity": 4
+              },
+              {
+                "type": "item",
+                "code": "metalnailsandstrips-{metal}",
+                "allowedVariants": ["iron", "steel"],
+                "storeWildCard": "metal",
+                "quantity": 8
+              }
+            ],
+            "addElements": ["Root/Flues"]
+          },
+          {
+            "requireStacks": [
+              {
+                "type": "item",
+                "code": "metalplate-steel",
+                "quantity": 16
+              },
+              {
+                "type": "item",
+                "code": "metalnailsandstrips-{metal}",
+                "allowedVariants": ["iron", "steel"],
+                "storeWildCard": "metal",
+                "quantity": 8
+              },
+              {
+                "type": "item",
+                "code": "rod-steel",
+                "quantity": 6
+              },
+              {
+                "type": "item",
+                "code": "game:burnedbrick-fire",
+                "quantity": 48
+              }
+            ],
+            "addElements": ["Root/Casing"]
+          }
+        ]
+      }
+    }
+  ],
+  "attributes": {
+    "steamConnectorOffset": { "x": 0, "y": 1, "z": 4 },
+    "lidOffset": { "x": 0, "y": 1, "z": 1 },
+    "fuelOffset": { "x": 0, "y": 0, "z": -1 },
+    "explosionCenterOffset": { "x": 0, "y": 1, "z": 3 },
+    "lightSampleOffset": { "x": 0, "y": 1, "z": 3 },
+    "exhaustOutletOffset": { "x": 0, "y": 1, "z": 6 },
+    "waterRendererBox": {
+      "x1": -14,
+      "y1": 2,
+      "z1": 2,
+      "x2": 30,
+      "y2": 30,
+      "z2": 94
+    },
+    "fillerOffsets": [
+      { "x": -1, "y": 0, "z": 0, "allowAttach": true },
+      { "x": 1, "y": 0, "z": 0, "allowAttach": true },
+      { "x": -1, "y": 1, "z": 0 },
+      { "x": 0, "y": 1, "z": 0, "allowAttach": true },
+      { "x": 1, "y": 1, "z": 0 },
+      { "x": -1, "y": 0, "z": 1, "allowAttach": true },
+      { "x": 0, "y": 0, "z": 1, "allowAttach": true },
+      { "x": 1, "y": 0, "z": 1, "allowAttach": true },
+      { "x": -1, "y": 1, "z": 1 },
+      { "x": 0, "y": 1, "z": 1, "allowAttach": true },
+      { "x": 1, "y": 1, "z": 1 },
+      { "x": -1, "y": 0, "z": 2, "allowAttach": true },
+      { "x": 0, "y": 0, "z": 2, "allowAttach": true },
+      { "x": 1, "y": 0, "z": 2, "allowAttach": true },
+      { "x": -1, "y": 1, "z": 2 },
+      { "x": 0, "y": 1, "z": 2, "allowAttach": true },
+      { "x": 1, "y": 1, "z": 2 },
+      { "x": -1, "y": 0, "z": 3, "allowAttach": true },
+      { "x": 0, "y": 0, "z": 3, "allowAttach": true },
+      { "x": 1, "y": 0, "z": 3, "allowAttach": true },
+      { "x": -1, "y": 1, "z": 3 },
+      { "x": 0, "y": 1, "z": 3, "allowAttach": true },
+      { "x": 1, "y": 1, "z": 3 },
+      { "x": -1, "y": 0, "z": 4, "allowAttach": true },
+      { "x": 0, "y": 0, "z": 4, "allowAttach": true },
+      { "x": 1, "y": 0, "z": 4, "allowAttach": true },
+      { "x": -1, "y": 1, "z": 4 },
+      { "x": 0, "y": 1, "z": 4, "allowAttach": true },
+      { "x": 1, "y": 1, "z": 4 },
+      { "x": -1, "y": 0, "z": 5, "allowAttach": true },
+      { "x": 0, "y": 0, "z": 5, "allowAttach": true },
+      { "x": 1, "y": 0, "z": 5, "allowAttach": true },
+      { "x": -1, "y": 1, "z": 5 },
+      { "x": 0, "y": 1, "z": 5, "allowAttach": true },
+      { "x": 1, "y": 1, "z": 5 }
+    ],
+    "multiblockStructure": {
+      "blockNumbers": {
+        "ppex:boilerlancashire*": 1,
+        "ppex:pipe-passthrough-fire-*": 2,
+        "ppex:pipe-passthroughbend-fire-u*": 3,
+        "game:claybricks-good-fire": 4,
+        "game:air*": 6,
+        "@(air|coalpile)": 7,
+        "exlib:structurefiller": 8,
+        "game:cokeovendoor*": 9,
+        "ppex:pipe-outlet-fire-u": 10
+      },
+      "offsets": [
+        { "x": -1, "y": 0, "z": 0, "w": 8 },
+        { "x": 0, "y": 0, "z": 0, "w": 1 },
+        { "x": 1, "y": 0, "z": 0, "w": 8 },
+        { "x": -1, "y": 1, "z": 0, "w": 8 },
+        { "x": 0, "y": 1, "z": 0, "w": 8 },
+        { "x": 1, "y": 1, "z": 0, "w": 8 },
+        { "x": -1, "y": 0, "z": 1, "w": 8 },
+        { "x": 0, "y": 0, "z": 1, "w": 8 },
+        { "x": 1, "y": 0, "z": 1, "w": 8 },
+        { "x": -1, "y": 1, "z": 1, "w": 8 },
+        { "x": 0, "y": 1, "z": 1, "w": 8 },
+        { "x": 1, "y": 1, "z": 1, "w": 8 },
+        { "x": -1, "y": 0, "z": 2, "w": 8 },
+        { "x": 0, "y": 0, "z": 2, "w": 8 },
+        { "x": 1, "y": 0, "z": 2, "w": 8 },
+        { "x": -1, "y": 1, "z": 2, "w": 8 },
+        { "x": 0, "y": 1, "z": 2, "w": 8 },
+        { "x": 1, "y": 1, "z": 2, "w": 8 },
+        { "x": -1, "y": 0, "z": 3, "w": 8 },
+        { "x": 0, "y": 0, "z": 3, "w": 8 },
+        { "x": 1, "y": 0, "z": 3, "w": 8 },
+        { "x": -1, "y": 1, "z": 3, "w": 8 },
+        { "x": 0, "y": 1, "z": 3, "w": 8 },
+        { "x": 1, "y": 1, "z": 3, "w": 8 },
+        { "x": -1, "y": 0, "z": 4, "w": 8 },
+        { "x": 0, "y": 0, "z": 4, "w": 8 },
+        { "x": 1, "y": 0, "z": 4, "w": 8 },
+        { "x": -1, "y": 1, "z": 4, "w": 8 },
+        { "x": 0, "y": 1, "z": 4, "w": 8 },
+        { "x": 1, "y": 1, "z": 4, "w": 8 },
+        { "x": -1, "y": 0, "z": 5, "w": 8 },
+        { "x": 0, "y": 0, "z": 5, "w": 8 },
+        { "x": 1, "y": 0, "z": 5, "w": 8 },
+        { "x": -1, "y": 1, "z": 5, "w": 8 },
+        { "x": 0, "y": 1, "z": 5, "w": 8 },
+        { "x": 1, "y": 1, "z": 5, "w": 8 },
+
+        { "x": -1, "y": -1, "z": -2, "w": 4 },
+        { "x": 0, "y": -1, "z": -2, "w": 2 },
+        { "x": 1, "y": -1, "z": -2, "w": 4 },
+        { "x": -1, "y": 0, "z": -2, "w": 4 },
+        { "x": 0, "y": 0, "z": -2, "w": 9 },
+        { "x": 1, "y": 0, "z": -2, "w": 4 },
+        { "x": 0, "y": 1, "z": -2, "w": 4 },
+        { "x": -1, "y": -1, "z": -1, "w": 4 },
+        { "x": 0, "y": -1, "z": -1, "w": 2 },
+        { "x": 1, "y": -1, "z": -1, "w": 4 },
+        { "x": -1, "y": 0, "z": -1, "w": 4 },
+        { "x": 0, "y": 0, "z": -1, "w": 7 },
+        { "x": 1, "y": 0, "z": -1, "w": 4 },
+        { "x": 0, "y": 1, "z": -1, "w": 4 },
+
+        { "x": -1, "y": -1, "z": 0, "w": 4 },
+        { "x": 0, "y": -1, "z": 0, "w": 3 },
+        { "x": 1, "y": -1, "z": 0, "w": 4 },
+        { "x": -1, "y": -1, "z": 1, "w": 4 },
+        { "x": 0, "y": -1, "z": 1, "w": 4 },
+        { "x": 1, "y": -1, "z": 1, "w": 4 },
+        { "x": -1, "y": -1, "z": 2, "w": 4 },
+        { "x": 0, "y": -1, "z": 2, "w": 4 },
+        { "x": 1, "y": -1, "z": 2, "w": 4 },
+        { "x": -1, "y": -1, "z": 3, "w": 4 },
+        { "x": 0, "y": -1, "z": 3, "w": 4 },
+        { "x": 1, "y": -1, "z": 3, "w": 4 },
+        { "x": -1, "y": -1, "z": 4, "w": 4 },
+        { "x": 0, "y": -1, "z": 4, "w": 4 },
+        { "x": 1, "y": -1, "z": 4, "w": 4 },
+        { "x": -1, "y": -1, "z": 5, "w": 4 },
+        { "x": 0, "y": -1, "z": 5, "w": 4 },
+        { "x": 1, "y": -1, "z": 5, "w": 4 },
+
+        { "x": -1, "y": -1, "z": 6, "w": 4 },
+        { "x": 0, "y": -1, "z": 6, "w": 4 },
+        { "x": 1, "y": -1, "z": 6, "w": 4 },
+        { "x": -1, "y": 0, "z": 6, "w": 4 },
+        { "x": 0, "y": 0, "z": 6, "w": 6 },
+        { "x": 1, "y": 0, "z": 6, "w": 4 },
+        { "x": 0, "y": 1, "z": 6, "w": 10 },
+        { "x": -1, "y": -1, "z": 7, "w": 4 },
+        { "x": 0, "y": -1, "z": 7, "w": 4 },
+        { "x": 1, "y": -1, "z": 7, "w": 4 },
+        { "x": -1, "y": 0, "z": 7, "w": 4 },
+        { "x": 0, "y": 0, "z": 7, "w": 4 },
+        { "x": 1, "y": 0, "z": 7, "w": 4 },
+        { "x": 0, "y": 1, "z": 7, "w": 4 }
+      ]
+    }
+  },
+  "variantgroups": [
+    { "code": "side", "loadFromProperties": "abstract/horizontalorientation" }
+  ],
+  "creativeinventory": {
+    "general": ["*-north"],
+    "ppex": ["*-north"]
+  },
+  "shape": {
+    "base": "ppex:boiler/lancashire",
+    "rotateYByType": {
+      "*-north": 0,
+      "*-east": 270,
+      "*-south": 180,
+      "*-west": 90
+    },
+    "selectiveElements": ["Root/Base/*"]
+  },
+  "sidesolid": { "all": false },
+  "sideopaque": { "all": false }
+}

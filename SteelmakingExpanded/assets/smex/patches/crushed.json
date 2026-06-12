@@ -71,13 +71,11 @@
     "side": "Server",
     "dependsOn": [{ "modid": "em" }],
     "op": "add",
-    "path": "/grindingPropsByType",
+    "path": "/grindingPropsByType/*-coke",
     "value": {
-      "*-coke": {
-        "groundStack": {
-          "type": "item",
-          "code": "em:powdered-ore-coal"
-        }
+      "groundStack": {
+        "type": "item",
+        "code": "em:powdered-ore-coal"
       }
     }
   }

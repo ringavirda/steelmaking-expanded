@@ -2,18 +2,74 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "build",
+      "label": "build-exlib",
+      "command": "dotnet",
+      "type": "process",
+      "args": ["build", "${workspaceFolder}/ExpandedLib/ExpandedLib.csproj"],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "build-ppex",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/PipesAndPowerExpanded/PipesAndPowerExpanded.csproj"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "build-smex",
       "command": "dotnet",
       "type": "process",
       "args": [
         "build",
         "${workspaceFolder}/SteelmakingExpanded/SteelmakingExpanded.csproj"
       ],
-      "problemMatcher": "$msCompile",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      }
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "stage-mods (exlib, ppex)",
+      "type": "process",
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-File",
+        "${workspaceFolder}/.vscode/stage-mods.ps1",
+        "-Dest",
+        "${workspaceFolder}/bin/Mods",
+        "exlib=${workspaceFolder}/ExpandedLib/bin/Debug/Mods/mod",
+        "ppex=${workspaceFolder}/PipesAndPowerExpanded/bin/Debug/Mods/mod"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "stage-mods (exlib, ppex, smex)",
+      "type": "process",
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-File",
+        "${workspaceFolder}/.vscode/stage-mods.ps1",
+        "-Dest",
+        "${workspaceFolder}/bin/Mods",
+        "exlib=${workspaceFolder}/ExpandedLib/bin/Debug/Mods/mod",
+        "smex=${workspaceFolder}/SteelmakingExpanded/bin/Debug/Mods/mod",
+        "ppex=${workspaceFolder}/PipesAndPowerExpanded/bin/Debug/Mods/mod"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "launch-prep (ppex)",
+      "dependsOrder": "sequence",
+      "dependsOn": ["build-ppex", "stage-mods (exlib, ppex)"],
+      "problemMatcher": []
+    },
+    {
+      "label": "launch-prep (smex)",
+      "dependsOrder": "sequence",
+      "dependsOn": ["build-smex", "stage-mods (exlib, ppex, smex)"],
+      "problemMatcher": []
     }
   ]
 }

@@ -77,7 +77,7 @@
       },
       "P": {
         "type": "block",
-        "code": "smex:gaspipe-straight*"
+        "code": "ppex:pipe-straight*"
       },
       "H": {
         "type": "item",

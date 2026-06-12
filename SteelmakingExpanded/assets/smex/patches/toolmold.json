@@ -154,7 +154,7 @@
       "moldrackable": true,
       "onmoldrackTransform": { "rotation": { "z": 90 } },
       "fillQuadsByLevel": [{ "x1": 2, "z1": 2, "x2": 14, "z2": 14 }],
-      "drop": { "type": "item", "code": "metalrod-{metal}", "quantity": 4 }
+      "drop": { "type": "item", "code": "rod-{metal}", "quantity": 4 }
     }
   },
   {

@@ -1,0 +1,68 @@
+{
+  "code": "steamcondenser",
+  "class": "ppex.BlockSteamCondenser",
+  "entityClass": "ppex.BlockEntitySteamCondenser",
+  "blockmaterial": "Metal",
+  "sounds": {
+    "place": "game:block/anvil",
+    "break": "game:block/anvil",
+    "hit": "game:block/anvil",
+    "walk": "game:walk/stone"
+  },
+  "maxstacksize": 8,
+  "behaviors": [{ "name": "HorizontalOrientable" }],
+  "variantgroups": [
+    { "code": "side", "loadFromProperties": "abstract/horizontalorientation" }
+  ],
+  "creativeinventory": {
+    "general": ["*-north"],
+    "ppex": ["*-north"]
+  },
+  "shapebytype": {
+    "*-north": { "base": "ppex:pipes/steamcondenser", "rotateY": 0 },
+    "*-east": { "base": "ppex:pipes/steamcondenser", "rotateY": 270 },
+    "*-south": { "base": "ppex:pipes/steamcondenser", "rotateY": 180 },
+    "*-west": { "base": "ppex:pipes/steamcondenser", "rotateY": 90 }
+  },
+  "collisionboxes": [
+    {
+      "x1": 0,
+      "y1": 0.3125,
+      "z1": 0.3125,
+      "x2": 1,
+      "y2": 0.6875,
+      "z2": 0.6875
+    },
+    {
+      "x1": 0.3125,
+      "y1": 0.3125,
+      "z1": 0,
+      "x2": 0.6875,
+      "y2": 0.6875,
+      "z2": 0.3125
+    }
+  ],
+  "selectionboxes": [
+    {
+      "x1": 0,
+      "y1": 0.3125,
+      "z1": 0.3125,
+      "x2": 1,
+      "y2": 0.6875,
+      "z2": 0.6875
+    },
+    {
+      "x1": 0.3125,
+      "y1": 0.3125,
+      "z1": 0,
+      "x2": 0.6875,
+      "y2": 0.6875,
+      "z2": 0.3125
+    }
+  ],
+  "renderpass": "OpaqueNoCull",
+  "faceCullMode": "NeverCull",
+  "lightAbsorption": 0,
+  "sidesolid": { "all": false },
+  "sideopaque": { "all": false }
+}

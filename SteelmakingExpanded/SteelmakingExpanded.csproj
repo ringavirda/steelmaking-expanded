@@ -23,6 +23,10 @@
       <HintPath>$(VINTAGE_STORY)/Lib/cairo-sharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(VINTAGE_STORY)/Lib/0Harmony.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>$(VINTAGE_STORY)/Lib/Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
@@ -47,20 +51,18 @@
     </Content>
   </ItemGroup>
 
+  <!--
+    smex builds on the shared framework in exlib (network/structure base types, single
+    BlockNetworkModSystem identity) and uses ppex's pipe network + pipe blocks directly.
+    Reference both built dlls; Private=false because the player installs exlib and ppex as
+    their own mods, so neither dll is bundled into smex's output.
+  -->
   <ItemGroup>
-    <Folder Include="Blocks/" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile
-      Include="..\BlockNetworkLib\**\*.cs"
-      Link="BlockNetworkLib\%(RecursiveDir)%(Filename)%(Extension)"
-    />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile
-      Include="..\BlockMigrationLib\**\*.cs"
-      Link="BlockMigrationLib\%(RecursiveDir)%(Filename)%(Extension)"
-    />
+    <ProjectReference Include="..\ExpandedLib\ExpandedLib.csproj">
+      <Private>false</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\PipesAndPowerExpanded\PipesAndPowerExpanded.csproj">
+      <Private>false</Private>
+    </ProjectReference>
   </ItemGroup>
 </Project>

@@ -1,0 +1,2005 @@
+<mxfile host="Electron" pages="4">
+  <diagram name="Page-1" id="2bGoaK19yGElt54mBA6g">
+    <mxGraphModel dx="1417" dy="862" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-17" edge="1" parent="1" source="wJ5AX6jDKQNvzjphZT_5-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="wJ5AX6jDKQNvzjphZT_5-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-41" edge="1" parent="1" source="wJ5AX6jDKQNvzjphZT_5-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="wJ5AX6jDKQNvzjphZT_5-2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="360" y="600" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Blast Furnace&lt;div&gt;5x5&lt;/div&gt;" vertex="1">
+          <mxGeometry height="200" width="200" x="320" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-42" edge="1" parent="1" source="wJ5AX6jDKQNvzjphZT_5-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="wJ5AX6jDKQNvzjphZT_5-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-46" edge="1" parent="1" source="wJ5AX6jDKQNvzjphZT_5-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="wJ5AX6jDKQNvzjphZT_5-44">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="480" y="550" />
+              <mxPoint x="480" y="550" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Cowper Stoves&lt;div&gt;(Air Processor)&lt;br&gt;&lt;div&gt;3x6&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="240" width="120" x="440" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-25" edge="1" parent="1" source="wJ5AX6jDKQNvzjphZT_5-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="wJ5AX6jDKQNvzjphZT_5-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Ore Bunker&lt;br&gt;&lt;div&gt;(Material mixer)&lt;br&gt;&lt;div&gt;3x3&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="120" x="120" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-31" edge="1" parent="1" source="wJ5AX6jDKQNvzjphZT_5-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="wJ5AX6jDKQNvzjphZT_5-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Coke Owen&lt;br&gt;&lt;div&gt;(Coal processor)&lt;br&gt;&lt;div&gt;3x3&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="120" x="120" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Smoke Stack&lt;div&gt;3x3&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="120" x="440" y="880" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-16" edge="1" parent="1" source="wJ5AX6jDKQNvzjphZT_5-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="wJ5AX6jDKQNvzjphZT_5-15">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Bessemer converter&lt;div&gt;3x3&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="120" x="600" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-11" edge="1" parent="1" style="endArrow=none;html=1;rounded=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="40" y="480" as="sourcePoint" />
+            <mxPoint x="40" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-66" edge="1" parent="1" source="wJ5AX6jDKQNvzjphZT_5-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1000" y="380" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-15" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Molds" vertex="1">
+          <mxGeometry height="60" width="120" x="800" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-18" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Molten iron" vertex="1">
+          <mxGeometry height="30" width="60" x="530" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-19" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Smoke" vertex="1">
+          <mxGeometry height="30" width="60" x="370" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-22" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Heated&lt;br&gt;air" vertex="1">
+          <mxGeometry height="30" width="60" x="380" y="505" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-23" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Coke powder" vertex="1">
+          <mxGeometry height="30" width="60" x="180" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-24" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Molten steel" vertex="1">
+          <mxGeometry height="30" width="60" x="730" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-26" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Blast mix" vertex="1">
+          <mxGeometry height="30" width="60" x="250" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-27" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="40" y="360" as="sourcePoint" />
+            <mxPoint x="120" y="360" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-28" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="40" y="400" as="sourcePoint" />
+            <mxPoint x="120" y="400" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-30" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Iron ore powder" vertex="1">
+          <mxGeometry height="30" width="60" x="50" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-33" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Lime" vertex="1">
+          <mxGeometry height="30" width="60" x="50" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-34" edge="1" parent="1" style="endArrow=none;html=1;rounded=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="280" y="720" as="sourcePoint" />
+            <mxPoint x="80" y="720" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-35" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;" target="wJ5AX6jDKQNvzjphZT_5-4" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="180" y="720" as="sourcePoint" />
+            <mxPoint x="260" y="720" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-36" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Coal powder" vertex="1">
+          <mxGeometry height="30" width="60" x="180" y="670" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-37" edge="1" parent="1" style="endArrow=none;html=1;rounded=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="760" y="240" as="sourcePoint" />
+            <mxPoint x="640" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-39" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="700" y="240" as="sourcePoint" />
+            <mxPoint x="700" y="320" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-40" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Lime and maybe&lt;br&gt;additions" vertex="1">
+          <mxGeometry height="30" width="60" x="700" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-43" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Depleted&lt;br&gt;smoke" vertex="1">
+          <mxGeometry height="30" width="60" x="500" y="830" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-47" edge="1" parent="1" source="wJ5AX6jDKQNvzjphZT_5-44" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="wJ5AX6jDKQNvzjphZT_5-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="480" y="500" />
+              <mxPoint x="480" y="500" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-44" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Compressor&lt;div&gt;1x2&lt;/div&gt;" vertex="1">
+          <mxGeometry height="40" width="80" x="440" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-49" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Cold air" vertex="1">
+          <mxGeometry height="30" width="60" x="370" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-54" edge="1" parent="1" source="wJ5AX6jDKQNvzjphZT_5-50" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="wJ5AX6jDKQNvzjphZT_5-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-50" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Compressor&lt;div&gt;1x2&lt;/div&gt;" vertex="1">
+          <mxGeometry height="40" width="80" x="620" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-51" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Cold air" vertex="1">
+          <mxGeometry height="30" width="60" x="660" y="550" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-52" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;entryX=0.035;entryY=0.667;entryDx=0;entryDy=0;entryPerimeter=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="360" y="720" as="sourcePoint" />
+            <mxPoint x="440" y="720" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-53" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;" target="wJ5AX6jDKQNvzjphZT_5-50" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="660" y="600" as="sourcePoint" />
+            <mxPoint x="620" y="710" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-55" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Air intake" vertex="1">
+          <mxGeometry height="40" width="40" x="320" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-56" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Air intake" vertex="1">
+          <mxGeometry height="40" width="40" x="640" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-57" edge="1" parent="1" style="endArrow=none;html=1;rounded=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="580" y="720" as="sourcePoint" />
+            <mxPoint x="760" y="720" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-59" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;" target="wJ5AX6jDKQNvzjphZT_5-50" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="600" y="720" />
+              <mxPoint x="600" y="500" />
+            </Array>
+            <mxPoint x="640" y="720" as="sourcePoint" />
+            <mxPoint x="530" y="570" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-60" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;entryX=1;entryY=0;entryDx=0;entryDy=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="600" y="519.31" as="sourcePoint" />
+            <mxPoint x="520.0000000000002" y="519.31" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-61" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Mechanical power&lt;div&gt;(high speed)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="70" x="610" y="665" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-62" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;entryX=0.667;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" target="wJ5AX6jDKQNvzjphZT_5-3" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="200" y="200" as="sourcePoint" />
+            <mxPoint x="380" y="130" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-64" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Mechanical power&lt;div&gt;(low speed)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="70" x="120" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-65" edge="1" parent="1" style="endArrow=none;html=1;rounded=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="1000" y="480" as="sourcePoint" />
+            <mxPoint x="1000" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-67" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Steel ingots / plates&amp;nbsp;&lt;div&gt;/ rods&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="70" x="930" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-68" edge="1" parent="1" style="endArrow=none;html=1;rounded=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="320" y="200" as="sourcePoint" />
+            <mxPoint x="120" y="200" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wJ5AX6jDKQNvzjphZT_5-69" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;entryX=0.169;entryY=0.004;entryDx=0;entryDy=0;entryPerimeter=0;" target="wJ5AX6jDKQNvzjphZT_5-6" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="200" y="240" as="sourcePoint" />
+            <mxPoint x="600" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="HbcxTS5xdqAlYMeD8Oax" name="Page-2">
+    <mxGraphModel dx="4268" dy="1563" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-3" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="bSzPcHIdcw4jI7FtppFr-4">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320.0000000000002" y="700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-11" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="bSzPcHIdcw4jI7FtppFr-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Boiler&lt;div&gt;(Cornish)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="120" x="80" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Engine&lt;br&gt;(Watt)" vertex="1">
+          <mxGeometry height="60" width="120" x="520.0000000000002" y="670" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-5" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="30l/s steam in" vertex="1">
+          <mxGeometry height="30" width="100" x="490" y="730" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-8" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="bSzPcHIdcw4jI7FtppFr-7" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="200" y="700" as="sourcePoint" />
+            <mxPoint x="520" y="700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Pressure&lt;div&gt;Valve&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="60" x="410" y="670" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-14" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="360.0000000000002" y="460" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-10" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Pressure&lt;div&gt;Valve&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="60" x="330" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-12" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="2.5atm&lt;div&gt;overflow&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="410" y="730" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-13" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="3.5 atm&lt;div&gt;overflow&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="270" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-15" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="2l/s excees&lt;div&gt;steam&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="65" x="365" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-24" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="bSzPcHIdcw4jI7FtppFr-2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="840" />
+              <mxPoint x="40" y="840" />
+              <mxPoint x="40" y="700" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-28" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="bSzPcHIdcw4jI7FtppFr-21">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="940" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-29" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="bSzPcHIdcw4jI7FtppFr-22">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="1100" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-20" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="pWUfct4_YDeaPmcj9MpU-19">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-16" parent="1" style="whiteSpace=wrap;html=1;" value="Fluid Pump" vertex="1">
+          <mxGeometry height="40" width="80" x="640" y="680" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-19" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="bSzPcHIdcw4jI7FtppFr-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-18" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Fluid Intake" vertex="1">
+          <mxGeometry height="80" width="80" x="640" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-20" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="2l/s water in" vertex="1">
+          <mxGeometry height="30" width="70" x="40" y="760" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-43" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="bSzPcHIdcw4jI7FtppFr-39">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint y="940" />
+              <mxPoint y="1100" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-21" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Boiler&lt;div&gt;(Cornish)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="120" x="80" y="880" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-42" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="bSzPcHIdcw4jI7FtppFr-39">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="60" y="1100" />
+              <mxPoint x="60" y="1100" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-22" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Boiler&lt;div&gt;(Cornish)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="120" x="80" y="1040" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-26" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Fluid intake produces 5l/s of water" vertex="1">
+          <mxGeometry height="30" width="120" x="520" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-27" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Produces water based on pump" vertex="1">
+          <mxGeometry height="30" width="90" x="720" y="530" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-32" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="2l/s water in" vertex="1">
+          <mxGeometry height="30" width="75" x="160" y="1000" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-35" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="32l/s steam out" vertex="1">
+          <mxGeometry height="30" width="85" x="40" y="850" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-36" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="32l/s steam out" vertex="1">
+          <mxGeometry height="30" width="90" x="40" y="1010" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-47" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-39" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="bSzPcHIdcw4jI7FtppFr-44">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-48" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-39" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="bSzPcHIdcw4jI7FtppFr-45">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-160" y="1100" />
+              <mxPoint x="-160" y="1015" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-88" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-39" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="bSzPcHIdcw4jI7FtppFr-86">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-39" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Pressure&lt;div&gt;Valve&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="60" x="-120" y="1070" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-40" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="3atm&lt;div&gt;overflow&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="-120" y="1130" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-17" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-44" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="bSzPcHIdcw4jI7FtppFr-2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-280" y="700" />
+            </Array>
+            <mxPoint x="-280" y="1200" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-44" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Engine&lt;br&gt;(Watt)" vertex="1">
+          <mxGeometry height="60" width="120" x="-320" y="1070" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-15" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-45" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="bSzPcHIdcw4jI7FtppFr-2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-220" y="700" />
+            </Array>
+            <mxPoint x="-220" y="920" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-45" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Engine&lt;br&gt;(Watt)" vertex="1">
+          <mxGeometry height="60" width="120" x="-320" y="985" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-49" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-51" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="pWUfct4_YDeaPmcj9MpU-45">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-440" y="1015" />
+              <mxPoint x="-440" y="1050" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-51" parent="1" style="whiteSpace=wrap;html=1;" value="Air Blower" vertex="1">
+          <mxGeometry height="40" width="80" x="-400" y="995" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-47" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-52" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="pWUfct4_YDeaPmcj9MpU-46">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-440" y="1100" />
+              <mxPoint x="-440" y="1250" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-48" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-52" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="pWUfct4_YDeaPmcj9MpU-45">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-440" y="1100" />
+              <mxPoint x="-440" y="1050" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-52" parent="1" style="whiteSpace=wrap;html=1;" value="Air Blower" vertex="1">
+          <mxGeometry height="40" width="80" x="-400" y="1080" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-53" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-68" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="bSzPcHIdcw4jI7FtppFr-74">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-840" y="1050" />
+              <mxPoint x="-840" y="1025" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-61" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-68" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="pWUfct4_YDeaPmcj9MpU-9">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-460" y="990" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-68" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Cowper Stove" vertex="1">
+          <mxGeometry height="120" width="120" x="-680" y="960.5" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-54" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-69" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="bSzPcHIdcw4jI7FtppFr-75">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-840" y="1250" />
+              <mxPoint x="-840" y="1205" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-55" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-69" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="bSzPcHIdcw4jI7FtppFr-74">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-840" y="1250" />
+              <mxPoint x="-840" y="1025" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-62" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-69" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="pWUfct4_YDeaPmcj9MpU-9">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-460" y="1190" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-69" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Cowper Stove" vertex="1">
+          <mxGeometry height="120" width="120" x="-680" y="1160" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-73" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Blast Furnace" vertex="1">
+          <mxGeometry height="120" width="120" x="-1080" y="1055" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-74" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Tuyere" vertex="1">
+          <mxGeometry height="60" width="60" x="-1020" y="995" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-75" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Tuyere" vertex="1">
+          <mxGeometry height="60" width="60" x="-1020" y="1175" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-1" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-80" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="bSzPcHIdcw4jI7FtppFr-83">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-80" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Metal Tap" vertex="1">
+          <mxGeometry height="60" width="60" x="-1140" y="1085" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-83" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Molds" vertex="1">
+          <mxGeometry height="120" width="120" x="-1360" y="1055" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-89" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-86" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-160" y="820" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-86" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Pressure&lt;div&gt;Valve&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="60" x="-190" y="890" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-87" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="4atm&lt;div&gt;overflow&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="-130" y="905" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-90" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="4l/s or more of excees steam" vertex="1">
+          <mxGeometry height="30" width="110" x="-160" y="820" as="geometry" />
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-94" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="30l/s steam in" vertex="1">
+          <mxGeometry height="30" width="80" x="-275" y="1130" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-7" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-96" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="pWUfct4_YDeaPmcj9MpU-5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1160" y="1025" />
+              <mxPoint x="-1160" y="880" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-57" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-96" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="pWUfct4_YDeaPmcj9MpU-42">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1160" y="1025" />
+              <mxPoint x="-1160" y="880" />
+              <mxPoint x="-800" y="880" />
+              <mxPoint x="-800" y="991" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-58" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-96" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="pWUfct4_YDeaPmcj9MpU-44">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1160" y="1025" />
+              <mxPoint x="-1160" y="880" />
+              <mxPoint x="-800" y="880" />
+              <mxPoint x="-800" y="1190" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-96" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Exhaust&lt;div&gt;Outlet&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="60" x="-1080" y="995" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-56" edge="1" parent="1" source="bSzPcHIdcw4jI7FtppFr-98" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="pWUfct4_YDeaPmcj9MpU-5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1160" y="1205" />
+              <mxPoint x="-1160" y="880" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bSzPcHIdcw4jI7FtppFr-98" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Exhaust&lt;div&gt;Outlet&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="60" x="-1080" y="1175" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-8" edge="1" parent="1" source="pWUfct4_YDeaPmcj9MpU-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="pWUfct4_YDeaPmcj9MpU-9">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-460" y="880" />
+            </Array>
+            <mxPoint x="-450" y="880.0000000000002" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Pressure&lt;div&gt;Valve&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="60" x="-640" y="850" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-6" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="0.6 atm&lt;div&gt;overflow&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="-640" y="820" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-9" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Smoke Stack" vertex="1">
+          <mxGeometry height="120" width="120" x="-520" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-12" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="16l/s of air out" vertex="1">
+          <mxGeometry height="30" width="60" x="-400" y="1120" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-13" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="16l/ of air out" vertex="1">
+          <mxGeometry height="30" width="60" x="-410" y="1035" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-16" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="1l/s excees water" vertex="1">
+          <mxGeometry height="30" width="70" x="-220" y="780" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-18" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="1l/s excees water" vertex="1">
+          <mxGeometry height="30" width="70" x="-350" y="830" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-19" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Pressure&lt;div&gt;Valve&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="60" x="650" y="1150" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-22" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="1220" />
+              <mxPoint x="680" y="1220" />
+            </Array>
+            <mxPoint x="680" y="1210" as="sourcePoint" />
+            <mxPoint x="680" y="1280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-23" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="1l/s excees water" vertex="1">
+          <mxGeometry height="30" width="70" x="610" y="1250" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-27" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Can consume 48l/s of gas&amp;nbsp;" vertex="1">
+          <mxGeometry height="30" width="80" x="-505" y="670" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-28" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Blast furnace needs both tuyeres to consume 12l of air at &amp;gt; 2.5atm and 800 deg or higher&amp;nbsp; to work, and output exhaust not to be choked (output pressure &amp;lt; 0.8 atm)" vertex="1">
+          <mxGeometry height="35" width="240" x="-1140" y="940" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-29" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Molten iron" vertex="1">
+          <mxGeometry height="30" width="60" x="-1240" y="1085" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-33" edge="1" parent="1" source="pWUfct4_YDeaPmcj9MpU-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="pWUfct4_YDeaPmcj9MpU-31">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-30" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Metal Tap" vertex="1">
+          <mxGeometry height="60" width="60" x="-960" y="1085" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-31" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Barrel" vertex="1">
+          <mxGeometry height="60" width="60" x="-960" y="1280" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-34" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Molten stag" vertex="1">
+          <mxGeometry height="30" width="60" x="-930" y="1250" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-35" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;0.8atm&lt;/div&gt;overflow" vertex="1">
+          <mxGeometry height="30" width="60" x="710" y="1170" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-36" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Max atm for out air is based on input steam atm * 0.7 (steam engine efficiency)" vertex="1">
+          <mxGeometry height="30" width="120" x="-425" y="930.5" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-37" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="2l/s water in" vertex="1">
+          <mxGeometry height="30" width="75" x="165" y="1160" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-38" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Cornish boiler max pressure is 5atm" vertex="1">
+          <mxGeometry height="50" width="90" x="275" y="990" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-39" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="32l/s steam out" vertex="1">
+          <mxGeometry height="30" width="85" x="160" y="610" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-40" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="One tuyere requires 12l/s of hot pressurized air&lt;div&gt;One exhaust outlet produces 24l/s of hot exhaust&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="170" x="-1195" y="1270" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-59" edge="1" parent="1" source="pWUfct4_YDeaPmcj9MpU-42" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="bSzPcHIdcw4jI7FtppFr-68">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-680" y="991" />
+              <mxPoint x="-680" y="991" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-42" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Valve" vertex="1">
+          <mxGeometry height="60" width="60" x="-770" y="960.5" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-60" edge="1" parent="1" source="pWUfct4_YDeaPmcj9MpU-44" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="bSzPcHIdcw4jI7FtppFr-69">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-680" y="1190" />
+              <mxPoint x="-680" y="1190" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-44" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Valve" vertex="1">
+          <mxGeometry height="60" width="60" x="-770" y="1160" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-51" edge="1" parent="1" source="pWUfct4_YDeaPmcj9MpU-45" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="bSzPcHIdcw4jI7FtppFr-68">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-560" y="1050" />
+              <mxPoint x="-560" y="1050" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-45" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Valve" vertex="1">
+          <mxGeometry height="60" width="60" x="-530" y="1020" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-52" edge="1" parent="1" source="pWUfct4_YDeaPmcj9MpU-46" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="bSzPcHIdcw4jI7FtppFr-69">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-560" y="1250" />
+              <mxPoint x="-560" y="1250" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-46" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Valve" vertex="1">
+          <mxGeometry height="60" width="60" x="-530" y="1220" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-63" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Up to 24l/s of hot exhaust in" vertex="1">
+          <mxGeometry height="30" width="90" x="-730" y="1130" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-64" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Up to 24l/s of hot exhaust in" vertex="1">
+          <mxGeometry height="30" width="90" x="-720" y="930.5" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-65" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Up to 24l/s of chilled exhaust out" vertex="1">
+          <mxGeometry height="30" width="110" x="-610" y="930.5" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-66" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Up to 24l/s of chilled exhaust out" vertex="1">
+          <mxGeometry height="30" width="110" x="-615" y="1130" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-67" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Up to 24l/s of cold air in" vertex="1">
+          <mxGeometry height="30" width="110" x="-620" y="1280" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-68" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Up to 24l/s of cold hot air out" vertex="1">
+          <mxGeometry height="30" width="110" x="-730" y="1280" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-69" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Up to 24l/s of cold air in" vertex="1">
+          <mxGeometry height="30" width="110" x="-615" y="1080" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-70" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Up to 24l/s of cold hot air out" vertex="1">
+          <mxGeometry height="30" width="110" x="-725" y="1080" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-71" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="30l/s steam in" vertex="1">
+          <mxGeometry height="30" width="80" x="-280" y="1040" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-72" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Watt engine operational steam pressure band is 2-4atm" vertex="1">
+          <mxGeometry height="30" width="130" x="475" y="580" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-73" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Cowper stoves are operated manually through valves. They&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;lower the temp of incoming exhaust, accumulating it inside, and heat up incoming air, retaining pressure.&amp;nbsp;&amp;nbsp;&lt;/span&gt;" vertex="1">
+          <mxGeometry height="30" width="200" x="-705" y="1370" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-74" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="All excess fluids/gases on this diagram are simply dumped on the ground/in the atmosphere.&lt;div&gt;Pipe opening (uncovered pipe end) can expell 8l/s of gas or 1l/s of fluid (water).&lt;/div&gt;" vertex="1">
+          <mxGeometry height="80" width="160" x="-180" y="1200" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-75" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;Starter iron production setup&lt;/b&gt;" vertex="1">
+          <mxGeometry height="60" width="180" x="-725" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-76" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Kickstart this boiler manually with buckets" vertex="1">
+          <mxGeometry height="40" width="100" x="20" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-77" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="There cannot be more water in the pipe than it can contain (water doesn&#39;t compact like gas does). When water reaches capacity in pipe, it&#39;s pressure becomes equal to the pumping engine incoming steam pressure * 0.7 (steam engine efficiency)." vertex="1">
+          <mxGeometry height="110" width="205" x="405" y="1140" as="geometry" />
+        </mxCell>
+        <mxCell id="pWUfct4_YDeaPmcj9MpU-78" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="If boiler recieves water with pressure more than 1 atm, that pressure gets added to internal steam pressure." vertex="1">
+          <mxGeometry height="100" width="110" x="100" y="1200" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="Page-3" id="HGlUfh6gNgO-sOje66MQ">
+    <mxGraphModel dx="3486" dy="1087" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-0" />
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-1" parent="N3N-RfWJmq3yOfmEteNa-0" />
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-2" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-5">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320.0000000000002" y="700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-3" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-4" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Boiler&lt;div&gt;(Cornish)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="120" x="80" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-5" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Engine&lt;br&gt;(Watt)" vertex="1">
+          <mxGeometry height="60" width="120" x="520.0000000000002" y="670" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-6" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="30l/s steam in" vertex="1">
+          <mxGeometry height="30" width="100" x="490" y="730" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-7" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-8" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="200" y="700" as="sourcePoint" />
+            <mxPoint x="520" y="700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-8" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Pressure&lt;div&gt;Valve&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="60" x="410" y="670" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-9" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="360.0000000000002" y="460" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-10" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Pressure&lt;div&gt;Valve&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="60" x="330" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-11" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="2.5atm&lt;div&gt;overflow&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="410" y="730" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-12" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="3.5 atm&lt;div&gt;overflow&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="270" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-13" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="2l/s excees&lt;div&gt;steam&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="65" x="365" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-14" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="840" />
+              <mxPoint x="40" y="840" />
+              <mxPoint x="40" y="700" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-15" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-23">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="940" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-16" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-25">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="1100" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-17" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-77">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-38" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="CA4Ep4ht3mo8HhsOWz-B-10">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="1260" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-39" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="CA4Ep4ht3mo8HhsOWz-B-11">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="1420" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-18" parent="N3N-RfWJmq3yOfmEteNa-1" style="whiteSpace=wrap;html=1;" value="Fluid Pump" vertex="1">
+          <mxGeometry height="40" width="80" x="640" y="680" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-19" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-18">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-20" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Fluid Intake" vertex="1">
+          <mxGeometry height="80" width="80" x="640" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-21" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="2l/s water in" vertex="1">
+          <mxGeometry height="30" width="70" x="47.5" y="760" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-22" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-34">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint y="940" />
+              <mxPoint y="1100" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-23" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Boiler&lt;div&gt;(Cornish)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="120" x="80" y="880" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-24" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-34">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="60" y="1100" />
+              <mxPoint x="60" y="1100" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-25" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Boiler&lt;div&gt;(Cornish)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="120" x="80" y="1040" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-26" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Fluid intake produces 5l/s of water" vertex="1">
+          <mxGeometry height="30" width="120" x="520" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-27" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Produces water based on pump" vertex="1">
+          <mxGeometry height="30" width="90" x="720" y="530" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-28" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="2l/s water in" vertex="1">
+          <mxGeometry height="30" width="75" x="160" y="1000" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-29" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="32l/s steam out" vertex="1">
+          <mxGeometry height="30" width="85" x="60" y="850" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-30" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="32l/s steam out" vertex="1">
+          <mxGeometry height="30" width="90" x="40" y="1010" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-31" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-37">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-32" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-39">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-160" y="1100" />
+              <mxPoint x="-160" y="1015" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-33" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-59">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-25" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="CA4Ep4ht3mo8HhsOWz-B-16">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-160" y="1100" />
+              <mxPoint x="-160" y="785" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-26" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="CA4Ep4ht3mo8HhsOWz-B-17">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-160" y="1100" />
+              <mxPoint x="-160" y="700" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-34" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Pressure&lt;div&gt;Valve&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="60" x="-120" y="1070" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-35" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="3atm&lt;div&gt;overflow&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="-120" y="1130" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-46" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-37" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="CA4Ep4ht3mo8HhsOWz-B-36">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-280" y="880" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-37" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Engine&lt;br&gt;(Watt)" vertex="1">
+          <mxGeometry height="60" width="120" x="-320" y="1070" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-45" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-39" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="CA4Ep4ht3mo8HhsOWz-B-36">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-240" y="880" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-39" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Engine&lt;br&gt;(Watt)" vertex="1">
+          <mxGeometry height="60" width="120" x="-320" y="985" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-40" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-41" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-98">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-440" y="1015" />
+              <mxPoint x="-440" y="1050" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-41" parent="N3N-RfWJmq3yOfmEteNa-1" style="whiteSpace=wrap;html=1;" value="Air Blower" vertex="1">
+          <mxGeometry height="40" width="80" x="-400" y="995" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-42" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-44" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-100">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-440" y="1100" />
+              <mxPoint x="-440" y="1250" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-43" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-44" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-98">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-440" y="1100" />
+              <mxPoint x="-440" y="1050" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-44" parent="N3N-RfWJmq3yOfmEteNa-1" style="whiteSpace=wrap;html=1;" value="Air Blower" vertex="1">
+          <mxGeometry height="40" width="80" x="-400" y="1080" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-45" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-47" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-53">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-840" y="1050" />
+              <mxPoint x="-840" y="1025" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-46" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-47" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-72">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-460" y="990" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-47" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Cowper Stove" vertex="1">
+          <mxGeometry height="120" width="120" x="-680" y="960.5" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-48" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-51" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-54">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-840" y="1250" />
+              <mxPoint x="-840" y="1205" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-49" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-51" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-53">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-840" y="1250" />
+              <mxPoint x="-840" y="1025" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-50" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-51" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-72">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-460" y="1190" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-51" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Cowper Stove" vertex="1">
+          <mxGeometry height="120" width="120" x="-680" y="1160" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-52" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Blast Furnace" vertex="1">
+          <mxGeometry height="120" width="120" x="-1080" y="1055" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-53" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Tuyere" vertex="1">
+          <mxGeometry height="60" width="60" x="-1020" y="995" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-54" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Tuyere" vertex="1">
+          <mxGeometry height="60" width="60" x="-1020" y="1175" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-5" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-56" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="CA4Ep4ht3mo8HhsOWz-B-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1480" y="1120" />
+              <mxPoint x="-1480" y="520" />
+              <mxPoint x="-1100" y="520" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-6" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="CA4Ep4ht3mo8HhsOWz-B-3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1480" y="1120" />
+              <mxPoint x="-1480" y="520" />
+              <mxPoint x="-1340" y="520" />
+            </Array>
+            <mxPoint x="-1140" y="1120" as="sourcePoint" />
+            <mxPoint x="-1340" y="565" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-56" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Metal Tap" vertex="1">
+          <mxGeometry height="60" width="60" x="-1140" y="1085" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-57" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Molds" vertex="1">
+          <mxGeometry height="120" width="120" x="-1280" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-58" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-59" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="CA4Ep4ht3mo8HhsOWz-B-36">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-160" y="520" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-59" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Pressure&lt;div&gt;Valve&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="60" x="-190" y="590" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-60" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="4atm&lt;div&gt;overflow&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="-190" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-61" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="8l/s or more of excees steam" vertex="1">
+          <mxGeometry height="30" width="110" x="-130" y="580" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-62" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="30l/s steam in" vertex="1">
+          <mxGeometry height="30" width="80" x="-275" y="1130" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-63" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-66" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-70">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1160" y="1025" />
+              <mxPoint x="-1160" y="880" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-64" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-66" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-94">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1160" y="1025" />
+              <mxPoint x="-1160" y="880" />
+              <mxPoint x="-800" y="880" />
+              <mxPoint x="-800" y="991" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-65" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-66" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-96">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1160" y="1025" />
+              <mxPoint x="-1160" y="880" />
+              <mxPoint x="-800" y="880" />
+              <mxPoint x="-800" y="1190" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-66" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Exhaust&lt;div&gt;Outlet&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="60" x="-1080" y="995" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-67" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-68" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-70">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1160" y="1205" />
+              <mxPoint x="-1160" y="880" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-68" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Exhaust&lt;div&gt;Outlet&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="60" x="-1080" y="1175" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-69" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-70" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-72">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-460" y="880" />
+            </Array>
+            <mxPoint x="-450" y="880.0000000000002" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-70" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Pressure&lt;div&gt;Valve&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="60" x="-640" y="850" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-71" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="0.6 atm&lt;div&gt;overflow&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="-640" y="820" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-72" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Smoke Stack" vertex="1">
+          <mxGeometry height="120" width="120" x="-520" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-73" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="16l/s of air out" vertex="1">
+          <mxGeometry height="30" width="60" x="-400" y="1120" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-74" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="16l/ of air out" vertex="1">
+          <mxGeometry height="30" width="60" x="-410" y="1035" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-76" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="1l/s excees water from each engine" vertex="1">
+          <mxGeometry height="30" width="70" x="-370" y="880" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-77" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Pressure&lt;div&gt;Valve&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="60" x="650" y="1520" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-78" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="1590" />
+              <mxPoint x="680" y="1590" />
+            </Array>
+            <mxPoint x="680" y="1580" as="sourcePoint" />
+            <mxPoint x="680" y="1650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-79" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="0.5l/s excees water" vertex="1">
+          <mxGeometry height="30" width="80" x="600" y="1620" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-80" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Can consume 48l/s of gas&amp;nbsp;" vertex="1">
+          <mxGeometry height="30" width="80" x="-505" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-81" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Blast furnace needs both tuyeres to consume 12l of air at &amp;gt; 2.5atm and 800 deg or higher&amp;nbsp; to work, and output exhaust not to be choked (output pressure &amp;lt; 0.8 atm)" vertex="1">
+          <mxGeometry height="35" width="240" x="-1140" y="940" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-82" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Molten iron" vertex="1">
+          <mxGeometry height="30" width="60" x="-1240" y="1085" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-83" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-84" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-85">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-84" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Metal Tap" vertex="1">
+          <mxGeometry height="60" width="60" x="-960" y="1085" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-85" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Barrel" vertex="1">
+          <mxGeometry height="60" width="60" x="-960" y="1280" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-86" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Molten stag" vertex="1">
+          <mxGeometry height="30" width="60" x="-930" y="1250" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-87" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;0.8atm&lt;/div&gt;overflow" vertex="1">
+          <mxGeometry height="30" width="60" x="710" y="1540" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-88" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Max atm for out air is based on input steam atm * 0.7 (steam engine efficiency)" vertex="1">
+          <mxGeometry height="30" width="120" x="-395" y="1170" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-89" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="2l/s water in" vertex="1">
+          <mxGeometry height="30" width="75" x="165" y="1160" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-90" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Cornish boiler max pressure is 5atm" vertex="1">
+          <mxGeometry height="50" width="90" x="290" y="1165" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-91" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="32l/s steam out" vertex="1">
+          <mxGeometry height="30" width="85" x="160" y="610" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-92" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="One tuyere requires 12l/s of hot pressurized air&lt;div&gt;One exhaust outlet produces 24l/s of hot exhaust&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="170" x="-1195" y="1270" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-93" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-94" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-47">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-680" y="991" />
+              <mxPoint x="-680" y="991" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-94" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Valve" vertex="1">
+          <mxGeometry height="60" width="60" x="-770" y="960.5" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-95" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-96" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-51">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-680" y="1190" />
+              <mxPoint x="-680" y="1190" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-96" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Valve" vertex="1">
+          <mxGeometry height="60" width="60" x="-770" y="1160" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-97" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-98" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-47">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-560" y="1050" />
+              <mxPoint x="-560" y="1050" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-98" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Valve" vertex="1">
+          <mxGeometry height="60" width="60" x="-530" y="1020" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-99" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="N3N-RfWJmq3yOfmEteNa-100" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-51">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-560" y="1250" />
+              <mxPoint x="-560" y="1250" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-100" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Valve" vertex="1">
+          <mxGeometry height="60" width="60" x="-530" y="1220" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-101" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Up to 24l/s of hot exhaust in" vertex="1">
+          <mxGeometry height="30" width="90" x="-730" y="1130" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-102" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Up to 24l/s of hot exhaust in" vertex="1">
+          <mxGeometry height="30" width="90" x="-720" y="930.5" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-103" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Up to 24l/s of chilled exhaust out" vertex="1">
+          <mxGeometry height="30" width="110" x="-610" y="930.5" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-104" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Up to 24l/s of chilled exhaust out" vertex="1">
+          <mxGeometry height="30" width="110" x="-615" y="1130" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-105" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Up to 24l/s of cold air in" vertex="1">
+          <mxGeometry height="30" width="110" x="-620" y="1280" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-106" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Up to 24l/s of cold hot air out" vertex="1">
+          <mxGeometry height="30" width="110" x="-730" y="1280" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-107" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Up to 24l/s of cold air in" vertex="1">
+          <mxGeometry height="30" width="110" x="-615" y="1080" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-108" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Up to 24l/s of cold hot air out" vertex="1">
+          <mxGeometry height="30" width="110" x="-725" y="1080" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-109" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="30l/s steam in" vertex="1">
+          <mxGeometry height="30" width="80" x="-280" y="1040" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-110" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Watt engine operational steam pressure band is 2-4atm" vertex="1">
+          <mxGeometry height="30" width="130" x="475" y="580" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-111" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Cowper stoves are operated manually through valves. They&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;lower the temp of incoming exhaust, accumulating it inside, and heat up incoming air, retaining pressure.&amp;nbsp;&amp;nbsp;&lt;/span&gt;" vertex="1">
+          <mxGeometry height="30" width="200" x="-705" y="1370" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-112" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="All excess fluids/gases on this diagram are simply dumped on the ground/in the atmosphere.&lt;div&gt;Pipe opening (uncovered pipe end) can expell 8l/s of gas or 1l/s of fluid (water).&lt;/div&gt;" vertex="1">
+          <mxGeometry height="80" width="160" x="-180" y="1200" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-113" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;Starter steel production setup&lt;/b&gt;" vertex="1">
+          <mxGeometry height="60" width="180" x="-795" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-114" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Kickstart this boiler manually with buckets" vertex="1">
+          <mxGeometry height="40" width="100" x="20" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-115" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="There cannot be more water in the pipe than it can contain (water doesn&#39;t compact like gas does). When water reaches capacity in pipe, it&#39;s pressure becomes equal to the pumping engine incoming steam pressure * 0.7 (steam engine efficiency)." vertex="1">
+          <mxGeometry height="110" width="205" x="445" y="970.5" as="geometry" />
+        </mxCell>
+        <mxCell id="N3N-RfWJmq3yOfmEteNa-116" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="If boiler recieves water with pressure more than 1 atm, that pressure gets added to internal steam pressure." vertex="1">
+          <mxGeometry height="100" width="110" x="400" y="1145" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-0" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="608.89" y="740" />
+              <mxPoint x="608.89" y="740" />
+            </Array>
+            <mxPoint x="608.89" y="730" as="sourcePoint" />
+            <mxPoint x="680" y="790" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-1" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="1l/s excees water" vertex="1">
+          <mxGeometry height="30" width="70" x="538.89" y="770" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-7" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="CA4Ep4ht3mo8HhsOWz-B-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-57">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1220" y="620" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-3" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Converter&lt;div&gt;(Bessemer)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="120" x="-1400" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-8" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="CA4Ep4ht3mo8HhsOWz-B-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-57">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1220" y="620" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-4" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Converter&lt;div&gt;(Bessemer)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="120" x="-1160" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-9" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Molten steel" vertex="1">
+          <mxGeometry height="30" width="60" x="-1250" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-41" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="CA4Ep4ht3mo8HhsOWz-B-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-34">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint y="1260" />
+              <mxPoint y="1100" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-10" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Boiler&lt;div&gt;(Cornish)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="120" x="80" y="1200" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-40" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="CA4Ep4ht3mo8HhsOWz-B-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="N3N-RfWJmq3yOfmEteNa-34">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint y="1420" />
+              <mxPoint y="1100" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-11" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Boiler&lt;div&gt;(Cornish)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="120" x="80" y="1360" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-12" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="2l/s water in" vertex="1">
+          <mxGeometry height="30" width="75" x="160" y="1320" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-13" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="32l/s steam out" vertex="1">
+          <mxGeometry height="30" width="85" x="40" y="1170" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-14" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="32l/s steam out" vertex="1">
+          <mxGeometry height="30" width="90" x="40" y="1330" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-15" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="2l/s water in" vertex="1">
+          <mxGeometry height="30" width="75" x="165" y="1480" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-48" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="CA4Ep4ht3mo8HhsOWz-B-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="CA4Ep4ht3mo8HhsOWz-B-36">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-280" y="880" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-17" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Engine&lt;br&gt;(Watt)" vertex="1">
+          <mxGeometry height="60" width="120" x="-320" y="670" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-29" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="CA4Ep4ht3mo8HhsOWz-B-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="CA4Ep4ht3mo8HhsOWz-B-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1070" y="700" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-30" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="CA4Ep4ht3mo8HhsOWz-B-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="CA4Ep4ht3mo8HhsOWz-B-3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1300" y="700" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-18" parent="N3N-RfWJmq3yOfmEteNa-1" style="whiteSpace=wrap;html=1;" value="MPGen" vertex="1">
+          <mxGeometry height="40" width="80" x="-400" y="680" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-27" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="CA4Ep4ht3mo8HhsOWz-B-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="CA4Ep4ht3mo8HhsOWz-B-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1130" y="785" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-28" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="CA4Ep4ht3mo8HhsOWz-B-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="CA4Ep4ht3mo8HhsOWz-B-3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1370" y="785" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-19" parent="N3N-RfWJmq3yOfmEteNa-1" style="whiteSpace=wrap;html=1;" value="Air Blower" vertex="1">
+          <mxGeometry height="40" width="80" x="-400" y="765" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-20" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="30l/s steam in" vertex="1">
+          <mxGeometry height="30" width="80" x="-240" y="815" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-21" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="16l/s of air out" vertex="1">
+          <mxGeometry height="30" width="60" x="-400" y="805" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-23" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="30l/s steam in" vertex="1">
+          <mxGeometry height="30" width="80" x="-240" y="725" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-47" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="CA4Ep4ht3mo8HhsOWz-B-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="CA4Ep4ht3mo8HhsOWz-B-36">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-240" y="880" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-16" parent="N3N-RfWJmq3yOfmEteNa-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Engine&lt;br&gt;(Watt)" vertex="1">
+          <mxGeometry height="60" width="120" x="-320" y="755" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-49" edge="1" parent="N3N-RfWJmq3yOfmEteNa-1" source="CA4Ep4ht3mo8HhsOWz-B-36" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="40" y="839.9999999999998" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-36" parent="N3N-RfWJmq3yOfmEteNa-1" style="whiteSpace=wrap;html=1;" value="Steam condenser" vertex="1">
+          <mxGeometry height="60" width="60" x="-90" y="850" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-37" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="4.5 l/s of water or more out" vertex="1">
+          <mxGeometry height="30" width="60" x="-30" y="890" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-42" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="One bessemer converter consumes 8l/s of air under 2.5 pressure or more + requires MP to overcome 1 resistance" vertex="1">
+          <mxGeometry height="105" width="120" x="-1020" y="567.5" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-43" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="One MPGen can produce 2.5 or MP if powered by a watt engine" vertex="1">
+          <mxGeometry height="50" width="145" x="-395" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="CA4Ep4ht3mo8HhsOWz-B-50" parent="N3N-RfWJmq3yOfmEteNa-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="This is main water line" vertex="1">
+          <mxGeometry height="30" width="60" x="690" y="835" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="Page-4" id="Q-myeCN7kgtKSsgFlYQ8">
+    <mxGraphModel dx="4116" dy="1471" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-0" />
+        <mxCell id="olovRQD_OqK5fJrkpe8d-1" parent="olovRQD_OqK5fJrkpe8d-0" />
+        <mxCell id="olovRQD_OqK5fJrkpe8d-5" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Engine&lt;br&gt;(Cornish, underclocked)" vertex="1">
+          <mxGeometry height="60" width="120" x="520.0000000000002" y="670" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-6" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="8/s steam in" vertex="1">
+          <mxGeometry height="30" width="100" x="490" y="730" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-15" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-25">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="940" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-16" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-27">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="1100" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-17" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-81">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-20" parent="olovRQD_OqK5fJrkpe8d-1" style="whiteSpace=wrap;html=1;" value="Fluid Pump" vertex="1">
+          <mxGeometry height="40" width="80" x="640" y="680" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-21" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-20">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-22" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Fluid Intake" vertex="1">
+          <mxGeometry height="80" width="80" x="640" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-23" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="3l/s water in" vertex="1">
+          <mxGeometry height="30" width="70" x="162.5" y="1000" as="geometry" />
+        </mxCell>
+        <mxCell id="1tLf7QLMlcTQzOmPqVt6-11" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-41">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint y="940" />
+              <mxPoint y="1100" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1tLf7QLMlcTQzOmPqVt6-17" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint y="940" />
+              <mxPoint y="700" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-25" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Boiler&lt;div&gt;(Lancashire)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="120" x="80" y="880" as="geometry" />
+        </mxCell>
+        <mxCell id="1tLf7QLMlcTQzOmPqVt6-7" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-41">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="1tLf7QLMlcTQzOmPqVt6-8" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-64">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="1tLf7QLMlcTQzOmPqVt6-9" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-148">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-160" y="1100" />
+              <mxPoint x="-160" y="785" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1tLf7QLMlcTQzOmPqVt6-10" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-137">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-160" y="1100" />
+              <mxPoint x="-160" y="700" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-27" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Boiler&lt;div&gt;(Lancashire)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="120" x="80" y="1040" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-28" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Fluid intake produces 2.5l/s of water" vertex="1">
+          <mxGeometry height="30" width="120" x="520" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-29" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Produces water based on pump" vertex="1">
+          <mxGeometry height="30" width="90" x="720" y="530" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-40" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-41" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-150">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-280" y="880" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-41" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Engine&lt;br&gt;(Cornish, overclocked)" vertex="1">
+          <mxGeometry height="60" width="120" x="-320" y="1070" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-46" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-48" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-104">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-440" y="1100" />
+              <mxPoint x="-440" y="1250" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-47" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-48" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-102">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-440" y="1100" />
+              <mxPoint x="-440" y="1050" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1tLf7QLMlcTQzOmPqVt6-24" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-400" y="1100" />
+              <mxPoint x="-440" y="1100" />
+              <mxPoint x="-440" y="785" />
+              <mxPoint x="-1130" y="785" />
+            </Array>
+            <mxPoint x="-400" y="1105" as="sourcePoint" />
+            <mxPoint x="-1130" y="684.9999999999998" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-48" parent="olovRQD_OqK5fJrkpe8d-1" style="whiteSpace=wrap;html=1;" value="Air Blower" vertex="1">
+          <mxGeometry height="40" width="80" x="-400" y="1080" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-49" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-51" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-57">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-840" y="1050" />
+              <mxPoint x="-840" y="1025" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-50" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-51" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-77">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-460" y="990" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-51" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Cowper Stove" vertex="1">
+          <mxGeometry height="120" width="120" x="-680" y="960.5" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-52" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-55" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-58">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-840" y="1250" />
+              <mxPoint x="-840" y="1205" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-53" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-55" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-57">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-840" y="1250" />
+              <mxPoint x="-840" y="1025" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-54" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-55" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-77">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-460" y="1190" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-55" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Cowper Stove" vertex="1">
+          <mxGeometry height="120" width="120" x="-680" y="1160" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-56" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Blast Furnace" vertex="1">
+          <mxGeometry height="120" width="120" x="-1080" y="1055" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-57" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Tuyere" vertex="1">
+          <mxGeometry height="60" width="60" x="-1020" y="995" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-58" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Tuyere" vertex="1">
+          <mxGeometry height="60" width="60" x="-1020" y="1175" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-59" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-61" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-126">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1480" y="1120" />
+              <mxPoint x="-1480" y="520" />
+              <mxPoint x="-1100" y="520" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-60" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="olovRQD_OqK5fJrkpe8d-124">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1480" y="1120" />
+              <mxPoint x="-1480" y="520" />
+              <mxPoint x="-1340" y="520" />
+            </Array>
+            <mxPoint x="-1140" y="1120" as="sourcePoint" />
+            <mxPoint x="-1340" y="565" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-61" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Metal Tap" vertex="1">
+          <mxGeometry height="60" width="60" x="-1140" y="1085" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-62" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Molds" vertex="1">
+          <mxGeometry height="120" width="120" x="-1280" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-63" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-64" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-150">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-160" y="520" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-64" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Pressure&lt;div&gt;Valve&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="60" x="-190" y="590" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-65" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="8atm&lt;div&gt;overflow&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="-190" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-66" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="24l/s or more of excees steam" vertex="1">
+          <mxGeometry height="30" width="110" x="-130" y="580" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-68" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-71" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-75">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1160" y="1025" />
+              <mxPoint x="-1160" y="880" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-69" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-71" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-98">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1160" y="1025" />
+              <mxPoint x="-1160" y="880" />
+              <mxPoint x="-800" y="880" />
+              <mxPoint x="-800" y="991" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-70" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-71" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-100">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1160" y="1025" />
+              <mxPoint x="-1160" y="880" />
+              <mxPoint x="-800" y="880" />
+              <mxPoint x="-800" y="1190" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-71" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Exhaust&lt;div&gt;Outlet&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="60" x="-1080" y="995" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-72" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-73" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-75">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1160" y="1205" />
+              <mxPoint x="-1160" y="880" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-73" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Exhaust&lt;div&gt;Outlet&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="60" x="-1080" y="1175" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-74" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-75" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-77">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-460" y="880" />
+            </Array>
+            <mxPoint x="-450" y="880.0000000000002" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-75" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Pressure&lt;div&gt;Valve&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="60" x="-640" y="850" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-76" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="0.6 atm&lt;div&gt;overflow&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="-640" y="820" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-77" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Smoke Stack" vertex="1">
+          <mxGeometry height="120" width="120" x="-520" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-78" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="32l/s of air out" vertex="1">
+          <mxGeometry height="30" width="60" x="-400" y="1120" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-80" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="0.6l/s excees water from normal engine, 0.3l/s form underclocked, 1.2l/s from overclocked" vertex="1">
+          <mxGeometry height="80" width="120" x="-410" y="870" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-81" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Pressure&lt;div&gt;Valve&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="60" x="650" y="1280" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-82" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="1350" />
+              <mxPoint x="680" y="1350" />
+            </Array>
+            <mxPoint x="680" y="1340" as="sourcePoint" />
+            <mxPoint x="680" y="1410" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-83" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="0.7l/s excees water" vertex="1">
+          <mxGeometry height="30" width="80" x="600" y="1380" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-84" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Can consume 48l/s of gas&amp;nbsp;" vertex="1">
+          <mxGeometry height="30" width="80" x="-505" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-85" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Blast furnace needs both tuyeres to consume 12l of air at &amp;gt; 2.5atm and 800 deg or higher&amp;nbsp; to work, and output exhaust not to be choked (output pressure &amp;lt; 0.8 atm)" vertex="1">
+          <mxGeometry height="35" width="240" x="-1140" y="940" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-86" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Molten iron" vertex="1">
+          <mxGeometry height="30" width="60" x="-1240" y="1085" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-87" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-88" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-89">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-88" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Metal Tap" vertex="1">
+          <mxGeometry height="60" width="60" x="-960" y="1085" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-89" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Barrel" vertex="1">
+          <mxGeometry height="60" width="60" x="-960" y="1280" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-90" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Molten stag" vertex="1">
+          <mxGeometry height="30" width="60" x="-930" y="1250" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-91" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;0.8atm&lt;/div&gt;overflow" vertex="1">
+          <mxGeometry height="30" width="60" x="710" y="1300" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-92" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Max atm for out air is based on input steam atm * 0.7 (steam engine efficiency)" vertex="1">
+          <mxGeometry height="30" width="120" x="-395" y="1170" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-94" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Lancashire boiler max pressure is 12atm" vertex="1">
+          <mxGeometry height="50" width="110" x="270" y="980" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-95" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="48l/s steam out" vertex="1">
+          <mxGeometry height="30" width="85" x="50" y="850" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-96" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="One tuyere requires 12l/s of hot pressurized air&lt;div&gt;One exhaust outlet produces 24l/s of hot exhaust&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="170" x="-1195" y="1270" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-97" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-98" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-51">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-680" y="991" />
+              <mxPoint x="-680" y="991" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-98" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Valve" vertex="1">
+          <mxGeometry height="60" width="60" x="-770" y="960.5" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-99" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-100" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-55">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-680" y="1190" />
+              <mxPoint x="-680" y="1190" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-100" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Valve" vertex="1">
+          <mxGeometry height="60" width="60" x="-770" y="1160" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-101" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-102" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-51">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-560" y="1050" />
+              <mxPoint x="-560" y="1050" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-102" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Valve" vertex="1">
+          <mxGeometry height="60" width="60" x="-530" y="1020" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-103" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-104" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-55">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-560" y="1250" />
+              <mxPoint x="-560" y="1250" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-104" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Valve" vertex="1">
+          <mxGeometry height="60" width="60" x="-530" y="1220" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-105" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Up to 24l/s of hot exhaust in" vertex="1">
+          <mxGeometry height="30" width="90" x="-730" y="1130" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-106" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Up to 24l/s of hot exhaust in" vertex="1">
+          <mxGeometry height="30" width="90" x="-720" y="930.5" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-107" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Up to 24l/s of chilled exhaust out" vertex="1">
+          <mxGeometry height="30" width="110" x="-610" y="930.5" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-108" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Up to 24l/s of chilled exhaust out" vertex="1">
+          <mxGeometry height="30" width="110" x="-615" y="1130" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-109" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Up to 24l/s of cold air in" vertex="1">
+          <mxGeometry height="30" width="110" x="-620" y="1280" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-110" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Up to 24l/s of cold hot air out" vertex="1">
+          <mxGeometry height="30" width="110" x="-730" y="1280" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-111" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Up to 24l/s of cold air in" vertex="1">
+          <mxGeometry height="30" width="110" x="-615" y="1080" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-112" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Up to 24l/s of cold hot air out" vertex="1">
+          <mxGeometry height="30" width="110" x="-725" y="1080" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-113" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="32l/s steam in" vertex="1">
+          <mxGeometry height="30" width="80" x="-270" y="1130" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-114" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Cornish engine operational steam pressure band is 6-8atm" vertex="1">
+          <mxGeometry height="30" width="145" x="460" y="580" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-115" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Cowper stoves are operated manually through valves. They&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;lower the temp of incoming exhaust, accumulating it inside, and heat up incoming air, retaining pressure.&amp;nbsp;&amp;nbsp;&lt;/span&gt;" vertex="1">
+          <mxGeometry height="30" width="200" x="-705" y="1370" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-116" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="All excess fluids/gases on this diagram are simply dumped on the ground/in the atmosphere.&lt;div&gt;Pipe opening (uncovered pipe end) can expell 8l/s of gas or 1l/s of fluid (water).&lt;/div&gt;" vertex="1">
+          <mxGeometry height="80" width="160" x="-180" y="1200" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-117" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;Improved steel production setup&lt;/b&gt;" vertex="1">
+          <mxGeometry height="60" width="245" x="-860" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-118" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Kickstart one of these boilers manually with buckets" vertex="1">
+          <mxGeometry height="47.5" width="120" x="135" y="815" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-119" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="There cannot be more water in the pipe than it can contain (water doesn&#39;t compact like gas does). When water reaches capacity in pipe, it&#39;s pressure becomes equal to the pumping engine incoming steam pressure * 0.7 (steam engine efficiency)." vertex="1">
+          <mxGeometry height="110" width="205" x="430" y="1135" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-120" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="If boiler recieves water with pressure more than 1 atm, that pressure gets added to internal steam pressure." vertex="1">
+          <mxGeometry height="100" width="110" x="400" y="965" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-121" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="608.89" y="740" />
+              <mxPoint x="608.89" y="740" />
+            </Array>
+            <mxPoint x="608.89" y="730" as="sourcePoint" />
+            <mxPoint x="680" y="790" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-122" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="0.3l/s excees water" vertex="1">
+          <mxGeometry height="30" width="70" x="610" y="750" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-123" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-124" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-62">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1220" y="620" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-124" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Converter&lt;div&gt;(Bessemer)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="120" x="-1400" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-125" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-126" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-62">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1220" y="620" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-126" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Converter&lt;div&gt;(Bessemer)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="120" x="-1160" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-127" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Molten steel" vertex="1">
+          <mxGeometry height="30" width="60" x="-1250" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-136" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-137" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-150">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-280" y="880" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-137" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Engine&lt;br&gt;(Cornish)" vertex="1">
+          <mxGeometry height="60" width="120" x="-320" y="670" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-138" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-140" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-126">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1070" y="700" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-139" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-140" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-124">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1300" y="700" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-140" parent="olovRQD_OqK5fJrkpe8d-1" style="whiteSpace=wrap;html=1;" value="MPGen" vertex="1">
+          <mxGeometry height="40" width="80" x="-400" y="680" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-141" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-143" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-126">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1130" y="785" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-142" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-143" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-124">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1370" y="785" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-143" parent="olovRQD_OqK5fJrkpe8d-1" style="whiteSpace=wrap;html=1;" value="Air Blower" vertex="1">
+          <mxGeometry height="40" width="80" x="-400" y="765" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-144" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="16l/s steam in" vertex="1">
+          <mxGeometry height="30" width="80" x="-240" y="815" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-145" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="16l/s of air out" vertex="1">
+          <mxGeometry height="30" width="60" x="-400" y="805" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-146" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="16/s steam in" vertex="1">
+          <mxGeometry height="30" width="80" x="-240" y="725" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-147" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-148" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="olovRQD_OqK5fJrkpe8d-150">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-240" y="880" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-148" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Engine&lt;br&gt;(Cornish)" vertex="1">
+          <mxGeometry height="60" width="120" x="-320" y="755" as="geometry" />
+        </mxCell>
+        <mxCell id="1tLf7QLMlcTQzOmPqVt6-27" edge="1" parent="olovRQD_OqK5fJrkpe8d-1" source="olovRQD_OqK5fJrkpe8d-150" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="40" y="880" />
+              <mxPoint x="40" y="790" />
+            </Array>
+            <mxPoint x="680" y="790" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-150" parent="olovRQD_OqK5fJrkpe8d-1" style="whiteSpace=wrap;html=1;" value="Steam condenser" vertex="1">
+          <mxGeometry height="60" width="60" x="-90" y="850" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-151" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="3.9l/s of water or more out" vertex="1">
+          <mxGeometry height="30" width="60" x="-90" y="920" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-152" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="One bessemer converter consumes 8l/s of air under 2.5 pressure or more + requires MP to overcome 1 resistance" vertex="1">
+          <mxGeometry height="105" width="120" x="-1020" y="567.5" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-153" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="One MPGen can produce 2.5 or MP if powered by a normal cornish engine, 1.25 when underclocked, 5 when overclocked." vertex="1">
+          <mxGeometry height="50" width="145" x="-395" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="olovRQD_OqK5fJrkpe8d-154" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="This is main water line" vertex="1">
+          <mxGeometry height="35" width="80" x="680" y="862.5" as="geometry" />
+        </mxCell>
+        <mxCell id="1tLf7QLMlcTQzOmPqVt6-0" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="48l/s steam out" vertex="1">
+          <mxGeometry height="30" width="85" x="40" y="1010" as="geometry" />
+        </mxCell>
+        <mxCell id="1tLf7QLMlcTQzOmPqVt6-1" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="3l/s water in" vertex="1">
+          <mxGeometry height="30" width="70" x="165" y="1160" as="geometry" />
+        </mxCell>
+        <mxCell id="1tLf7QLMlcTQzOmPqVt6-13" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Normal operating cornish engine can pump 5l/s of water, underclocked can 2.5l/s, overclocked 10l/s" vertex="1">
+          <mxGeometry height="90" width="145" x="300" y="575" as="geometry" />
+        </mxCell>
+        <mxCell id="1tLf7QLMlcTQzOmPqVt6-14" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Overclocking should visually speed up engine&#39;s work, while underclocking should slow it down." vertex="1">
+          <mxGeometry height="90" width="120" x="165" y="575" as="geometry" />
+        </mxCell>
+        <mxCell id="1tLf7QLMlcTQzOmPqVt6-15" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Air blover when powered by normal Cornish engine should produce 16l/s of air, overclocked 32l/s, underclocked 8l/s." vertex="1">
+          <mxGeometry height="80" width="150" x="-397.5" y="1225" as="geometry" />
+        </mxCell>
+        <mxCell id="1tLf7QLMlcTQzOmPqVt6-23" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="This is main steam line" vertex="1">
+          <mxGeometry height="30" width="80" x="-90" y="975.5" as="geometry" />
+        </mxCell>
+        <mxCell id="XEQf_AJV2I9w9mVsSkvX-0" parent="olovRQD_OqK5fJrkpe8d-1" style="rounded=0;whiteSpace=wrap;html=1;" value="Pressure&lt;div&gt;Valve&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="60" x="-110" y="1070" as="geometry" />
+        </mxCell>
+        <mxCell id="XEQf_AJV2I9w9mVsSkvX-2" parent="olovRQD_OqK5fJrkpe8d-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="8atm&lt;div&gt;overflow&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="-110" y="1030" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

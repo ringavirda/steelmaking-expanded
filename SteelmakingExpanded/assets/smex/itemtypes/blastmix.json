@@ -3,14 +3,14 @@
   "heldTpIdleAnimation": "holdbothhands",
   "heldRightReadyAnimation": "holdbothhands",
   "shape": { "base": "game:item/resource/crushed/normal" },
-  "texture": { "base": "game:block/coal/orecoalmix" },
+  "textures": { "quartz": { "base": "game:block/coal/orecoalmix" } },
   "creativeinventory": {
     "general": ["*"],
     "items": ["*"],
     "smex": ["*"]
   },
   "class": "smex.ItemBlastmix",
-  "maxstacksize": 64,
+  "maxstacksize": 128,
   "attributes": {
     "placeSound": "game:sound/block/sand"
   },

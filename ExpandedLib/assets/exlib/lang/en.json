@@ -1,0 +1,14 @@
+{
+  "block-structurefiller": "Machine",
+
+  "blockhelp-rotate": "Rotate",
+
+  "blockname-prefixed": "{0} {1}",
+  "blockname-suffixed": "{0} ({1})",
+
+  "refractory-tier1": "Refractory Tier 1",
+  "refractory-tier2": "Refractory Tier 2",
+  "refractory-tier3": "Refractory Tier 3",
+
+  "game:placefailure-exlib-noorientation": "Cannot connect to the neighbouring blocks — no valid orientation here."
+}

@@ -1,0 +1,73 @@
+{
+  "code": "pipe",
+  "class": "ppex.BlockPipePassthrough",
+  "entityClass": "ppex.BlockEntityPipePassthrough",
+  "blockmaterial": "Ceramic",
+  "sounds": {
+    "walk": "game:walk/stone",
+    "place": "game:block/ceramicplace",
+    "byTool": {
+      "Pickaxe": {
+        "hit": "game:block/rock-hit-pickaxe",
+        "break": "game:block/rock-break-pickaxe"
+      }
+    }
+  },
+  "maxstacksize": 1,
+  "creativeinventory": {
+    "general": ["*-passthrough-*-ns"],
+    "ppex": ["*-passthrough-*-ns"]
+  },
+  "attributes": {
+    "handbook": { "groupBy": ["pipe-passthrough-*"] }
+  },
+  "behaviors": [{ "name": "Lockable" }],
+  "variantgroups": [
+    { "code": "type", "states": ["passthrough"] },
+    {
+      "code": "brick",
+      "states": [
+        "fire",
+        "black",
+        "brown",
+        "cream",
+        "gray",
+        "orange",
+        "red",
+        "tan"
+      ]
+    },
+    { "code": "orientation", "states": ["ns", "we", "ud"] }
+  ],
+  "shapebytype": {
+    "*-passthrough-*-ns": {
+      "base": "ppex:pipes/passthrough",
+      "rotateY": 0
+    },
+    "*-passthrough-*-we": {
+      "base": "ppex:pipes/passthrough",
+      "rotateY": 90
+    },
+    "*-passthrough-*-ud": {
+      "base": "ppex:pipes/passthrough",
+      "rotateX": 90
+    }
+  },
+  "texturesByType": {
+    "*": {
+      "front1": {
+        "base": "game:block/clay/brick/four/running/cream1",
+        "overlays": ["game:block/clay/brick/four/running/{brick}1"]
+      }
+    }
+  },
+  "renderpass": "OpaqueNoCull",
+  "faceCullMode": "NeverCull",
+  "lightAbsorption": 0,
+  "sidesolid": {
+    "all": true
+  },
+  "sideopaque": {
+    "all": false
+  }
+}

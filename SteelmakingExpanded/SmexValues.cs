@@ -60,9 +60,14 @@ public class SmexConfig
   public int BessemerRequiredRods { get; set; } = 12;
   #endregion
 
-  #region Gas system
-  /// <summary>Minimum mechanical RPS for a blower to push blast into the gas network.</summary>
-  public float BlowerMinRPSForBlast { get; set; } = 1.5f;
+  #region Air blower / blast
+  /// <summary>Pressure (atm) at or above which air in a pipe network counts as "blast".</summary>
+  public float BlastPressureThreshold { get; set; } = 2.5f;
+
+  /// <summary>Air (L/s) the air blower injects at full engine power (scales with the
+  /// engine's power fraction). Output pressure tracks the engine's inlet steam pressure
+  /// × <see cref="PipesAndPowerExpanded.PpexValues.SteamEngineEfficiency"/>.</summary>
+  public float AirBlowerOutputPerSecond { get; set; } = 16f;
   #endregion
 
   #region Player safety
@@ -88,6 +93,9 @@ public class SmexConfig
 
   /// <summary>Per-second rate the regenerator loses heat into the air it reheats into hot blast.</summary>
   public float CowperCoolingSpeedAir { get; set; } = 0.0012f;
+
+  /// <summary>Gas (L/s) the cowper stove draws each tick from each of its intakes — the furnace exhaust it soaks heat from, and the air it reheats into hot blast.</summary>
+  public float CowperIntakeVolume { get; set; } = 24f;
   #endregion
 
   #region Blast furnace
@@ -126,14 +134,17 @@ public class SmexConfig
 
   /// <summary>Blast-mix consumed per melt cycle.</summary>
   public int BfBlastMixPerMeltCycle { get; set; } = 16;
+
+  /// <summary>Air/blast (L/s) the blast furnace draws through each tuyere.</summary>
+  public float TuyereIntakeVolume { get; set; } = 12f;
   #endregion
 
   #region Bessemer converter
   /// <summary>Molten-metal capacity (units) of the converter vessel.</summary>
   public int BessemerConverterCapacity { get; set; } = 1200;
 
-  /// <summary>Blast (m³/s) the converter draws from its gas intake while refining.</summary>
-  public float BessemerBlastPerSecond { get; set; } = 1.0f;
+  /// <summary>Blast (L/s) the converter draws from its gas intake while refining.</summary>
+  public float BessemerBlastPerSecond { get; set; } = 8.0f;
 
   /// <summary>Seconds of blast a charge needs to refine iron into steel.</summary>
   public float BessemerProcessDuration { get; set; } = 300f;
@@ -166,8 +177,8 @@ public class SmexConfig
   #endregion
 
   #region Smoke stack
-  /// <summary>Exhaust gas (m³) the smoke stack vents from the network per tick.</summary>
-  public float SmokestackGasIntakeVolume { get; set; } = 4.0f;
+  /// <summary>Exhaust gas (L/s) the smoke stack vents from the network.</summary>
+  public float SmokestackGasIntakeVolume { get; set; } = 48.0f;
   #endregion
 }
 
@@ -243,8 +254,10 @@ public static class SmexValues
   public static int BessemerRequiredRods => _config.BessemerRequiredRods;
   #endregion
 
-  #region Gas system
-  public static float BlowerMinRPSForBlast => _config.BlowerMinRPSForBlast;
+  #region Air blower / blast
+  public static float BlastPressureThreshold => _config.BlastPressureThreshold;
+  public static float AirBlowerOutputPerSecond =>
+    _config.AirBlowerOutputPerSecond;
   #endregion
 
   #region Player safety
@@ -262,6 +275,7 @@ public static class SmexValues
   public static float CowperCoolingSpeedExhaust =>
     _config.CowperCoolingSpeedExhaust;
   public static float CowperCoolingSpeedAir => _config.CowperCoolingSpeedAir;
+  public static float CowperIntakeVolume => _config.CowperIntakeVolume;
   #endregion
 
   #region Blast furnace
@@ -277,6 +291,7 @@ public static class SmexValues
   public static float BfIronPerMeltCycle => _config.BfIronPerMeltCycle;
   public static float BfSlagPerMeltCycle => _config.BfSlagPerMeltCycle;
   public static int BfBlastMixPerMeltCycle => _config.BfBlastMixPerMeltCycle;
+  public static float TuyereIntakeVolume => _config.TuyereIntakeVolume;
   #endregion
 
   #region Bessemer converter

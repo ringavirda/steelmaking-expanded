@@ -1,72 +1,80 @@
 {
-	"editor": {
-		"allAngles": false,
-		"entityTextureMode": false
-	},
-	"textureWidth": 16,
-	"textureHeight": 16,
-	"textureSizes": {
-	},
-	"textures": {
-		"burned": "game:block/clay/vessel/sides/burned"
-	},
-	"elements": [
-		{
-			"name": "Cube3",
-			"from": [ 6.0, 13.0, 0.0 ],
-			"to": [ 10.0, 14.0, 5.0 ],
-			"rotationOrigin": [ 6.0, 13.0, 0.0 ],
-			"faces": {
-				"north": { "texture": "#burned", "uv": [ 0.0, 0.0, 4.0, 1.0 ] },
-				"east": { "texture": "#burned", "uv": [ 0.0, 0.0, 5.0, 1.0 ] },
-				"south": { "texture": "#burned", "uv": [ 0.0, 0.0, 4.0, 1.0 ] },
-				"west": { "texture": "#burned", "uv": [ 0.0, 0.0, 5.0, 1.0 ] },
-				"up": { "texture": "#burned", "uv": [ 0.0, 6.5, 5.0, 10.5 ], "rotation": 270 },
-				"down": { "texture": "#burned", "uv": [ 0.0, 6.0, 5.0, 10.0 ], "rotation": 270 }
-			},
-			"children": [
-				{
-					"name": "Cube4",
-					"from": [ 0.0, 1.0, 0.0 ],
-					"to": [ 1.0, 2.0, 5.0 ],
-					"rotationOrigin": [ 0.0, 1.0, 0.0 ],
-					"faces": {
-						"north": { "texture": "#burned", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
-						"east": { "texture": "#burned", "uv": [ 0.0, 0.0, 5.0, 1.0 ] },
-						"south": { "texture": "#burned", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
-						"west": { "texture": "#burned", "uv": [ 0.0, 0.0, 5.0, 1.0 ] },
-						"up": { "texture": "#burned", "uv": [ 0.0, 0.0, 1.0, 5.0 ] },
-						"down": { "texture": "#burned", "uv": [ 0.0, 0.0, 1.0, 5.0 ] }
-					}
-				},
-				{
-					"name": "Cube5",
-					"from": [ 3.0, 1.0, 0.0 ],
-					"to": [ 4.0, 2.0, 5.0 ],
-					"rotationOrigin": [ 3.0, 1.0, 0.0 ],
-					"faces": {
-						"north": { "texture": "#burned", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
-						"east": { "texture": "#burned", "uv": [ 0.0, 0.0, 5.0, 1.0 ] },
-						"south": { "texture": "#burned", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
-						"west": { "texture": "#burned", "uv": [ 0.0, 0.0, 5.0, 1.0 ] },
-						"up": { "texture": "#burned", "uv": [ 0.0, 0.0, 1.0, 5.0 ] },
-						"down": { "texture": "#burned", "uv": [ 0.0, 0.0, 1.0, 5.0 ] }
-					}
-				},
-				{
-					"name": "Cube2",
-					"from": [ 0.0, 0.0, 5.0 ],
-					"to": [ 4.0, 2.0, 6.0 ],
-					"rotationOrigin": [ 0.0, 0.0, 5.0 ],
-					"faces": {
-						"north": { "texture": "#burned", "uv": [ 0.0, 0.0, 4.0, 2.0 ] },
-						"east": { "texture": "#burned", "uv": [ 0.0, 0.0, 1.0, 2.0 ] },
-						"south": { "texture": "#burned", "uv": [ 0.0, 0.0, 4.0, 2.0 ] },
-						"west": { "texture": "#burned", "uv": [ 0.0, 0.0, 1.0, 2.0 ] },
-						"up": { "texture": "#burned", "uv": [ 0.0, 0.0, 4.0, 1.0 ] },
-						"down": { "texture": "#burned", "uv": [ 0.0, 0.0, 4.0, 1.0 ] }
-					}
-				}
-			]
-		}
-	]}
+  "editor": {
+    "allAngles": false,
+    "entityTextureMode": false
+  },
+  "textureWidth": 16,
+  "textureHeight": 16,
+  "textureSizes": {},
+  "textures": {
+    "burned": "game:block/clay/vessel/sides/burned"
+  },
+  "elements": [
+    {
+      "name": "Cube3",
+      "from": [6.0, 13.0, 0.0],
+      "to": [10.0, 14.0, 5.0],
+      "rotationOrigin": [6.0, 13.0, 0.0],
+      "faces": {
+        "north": { "texture": "#burned", "uv": [0.0, 0.0, 4.0, 1.0] },
+        "east": { "texture": "#burned", "uv": [0.0, 0.0, 5.0, 1.0] },
+        "south": { "texture": "#burned", "uv": [0.0, 0.0, 4.0, 1.0] },
+        "west": { "texture": "#burned", "uv": [0.0, 0.0, 5.0, 1.0] },
+        "up": {
+          "texture": "#burned",
+          "uv": [0.0, 6.5, 5.0, 10.5],
+          "rotation": 270
+        },
+        "down": {
+          "texture": "#burned",
+          "uv": [0.0, 6.0, 5.0, 10.0],
+          "rotation": 270
+        }
+      },
+      "children": [
+        {
+          "name": "Cube4",
+          "from": [0.0, 1.0, 0.0],
+          "to": [1.0, 2.0, 5.0],
+          "rotationOrigin": [0.0, 1.0, 0.0],
+          "faces": {
+            "north": { "texture": "#burned", "uv": [0.0, 0.0, 1.0, 1.0] },
+            "east": { "texture": "#burned", "uv": [0.0, 0.0, 5.0, 1.0] },
+            "south": { "texture": "#burned", "uv": [0.0, 0.0, 1.0, 1.0] },
+            "west": { "texture": "#burned", "uv": [0.0, 0.0, 5.0, 1.0] },
+            "up": { "texture": "#burned", "uv": [0.0, 0.0, 1.0, 5.0] },
+            "down": { "texture": "#burned", "uv": [0.0, 0.0, 1.0, 5.0] }
+          }
+        },
+        {
+          "name": "Cube5",
+          "from": [3.0, 1.0, 0.0],
+          "to": [4.0, 2.0, 5.0],
+          "rotationOrigin": [3.0, 1.0, 0.0],
+          "faces": {
+            "north": { "texture": "#burned", "uv": [0.0, 0.0, 1.0, 1.0] },
+            "east": { "texture": "#burned", "uv": [0.0, 0.0, 5.0, 1.0] },
+            "south": { "texture": "#burned", "uv": [0.0, 0.0, 1.0, 1.0] },
+            "west": { "texture": "#burned", "uv": [0.0, 0.0, 5.0, 1.0] },
+            "up": { "texture": "#burned", "uv": [0.0, 0.0, 1.0, 5.0] },
+            "down": { "texture": "#burned", "uv": [0.0, 0.0, 1.0, 5.0] }
+          }
+        },
+        {
+          "name": "Cube2",
+          "from": [0.0, 0.0, 5.0],
+          "to": [4.0, 2.0, 6.0],
+          "rotationOrigin": [0.0, 0.0, 5.0],
+          "faces": {
+            "north": { "texture": "#burned", "uv": [0.0, 0.0, 4.0, 2.0] },
+            "east": { "texture": "#burned", "uv": [0.0, 0.0, 1.0, 2.0] },
+            "south": { "texture": "#burned", "uv": [0.0, 0.0, 4.0, 2.0] },
+            "west": { "texture": "#burned", "uv": [0.0, 0.0, 1.0, 2.0] },
+            "up": { "texture": "#burned", "uv": [0.0, 0.0, 4.0, 1.0] },
+            "down": { "texture": "#burned", "uv": [0.0, 0.0, 4.0, 1.0] }
+          }
+        }
+      ]
+    }
+  ]
+}
