@@ -46,7 +46,7 @@
     },
     {
       "code": "material",
-      "states": ["copper", "brass", "iron", "steel"]
+      "states": ["iron", "steel"]
     }
   ],
 
@@ -94,14 +94,6 @@
     }
   },
   "texturesByType": {
-    "*-copper": {
-      "normal4": { "base": "game:block/metal/sheet-plain/copper4" },
-      "iron4": { "base": "game:block/metal/sheet-plain/copper4" }
-    },
-    "*-brass": {
-      "normal4": { "base": "game:block/metal/sheet-plain/brass4" },
-      "iron4": { "base": "game:block/metal/sheet-plain/brass4" }
-    },
     "*-iron": {
       "normal4": { "base": "game:block/metal/sheet-plain/iron4" },
       "iron4": { "base": "game:block/metal/sheet-plain/iron4" }

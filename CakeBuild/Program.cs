@@ -28,9 +28,11 @@ public record ModProject(string Folder, string ModId, string Version);
 
 public class BuildContext : FrostingContext
 {
-  // Build order matters: ppex first, since smex references the built ppex.dll.
+  // Build order matters: exlib first (the shared lib both mods reference), then ppex
+  // (referenced by smex), then smex.
   public static readonly string[] ProjectFolders =
   [
+    "ExpandedLib",
     "PipesAndPowerExpanded",
     "SteelmakingExpanded",
   ];

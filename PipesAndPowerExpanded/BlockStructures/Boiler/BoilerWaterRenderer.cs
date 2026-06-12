@@ -7,12 +7,17 @@ using Vintagestory.API.Util;
 namespace PipesAndPowerExpanded.BlockStructures.Boiler;
 
 /// <summary>
-/// Draws the translucent water surface inside the Lancashire boiler. One quad per
-/// footprint box is raised by <see cref="FillRatio"/> (water level) and tinted toward
-/// a faint glow as <see cref="Temperature"/> approaches the boiling point, so a hot
-/// boiler shows shimmering water through the open lid. Modelled on
-/// <see cref="Networks.Molten.MoltenRenderer"/> but blended (water is see-through and
-/// has no metal stack / incandescence).
+/// Draws the translucent water surface inside a steam boiler. One quad per footprint
+/// box is drawn at an absolute block-height set by <see cref="SurfaceLevel"/> and tinted
+/// toward a faint glow as <see cref="Temperature"/> approaches the boiling point. The
+/// surface is rendered see-through (blended, like vanilla barrel water) so a hot boiler
+/// shows shimmering water through the open lid.
+/// <para>
+/// The level is driven by the boiler in discrete steps rather than a continuous fill
+/// ratio — hidden when empty, low (below the flue tubes) while filling, and high (above
+/// the flues) once the vessel holds enough water to operate — so the flat quad always
+/// lands at a sensible height inside the vessel instead of slicing through the geometry.
+/// </para>
 /// </summary>
 public class BoilerWaterRenderer : IRenderer
 {
@@ -20,39 +25,39 @@ public class BoilerWaterRenderer : IRenderer
   private readonly BlockPos _pos;
   private readonly MeshRef _meshRef;
   private readonly float _rotationY;
-  private readonly float _fillStartY;
-  private readonly float _fillHeightLevels;
   private readonly int _textureId;
 
   public Matrixf ModelMat = new();
 
-  /// <summary>Fill ratio in [0, 1]; 0 hides the surface.</summary>
-  public float FillRatio;
+  /// <summary>
+  /// Absolute surface height in block units above the boiler's base cell. A value of
+  /// <c>0</c> (or less) hides the surface entirely.
+  /// </summary>
+  public float SurfaceLevel;
 
   /// <summary>Water temperature (°C); drives the faint hot-water glow.</summary>
   public float Temperature;
 
-  public double RenderOrder => 0.5;
+  // Must render AFTER the boiler's animated geometry (AnimationUtil renders in the
+  // Opaque stage at RenderOrder 1.0). If the translucent surface drew first it would
+  // write depth and cull the flue tubes / vessel floor sitting below the water line,
+  // so the camera saw straight through to the terrain. Drawing last lets the water
+  // blend over that already-rendered interior instead.
+  public double RenderOrder => 1.5;
   public int RenderRange => 24;
 
   /// <param name="footprintBoxes">Surface footprint boxes in 0-16 pixel space.</param>
   /// <param name="rotationY">Y rotation (radians) matching the block's visual shape.</param>
-  /// <param name="fillStartY">Block-height (0-1) of the surface at fill ratio 0.</param>
-  /// <param name="fillHeightLevels">1/16-unit steps the surface rises from 0 → 1.</param>
   public BoilerWaterRenderer(
     BlockPos pos,
     ICoreClientAPI api,
     Cuboidf[] footprintBoxes,
-    float rotationY,
-    float fillStartY,
-    float fillHeightLevels
+    float rotationY
   )
   {
     _pos = pos;
     _api = api;
     _rotationY = rotationY;
-    _fillStartY = fillStartY;
-    _fillHeightLevels = fillHeightLevels - 0.01f;
 
     MeshData combined = new(
       4 * footprintBoxes.Length,
@@ -98,7 +103,7 @@ public class BoilerWaterRenderer : IRenderer
 
   public void OnRenderFrame(float deltaTime, EnumRenderStage stage)
   {
-    if (FillRatio <= 0f || _textureId == 0)
+    if (SurfaceLevel <= 0f || _textureId == 0)
       return;
 
     IRenderAPI render = _api.Render;
@@ -114,8 +119,10 @@ public class BoilerWaterRenderer : IRenderer
     shader.RgbaFogIn = render.FogColor;
     shader.FogMinIn = render.FogMin;
     shader.FogDensityIn = render.FogDensity;
-    // Translucent blue tint over the water texture.
-    shader.RgbaTint = new Vec4f(0.55f, 0.7f, 0.95f, 0.72f);
+    // Translucent blue tint over the water texture — see-through like vanilla barrel
+    // water. The boiler keeps SurfaceLevel at a height that sits inside the vessel, so
+    // what shows through the water is the vessel interior, not the world below.
+    shader.RgbaTint = new Vec4f(0.55f, 0.7f, 0.95f, 0.7f);
     shader.DontWarpVertices = 0;
     shader.AddRenderFlags = 0;
     shader.ExtraGodray = 0f;
@@ -135,15 +142,13 @@ public class BoilerWaterRenderer : IRenderer
 
     render.BindTexture2d(_textureId);
 
-    float yLevel = _fillStartY + FillRatio * _fillHeightLevels / 16f;
-
     shader.ModelMatrix = ModelMat
       .Identity()
       .Translate(_pos.X - camPos.X, _pos.Y - camPos.Y, _pos.Z - camPos.Z)
       .Translate(0.5f, 0f, 0.5f)
       .RotateY(_rotationY)
       .Translate(-0.5f, 0f, -0.5f)
-      .Translate(0f, yLevel, 0f)
+      .Translate(0f, SurfaceLevel, 0f)
       .Values;
 
     shader.ViewMatrix = render.CameraMatrixOriginf;
@@ -158,7 +163,7 @@ public class BoilerWaterRenderer : IRenderer
 
   public void Dispose()
   {
-    _api.Event.UnregisterRenderer(this, EnumRenderStage.Done);
+    _api.Event.UnregisterRenderer(this, EnumRenderStage.Opaque);
     _meshRef?.Dispose();
   }
 }

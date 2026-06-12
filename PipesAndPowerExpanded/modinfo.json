@@ -4,9 +4,10 @@
   "modid": "ppex",
   "name": "Pipes and Power Expanded",
   "authors": ["fallenstar"],
-  "description": "Pipe network for gases and fluids with machinery. Boilers and modular steam engines to produce power!.",
+  "description": "Pipe network and modular steam power machinery!",
   "version": "0.1.0",
   "dependencies": {
-    "game": "1.22.0"
+    "game": "1.22.0",
+    "exlib": "0.1.0"
   }
 }

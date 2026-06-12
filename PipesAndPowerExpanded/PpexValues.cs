@@ -7,153 +7,221 @@ namespace PipesAndPowerExpanded;
 /// JSON-serializable gameplay tunables for Pipes and Power Expanded. Loaded from (and written
 /// to) <c>ModConfig/ppex.json</c>; the property defaults below apply when the file is missing or
 /// a key is absent. Accessed through <see cref="PpexValues"/>, not directly.
+/// <para>
+/// All gas/liquid volumes are in <b>litres</b> (matching vanilla liquid containers). Pressure is
+/// a dimensionless ratio (volume / capacity), expressed in atm.
+/// </para>
 /// </summary>
 public class PpexConfig
 {
   #region Pipes
+  /// <summary>Litres a single pipe holds at 1 atm (both the gas and water pools).</summary>
+  public float LitresPerPipe { get; set; } = 30f;
+
   /// <summary>Per-material pipe burst pressure (atm) — the weakest pipe limits a run.</summary>
-  public float CopperPipeBurstPressure { get; set; } = 1.5f;
-  public float BronzePipeBurstPressure { get; set; } = 3.0f;
-  public float BrassPipeBurstPressure { get; set; } = 3.0f;
   public float IronPipeBurstPressure { get; set; } = 5.0f;
   public float SteelPipeBurstPressure { get; set; } = 10.0f;
-
-  /// <summary>Glow factor applied to a ferric (iron/steel) pipe's temperature.</summary>
-  public float FerricGlowFactor { get; set; } = 0.6f;
 
   /// <summary>Temperature (°C) at which water boils into steam / steam condenses into water.</summary>
   public float BoilingPoint { get; set; } = 100f;
 
-  /// <summary>Temperature (°C) lost per ferric (iron/steel) pipe as gas/fluid travels away from the source.</summary>
-  public float FerricPipeHeatLoss { get; set; } = 0.5f;
+  /// <summary>Gas (L/s) a vanilla chimney draws from the network when capping the top
+  /// connector of a passthrough / passthrough-bend / outlet block.</summary>
+  public float ChimneyGasDrawRate { get; set; } = 16.0f;
 
-  /// <summary>Temperature (°C) lost per non-ferric (copper/bronze/brass) pipe as gas/fluid travels.</summary>
-  public float NonFerricPipeHeatLoss { get; set; } = 2f;
+  /// <summary>Gas (L/s) bled per open-ended pipe connector (leak) — only the volume above
+  /// the network's 1 atm capacity is vented, so a leaking run can never build pressure.</summary>
+  public float GasLeakRate { get; set; } = 8.0f;
 
-  /// <summary>Gas (m³/s) a vanilla chimney atop a pipe vents from the network.</summary>
-  public float ChimneyVentRate { get; set; } = 2.0f;
+  /// <summary>Seconds a pipe run may sit at its weakest pipe's burst pressure (nowhere to
+  /// vent) before a pipe lets go — mirrors the boiler over-pressure grace.</summary>
+  public float PipeOverpressureSeconds { get; set; } = 30f;
 
-  /// <summary>Liquid (m³/s) lost per open-ended pipe connector (leak).</summary>
-  public float LiquidLeakRatePerOpening { get; set; } = 0.0005f;
+  /// <summary>Liquid (L/s) drained from the network per open-ended pipe connector (leak).</summary>
+  public float LiquidLeakRate { get; set; } = 10.0f;
+
+  /// <summary>Water (L) lost to natural evaporation per in-game day (boiler pool and pipe water pool). 100 L over 2 days = 50 L/day.</summary>
+  public float EvaporationLitresPerDay { get; set; } = 50f;
   #endregion
 
-  #region Boiler (Base values used for Lancashire variant)
+  #region Steam
+  /// <summary>Litres of steam produced by boiling one litre of water (and the reverse ratio steam condenses back at).</summary>
+  public float SteamExpansionFactor { get; set; } = 16f;
+
+  /// <summary>Steam temperature (°C) produced when the boiler is at its minimum operating water level (hottest).</summary>
+  public float SteamTempLowWater { get; set; } = 220f;
+
+  /// <summary>Steam temperature (°C) produced when the boiler is at its maximum operating water level (coolest).</summary>
+  public float SteamTempHighWater { get; set; } = 160f;
+  #endregion
+
+  #region Boiler (base values used for the Lancashire variant)
   /// <summary>Max output-network pressure (atm) a boiler can vent exhaust into; above it the fire goes out.</summary>
   public float ExhaustMaxOutputPressure { get; set; } = 0.8f;
 
-  /// <summary>Steam pressure (atm) the boiler chokes at — it stops producing steam above this on the outlet network.</summary>
+  /// <summary>Steam pressure (atm) the boiler chokes at — it stops pushing steam above this on the outlet network.</summary>
   public float BoilerMaxOutputPressure { get; set; } = 12.0f;
 
-  /// <summary>Seconds a boiler may sit fully choked (steam buffer full, still firing and boiling
-  /// water with nowhere to vent) before it explodes. Open the lid or give the steam somewhere to go.</summary>
+  /// <summary>Seconds a boiler may sit over <see cref="BoilerMaxOutputPressure"/> (still firing, nowhere to vent) before it explodes.</summary>
   public float BoilerOverpressureSeconds { get; set; } = 30f;
 
-  /// <summary>How much faster coal burns inside a boiler than a free-standing pile.</summary>
-  public float BoilerCoalBurnRateMultiplier { get; set; } = 4.0f;
+  /// <summary>Seconds of "heating up" (water present + coal lit) before the boiler starts boiling — blast-furnace style.</summary>
+  public float BoilerHeatUpSeconds { get; set; } = 180f;
 
-  /// <summary>Cap (°C) on the Lancashire boiler's working steam temperature (~190 °C saturated at 12 atm).</summary>
-  public float BoilerMaxTemperature { get; set; } = 200f;
+  /// <summary>Grace seconds the boiler keeps running after the fire dies (or water leaves range) before it shuts down.</summary>
+  public float BoilerShutdownDelaySeconds { get; set; } = 10f;
 
-  /// <summary>Base heating-rate factor for the boiler firebox (divided by water amount for thermal mass).</summary>
-  public float BoilerHeatingSpeed { get; set; } = 0.05f;
+  /// <summary>Internal steam (L/s) that condenses back to water once the boiler has shut down.</summary>
+  public float BoilerShutdownCondenseRate { get; set; } = 200f;
 
-  /// <summary>Reference water volume (m³) for the thermal-mass divisor (rate is scaled by water / this).</summary>
-  public float BoilerThermalMassReference { get; set; } = 0.1f;
+  /// <summary>Total internal capacity (L) shared between water and steam.</summary>
+  public float BoilerCapacity { get; set; } = 1200f;
 
-  /// <summary>Maximum water (m³) the boiler can hold.</summary>
-  public float BoilerWaterCapacity { get; set; } = 0.4f;
+  /// <summary>Minimum water (L) needed before the boiler will begin heating/boiling.</summary>
+  public float BoilerMinBoilWater { get; set; } = 200f;
 
-  /// <summary>Maximum internal steam (m³) the boiler can hold before venting/choking caps it.</summary>
-  public float BoilerMaxInternalSteam { get; set; } = 20f;
+  /// <summary>Maximum water (L) the boiler will hold/boil — the rest of the capacity is reserved for steam.</summary>
+  public float BoilerMaxBoilWater { get; set; } = 800f;
 
-  /// <summary>Steam (m³) produced per second while boiling at full tilt (supplies ~2 Cornish engines).</summary>
-  public float BoilerSteamPerSecond { get; set; } = 4.5f;
+  /// <summary>Fraction of the vessel capacity the automatic pump intake fills to — keeps a piped
+  /// supply from overfilling the boiler (manual pouring can still go up to the boil-water ceiling).</summary>
+  public float BoilerWaterIntakeFillFraction { get; set; } = 0.5f;
 
-  /// <summary>Water (m³) consumed per m³ of steam produced — a ~200× expansion (and the reverse
-  /// ratio steam condenses back at). Also the litres-equivalent the engine/condenser recover.</summary>
-  public float BoilerWaterPerSteam { get; set; } = 0.005f;
+  /// <summary>Steam (L/s) produced while boiling at full tilt (consumes this / <see cref="SteamExpansionFactor"/> litres of water).</summary>
+  public float BoilerSteamPerSecond { get; set; } = 48f;
 
   /// <summary>Block radius damaged when a boiler explodes.</summary>
   public int BoilerExplosionRadius { get; set; } = 4;
 
-  /// <summary>How fast (per second) an open lid bleeds internal pressure/temperature toward the vent targets.</summary>
-  public float BoilerLidVentSpeed { get; set; } = 0.5f;
+  /// <summary>A boiler burst shatters every block in its radius whose mining resistance is below
+  /// this — the mod's pipes, ports, coal piles and soft terrain. Sturdier blocks ride it out;
+  /// keep this under 45 so other boilers/engines (and their resistance-45 structure fillers) and
+  /// reinforced stone survive intact.</summary>
+  public float BoilerBlastResistanceThreshold { get; set; } = 20f;
 
-  /// <summary>Temperature (°C) an open lid rapidly cools the boiler toward.</summary>
-  public float BoilerLidCoolTarget { get; set; } = 60f;
+  /// <summary>Fraction (0..1) of the boiler's construction materials scattered as salvage when it
+  /// bursts — less forgiving than mining it intact (the JSON <c>brokenDropsRatio</c>).</summary>
+  public float BoilerExplosionDropRatio { get; set; } = 0.4f;
 
-  /// <summary>Internal pressure (atm) an open lid rapidly bleeds the boiler toward.</summary>
-  public float BoilerLidVentPressure { get; set; } = 1.0f;
+  /// <summary>Internal steam (L/s) an open lid vents to atmosphere.</summary>
+  public float BoilerLidVentRate { get; set; } = 200f;
+
+  /// <summary>Internal steam (L/s) bled to atmosphere when the steam outlet has no pipe
+  /// attached — the boiler's neck is open, so steam jets out instead of pressurising.</summary>
+  public float BoilerSteamLeakRate { get; set; } = 16f;
+
+  /// <summary>Rendered water-surface height (block units) while the boiler holds some water
+  /// but is below its operating threshold — kept below the flue tubes.</summary>
+  public float BoilerWaterSurfaceLowLevel { get; set; } = 0.2f;
+
+  /// <summary>Rendered water-surface height (block units) once the boiler holds enough
+  /// water to operate — raised above the flue tubes. Kept just under a full block to
+  /// avoid z-fighting with the cell boundary.</summary>
+  public float BoilerWaterSurfaceHighLevel { get; set; } = 0.99f;
+
+  /// <summary>Extra steam (L) flashed per litre of admitted water per atm of feed-water
+  /// pressure above 1 atm. Pumped, pressurized water raises a boiling boiler's steam
+  /// pressure — the player must valve it down or risk a burst.</summary>
+  public float WaterPressureSteamBoost { get; set; } = 1f;
   #endregion
 
   #region Cornish boiler
-  /// <summary>Maximum water (m³) the Cornish boiler can hold (≈2/3 of the Lancashire vessel).</summary>
-  public float CornishBoilerWaterCapacity { get; set; } = 0.27f;
+  /// <summary>Total internal capacity (L) of the Cornish boiler.</summary>
+  public float CornishBoilerCapacity { get; set; } = 800f;
 
-  /// <summary>Maximum internal steam (m³) the Cornish boiler can hold (≈2/3 of the Lancashire).</summary>
-  public float CornishBoilerMaxInternalSteam { get; set; } = 13f;
+  /// <summary>Minimum water (L) the Cornish boiler needs to begin heating/boiling.</summary>
+  public float CornishBoilerMinBoilWater { get; set; } = 150f;
 
-  /// <summary>Steam (m³/s) the Cornish boiler produces while boiling at full tilt (supplies ~1 Watt engine).</summary>
-  public float CornishBoilerSteamPerSecond { get; set; } = 3.5f;
+  /// <summary>Maximum water (L) the Cornish boiler will hold/boil.</summary>
+  public float CornishBoilerMaxBoilWater { get; set; } = 500f;
 
-  /// <summary>Steam pressure (atm) the Cornish boiler chokes at — matches the Watt engine's band top so a Watt
-  /// engine it feeds never sits over-pressure, and stays well below the Cornish engine's 6 atm floor.</summary>
-  public float CornishBoilerMaxOutputPressure { get; set; } = 4.0f;
+  /// <summary>Steam (L/s) the Cornish boiler produces while boiling at full tilt.</summary>
+  public float CornishBoilerSteamPerSecond { get; set; } = 32f;
 
-  /// <summary>Cap (°C) on the Cornish boiler's working steam temperature (~150 °C saturated at 5 atm).</summary>
-  public float CornishBoilerMaxTemperature { get; set; } = 160f;
+  /// <summary>Steam pressure (atm) the Cornish boiler chokes at — above the Watt engine's
+  /// 4 atm break, so a pressure valve between boiler and engine is mandatory; the player
+  /// manages the head so boilers don't burst and engines don't break.</summary>
+  public float CornishBoilerMaxOutputPressure { get; set; } = 5.0f;
+
+  public int CornishBoilerExplosionRadius { get; set; } = 3;
   #endregion
 
   #region Engines + sub-machines
-  /// <summary>Bottom of the Watt engine's operating band (atm) — below this it idles.</summary>
-  public float WattEngineMinPressure { get; set; } = 2.0f;
+  /// <summary>Inlet pressure (atm) at/above which the Watt engine runs.</summary>
+  public float WattEngineEngagePressure { get; set; } = 2.0f;
 
-  /// <summary>Top of the Watt engine's normal band (atm) — full power at this pressure; sustained operation
-  /// above it for <see cref="EngineOverPressureSeconds"/> breaks the engine.</summary>
-  public float WattEngineMaxPressure { get; set; } = 4.0f;
+  /// <summary>Inlet pressure (atm) above which the Watt engine wears toward a break.</summary>
+  public float WattEngineBreakPressure { get; set; } = 4.0f;
 
-  /// <summary>Maximum power a Watt engine delivers (at the top of its band).</summary>
-  public float WattEngineMaxPower { get; set; } = 0.8f;
+  /// <summary>Power a Watt engine delivers while running.</summary>
+  public float WattEngineMaxPower { get; set; } = 0.3f;
 
-  /// <summary>Steam (m³/s) a Watt engine consumes per unit power (thirsty — fills the whole cylinder).</summary>
-  public float WattEngineSteamPerPower { get; set; } = 4f;
+  /// <summary>Steam (L/s) a Watt engine consumes while running.</summary>
+  public float WattEngineSteamRate { get; set; } = 30f;
 
-  /// <summary>Inlet pressure (atm) a fully underclocked Cornish engine engages at (lowest control-rod setting).</summary>
-  public float CornishEngineUnderclockPressure { get; set; } = 4.0f;
+  /// <summary>Hot condensed water (L/s) a Watt engine spits out its outlet while running.</summary>
+  public float WattEngineWaterRate { get; set; } = 1f;
 
-  /// <summary>Inlet pressure (atm) a fully overclocked Cornish engine engages at (highest control-rod setting).</summary>
-  public float CornishEngineOverclockPressure { get; set; } = 8.0f;
+  /// <summary>Inlet pressure (atm) at/above which the Cornish engine runs (fixed — control rods do not move the band).</summary>
+  public float CornishEngineEngagePressure { get; set; } = 6.0f;
 
-  /// <summary>How far above its engage pressure (atm) a Cornish engine tolerates before the over-pressure timer
-  /// starts — so its break threshold rides up with the throttle (full overclock breaks above ~9 atm).</summary>
-  public float CornishEngineOverPressureMargin { get; set; } = 1.0f;
+  /// <summary>Inlet pressure (atm) above which the Cornish engine wears toward a break.</summary>
+  public float CornishEngineBreakPressure { get; set; } = 8.0f;
 
-  /// <summary>Nominal maximum power a Cornish engine delivers (used to scale sub-machine output).</summary>
+  /// <summary>Nominal power the Cornish engine delivers at the normal control-rod setting (display reference).</summary>
   public float CornishEngineMaxPower { get; set; } = 1.0f;
 
-  /// <summary>Delivered power at full underclock (lowered) and full overclock (raised, can exceed nominal).</summary>
-  public float CornishEngineUnderclockPower { get; set; } = 0.5f;
-  public float CornishEngineOverclockPower { get; set; } = 1.25f;
+  /// <summary>Cornish engine steam draw (L/s) at the low / normal / high control-rod settings.</summary>
+  public float CornishEngineSteamLow { get; set; } = 8f;
+  public float CornishEngineSteamNormal { get; set; } = 16f;
+  public float CornishEngineSteamHigh { get; set; } = 32f;
 
-  /// <summary>Steam (m³/s) a Cornish engine consumes per unit power (efficient — less volume, higher pressure).</summary>
-  public float CornishEngineSteamPerPower { get; set; } = 2f;
+  /// <summary>Cornish engine power at the low / normal / high control-rod settings.</summary>
+  public float CornishEnginePowerLow { get; set; } = 0.5f;
+  public float CornishEnginePowerNormal { get; set; } = 1.0f;
+  public float CornishEnginePowerHigh { get; set; } = 2.0f;
+
+  /// <summary>Cornish engine condensed-water output (L/s) at the low / normal / high settings.</summary>
+  public float CornishEngineWaterLow { get; set; } = 0.3f;
+  public float CornishEngineWaterNormal { get; set; } = 0.6f;
+  public float CornishEngineWaterHigh { get; set; } = 1.2f;
+
+  /// <summary>Steam-engine efficiency: an engine sets its sub-machine's output pressure
+  /// (pump water, air blower) to its inlet steam pressure times this fraction.</summary>
+  public float SteamEngineEfficiency { get; set; } = 0.75f;
 
   /// <summary>Seconds an engine may run above its band before it breaks and needs repairing.</summary>
   public float EngineOverPressureSeconds { get; set; } = 60f;
 
-  /// <summary>Water (m³/s) the pump moves per unit engine power (one pump feeds ~4 Cornish or ~3 Lancashire boilers).</summary>
-  public float PumpWaterPerPower { get; set; } = 0.09f;
+  /// <summary>"Normal" mechanical-network speed an MP generator holds while its load is within the
+  /// engine's rated capacity. Light loads can't push past it (the generator stops driving above
+  /// this); heavier loads drag the network below it.</summary>
+  public float MpRatedSpeed { get; set; } = 1.0f;
 
-  /// <summary>Maximum liquid pressure (atm) the pump sets at full power.</summary>
-  public float PumpMaxPressure { get; set; } = 5f;
+  /// <summary>MP consumer load (resistance) an engine's generator can hold at <see cref="MpRatedSpeed"/>
+  /// per unit of the engine's power output. A Watt engine at full power (0.3) × this (1.667) = 0.5,
+  /// which is four active helve hammers (0.125 resistance each) held at the rated speed. Adding load
+  /// past the rated amount slows the network (constant power: speed = budget / load), and past double
+  /// it drags the engine below half speed, where it overstresses and stops.</summary>
+  public float MpLoadPerEnginePower { get; set; } = 0.875f;
+
+  /// <summary>Water (L/s) the pump injects at full engine power (scales with the engine's
+  /// power fraction, so a throttled or overclocked engine moves proportionally less/more).</summary>
+  public float PumpWaterPerSecond { get; set; } = 5f;
+
+  /// <summary>A fluid intake only draws water when the whole cube of this depth directly below it is water.</summary>
+  public int FluidIntakeWaterDepth { get; set; } = 3;
+
+  /// <summary>An intake is disabled if another intake sits within this many blocks (Euclidean), to stop players packing them.</summary>
+  public float FluidIntakeExclusionRange { get; set; } = 6f;
   #endregion
 
   #region Steam condenser
-  /// <summary>Steam (m³/s) a condenser pulls from its steam line and condenses.</summary>
-  public float CondenserSteamPerSecond { get; set; } = 3f;
+  /// <summary>Steam (L/s) a condenser pulls from its (north) steam line and condenses.</summary>
+  public float CondenserSteamPerSecond { get; set; } = 30f;
 
-  /// <summary>Litres of coolant water drawn from the north line per litre of condensed steam.</summary>
-  public float CondenserCoolantRatio { get; set; } = 1.0f;
+  /// <summary>Water (L/s) the condenser passes through its W↔E water line (the through-flow cap).</summary>
+  public float CondenserWaterThroughput { get; set; } = 50f;
   #endregion
 }
 
@@ -203,20 +271,23 @@ public static class PpexValues
   }
 
   #region Pipes
-  public static float CopperPipeBurstPressure =>
-    _config.CopperPipeBurstPressure;
-  public static float BronzePipeBurstPressure =>
-    _config.BronzePipeBurstPressure;
-  public static float BrassPipeBurstPressure => _config.BrassPipeBurstPressure;
+  public static float LitresPerPipe => _config.LitresPerPipe;
   public static float IronPipeBurstPressure => _config.IronPipeBurstPressure;
   public static float SteelPipeBurstPressure => _config.SteelPipeBurstPressure;
-  public static float FerricGlowFactor => _config.FerricGlowFactor;
   public static float BoilingPoint => _config.BoilingPoint;
-  public static float FerricPipeHeatLoss => _config.FerricPipeHeatLoss;
-  public static float NonFerricPipeHeatLoss => _config.NonFerricPipeHeatLoss;
-  public static float ChimneyVentRate => _config.ChimneyVentRate;
-  public static float LiquidLeakRatePerOpening =>
-    _config.LiquidLeakRatePerOpening;
+  public static float ChimneyGasDrawRate => _config.ChimneyGasDrawRate;
+  public static float GasLeakRate => _config.GasLeakRate;
+  public static float PipeOverpressureSeconds =>
+    _config.PipeOverpressureSeconds;
+  public static float LiquidLeakRate => _config.LiquidLeakRate;
+  public static float EvaporationLitresPerDay =>
+    _config.EvaporationLitresPerDay;
+  #endregion
+
+  #region Steam
+  public static float SteamExpansionFactor => _config.SteamExpansionFactor;
+  public static float SteamTempLowWater => _config.SteamTempLowWater;
+  public static float SteamTempHighWater => _config.SteamTempHighWater;
   #endregion
 
   #region Boiler
@@ -226,63 +297,86 @@ public static class PpexValues
     _config.BoilerMaxOutputPressure;
   public static float BoilerOverpressureSeconds =>
     _config.BoilerOverpressureSeconds;
-  public static float BoilerCoalBurnRateMultiplier =>
-    _config.BoilerCoalBurnRateMultiplier;
-  public static float BoilerMaxTemperature => _config.BoilerMaxTemperature;
-  public static float BoilerHeatingSpeed => _config.BoilerHeatingSpeed;
-  public static float BoilerThermalMassReference =>
-    _config.BoilerThermalMassReference;
-  public static float BoilerWaterCapacity => _config.BoilerWaterCapacity;
-  public static float BoilerMaxInternalSteam => _config.BoilerMaxInternalSteam;
+  public static float BoilerHeatUpSeconds => _config.BoilerHeatUpSeconds;
+  public static float BoilerShutdownDelaySeconds =>
+    _config.BoilerShutdownDelaySeconds;
+  public static float BoilerShutdownCondenseRate =>
+    _config.BoilerShutdownCondenseRate;
+  public static float BoilerCapacity => _config.BoilerCapacity;
+  public static float BoilerMinBoilWater => _config.BoilerMinBoilWater;
+  public static float BoilerMaxBoilWater => _config.BoilerMaxBoilWater;
+  public static float BoilerWaterIntakeFillFraction =>
+    _config.BoilerWaterIntakeFillFraction;
   public static float BoilerSteamPerSecond => _config.BoilerSteamPerSecond;
-  public static float BoilerWaterPerSteam => _config.BoilerWaterPerSteam;
   public static int BoilerExplosionRadius => _config.BoilerExplosionRadius;
-  public static float BoilerLidVentSpeed => _config.BoilerLidVentSpeed;
-  public static float BoilerLidCoolTarget => _config.BoilerLidCoolTarget;
-  public static float BoilerLidVentPressure => _config.BoilerLidVentPressure;
+  public static float BoilerBlastResistanceThreshold =>
+    _config.BoilerBlastResistanceThreshold;
+  public static float BoilerExplosionDropRatio =>
+    _config.BoilerExplosionDropRatio;
+  public static float BoilerLidVentRate => _config.BoilerLidVentRate;
+  public static float BoilerSteamLeakRate => _config.BoilerSteamLeakRate;
+  public static float BoilerWaterSurfaceLowLevel =>
+    _config.BoilerWaterSurfaceLowLevel;
+  public static float BoilerWaterSurfaceHighLevel =>
+    _config.BoilerWaterSurfaceHighLevel;
+  public static float WaterPressureSteamBoost =>
+    _config.WaterPressureSteamBoost;
   #endregion
 
   #region Cornish boiler
-  public static float CornishBoilerWaterCapacity =>
-    _config.CornishBoilerWaterCapacity;
-  public static float CornishBoilerMaxInternalSteam =>
-    _config.CornishBoilerMaxInternalSteam;
+  public static float CornishBoilerCapacity => _config.CornishBoilerCapacity;
+  public static float CornishBoilerMinBoilWater =>
+    _config.CornishBoilerMinBoilWater;
+  public static float CornishBoilerMaxBoilWater =>
+    _config.CornishBoilerMaxBoilWater;
   public static float CornishBoilerSteamPerSecond =>
     _config.CornishBoilerSteamPerSecond;
   public static float CornishBoilerMaxOutputPressure =>
     _config.CornishBoilerMaxOutputPressure;
-  public static float CornishBoilerMaxTemperature =>
-    _config.CornishBoilerMaxTemperature;
+  public static int CornishBoilerExplosionRadius =>
+    _config.CornishBoilerExplosionRadius;
   #endregion
 
   #region Engines + sub-machines
-  public static float WattEngineMinPressure => _config.WattEngineMinPressure;
-  public static float WattEngineMaxPressure => _config.WattEngineMaxPressure;
+  public static float WattEngineEngagePressure =>
+    _config.WattEngineEngagePressure;
+  public static float WattEngineBreakPressure =>
+    _config.WattEngineBreakPressure;
   public static float WattEngineMaxPower => _config.WattEngineMaxPower;
-  public static float WattEngineSteamPerPower =>
-    _config.WattEngineSteamPerPower;
-  public static float CornishEngineUnderclockPressure =>
-    _config.CornishEngineUnderclockPressure;
-  public static float CornishEngineOverclockPressure =>
-    _config.CornishEngineOverclockPressure;
-  public static float CornishEngineOverPressureMargin =>
-    _config.CornishEngineOverPressureMargin;
+  public static float WattEngineSteamRate => _config.WattEngineSteamRate;
+  public static float CornishEngineEngagePressure =>
+    _config.CornishEngineEngagePressure;
+  public static float CornishEngineBreakPressure =>
+    _config.CornishEngineBreakPressure;
   public static float CornishEngineMaxPower => _config.CornishEngineMaxPower;
-  public static float CornishEngineUnderclockPower =>
-    _config.CornishEngineUnderclockPower;
-  public static float CornishEngineOverclockPower =>
-    _config.CornishEngineOverclockPower;
-  public static float CornishEngineSteamPerPower =>
-    _config.CornishEngineSteamPerPower;
+  public static float CornishEngineSteamLow => _config.CornishEngineSteamLow;
+  public static float CornishEngineSteamNormal =>
+    _config.CornishEngineSteamNormal;
+  public static float CornishEngineSteamHigh => _config.CornishEngineSteamHigh;
+  public static float CornishEnginePowerLow => _config.CornishEnginePowerLow;
+  public static float CornishEnginePowerNormal =>
+    _config.CornishEnginePowerNormal;
+  public static float CornishEnginePowerHigh => _config.CornishEnginePowerHigh;
+  public static float WattEngineWaterRate => _config.WattEngineWaterRate;
+  public static float CornishEngineWaterLow => _config.CornishEngineWaterLow;
+  public static float CornishEngineWaterNormal =>
+    _config.CornishEngineWaterNormal;
+  public static float CornishEngineWaterHigh => _config.CornishEngineWaterHigh;
+  public static float SteamEngineEfficiency => _config.SteamEngineEfficiency;
   public static float EngineOverPressureSeconds =>
     _config.EngineOverPressureSeconds;
-  public static float PumpWaterPerPower => _config.PumpWaterPerPower;
-  public static float PumpMaxPressure => _config.PumpMaxPressure;
+  public static float MpRatedSpeed => _config.MpRatedSpeed;
+  public static float MpLoadPerEnginePower => _config.MpLoadPerEnginePower;
+  public static float PumpWaterPerSecond => _config.PumpWaterPerSecond;
+  public static int FluidIntakeWaterDepth => _config.FluidIntakeWaterDepth;
+  public static float FluidIntakeExclusionRange =>
+    _config.FluidIntakeExclusionRange;
   #endregion
 
   #region Steam condenser
   public static float CondenserSteamPerSecond =>
     _config.CondenserSteamPerSecond;
-  public static float CondenserCoolantRatio => _config.CondenserCoolantRatio;
+  public static float CondenserWaterThroughput =>
+    _config.CondenserWaterThroughput;
   #endregion
 }

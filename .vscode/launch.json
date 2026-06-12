@@ -2,10 +2,10 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Steelmaking Expanded (smex + ppex)",
+      "name": "Steelmaking Expanded",
       "type": "coreclr",
       "request": "launch",
-      "preLaunchTask": "launch-prep-smex",
+      "preLaunchTask": "launch-prep (smex)",
       "program": "${env:VINTAGE_STORY}/Vintagestory.dll",
       "args": [
         "--tracelog",
@@ -18,10 +18,10 @@
       "requireExactSource": false
     },
     {
-      "name": "Pipes and Power Expanded (ppex only)",
+      "name": "Pipes and Power Expanded",
       "type": "coreclr",
       "request": "launch",
-      "preLaunchTask": "launch-prep-ppex",
+      "preLaunchTask": "launch-prep (ppex)",
       "program": "${env:VINTAGE_STORY}/Vintagestory.dll",
       "args": [
         "--tracelog",

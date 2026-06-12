@@ -31,6 +31,18 @@ public class BlockEntityStructureFiller : BlockEntity
   /// </summary>
   public bool AllowAttach { get; set; }
 
+  /// <summary>
+  /// Single-char face code ("u","d","n","s","e","w") of the network port this filler cell
+  /// exposes, or null for a plain (non-port) filler. Lets a principal turn one footprint cell
+  /// into a fixed pipe/molten connector — e.g. the boiler's steam outlet sits on the filler
+  /// directly below the steam pipe. Read by <see cref="BlockStructureFiller"/>'s
+  /// <c>INetworkConnector</c> implementation.
+  /// </summary>
+  public string? PortFace { get; set; }
+
+  /// <summary>Network type of the exposed port (e.g. "pipe"), or null when this cell has no port.</summary>
+  public string? PortNetworkType { get; set; }
+
   public override void ToTreeAttributes(ITreeAttribute tree)
   {
     base.ToTreeAttributes(tree);
@@ -40,6 +52,11 @@ public class BlockEntityStructureFiller : BlockEntity
     tree.SetInt("cy", Principal?.Y ?? -1);
     tree.SetInt("cz", Principal?.Z ?? -1);
     tree.SetBool("allowAttach", AllowAttach);
+    if (PortFace != null && PortNetworkType != null)
+    {
+      tree.SetString("portFace", PortFace);
+      tree.SetString("portNet", PortNetworkType);
+    }
   }
 
   public override void FromTreeAttributes(
@@ -54,6 +71,8 @@ public class BlockEntityStructureFiller : BlockEntity
     Principal =
       cx == -1 && cy == -1 && cz == -1 ? null : new BlockPos(cx, cy, cz);
     AllowAttach = tree.GetBool("allowAttach", false);
+    PortFace = tree.GetString("portFace", null);
+    PortNetworkType = tree.GetString("portNet", null);
   }
 
   /// <summary>Reroutes the HUD readout to the principal block entity.</summary>

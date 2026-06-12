@@ -20,7 +20,7 @@
       }
     },
     "allowedVariants": {
-      "metal": ["copper", "brass", "iron", "steel"]
+      "metal": ["iron", "steel"]
     },
     "width": 1,
     "height": 3,
@@ -50,7 +50,7 @@
       }
     },
     "allowedVariants": {
-      "metal": ["copper", "brass", "iron", "steel"]
+      "metal": ["iron", "steel"]
     },
     "width": 2,
     "height": 3,
@@ -80,7 +80,7 @@
       }
     },
     "allowedVariants": {
-      "metal": ["copper", "brass", "iron", "steel"]
+      "metal": ["iron", "steel"]
     },
     "width": 3,
     "height": 3,
@@ -110,7 +110,7 @@
       }
     },
     "allowedVariants": {
-      "metal": ["copper", "brass", "iron", "steel"]
+      "metal": ["iron", "steel"]
     },
     "width": 3,
     "height": 3,
@@ -249,7 +249,7 @@
       "L": { "type": "item", "code": "game:metalplate-{metal}", "quantity": 1 }
     },
     "allowedVariants": {
-      "metal": ["copper", "brass", "iron", "steel"]
+      "metal": ["iron", "steel"]
     },
     "width": 3,
     "height": 3,
@@ -275,7 +275,7 @@
       "L": { "type": "item", "code": "game:metalplate-{metal}", "quantity": 1 }
     },
     "allowedVariants": {
-      "metal": ["copper", "brass", "iron", "steel"]
+      "metal": ["iron", "steel"]
     },
     "width": 3,
     "height": 3,

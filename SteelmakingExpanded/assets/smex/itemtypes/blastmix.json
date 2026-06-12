@@ -10,7 +10,7 @@
     "smex": ["*"]
   },
   "class": "smex.ItemBlastmix",
-  "maxstacksize": 64,
+  "maxstacksize": 128,
   "attributes": {
     "placeSound": "game:sound/block/sand"
   },

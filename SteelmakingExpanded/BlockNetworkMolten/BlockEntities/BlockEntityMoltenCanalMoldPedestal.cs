@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Text;
+using ExpandedLib;
 using ExpandedLib.EntityRegistry;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -68,7 +69,7 @@ public class BlockEntityMoltenCanalMoldPedestal : BlockEntityMoltenCanal
   public void TryTogglePouring()
   {
     IsPouring = !IsPouring;
-    SmexSounds.Play(Api, Pos, SmexSounds.Latch, 0.7f);
+    ExSounds.Play(Api, Pos, ExSounds.Latch, 0.7f);
     MarkDirty(true);
   }
 
@@ -214,10 +215,10 @@ public class BlockEntityMoltenCanalMoldPedestal : BlockEntityMoltenCanal
       delayCooldown: false
     );
     MoldCurrentUnits += (int)drained;
-    SmexSounds.PlayThrottled(
+    ExSounds.PlayThrottled(
       Api,
       Pos,
-      SmexSounds.MoltenMetal,
+      ExSounds.MoltenMetal,
       ref _lastDrainSoundMs,
       2000,
       0.5f

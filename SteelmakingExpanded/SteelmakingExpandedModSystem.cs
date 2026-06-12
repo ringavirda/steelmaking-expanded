@@ -178,8 +178,8 @@ public class SteelmakingExpandedModSystem : ModSystem
     // Register other mod's iron ore types.
     IronOreCompat.Init(api);
 
-    // The shared structure-filler block lives in ppex (a hard dependency); ppex points the
-    // StructureFillers helper at ppex:structurefiller, which this mod's mega-blocks reuse.
+    // The shared structure-filler block lives in exlib (a hard dependency); exlib points the
+    // StructureFillers helper at exlib:structurefiller, which this mod's mega-blocks reuse.
 
     // Auto-register every [EntityRegister] block / block entity / item / behavior
     // (and the vanilla-class overrides) declared in this assembly.

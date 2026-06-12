@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using ExpandedLib;
 using ExpandedLib.EntityRegistry;
 using SteelmakingExpanded.BlockNetworkMolten.BlockEntities;
 using Vintagestory.API.Client;
@@ -103,7 +104,7 @@ public class BlockMoltenCanalTap : BlockMoltenCanal
         heldSlot.TakeOut(1);
         heldSlot.MarkDirty();
       }
-      SmexSounds.Play(world.Api, blockSel.Position, SmexSounds.Ingot, 0.7f);
+      ExSounds.Play(world.Api, blockSel.Position, ExSounds.Ingot, 0.7f);
       be.MarkDirty(true);
     }
     else

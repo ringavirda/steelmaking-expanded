@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ExpandedLib;
 using ExpandedLib.EntityRegistry;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -302,7 +303,7 @@ public class BlockEntityMoltenBarrel : BlockEntity, ILiquidMetalSink
       }
       MetalContent = null;
       CurrentUnitAmount = 0;
-      SmexSounds.Play(Api, Pos, SmexSounds.AnvilHit, 0.8f);
+      ExSounds.Play(Api, Pos, ExSounds.AnvilHit, 0.8f);
       UpdateRenderer();
       UpdateGlow();
       MarkDirty(true);

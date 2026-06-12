@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using ExpandedLib;
 using ExpandedLib.BlockNetworks;
 using ExpandedLib.BlockStructures;
 using ExpandedLib.EntityRegistry;
@@ -26,7 +27,7 @@ namespace SteelmakingExpanded.BlockStructures.Converter.BlockEntities;
 [EntityRegister]
 public class BlockEntityConverterControl : BlockEntityMultiblockStructure
 {
-  #region Structure-local peripheral offsets (must match control.json multiblock)
+  #region Structure-local peripheral offsets
   private static readonly (int x, int y, int z) TransmissionLocal = (0, -1, 0);
   private static readonly (int x, int y, int z) ConverterLocal = (0, 0, 2);
   private static readonly (int x, int y, int z) GasIntakeLocal = (0, 0, 4);
@@ -178,7 +179,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
       return;
     }
 
-    // Refining: requires blast from the gas intake. 1 m³/s consumed.
+    // Refining: requires blast from the gas intake (consumes BessemerBlastPerSecond L/s).
     float consumed = TryConsumeBlast(BlastPerSecond * dt);
     if (consumed <= 0f)
     {
@@ -195,10 +196,10 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
     GetConverter()?.SpawnSmokeParticles();
 
     // Roaring blast through the molten bath while refining.
-    SmexSounds.PlayThrottled(
+    ExSounds.PlayThrottled(
       Api,
       Pos,
-      SmexSounds.Embers,
+      ExSounds.Embers,
       ref _lastProcessSoundMs,
       4000,
       0.5f
@@ -255,7 +256,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
     }
 
     int space = CapacityUnits - _contentUnits;
-    int toDrain = (int)Math.Min(inputCell.CellAmount, space);
+    int toDrain = Math.Min(inputCell.CellAmount, space);
     if (toDrain <= 0)
       return;
 
@@ -288,10 +289,10 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
     );
     _contentUnits += (int)drained;
     // Molten metal hissing into the vessel.
-    SmexSounds.PlayThrottled(
+    ExSounds.PlayThrottled(
       Api,
       Pos,
-      SmexSounds.Sizzle,
+      ExSounds.Sizzle,
       ref _lastMoltenSoundMs,
       1500,
       0.6f
@@ -346,10 +347,10 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
 
     _contentUnits -= (int)accepted;
     // Molten metal pouring out into the output canal.
-    SmexSounds.PlayThrottled(
+    ExSounds.PlayThrottled(
       Api,
       Pos,
-      SmexSounds.MoltenMetal,
+      ExSounds.MoltenMetal,
       ref _lastMoltenSoundMs,
       1500,
       0.6f
@@ -425,7 +426,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
     {
       _solidified = nowSolid;
       if (nowSolid)
-        SmexSounds.Play(Api, Pos, SmexSounds.Extinguish, 0.7f);
+        ExSounds.Play(Api, Pos, ExSounds.Extinguish, 0.7f);
       SyncConverter();
       MarkDirty();
     }
@@ -434,18 +435,21 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
   #endregion
 
   #region Peripheral access
-  protected override BlockPos GetGlobalPos(int localX, int localY, int localZ)
-  {
-    var (dx, dz) = _currentAngle switch
-    {
-      90 => (-localZ, localX),
-      180 => (localX, localZ),
-      270 => (localZ, -localX),
-      _ => (-localX, -localZ), // Default case covers 0 degrees
-    };
-
-    return Pos.AddCopy(dx, localY, dz);
-  }
+  // The converter's local frame faces opposite the structure angle, so its global
+  // mapping is the shared rotation taken at _currentAngle + 180 (see the cowper/
+  // converter +180 convention).
+  protected override BlockPos GetGlobalPos(
+    int localX,
+    int localY,
+    int localZ
+  ) =>
+    ExOrientation.GlobalPos(
+      Pos,
+      localX,
+      localY,
+      localZ,
+      (_currentAngle + 180) % 360
+    );
 
   private BlockPos PeripheralPos((int x, int y, int z) local) =>
     GetGlobalPos(local.x, local.y, local.z);
@@ -465,18 +469,25 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
       is not Blocks.BlockConverterIntake intake
     )
       return 0f;
+    // Only draw blast from a network whose pipe actually presents a connector back at the
+    // intake's connector face — air merely sitting in a pipe routed past the intake without
+    // a connector facing it is not plumbed into the converter.
     if (
-      _netSystem?.GetNetworkAt(intakePos.AddCopy(intake.ConnectorFace))
-      is not PipeNetwork gasNet
+      _netSystem?.GetConnectedNetworkAcross(
+        Api.World.BlockAccessor,
+        intakePos,
+        intake.ConnectorFace
+      )
+      is not PipeNetwork pipeNet
     )
       return 0f;
     // "Blast" is now air at or above the blast threshold pressure (≥ 3 atm).
     if (
-      gasNet.State?.GasType != "Air"
-      || gasNet.State.Pressure < SmexValues.BlastPressureThreshold
+      pipeNet.State?.MediumType != "Air"
+      || pipeNet.State.Pressure < SmexValues.BlastPressureThreshold
     )
       return 0f;
-    return gasNet.TryConsumeGas(amount, Api.World.BlockAccessor);
+    return pipeNet.TryConsumeGas(amount, Api.World.BlockAccessor);
   }
 
   /// <summary>True if the transmission's mechanical network is turning.</summary>
@@ -625,7 +636,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
     if (Api.Side == EnumAppSide.Server)
     {
       // Heavy door-style clunk as the vessel lever is set to fill / pour / hold.
-      SmexSounds.Play(Api, Pos, SmexSounds.CokeOvenDoorOpen, 0.9f);
+      ExSounds.Play(Api, Pos, ExSounds.CokeOvenDoorOpen, 0.9f);
       SyncConverter();
       MarkDirty(true);
     }
@@ -668,7 +679,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
     // The converter is a single block that renders across a 3x3x3 volume; that
     // volume is reserved with invisible filler blocks so the player can't walk
     // through it or build into it. Make sure every cell is free first.
-    int fillerAngle = StructureFillers.AngleFromSide(converter.Variant["side"]);
+    int fillerAngle = ExOrientation.AngleFromSide(converter.Variant["side"]);
     var fillerCells = StructureFillers.FootprintCells(
       converter,
       pos,
@@ -717,7 +728,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
   {
     string side = Block.Variant["side"];
     return Api.World.GetBlock(
-      new AssetLocation("smex:bessemerconverter-" + side)
+      new AssetLocation("smex:converterbessemer-" + side)
     );
   }
 

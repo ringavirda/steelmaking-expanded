@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using ExpandedLib;
 using ExpandedLib.EntityRegistry;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -190,48 +191,34 @@ public class BlockEntityConverterBessemer : BlockEntity
       Pos.Z + Math.Max(z1, z2)
     );
 
-    var particles = new SimpleParticleProperties(
-      minQuantity: intensity * 6f,
-      maxQuantity: intensity * 10f,
-      color: ColorUtil.ToRgba(200, 80, 80, 80),
-      minPos: minPos,
-      maxPos: maxPos,
+    ExParticles.RisingPlume(
+      Api.World,
+      ExParticles.Smoke,
+      minPos,
+      maxPos,
       // Lower upward velocity + shorter life ⇒ the plume only rises a short way
       // out of the vessel mouth instead of shooting toward the ceiling.
-      minVelocity: new Vec3f(-0.15f, 0.5f, -0.15f),
-      maxVelocity: new Vec3f(0.15f, 1.1f, 0.15f),
-      lifeLength: 0.7f,
-      gravityEffect: -0.05f,
-      minSize: 0.15f,
-      maxSize: 0.45f,
-      model: EnumParticleModel.Quad
-    )
-    {
-      OpacityEvolve = new EvolvingNatFloat(EnumTransformFunction.LINEAR, -120f),
-      SizeEvolve = new EvolvingNatFloat(EnumTransformFunction.LINEAR, 1f),
-    };
-
-    Api.World.SpawnParticles(particles);
+      new Vec3f(-0.15f, 0.5f, -0.15f),
+      new Vec3f(0.15f, 1.1f, 0.15f),
+      intensity * 6f,
+      intensity * 10f,
+      0.7f,
+      -0.05f,
+      0.15f,
+      0.45f,
+      new EvolvingNatFloat(EnumTransformFunction.LINEAR, -120f),
+      new EvolvingNatFloat(EnumTransformFunction.LINEAR, 1f)
+    );
   }
 
   // Rotates a block-relative (x,z) around the block centre (0.5,0.5) to match the
   // shape's rotateY for this orientation (north 0, west 90, south 180, east 270).
-  private void RotateXZ(ref float x, ref float z)
-  {
-    float dx = x - 0.5f;
-    float dz = z - 0.5f;
-
-    (float ndx, float ndz) = Block.Variant["side"] switch
-    {
-      "west" => (dz, -dx), // 90 degrees:  (x, z) -> (z, -x)
-      "south" => (-dx, -dz), // 180 degrees: (x, z) -> (-x, -z)
-      "east" => (-dz, dx), // 270 degrees: (x, z) -> (-z, x)
-      _ => (dx, dz), // "north" or default 0 degrees
-    };
-
-    x = 0.5f + ndx;
-    z = 0.5f + ndz;
-  }
+  private void RotateXZ(ref float x, ref float z) =>
+    ExOrientation.RotateAroundCenter(
+      ref x,
+      ref z,
+      ExOrientation.AngleFromSide(Block.Variant["side"])
+    );
 
   private void ApplyPose()
   {

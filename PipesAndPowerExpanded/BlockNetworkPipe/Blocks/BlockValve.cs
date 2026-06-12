@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using ExpandedLib.BlockNetworks;
+using ExpandedLib;
 using ExpandedLib.EntityRegistry;
 using PipesAndPowerExpanded.BlockNetworkPipe.BlockEntities;
 using Vintagestory.API.Client;
@@ -9,9 +9,11 @@ using Vintagestory.API.Common;
 namespace PipesAndPowerExpanded.BlockNetworkPipe.Blocks;
 
 /// <summary>
-/// Manually-toggled gas valve. Right-clicking with an empty hand opens or closes it;
-/// while closed it severs the network at this position (see
-/// <see cref="BlockEntityValve.IsConnectionBroken"/>).
+/// Manually-toggled gas valve sitting in-line on a pipe run. While open it is a normal
+/// pipe node and the run flows straight through it (so a machine port butted against it
+/// reads the run directly); while closed it severs the run at its own cell (see
+/// <see cref="BlockEntityValve.IsConnectionBroken"/>), splitting it in two. Right-clicking
+/// with an empty hand toggles it.
 /// </summary>
 [EntityRegister]
 public class BlockValve : BlockPipe
@@ -36,25 +38,15 @@ public class BlockValve : BlockPipe
       if (!byPlayer.Entity.RightHandItemSlot.Empty)
         return false;
 
-      // The valve no longer swaps to a separate "opened"/"closed" block — the
-      // state lives on the block entity and is shown via the held "open"
-      // animation pose. We just flip it and re-walk the network so the new
-      // open/closed connectivity (see BlockEntityValve.IsConnectionBroken)
-      // takes effect immediately.
+      // Toggling changes graph connectivity: opening rejoins the two sides into one run,
+      // closing severs them. ToggleOpen re-walks the network to apply that immediately.
       if (world.Side == EnumAppSide.Server)
-      {
         be.ToggleOpen();
-        var netManager =
-          world.Api.ModLoader.GetModSystem<BlockNetworkModSystem>();
-        netManager.RemoveNode(world.BlockAccessor, blockSel.Position);
-        netManager.AddNode(world.BlockAccessor, blockSel.Position, "pipe");
-      }
 
-      world.PlaySoundAt(
-        new AssetLocation("game:sounds/block/cokeovendoor-open"),
-        blockSel.Position.X,
-        blockSel.Position.Y,
-        blockSel.Position.Z,
+      ExSounds.PlayAt(
+        world,
+        blockSel.Position,
+        ExSounds.CokeOvenDoorOpen,
         byPlayer
       );
 

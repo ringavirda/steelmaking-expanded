@@ -97,31 +97,35 @@
     }
   },
   "creativeinventory": {
-    "general": ["*-intake-*-s"],
-    "smex": ["*-intake-*-s"]
+    "general": ["*-intake-*-south"],
+    "smex": ["*-intake-*-south"]
   },
-  "behaviors": [{ "name": "MultiblockStructure" }, { "name": "Lockable" }],
+  "behaviors": [
+    { "name": "MultiblockStructure" },
+    { "name": "Lockable" },
+    { "name": "HorizontalOrientable" }
+  ],
   "variantgroups": [
     { "code": "type", "states": ["intake"] },
     { "code": "refractory", "states": ["tier1", "tier2", "tier3"] },
-    { "code": "orientation", "states": ["n", "s", "w", "e"] }
+    { "code": "side", "loadFromProperties": "abstract/horizontalorientation" }
   ],
   "shapebytype": {
-    "*-intake-*-n": {
-      "base": "smex:cowperstove/intake",
-      "rotateY": 180
-    },
-    "*-intake-*-w": {
-      "base": "smex:cowperstove/intake",
-      "rotateY": 270
-    },
-    "*-intake-*-s": {
+    "*-intake-*-north": {
       "base": "smex:cowperstove/intake",
       "rotateY": 0
     },
-    "*-intake-*-e": {
+    "*-intake-*-west": {
       "base": "smex:cowperstove/intake",
       "rotateY": 90
+    },
+    "*-intake-*-south": {
+      "base": "smex:cowperstove/intake",
+      "rotateY": 180
+    },
+    "*-intake-*-east": {
+      "base": "smex:cowperstove/intake",
+      "rotateY": 270
     }
   },
   "textures": {

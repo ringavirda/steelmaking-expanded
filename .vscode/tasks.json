@@ -2,13 +2,10 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "build-smex",
+      "label": "build-exlib",
       "command": "dotnet",
       "type": "process",
-      "args": [
-        "build",
-        "${workspaceFolder}/SteelmakingExpanded/SteelmakingExpanded.csproj"
-      ],
+      "args": ["build", "${workspaceFolder}/ExpandedLib/ExpandedLib.csproj"],
       "problemMatcher": "$msCompile"
     },
     {
@@ -22,7 +19,17 @@
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "stage-mods.ps1 (smex+ppex)",
+      "label": "build-smex",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/SteelmakingExpanded/SteelmakingExpanded.csproj"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "stage-mods (exlib, ppex)",
       "type": "process",
       "command": "pwsh",
       "args": [
@@ -31,35 +38,40 @@
         "${workspaceFolder}/.vscode/stage-mods.ps1",
         "-Dest",
         "${workspaceFolder}/bin/Mods",
+        "exlib=${workspaceFolder}/ExpandedLib/bin/Debug/Mods/mod",
+        "ppex=${workspaceFolder}/PipesAndPowerExpanded/bin/Debug/Mods/mod"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "stage-mods (exlib, ppex, smex)",
+      "type": "process",
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-File",
+        "${workspaceFolder}/.vscode/stage-mods.ps1",
+        "-Dest",
+        "${workspaceFolder}/bin/Mods",
+        "exlib=${workspaceFolder}/ExpandedLib/bin/Debug/Mods/mod",
         "smex=${workspaceFolder}/SteelmakingExpanded/bin/Debug/Mods/mod",
         "ppex=${workspaceFolder}/PipesAndPowerExpanded/bin/Debug/Mods/mod"
       ],
       "problemMatcher": []
     },
     {
-      "label": "stage-mods.ps1 (ppex only)",
-      "type": "process",
-      "command": "pwsh",
-      "args": [
-        "-NoProfile",
-        "-File",
-        "${workspaceFolder}/.vscode/stage-mods.ps1",
-        "-Dest",
-        "${workspaceFolder}/bin/Mods",
-        "ppex=${workspaceFolder}/PipesAndPowerExpanded/bin/Debug/Mods/mod"
+      "label": "launch-prep (ppex)",
+      "dependsOrder": "sequence",
+      "dependsOn": ["build-ppex", "stage-mods (exlib, ppex)"],
+      "problemMatcher": []
+    },
+    {
+      "label": "launch-prep (smex)",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "build-smex",
+        "stage-mods (exlib, ppex, smex)"
       ],
-      "problemMatcher": []
-    },
-    {
-      "label": "launch-prep-smex",
-      "dependsOrder": "sequence",
-      "dependsOn": ["build-smex", "stage-mods.ps1 (smex+ppex)"],
-      "problemMatcher": []
-    },
-    {
-      "label": "launch-prep-ppex",
-      "dependsOrder": "sequence",
-      "dependsOn": ["build-ppex", "stage-mods.ps1 (ppex only)"],
       "problemMatcher": []
     }
   ]

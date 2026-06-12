@@ -1,3 +1,4 @@
+using ExpandedLib;
 using ExpandedLib.BlockNetworks;
 using ExpandedLib.BlockStructures;
 using ExpandedLib.EntityRegistry;
@@ -23,9 +24,9 @@ public class BlockConverterIntake : Block, INetworkConnector
   /// block's <c>side</c> variant (north → north, rotated for the other sides).
   /// </summary>
   public BlockFacing ConnectorFace =>
-    StructureFillers.RotateFacing(
+    ExOrientation.RotateFacing(
       BlockFacing.NORTH,
-      StructureFillers.AngleFromSide(Variant["side"])
+      ExOrientation.AngleFromSide(Variant["side"])
     );
 
   public bool HasConnectorAt(BlockFacing face) => face == ConnectorFace;

@@ -62,13 +62,12 @@ public class SmexConfig
 
   #region Air blower / blast
   /// <summary>Pressure (atm) at or above which air in a pipe network counts as "blast".</summary>
-  public float BlastPressureThreshold { get; set; } = 3.0f;
+  public float BlastPressureThreshold { get; set; } = 2.5f;
 
-  /// <summary>Air-line pressure multiplier the air blower can reach per unit of engine power.</summary>
-  public float AirCompressionRatio { get; set; } = 6f;
-
-  /// <summary>Air (m³/s) the air blower injects at full power.</summary>
-  public float AirBlowerOutputPerSecond { get; set; } = 3f;
+  /// <summary>Air (L/s) the air blower injects at full engine power (scales with the
+  /// engine's power fraction). Output pressure tracks the engine's inlet steam pressure
+  /// × <see cref="PipesAndPowerExpanded.PpexValues.SteamEngineEfficiency"/>.</summary>
+  public float AirBlowerOutputPerSecond { get; set; } = 16f;
   #endregion
 
   #region Player safety
@@ -138,8 +137,8 @@ public class SmexConfig
   /// <summary>Molten-metal capacity (units) of the converter vessel.</summary>
   public int BessemerConverterCapacity { get; set; } = 1200;
 
-  /// <summary>Blast (m³/s) the converter draws from its gas intake while refining.</summary>
-  public float BessemerBlastPerSecond { get; set; } = 1.0f;
+  /// <summary>Blast (L/s) the converter draws from its gas intake while refining.</summary>
+  public float BessemerBlastPerSecond { get; set; } = 8.0f;
 
   /// <summary>Seconds of blast a charge needs to refine iron into steel.</summary>
   public float BessemerProcessDuration { get; set; } = 300f;
@@ -172,8 +171,8 @@ public class SmexConfig
   #endregion
 
   #region Smoke stack
-  /// <summary>Exhaust gas (m³) the smoke stack vents from the network per tick.</summary>
-  public float SmokestackGasIntakeVolume { get; set; } = 4.0f;
+  /// <summary>Exhaust gas (L/s) the smoke stack vents from the network.</summary>
+  public float SmokestackGasIntakeVolume { get; set; } = 48.0f;
   #endregion
 }
 
@@ -251,7 +250,6 @@ public static class SmexValues
 
   #region Air blower / blast
   public static float BlastPressureThreshold => _config.BlastPressureThreshold;
-  public static float AirCompressionRatio => _config.AirCompressionRatio;
   public static float AirBlowerOutputPerSecond =>
     _config.AirBlowerOutputPerSecond;
   #endregion

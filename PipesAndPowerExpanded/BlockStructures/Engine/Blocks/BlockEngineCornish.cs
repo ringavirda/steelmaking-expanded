@@ -7,10 +7,10 @@ namespace PipesAndPowerExpanded.BlockStructures.Engine.Blocks;
 /// <summary>
 /// The Cornish engine mega-block (steel, high-pressure tier). Adds the steam control
 /// rods: sneak + right-click cycles the steam-admission throttle. Repairs require steel
-/// only. All other behavior lives in <see cref="BlockEngineBase"/>.
+/// only. All other behavior lives in <see cref="BlockEngine"/>.
 /// </summary>
 [EntityRegister]
-public class BlockEngineCornish : BlockEngineBase
+public class BlockEngineCornish : BlockEngine
 {
   protected override RepairItem[] RepairItems =>
     [

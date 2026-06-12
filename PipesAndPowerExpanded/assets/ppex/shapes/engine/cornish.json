@@ -3566,7 +3566,7 @@
       "code": "cyclepump",
       "quantityframes": 60,
       "onActivityStopped": "EaseOut",
-      "onAnimationEnd": "EaseOut",
+      "onAnimationEnd": "Repeat",
       "keyframes": [
         {
           "frame": 0,
@@ -3687,7 +3687,7 @@
       "code": "cyclemp",
       "quantityframes": 60,
       "onActivityStopped": "EaseOut",
-      "onAnimationEnd": "EaseOut",
+      "onAnimationEnd": "Repeat",
       "keyframes": [
         {
           "frame": 0,

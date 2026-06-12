@@ -373,11 +373,26 @@
 	],
 	"animations": [
 		{
+			"name": "idle",
+			"code": "idle",
+			"quantityframes": 30,
+			"onActivityStopped": "EaseOut",
+			"onAnimationEnd": "Repeat",
+			"keyframes": [
+				{
+					"frame": 0,
+					"elements": {
+						"Piston": { "offsetX": 0.0, "offsetY": 0.0, "offsetZ": 0.0 }
+					}
+				}
+			]
+		},
+		{
 			"name": "cycle",
 			"code": "cycle",
 			"quantityframes": 60,
 			"onActivityStopped": "EaseOut",
-			"onAnimationEnd": "EaseOut",
+			"onAnimationEnd": "Repeat",
 			"keyframes": [
 				{
 					"frame": 0,

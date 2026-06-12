@@ -1,7 +1,9 @@
+using ExpandedLib.BlockNetworks;
 using ExpandedLib.EntityRegistry;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
+using Vintagestory.GameContent;
 
 namespace ExpandedLib.BlockStructures;
 
@@ -14,8 +16,32 @@ namespace ExpandedLib.BlockStructures;
 /// <c>BlockMPMultiblockGear</c>.
 /// </summary>
 [EntityRegister]
-public class BlockStructureFiller : Block
+public class BlockStructureFiller : Block, INetworkConnector
 {
+  // --- INetworkConnector: optional per-cell network port ---
+  // A plain filler is inert (network type ""), so it never affects pipe orientation or
+  // connectivity. A principal can turn one footprint cell into a fixed port by setting
+  // PortFace/PortNetworkType on that cell's BE (e.g. the boiler's steam outlet sits on the
+  // filler directly below the steam pipe); only that cell then reads as a connector, on that
+  // one face. The position-less members below are the inert fallback; the network system uses
+  // the position-aware overloads, which consult the BE.
+  public string NetworkType => "";
+
+  public bool HasConnectorAt(BlockFacing face) => false;
+
+  public string NetworkTypeAt(IBlockAccessor world, BlockPos pos) =>
+    world.GetBlockEntity(pos) is BlockEntityStructureFiller be
+      ? be.PortNetworkType ?? ""
+      : "";
+
+  public bool HasConnectorAt(
+    IBlockAccessor world,
+    BlockPos pos,
+    BlockFacing face
+  ) =>
+    world.GetBlockEntity(pos) is BlockEntityStructureFiller be
+    && be.PortFace == face.Code[0].ToString();
+
   // Fillers are solid (sidesolid:all) so they collide, but by default they must not
   // act as an attachment surface — otherwise torches, vines, slabs, etc. could be
   // hung on the invisible footprint. A cell opts back in via its fillerOffsets
@@ -40,6 +66,32 @@ public class BlockStructureFiller : Block
         attachmentArea
       );
     return false;
+  }
+
+  /// <summary>
+  /// Inherits the principal's interaction sounds (hit, break, place, walk, inside,
+  /// ambient) so the invisible footprint sounds like the block it stands in for —
+  /// otherwise hitting or walking on a filler is silent. Every sound the engine plays
+  /// for a block is resolved through this method.
+  /// </summary>
+  public override BlockSounds GetSounds(
+    IBlockAccessor blockAccessor,
+    BlockSelection blockSel,
+    ItemStack? stack = null
+  )
+  {
+    if (
+      blockSel?.Position != null
+      && blockAccessor.GetBlockEntity(blockSel.Position)
+        is BlockEntityStructureFiller be
+      && be.Principal != null
+    )
+    {
+      Block principal = blockAccessor.GetBlock(be.Principal);
+      if (principal.Id != 0 && principal != this)
+        return principal.GetSounds(blockAccessor, blockSel, stack);
+    }
+    return base.GetSounds(blockAccessor, blockSel, stack);
   }
 
   /// <summary>Resolves the principal position + block, or null when orphaned.</summary>
@@ -80,9 +132,50 @@ public class BlockStructureFiller : Block
     BlockSelection blockSel
   )
   {
-    if (!TryGetPrincipal(world, blockSel.Position, out var pp, out var pb))
-      return base.OnBlockInteractStart(world, byPlayer, blockSel);
-    return pb.OnBlockInteractStart(world, byPlayer, Repoint(blockSel, pp));
+    // A held placeable block means the player wants to build on the footprint, not drive
+    // the principal — skip the forward so the placement runs (the allowAttach branch below,
+    // or base). Liquid containers are the one exception: a held bucket is itself a block,
+    // but the principal (e.g. a boiler pouring from it) needs to see it, so those still
+    // forward.
+    ItemStack? held = byPlayer.InventoryManager?.ActiveHotbarSlot?.Itemstack;
+    bool placingBlock =
+      held?.Block != null && held.Collectible is not BlockLiquidContainerBase;
+
+    // Forward to the principal first. If it handles the click (e.g. a boiler pouring from a
+    // held bucket or toggling its lid) we are done. Cell-aware principals
+    // (IFillerInteractionTarget) also get the originally-clicked cell, so they can restrict
+    // an interaction to a specific footprint cell.
+    if (
+      !placingBlock
+      && TryGetPrincipal(world, blockSel.Position, out var pp, out var pb)
+    )
+    {
+      BlockSelection psel = Repoint(blockSel, pp);
+      bool handled = pb is IFillerInteractionTarget target
+        ? target.OnFillerInteractStart(world, byPlayer, psel, blockSel.Position)
+        : pb.OnBlockInteractStart(world, byPlayer, psel);
+      if (handled)
+        return true;
+    }
+
+    // The principal didn't handle it. On a cell flagged allowAttach (a buildable
+    // surface, e.g. a boiler's deck), return false so the engine performs its normal
+    // block placement on the filler's face instead of the click being swallowed —
+    // otherwise only sneak+RMB would place a block here.
+    if (
+      world.BlockAccessor.GetBlockEntity(blockSel.Position)
+        is BlockEntityStructureFiller be
+      && be.AllowAttach
+    )
+      return false;
+
+    // Cell is not a buildable surface: swallow a block-placement click so the engine
+    // can't drop a block on the filler's face. Other interactions still fall through
+    // to base.
+    if (placingBlock)
+      return true;
+
+    return base.OnBlockInteractStart(world, byPlayer, blockSel);
   }
 
   public override bool OnBlockInteractStep(
@@ -94,12 +187,16 @@ public class BlockStructureFiller : Block
   {
     if (!TryGetPrincipal(world, blockSel.Position, out var pp, out var pb))
       return base.OnBlockInteractStep(secondsUsed, world, byPlayer, blockSel);
-    return pb.OnBlockInteractStep(
-      secondsUsed,
-      world,
-      byPlayer,
-      Repoint(blockSel, pp)
-    );
+    BlockSelection psel = Repoint(blockSel, pp);
+    return pb is IFillerInteractionTarget target
+      ? target.OnFillerInteractStep(
+        secondsUsed,
+        world,
+        byPlayer,
+        psel,
+        blockSel.Position
+      )
+      : pb.OnBlockInteractStep(secondsUsed, world, byPlayer, psel);
   }
 
   public override void OnBlockInteractStop(
@@ -114,7 +211,17 @@ public class BlockStructureFiller : Block
       base.OnBlockInteractStop(secondsUsed, world, byPlayer, blockSel);
       return;
     }
-    pb.OnBlockInteractStop(secondsUsed, world, byPlayer, Repoint(blockSel, pp));
+    BlockSelection psel = Repoint(blockSel, pp);
+    if (pb is IFillerInteractionTarget target)
+      target.OnFillerInteractStop(
+        secondsUsed,
+        world,
+        byPlayer,
+        psel,
+        blockSel.Position
+      );
+    else
+      pb.OnBlockInteractStop(secondsUsed, world, byPlayer, psel);
   }
 
   public override float OnGettingBroken(
@@ -192,10 +299,14 @@ public class BlockStructureFiller : Block
   {
     if (!TryGetPrincipal(world, selection.Position, out var pp, out var pb))
       return base.GetPlacedBlockInteractionHelp(world, selection, forPlayer);
-    return pb.GetPlacedBlockInteractionHelp(
-      world,
-      Repoint(selection, pp),
-      forPlayer
-    );
+    BlockSelection psel = Repoint(selection, pp);
+    return pb is IFillerInteractionTarget target
+      ? target.GetFillerInteractionHelp(
+        world,
+        psel,
+        forPlayer,
+        selection.Position
+      )
+      : pb.GetPlacedBlockInteractionHelp(world, psel, forPlayer);
   }
 }

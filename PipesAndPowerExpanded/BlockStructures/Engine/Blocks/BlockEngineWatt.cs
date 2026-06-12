@@ -4,10 +4,10 @@ namespace PipesAndPowerExpanded.BlockStructures.Engine.Blocks;
 
 /// <summary>
 /// The Watt engine mega-block (iron, low-pressure tier). No control rods. Repairs accept
-/// iron or steel. All behavior lives in <see cref="BlockEngineBase"/>.
+/// iron or steel. All behavior lives in <see cref="BlockEngine"/>.
 /// </summary>
 [EntityRegister]
-public class BlockEngineWatt : BlockEngineBase
+public class BlockEngineWatt : BlockEngine
 {
   protected override RepairItem[] RepairItems =>
     [

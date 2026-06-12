@@ -104,16 +104,19 @@
     }
   ],
   "attributes": {
-    "outletOffset": { "x": 0, "y": 2, "z": 2 },
+    "steamConnectorOffset": { "x": 0, "y": 1, "z": 2 },
+    "lidOffset": { "x": 0, "y": 1, "z": 1 },
     "fuelOffset": { "x": 0, "y": 0, "z": -1 },
-    "gasOutletOffset": { "x": 0, "y": 1, "z": 4 },
+    "explosionCenterOffset": { "x": 0, "y": 1, "z": 2 },
+    "lightSampleOffset": { "x": 0, "y": 1, "z": 2 },
+    "exhaustPipeOffset": { "x": 0, "y": 1, "z": 5 },
     "waterRendererBox": {
-      "x1": -16,
-      "y1": 0,
-      "z1": 0,
-      "x2": 16,
-      "y2": 16,
-      "z2": 32
+      "x1": -14,
+      "y1": 2,
+      "z1": 2,
+      "x2": 30,
+      "y2": 30,
+      "z2": 62
     },
     "fillerOffsets": [
       { "x": -1, "y": 0, "z": 0, "allowAttach": true },
@@ -132,7 +135,13 @@
       { "x": 1, "y": 0, "z": 2, "allowAttach": true },
       { "x": -1, "y": 1, "z": 2 },
       { "x": 0, "y": 1, "z": 2, "allowAttach": true },
-      { "x": 1, "y": 1, "z": 2 }
+      { "x": 1, "y": 1, "z": 2 },
+      { "x": -1, "y": 0, "z": 3, "allowAttach": true },
+      { "x": 0, "y": 0, "z": 3, "allowAttach": true },
+      { "x": 1, "y": 0, "z": 3, "allowAttach": true },
+      { "x": -1, "y": 1, "z": 3 },
+      { "x": 0, "y": 1, "z": 3, "allowAttach": true },
+      { "x": 1, "y": 1, "z": 3 }
     ],
     "multiblockStructure": {
       "blockNumbers": {
@@ -140,10 +149,9 @@
         "ppex:pipe-passthrough-fire-*": 2,
         "ppex:pipe-passthroughbend-fire-u*": 3,
         "game:claybricks-good-fire": 4,
-        "ppex:boiler-steamoutlet*": 5,
         "game:air*": 6,
-        "@(air|colpile)": 7,
-        "ppex:structurefiller": 8,
+        "@(air|coalpile)": 7,
+        "exlib:structurefiller": 8,
         "game:cokeovendoor*": 9,
         "ppex:pipe-outlet-fire-u": 10
       },
@@ -166,6 +174,12 @@
         { "x": -1, "y": 1, "z": 2, "w": 8 },
         { "x": 0, "y": 1, "z": 2, "w": 8 },
         { "x": 1, "y": 1, "z": 2, "w": 8 },
+        { "x": -1, "y": 0, "z": 3, "w": 8 },
+        { "x": 0, "y": 0, "z": 3, "w": 8 },
+        { "x": 1, "y": 0, "z": 3, "w": 8 },
+        { "x": -1, "y": 1, "z": 3, "w": 8 },
+        { "x": 0, "y": 1, "z": 3, "w": 8 },
+        { "x": 1, "y": 1, "z": 3, "w": 8 },
 
         { "x": -1, "y": -1, "z": -2, "w": 4 },
         { "x": 0, "y": -1, "z": -2, "w": 2 },
@@ -191,23 +205,24 @@
         { "x": -1, "y": -1, "z": 2, "w": 4 },
         { "x": 0, "y": -1, "z": 2, "w": 4 },
         { "x": 1, "y": -1, "z": 2, "w": 4 },
-
         { "x": -1, "y": -1, "z": 3, "w": 4 },
         { "x": 0, "y": -1, "z": 3, "w": 4 },
         { "x": 1, "y": -1, "z": 3, "w": 4 },
-        { "x": -1, "y": 0, "z": 3, "w": 4 },
-        { "x": 0, "y": 0, "z": 3, "w": 6 },
-        { "x": 1, "y": 0, "z": 3, "w": 4 },
-        { "x": 0, "y": 1, "z": 3, "w": 10 },
+
         { "x": -1, "y": -1, "z": 4, "w": 4 },
         { "x": 0, "y": -1, "z": 4, "w": 4 },
         { "x": 1, "y": -1, "z": 4, "w": 4 },
         { "x": -1, "y": 0, "z": 4, "w": 4 },
-        { "x": 0, "y": 0, "z": 4, "w": 4 },
+        { "x": 0, "y": 0, "z": 4, "w": 6 },
         { "x": 1, "y": 0, "z": 4, "w": 4 },
-        { "x": 0, "y": 1, "z": 4, "w": 4 },
-
-        { "x": 0, "y": 2, "z": 1, "w": 5 }
+        { "x": 0, "y": 1, "z": 4, "w": 10 },
+        { "x": -1, "y": -1, "z": 5, "w": 4 },
+        { "x": 0, "y": -1, "z": 5, "w": 4 },
+        { "x": 1, "y": -1, "z": 5, "w": 4 },
+        { "x": -1, "y": 0, "z": 5, "w": 4 },
+        { "x": 0, "y": 0, "z": 5, "w": 4 },
+        { "x": 1, "y": 0, "z": 5, "w": 4 },
+        { "x": 0, "y": 1, "z": 5, "w": 4 }
       ]
     }
   },
@@ -228,8 +243,6 @@
     },
     "selectiveElements": ["Root/Base/*"]
   },
-  "selectionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 },
-  "collisionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 },
   "sidesolid": { "all": false },
   "sideopaque": { "all": false }
 }

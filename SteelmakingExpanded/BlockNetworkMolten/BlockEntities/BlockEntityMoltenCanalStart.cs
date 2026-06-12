@@ -1,3 +1,4 @@
+using ExpandedLib;
 using ExpandedLib.EntityRegistry;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
@@ -87,10 +88,10 @@ public class BlockEntityMoltenCanalStart
     bool soaked = amount > 0 && SoakHeat(Api.World, temperature);
 
     if (accepted > 0 || soaked)
-      SmexSounds.PlayThrottled(
+      ExSounds.PlayThrottled(
         Api,
         Pos,
-        SmexSounds.PourMetal,
+        ExSounds.PourMetal,
         ref _lastPourSoundMs,
         2000,
         0.6f

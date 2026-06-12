@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ExpandedLib;
 using ExpandedLib.BlockStructures;
 using ExpandedLib.EntityRegistry;
 using PipesAndPowerExpanded.BlockNetworkPipe;
@@ -223,10 +224,10 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
     {
       _moltenIron -= accepted;
       dirty = true;
-      SmexSounds.PlayThrottled(
+      ExSounds.PlayThrottled(
         Api,
         lowerTapPos,
-        SmexSounds.MoltenMetal,
+        ExSounds.MoltenMetal,
         ref _lastTapSoundMs,
         2000,
         0.5f
@@ -259,10 +260,10 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
     {
       _moltenSlag -= accepted;
       dirty = true;
-      SmexSounds.PlayThrottled(
+      ExSounds.PlayThrottled(
         Api,
         higherTapPos,
-        SmexSounds.MoltenMetal,
+        ExSounds.MoltenMetal,
         ref _lastTapSoundMs,
         2000,
         0.5f
@@ -293,9 +294,9 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
     {
       foreach (var pos in _gasOutlets)
       {
-        if (Api.World.BlockAccessor.GetBlockEntity(pos) is IGasProducer outlet)
+        if (Api.World.BlockAccessor.GetBlockEntity(pos) is IPipeProducer outlet)
         {
-          if (!outlet.TryProduceGas(2.0f, _internalTemp * 0.8f, "Exhaust"))
+          if (!outlet.TryProduce(24f, _internalTemp * 0.8f, "Exhaust"))
             failedAny = true;
         }
         else
@@ -327,20 +328,22 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
 
     foreach (var pos in _tuyeres)
     {
-      if (Api.World.BlockAccessor.GetBlockEntity(pos) is IGasConsumer tuyere)
+      if (Api.World.BlockAccessor.GetBlockEntity(pos) is IPipeConsumer tuyere)
       {
-        float consumed = tuyere.TryConsumeGas(2.0f);
-        if (consumed > 0 && tuyere is BlockEntityPipe pipe)
+        float consumed = tuyere.TryConsume(12f);
+        if (tuyere is BlockEntityPipe pipe)
         {
-          if (pipe.GasType == "Exhaust")
+          if (pipe.Medium == "Exhaust")
             tuyeresReceiveExhaust = true;
-          // "Blast" is now air at or above the blast threshold pressure (≥ 3 atm).
+
           if (
-            pipe.GasType == "Air"
+            pipe.Medium == "Air"
             && pipe.Pressure >= SmexValues.BlastPressureThreshold
           )
-            hotBlastTemp = System.Math.Max(hotBlastTemp, pipe.LocalTemperature);
-          receivingBlast = true;
+          {
+            hotBlastTemp = Math.Max(hotBlastTemp, pipe.NetworkTemperature);
+            receivingBlast = true;
+          }
         }
       }
       else
@@ -370,7 +373,7 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
         _internalTemp = 900f;
         dirty = true;
         // Whoosh as the charge catches.
-        SmexSounds.Play(Api, GetGlobalPos(0, 0, 2), SmexSounds.Ignite, 1f, 32f);
+        ExSounds.Play(Api, GetGlobalPos(0, 0, 2), ExSounds.Ignite, 1f, 32f);
       }
     }
 
@@ -418,10 +421,10 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
     if (State == BlastFurnaceState.Firing || State == BlastFurnaceState.Melting)
     {
       // Roaring furnace ambience while lit.
-      SmexSounds.PlayThrottled(
+      ExSounds.PlayThrottled(
         Api,
         GetGlobalPos(0, 0, 2),
-        SmexSounds.Fire,
+        ExSounds.Fire,
         ref _lastFireSoundMs,
         5000,
         0.6f,
@@ -620,13 +623,7 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
   private void Extinguish()
   {
     if (State != BlastFurnaceState.Idle)
-      SmexSounds.Play(
-        Api,
-        GetGlobalPos(0, 0, 2),
-        SmexSounds.Extinguish,
-        1f,
-        32f
-      );
+      ExSounds.Play(Api, GetGlobalPos(0, 0, 2), ExSounds.Extinguish, 1f, 32f);
 
     State = BlastFurnaceState.Idle;
     _internalTemp = 20f;

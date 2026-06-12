@@ -1,6 +1,6 @@
 using ExpandedLib.EntityRegistry;
 using PipesAndPowerExpanded.BlockNetworkPipe;
-using SteelmakingExpanded.Structures.Metalworking.CowperStove.BlockEntities;
+using SteelmakingExpanded.BlockStructures.CowperStove.BlockEntities;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 

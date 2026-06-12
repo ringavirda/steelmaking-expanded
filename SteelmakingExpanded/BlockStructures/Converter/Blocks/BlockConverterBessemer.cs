@@ -1,4 +1,5 @@
 using System;
+using ExpandedLib;
 using ExpandedLib.BlockStructures;
 using ExpandedLib.EntityRegistry;
 using SteelmakingExpanded.BlockStructures.Converter.BlockEntities;
@@ -38,7 +39,7 @@ public class BlockConverterBessemer : Block
     // Clear the reserved 3x3x3 filler volume. Done before base.OnBlockBroken so
     // that even if the construction-drop path below throws, the fillers are gone
     // and we don't leave invisible solid cells behind.
-    int fillerAngle = StructureFillers.AngleFromSide(Variant["side"]);
+    int fillerAngle = ExOrientation.AngleFromSide(Variant["side"]);
     var fillerCells = StructureFillers.FootprintCells(this, pos, fillerAngle);
     StructureFillers.RemoveFillers(world, pos, fillerCells);
 

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://moddbcdn.vintagestory.at/schema/modinfo.latest.json",
+  "type": "Code",
+  "modid": "exlib",
+  "name": "Expanded Library",
+  "authors": ["fallenstar"],
+  "description": "Shared framework library for the Fallenstar's Expanded mods.",
+  "version": "0.1.0",
+  "dependencies": {
+    "game": "1.22.0"
+  }
+}

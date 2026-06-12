@@ -12,7 +12,7 @@ namespace PipesAndPowerExpanded.BlockStructures.Engine.Blocks;
 /// via the <see cref="BEBehaviorEngineMPGenerator"/> torque producer.
 /// </summary>
 [EntityRegister]
-public class BlockEngineMPGenerator : Block, IMechanicalPowerBlock
+public class BlockEngineMPGenerator : BlockEngineSubmachine, IMechanicalPowerBlock
 {
   private bool IsXAxis => Variant["side"] is "east" or "west";
 

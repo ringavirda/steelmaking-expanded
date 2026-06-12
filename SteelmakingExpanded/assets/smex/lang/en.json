@@ -170,13 +170,13 @@
   "bessemer-status-steelready": "Steel ready — pour it out",
   "bessemer-status-foreign": "Foreign metal — pour it out",
 
-  "gasblower-info-blowing": "Blowing {0:F1} m³/s of {1}",
-  "gasheated-info-passing": "Passing {0:F1} m³/s of {1}",
+  "gasblower-info-blowing": "Blowing {0:F1} L/s of {1}",
+  "gasheated-info-passing": "Passing {0:F1} L/s of {1}",
 
   "structure-missing-header": "Structure incomplete — still need:",
   "structure-missing-line": "  {0} × {1}",
 
-  "smokestack-info-consuming": "Consuming {0:F1} m³ of Gas",
+  "smokestack-info-consuming": "Consuming {0:F1} L of Gas",
   "smokestack-complete": "Smoke Stack structure is complete!",
   "heatsink-info-temp": "Temperature: {0:F1} °C",
   "cowperstove-info-status": "Status: {0}",

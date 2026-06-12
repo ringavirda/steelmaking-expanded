@@ -6,7 +6,7 @@ using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 
-namespace SteelmakingExpanded.Structures.Metalworking.CowperStove.BlockEntities;
+namespace SteelmakingExpanded.BlockStructures.CowperStove.BlockEntities;
 
 /// <summary>
 /// Block entity for the cowper-stove heat sink. Holds the regenerator temperature

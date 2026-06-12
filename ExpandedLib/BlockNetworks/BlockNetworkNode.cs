@@ -197,13 +197,17 @@ public abstract class BlockNetworkNode
       Block neighborBlock = blockAccessor.GetBlock(neighborPos);
 
       if (
-        BlockNetworkModSystem.IsCompatibleNetworkBlock(
+        BlockNetworkModSystem.IsCompatibleNetworkBlockAt(
+          blockAccessor,
+          neighborPos,
           neighborBlock,
           NetworkType
         ) && neighborBlock is INetworkConnector neighborNet
       )
       {
-        if (neighborNet.HasConnectorAt(face.Opposite))
+        if (
+          neighborNet.HasConnectorAt(blockAccessor, neighborPos, face.Opposite)
+        )
           requiredChars.Add(face.Code[0]);
         else
           forbiddenChars.Add(face.Code[0]);
@@ -223,12 +227,26 @@ public abstract class BlockNetworkNode
       }
     }
 
-    var choices = validOrientations
-      .Where(orient =>
-        requiredChars.All(c => orient.Contains(c))
-        && !forbiddenChars.Any(c => orient.Contains(c))
-      )
-      .ToArray();
+    // A linear shape connects only collinear faces — every one of its orientations
+    // lies on a single axis (e.g. ns / we / ud) — so it can never join two
+    // perpendicular neighbours at once. When such a segment has connectors on
+    // perpendicular faces it cannot honour all of them; instead it stays placeable by
+    // connecting to any one of them — the player picks the face at placement
+    // (clicked/look direction) and the wrench switches between the choices. Shapes
+    // that can bend (a single orientation spanning two axes) must still honour every
+    // required face, so the relaxation must not apply to them.
+    bool connectsAny = validOrientations.All(IsSingleAxisOrientation);
+
+    bool Matches(string orient) =>
+      !forbiddenChars.Any(c => orient.Contains(c))
+      && (
+        connectsAny
+          ? requiredChars.Count == 0
+            || requiredChars.Any(c => orient.Contains(c))
+          : requiredChars.All(c => orient.Contains(c))
+      );
+
+    var choices = validOrientations.Where(Matches).ToArray();
 
     // Fallback: relax the requirement for non-network faces if no orientation matched.
     if (
@@ -240,23 +258,33 @@ public abstract class BlockNetworkNode
       requiredChars.RemoveAll(c =>
       {
         BlockFacing? facing = BlockFacing.FromCode(c.ToString());
-        return facing != null
-          && !BlockNetworkModSystem.IsCompatibleNetworkBlock(
-            blockAccessor.GetBlock(pos.AddCopy(facing)),
-            NetworkType
-          );
+        if (facing == null)
+          return false;
+        BlockPos nPos = pos.AddCopy(facing);
+        return !BlockNetworkModSystem.IsCompatibleNetworkBlockAt(
+          blockAccessor,
+          nPos,
+          blockAccessor.GetBlock(nPos),
+          NetworkType
+        );
       });
 
-      choices = validOrientations
-        .Where(orient =>
-          requiredChars.All(c => orient.Contains(c))
-          && !forbiddenChars.Any(c => orient.Contains(c))
-        )
-        .ToArray();
+      choices = validOrientations.Where(Matches).ToArray();
     }
 
     return choices;
   }
+
+  /// <summary>
+  /// True when every connector face in <paramref name="orientation"/> lies on the same
+  /// axis (e.g. "ns", "we", "ud", or a single face). Such shapes are linear: they can
+  /// only join collinear neighbours, never two perpendicular ones at once.
+  /// </summary>
+  private static bool IsSingleAxisOrientation(string orientation) =>
+    orientation
+      .Select(c => BlockFacing.FromFirstLetter(c)?.Axis)
+      .Distinct()
+      .Count() == 1;
 
   /// <summary>
   /// Called by the VS engine when a neighbouring block changes.  Recalculates this

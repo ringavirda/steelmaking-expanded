@@ -25,7 +25,7 @@
         "smex:moltencanal-tap*": 5,
         "smex:moltencanal-start*": 6,
         "smex:moltencanal-straight*": 7,
-        "ppex:structurefiller": 8
+        "exlib:structurefiller": 8
       },
       "offsets": [
         { "x": 0, "y": 0, "z": 0, "w": 1 },

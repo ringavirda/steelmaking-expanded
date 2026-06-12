@@ -28,7 +28,7 @@
     "height": 3,
     "output": {
       "type": "block",
-      "code": "smex:cowperstove-intake-{tier}-s"
+      "code": "smex:cowperstove-intake-{tier}-south"
     }
   },
   {

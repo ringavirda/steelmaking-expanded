@@ -1,10 +1,10 @@
 {
   "code": "structurefiller",
-  "class": "ppex.BlockStructureFiller",
-  "entityClass": "ppex.BlockEntityStructureFiller",
+  "class": "exlib.BlockStructureFiller",
+  "entityClass": "exlib.BlockEntityStructureFiller",
   "handbook": { "exclude": true },
   "blockmaterial": "Metal",
-  "shape": { "base": "ppex:block/empty" },
+  "shape": { "base": "exlib:block/empty" },
   "drawtype": "json",
   "sidesolid": { "all": true },
   "sideopaque": { "all": false },

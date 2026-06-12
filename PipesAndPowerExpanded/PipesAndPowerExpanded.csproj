@@ -23,6 +23,10 @@
       <HintPath>$(VINTAGE_STORY)/Lib/cairo-sharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(VINTAGE_STORY)/Lib/0Harmony.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>$(VINTAGE_STORY)/Lib/Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
@@ -47,10 +51,15 @@
     </Content>
   </ItemGroup>
 
+  <!--
+    ExpandedLib is its own mod (exlib) with a single runtime type identity (one
+    BlockNetworkModSystem, shared network/structure base types). Reference the built
+    exlib.dll instead of recompiling it. Private=false: the player installs exlib as a
+    separate mod, so its dll is not bundled into ppex's output.
+  -->
   <ItemGroup>
-    <Compile
-      Include="..\ExpandedLib\**\*.cs"
-      Link="ExpandedLib\%(RecursiveDir)%(Filename)%(Extension)"
-    />
+    <ProjectReference Include="..\ExpandedLib\ExpandedLib.csproj">
+      <Private>false</Private>
+    </ProjectReference>
   </ItemGroup>
 </Project>

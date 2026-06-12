@@ -128,18 +128,8 @@ public abstract class BlockEntityMultiblockStructure : BlockEntity
   protected abstract void UpdateStructureRotation();
 
   /// <summary>Converts a structure-local offset into a world position for the current rotation.</summary>
-  protected virtual BlockPos GetGlobalPos(int localX, int localY, int localZ)
-  {
-    var (dx, dz) = _currentAngle switch
-    {
-      90 => (localZ, -localX),
-      180 => (-localX, -localZ),
-      270 => (-localZ, localX),
-      _ => (localX, localZ), // Default case covers 0 degrees
-    };
-
-    return Pos.AddCopy(dx, localY, dz);
-  }
+  protected virtual BlockPos GetGlobalPos(int localX, int localY, int localZ) =>
+    ExOrientation.GlobalPos(Pos, localX, localY, localZ, _currentAngle);
 
   /// <summary>
   /// Player interaction entry point (the structure-projection toggle): re-checks

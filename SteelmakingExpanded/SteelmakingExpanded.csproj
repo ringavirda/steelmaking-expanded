@@ -48,12 +48,15 @@
   </ItemGroup>
 
   <!--
-    ExpandedLib and the pipe network live in Pipes and Power Expanded (ppex). They must have a
-    single runtime type identity (one BlockNetworkModSystem instance, shared network base types),
-    so smex references the built ppex.dll rather than re-compiling ExpandedLib. Private=false: the
-    player installs ppex as a separate mod, so its dll is not bundled into smex's output.
+    smex builds on the shared framework in exlib (network/structure base types, single
+    BlockNetworkModSystem identity) and uses ppex's pipe network + pipe blocks directly.
+    Reference both built dlls; Private=false because the player installs exlib and ppex as
+    their own mods, so neither dll is bundled into smex's output.
   -->
   <ItemGroup>
+    <ProjectReference Include="..\ExpandedLib\ExpandedLib.csproj">
+      <Private>false</Private>
+    </ProjectReference>
     <ProjectReference Include="..\PipesAndPowerExpanded\PipesAndPowerExpanded.csproj">
       <Private>false</Private>
     </ProjectReference>

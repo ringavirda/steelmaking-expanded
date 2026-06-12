@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using ExpandedLib;
 using ExpandedLib.BlockNetworks;
 using ExpandedLib.EntityRegistry;
 using SteelmakingExpanded.BlockNetworkMolten.BlockEntities;
@@ -131,12 +132,7 @@ public class BlockMoltenCanal : BlockNetworkNode
       && world.BlockAccessor.GetBlockEntity(pos) is BlockEntityMoltenCanal be
       && be.WouldSpillOnRemoval()
     )
-      world.PlaySoundAt(
-        SmexSounds.Sizzle,
-        pos.X + 0.5,
-        pos.Y + 0.5,
-        pos.Z + 0.5
-      );
+      world.PlaySoundAt(ExSounds.Sizzle, pos.X + 0.5, pos.Y + 0.5, pos.Z + 0.5);
 
     base.OnBlockBroken(world, pos, byPlayer, dropQuantityMultiplier);
   }
@@ -256,12 +252,7 @@ public class BlockMoltenCanal : BlockNetworkNode
         if (byPlayer.WorldData.CurrentGameMode != EnumGameMode.Creative)
           held!.Collectible.DamageItem(world, byPlayer.Entity, activeSlot, 2);
 
-        SmexSounds.Play(
-          world.Api,
-          blockSel.Position,
-          SmexSounds.StoneCrush,
-          0.8f
-        );
+        ExSounds.Play(world.Api, blockSel.Position, ExSounds.StoneCrush, 0.8f);
       }
       return true;
     }
@@ -295,7 +286,7 @@ public class BlockMoltenCanal : BlockNetworkNode
           activeSlot!.TakeOut(SmexValues.CanalSealClayCost);
           activeSlot.MarkDirty();
         }
-        SmexSounds.Play(world.Api, blockSel.Position, SmexSounds.Build, 0.8f);
+        ExSounds.Play(world.Api, blockSel.Position, ExSounds.Build, 0.8f);
       }
       return true;
     }
@@ -321,12 +312,7 @@ public class BlockMoltenCanal : BlockNetworkNode
         }
         held!.Collectible.DamageItem(world, byPlayer.Entity, activeSlot, 1);
       }
-      SmexSounds.Play(
-        world.Api,
-        blockSel.Position,
-        SmexSounds.StoneCrush,
-        0.8f
-      );
+      ExSounds.Play(world.Api, blockSel.Position, ExSounds.StoneCrush, 0.8f);
     }
     return true;
   }

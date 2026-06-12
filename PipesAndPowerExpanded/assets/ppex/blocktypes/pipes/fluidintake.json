@@ -1,11 +1,11 @@
 {
   "code": "pipe",
   "class": "ppex.BlockFluidIntake",
-  "classEntity": "ppex.BlockEntityFluidIntake",
+  "entityClass": "ppex.BlockEntityFluidIntake",
   "blockmaterial": "Metal",
   "variantgroups": [
     { "code": "type", "states": ["fluidintake"] },
-    { "code": "orientations", "states": ["n", "s", "w", "e"] }
+    { "code": "orientation", "states": ["n", "s", "w", "e"] }
   ],
   "creativeinventory": {
     "general": ["*-fluidintake-s"],

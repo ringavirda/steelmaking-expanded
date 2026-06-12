@@ -1,5 +1,7 @@
+using System;
 using System.Text;
 using ExpandedLib.EntityRegistry;
+using PipesAndPowerExpanded.BlockNetworkPipe.Blocks;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -10,12 +12,13 @@ using Vintagestory.GameContent;
 namespace PipesAndPowerExpanded.BlockNetworkPipe.BlockEntities;
 
 /// <summary>
-/// A gas pipe section with a shut-off valve. The open/closed state is no longer
-/// encoded as a separate block variant; it lives on the block entity and is
-/// represented visually by holding the shape's <c>open</c> animation pose (driven
-/// through the <see cref="BEBehaviorAnimatable"/> behavior). Gas flow is gated by
-/// <see cref="IsConnectionBroken"/>, which the network re-evaluates whenever the
-/// valve is toggled.
+/// A manually-toggled in-line valve. While open it is a normal pipe node and the run
+/// flows straight through it as one network — so a machine port butted against it reads
+/// the run directly. While closed it severs the run at its own cell
+/// (<see cref="IsConnectionBroken"/>), splitting it in two; toggling re-walks the graph
+/// to apply the change. The open/closed state lives on the block entity and is shown by
+/// holding the shape's <c>open</c> animation pose (driven through the
+/// <see cref="BEBehaviorAnimatable"/> behavior).
 /// </summary>
 [EntityRegister]
 public class BlockEntityValve : BlockEntityPipe
@@ -26,10 +29,10 @@ public class BlockEntityValve : BlockEntityPipe
   private bool _animatorReady;
   private string? _animatorOrientation;
 
-  /// <summary>Whether the valve is currently open (passing gas).</summary>
+  /// <summary>Whether the valve is currently open (letting the run flow through it).</summary>
   public bool IsOpen() => _open;
 
-  /// <summary>A closed valve breaks the network connection so gas cannot pass through.</summary>
+  /// <summary>A closed valve severs the run at its cell; open, it is a normal in-line node.</summary>
   public override bool IsConnectionBroken() => !_open;
 
   #region Lifecycle
@@ -44,6 +47,8 @@ public class BlockEntityValve : BlockEntityPipe
       InitAnimator(capi);
       ApplyValvePose();
     }
+    if (!_open)
+      Pressure = 0f;
   }
 
   private void InitAnimator(ICoreClientAPI capi)
@@ -138,7 +143,10 @@ public class BlockEntityValve : BlockEntityPipe
       // re-initing the animator every time would reset the held "open" pose to its
       // start, making the valve appear to reset its position and re-open over and
       // over while gas flows.
-      if (_animatorReady && _animatorOrientation == block.Variant["orientation"])
+      if (
+        _animatorReady
+        && _animatorOrientation == block.Variant["orientation"]
+      )
         return;
 
       _animatorReady = false;
@@ -147,11 +155,44 @@ public class BlockEntityValve : BlockEntityPipe
     }
   }
 
-  /// <summary>Server-side toggle of the valve's open state.</summary>
+  /// <summary>Server-side toggle of the valve's open state. Re-walks the network so the
+  /// change in connectivity (open rejoins the two sides, closed severs them) takes effect
+  /// immediately.</summary>
   public void ToggleOpen()
   {
     _open = !_open;
     MarkDirty(true);
+
+    // RemoveNode runs fracture detection (closing splits the run); AddNode re-merges with
+    // both sides when open, or re-isolates the cell when closed (IsConnectionBroken).
+    if (
+      Api?.Side == EnumAppSide.Server
+      && NetworkSystem != null
+      && Api.World?.BlockAccessor is { } ba
+    )
+    {
+      NetworkSystem.RemoveNode(ba, Pos);
+      NetworkSystem.AddNode(ba, Pos, NetworkType);
+    }
+    if (!_open)
+    {
+      Pressure = 0f;
+      DiscardNetworkPool();
+    }
+  }
+
+  /// <summary>
+  /// Drops any cached/persisted network pool. A closed valve is an isolated single cell
+  /// that holds nothing, but closing severs it without a broadcast — so the pressurised
+  /// <see cref="PipeNetworkState"/> it cached while open (part of a charged run) lingers in
+  /// <c>_savedNetworkState</c>, gets serialised, and is restored into the isolated cell on
+  /// reload, immediately over-pressuring and bursting it. Clearing it keeps closed-valve
+  /// saves empty and the display honest.
+  /// </summary>
+  private void DiscardNetworkPool()
+  {
+    _savedNetworkState = null;
+    _networkState = null;
   }
 
   private void ApplyValvePose()
@@ -180,13 +221,15 @@ public class BlockEntityValve : BlockEntityPipe
 
   public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
   {
-    base.GetBlockInfo(forPlayer, dsc);
     dsc.AppendLine(
       Lang.Get(
         "ppex:valve-state",
         Lang.Get(_open ? "ppex:valve-open" : "ppex:valve-closed")
       )
     );
+    // Open, the valve is part of the run, so the base pipe info reports what flows
+    // through it; closed, it is isolated and reads empty.
+    base.GetBlockInfo(forPlayer, dsc);
   }
 
   #endregion
@@ -207,6 +250,11 @@ public class BlockEntityValve : BlockEntityPipe
     base.FromTreeAttributes(tree, worldForResolving);
     bool prev = _open;
     _open = tree.GetBool("valveOpen");
+    // Closed at save time → the cell was isolated and holds nothing. Drop any persisted
+    // pool (base just read it from the tree) before Initialize captures it for restore, so
+    // a stale pressurised state saved while the valve was open can't burst the cell on load.
+    if (!_open)
+      DiscardNetworkPool();
     if (Api?.Side == EnumAppSide.Client && prev != _open)
       ApplyValvePose();
   }

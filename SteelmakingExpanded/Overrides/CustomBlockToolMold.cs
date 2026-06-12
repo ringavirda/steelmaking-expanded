@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ExpandedLib;
 using ExpandedLib.EntityRegistry;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -308,7 +309,7 @@ public class CustomBlockToolMold : BlockToolMold
         be.UpdateRenderer();
         be.MarkDirty(true);
         world.PlaySoundAt(
-          SmexSounds.Ingot,
+          ExSounds.Ingot,
           blockSel.Position,
           -0.5,
           byPlayer,

@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using ExpandedLib;
 using ExpandedLib.BlockNetworks;
 using ExpandedLib.BlockStructures;
 using ExpandedLib.EntityRegistry;
@@ -26,7 +27,7 @@ namespace SteelmakingExpanded.BlockStructures.SmokeStack.BlockEntities;
 public class BlockEntitySmokeStack
   : BlockEntityMultiblockStructure,
     INetworkNode,
-    IGasConsumer
+    IPipeConsumer
 {
   private float _lastConsumedAmount;
   private BlockNetworkModSystem? _system;
@@ -80,18 +81,30 @@ public class BlockEntitySmokeStack
 
   #endregion
 
-  #region IGasConsumer
+  #region IPipeConsumer
 
   /// <summary>
-  /// Consumes up to <paramref name="requestedVolume"/> m³ from the gas network
+  /// Consumes up to <paramref name="requestedVolume"/> litres from the gas network
   /// at this block's position.  Returns the actual amount consumed.
   /// </summary>
-  public float TryConsumeGas(float requestedVolume)
+  public float TryConsume(float requestedVolume)
   {
     if (_system?.GetNetworkAt(Pos) is not PipeNetwork gasNet)
       return 0f;
     return gasNet.TryConsumeGas(requestedVolume, Api.World.BlockAccessor);
   }
+
+  /// <inheritdoc/>
+  public float CurrentNetworkPressure =>
+    _system?.GetNetworkAt(Pos) is not PipeNetwork gasNet
+      ? 0f
+      : gasNet.State?.Pressure ?? 0f;
+
+  /// <inheritdoc/>
+  public float CurrentNetworkVolume =>
+    _system?.GetNetworkAt(Pos) is not PipeNetwork gasNet
+      ? 0f
+      : gasNet.State?.Volume ?? 0f;
 
   #endregion
 
@@ -146,7 +159,7 @@ public class BlockEntitySmokeStack
     var gasIntakeVolume = SmexValues.SmokestackGasIntakeVolume;
 
     // Delegates to IGasConsumer; GasNetwork updates state and broadcasts.
-    float consumed = TryConsumeGas(gasIntakeVolume);
+    float consumed = TryConsume(gasIntakeVolume);
 
     if (System.Math.Abs(_lastConsumedAmount - consumed) > 0.001f)
     {
@@ -162,10 +175,10 @@ public class BlockEntitySmokeStack
     {
       SpawnSmokeParticles();
       // Soft draught of exhaust venting up the stack.
-      SmexSounds.PlayThrottled(
+      ExSounds.PlayThrottled(
         Api,
         Pos,
-        SmexSounds.Fire,
+        ExSounds.Fire,
         ref _lastVentSoundMs,
         6000,
         0.3f,
@@ -176,47 +189,31 @@ public class BlockEntitySmokeStack
 
   private void SpawnSmokeParticles()
   {
-    int dx = 0,
-      dz = 1;
-    if (_currentAngle == 90)
-    {
-      dx = 1;
-      dz = 0;
-    }
-    else if (_currentAngle == 180)
-    {
-      dx = 0;
-      dz = -1;
-    }
-    else if (_currentAngle == 270)
-    {
-      dx = -1;
-      dz = 0;
-    }
+    // The smoke column sits over the cell in front of the stack — structure-local
+    // (0, *, 1) rotated by the placed orientation, same as GetGlobalPos resolves it.
+    Vec3i d = ExOrientation.RotateOffset(0, 0, 1, _currentAngle);
+    int dx = d.X,
+      dz = d.Z;
 
     Vec3d minPos = new(Pos.X + dx + 0.1, Pos.Y + 1.0, Pos.Z + dz + 0.1);
     Vec3d maxPos = new(Pos.X + dx + 0.9, Pos.Y + 13.0, Pos.Z + dz + 0.9);
 
-    var particles = new SimpleParticleProperties(
-      _lastConsumedAmount * 15f,
-      _lastConsumedAmount * 25f,
-      ColorUtil.ToRgba(200, 80, 80, 80),
+    ExParticles.RisingPlume(
+      Api.World,
+      ExParticles.Smoke,
       minPos,
       maxPos,
       new Vec3f(-0.5f, 1f, -0.5f),
       new Vec3f(0.5f, 3f, 0.5f),
+      _lastConsumedAmount * 15f,
+      _lastConsumedAmount * 25f,
       1.5f,
-      3f,
+      -0.1f,
       0.5f,
       1.5f,
-      EnumParticleModel.Quad
-    )
-    {
-      OpacityEvolve = new EvolvingNatFloat(EnumTransformFunction.LINEAR, -200f),
-      SizeEvolve = new EvolvingNatFloat(EnumTransformFunction.LINEAR, 2),
-      GravityEffect = -0.1f,
-    };
-    Api.World.SpawnParticles(particles);
+      new EvolvingNatFloat(EnumTransformFunction.LINEAR, -200f),
+      new EvolvingNatFloat(EnumTransformFunction.LINEAR, 2)
+    );
   }
 
   #endregion

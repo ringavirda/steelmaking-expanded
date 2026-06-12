@@ -3,81 +3,76 @@ using ExpandedLib.EntityRegistry;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
-using Vintagestory.API.MathTools;
 
 namespace PipesAndPowerExpanded.BlockStructures.Engine.BlockEntities;
 
 /// <summary>
 /// The Cornish engine — the steel, high-pressure, efficient tier. Its steam control
-/// rods (sneak + right-click) set a throttle that shifts the whole operating band:
+/// rods (sneak + right-click) set how much steam it admits, which sets its power:
 /// <list type="bullet">
-///   <item><b>Underclocked</b> — engages at a lower pressure (down to ~4 atm) for reduced
-///   power, so it can limp along on a weak supply.</item>
-///   <item><b>Overclocked</b> — engages higher (up to ~8 atm) for boosted power, drawing
-///   more steam and pulling network pressure down faster.</item>
+///   <item><b>Low</b> — 12 L/s steam, half power.</item>
+///   <item><b>Normal</b> — 24 L/s steam, nominal power.</item>
+///   <item><b>High</b> — 48 L/s steam, double power.</item>
 /// </list>
-/// The over-pressure break threshold rides up with the throttle, so a fully overclocked
-/// engine tolerates ~9 atm before bursting. The break itself lives in
-/// <see cref="BlockEntityEngineBase"/>.
+/// The operating band is fixed (6–8 atm) — the control rods do not move it, so the
+/// engine never sits over-pressure just from a throttle change. The break itself lives
+/// in <see cref="BlockEntityEngine"/>.
 /// </summary>
 [EntityRegister]
-public class BlockEntityEngineCornish : BlockEntityEngineBase
+public class BlockEntityEngineCornish : BlockEntityEngine
 {
-  // Control-rod throttle (0 = full underclock, 1 = full overclock), in 0.25 steps.
-  private float _throttle = 0.5f;
+  // Control-rod setting: 0 = low, 1 = normal, 2 = high.
+  private int _throttle = 1;
 
-  /// <summary>The current control-rod throttle, 0..1.</summary>
-  public float ThrottleSetting => Math.Clamp(_throttle, 0f, 1f);
+  /// <summary>The current control-rod setting index, 0..2.</summary>
+  public int ThrottleIndex => Math.Clamp(_throttle, 0, 2);
 
-  /// <summary>Inlet pressure (atm) the engine engages at for the current throttle.</summary>
-  public float EngagePressure =>
-    GameMath.Lerp(
-      PpexValues.CornishEngineUnderclockPressure,
-      PpexValues.CornishEngineOverclockPressure,
-      ThrottleSetting
-    );
+  private static readonly string[] ThrottleKeys = ["low", "normal", "high"];
 
-  /// <summary>Delivered power for the current throttle (below nominal when underclocked, above when overclocked).</summary>
-  public float ThrottlePower =>
-    GameMath.Lerp(
-      PpexValues.CornishEngineUnderclockPower,
-      PpexValues.CornishEngineOverclockPower,
-      ThrottleSetting
-    );
+  /// <summary>Lang key fragment for the current setting.</summary>
+  public string ThrottleKey => ThrottleKeys[ThrottleIndex];
 
   protected override float MaxPowerValue => PpexValues.CornishEngineMaxPower;
-  protected override float SteamPerPower =>
-    PpexValues.CornishEngineSteamPerPower;
+  protected override float EngagePressure =>
+    PpexValues.CornishEngineEngagePressure;
+  protected override float BreakPressure =>
+    PpexValues.CornishEngineBreakPressure;
 
-  // The break threshold rides above the engage pressure, so it climbs with the throttle.
-  protected override float OverPressureThreshold =>
-    EngagePressure + PpexValues.CornishEngineOverPressureMargin;
+  protected override float RunSteamRate =>
+    ThrottleIndex switch
+    {
+      0 => PpexValues.CornishEngineSteamLow,
+      2 => PpexValues.CornishEngineSteamHigh,
+      _ => PpexValues.CornishEngineSteamNormal,
+    };
 
-  protected override float ComputePower(float inletPressure)
-  {
-    // Runs once the inlet meets the throttle's engage pressure; power is set by the throttle.
-    if (inletPressure < EngagePressure)
-      return 0f;
-    return ThrottlePower;
-  }
+  protected override float RunPower =>
+    ThrottleIndex switch
+    {
+      0 => PpexValues.CornishEnginePowerLow,
+      2 => PpexValues.CornishEnginePowerHigh,
+      _ => PpexValues.CornishEnginePowerNormal,
+    };
 
-  /// <summary>
-  /// Advances the control rods one step, wrapping from full overclock back to full
-  /// underclock. Called server-side from the block interaction.
-  /// </summary>
+  protected override float RunWaterOutput =>
+    ThrottleIndex switch
+    {
+      0 => PpexValues.CornishEngineWaterLow,
+      2 => PpexValues.CornishEngineWaterHigh,
+      _ => PpexValues.CornishEngineWaterNormal,
+    };
+
+  /// <summary>Advances the control rods one step, wrapping high → low. Called server-side.</summary>
   public void CycleThrottle()
   {
-    float next = ThrottleSetting + 0.25f;
-    if (next > 1.001f)
-      next = 0f;
-    _throttle = next;
+    _throttle = (ThrottleIndex + 1) % 3;
     MarkDirty(true);
   }
 
   public override void ToTreeAttributes(ITreeAttribute tree)
   {
     base.ToTreeAttributes(tree);
-    tree.SetFloat("throttle", _throttle);
+    tree.SetInt("throttle", _throttle);
   }
 
   public override void FromTreeAttributes(
@@ -86,7 +81,7 @@ public class BlockEntityEngineCornish : BlockEntityEngineBase
   )
   {
     base.FromTreeAttributes(tree, worldForResolving);
-    _throttle = tree.GetFloat("throttle", 0.5f);
+    _throttle = tree.GetInt("throttle", 1);
   }
 
   public override void GetBlockInfo(
@@ -101,9 +96,9 @@ public class BlockEntityEngineCornish : BlockEntityEngineBase
     dsc.AppendLine(
       Lang.Get(
         "ppex:engine-info-throttle",
-        ThrottleSetting * 100f,
+        Lang.Get("ppex:engine-throttle-" + ThrottleKey),
         EngagePressure,
-        OverPressureThreshold
+        BreakPressure
       )
     );
   }

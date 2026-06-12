@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using ExpandedLib;
 using ExpandedLib.EntityRegistry;
 using SteelmakingExpanded.Compat;
 using Vintagestory.API.Common;
@@ -303,27 +304,11 @@ public class BlockEntityHopperBell : BlockEntity
     }
 
     SpawnFallingParticles();
-    Api.World.PlaySoundAt(SmexSounds.StoneCrush, Pos.X, Pos.Y, Pos.Z);
+    Api.World.PlaySoundAt(ExSounds.StoneCrush, Pos.X, Pos.Y, Pos.Z);
   }
 
-  private void SpawnFallingParticles()
-  {
-    var color = ColorUtil.ToRgba(255, 60, 60, 60);
-    var particles = new SimpleParticleProperties(
-      20,
-      30,
-      color,
-      new Vec3d(Pos.X + 0.3, Pos.Y - 0.2, Pos.Z + 0.3),
-      new Vec3d(Pos.X + 0.7, Pos.Y - 0.2, Pos.Z + 0.7),
-      new Vec3f(-0.2f, -2f, -0.2f),
-      new Vec3f(0.2f, -4f, 0.2f),
-      1.5f,
-      0.5f,
-      1.2f,
-      (float)EnumParticleModel.Cube
-    );
-    Api.World.SpawnParticles(particles);
-  }
+  private void SpawnFallingParticles() =>
+    ExParticles.FallingDust(Api.World, Pos);
 
   private bool IsBlastmix(ItemStack stack) =>
     stack.Collectible.Code.Path.Equals("blastmix");

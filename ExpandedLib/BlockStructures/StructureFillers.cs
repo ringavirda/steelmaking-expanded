@@ -25,54 +25,12 @@ public readonly record struct FillerCell(BlockPos Pos, bool AllowAttach);
 public static class StructureFillers
 {
   /// <summary>
-  /// Asset code of the invisible filler block. This library compiles into every mod
-  /// that uses it, so each mod ships its own <c>structurefiller</c> block and must set
-  /// this to its own domain (e.g. <c>new AssetLocation(Mod.Info.ModID, "structurefiller")</c>)
-  /// during <c>ModSystem.Start</c> before any mega-block is placed.
+  /// Asset code of the invisible filler block. The Expanded Lib mod (<c>exlib</c>) ships
+  /// the one shared <c>structurefiller</c> block and points this at it during
+  /// <see cref="ExpandedLibModSystem.Start"/>; every dependent mod's mega-blocks reuse it.
   /// </summary>
   public static AssetLocation FillerCode { get; set; } =
-    new("game:structurefiller");
-
-  /// <summary>Maps a horizontal "side" variant to the structure's rotation angle.</summary>
-  public static int AngleFromSide(string? side) =>
-    side switch
-    {
-      "east" => 270,
-      "south" => 180,
-      "west" => 90,
-      _ => 0, // "north" or default
-    };
-
-  /// <summary>
-  /// Rotates a structure-local offset by the given angle. Same convention as
-  /// <see cref="BlockEntityMultiblockStructure.GetGlobalPos"/> so footprints line
-  /// up with the verification structures.
-  /// </summary>
-  public static Vec3i RotateOffset(Vec3i off, int angle)
-  {
-    var (dx, dz) = angle switch
-    {
-      90 => (off.Z, -off.X),
-      180 => (-off.X, -off.Z),
-      270 => (-off.Z, off.X),
-      _ => (off.X, off.Z),
-    };
-    return new Vec3i(dx, off.Y, dz);
-  }
-
-  /// <summary>
-  /// Rotates a horizontal block face by the structure angle (same convention as
-  /// <see cref="RotateOffset"/>). Vertical faces (up/down) are returned unchanged.
-  /// Used to map north-orientation connector faces onto the placed orientation.
-  /// </summary>
-  public static BlockFacing RotateFacing(BlockFacing baseFace, int angle)
-  {
-    if (baseFace.IsVertical)
-      return baseFace;
-    Vec3i n = baseFace.Normali;
-    Vec3i r = RotateOffset(new Vec3i(n.X, 0, n.Z), angle);
-    return BlockFacing.FromNormal(r) ?? baseFace;
-  }
+    new("exlib:structurefiller");
 
   /// <summary>
   /// Reads the <c>fillerOffsets</c> JSON attribute (north-orientation cells). Each
@@ -111,7 +69,7 @@ public static class StructureFillers
     var cells = new List<FillerCell>();
     foreach (var off in ReadOffsets(principal))
     {
-      Vec3i r = RotateOffset(off.Offset, angle);
+      Vec3i r = ExOrientation.RotateOffset(off.Offset, angle);
       cells.Add(
         new FillerCell(principalPos.AddCopy(r.X, r.Y, r.Z), off.AllowAttach)
       );

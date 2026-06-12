@@ -276,8 +276,8 @@ public class BlockMigrationModSystem : ModSystem
     }
   }
 
-  // Scan every loaded assembly, not just this lib's: ExpandedLib is compiled into one mod
-  // (ppex) but other mods that reference it (e.g. smex) declare their own migrations.
+  // Scan every loaded assembly, not just this lib's: this system lives in the shared
+  // exlib mod, but the mods that depend on it (ppex, smex) declare their own migrations.
   private static IEnumerable<IBlockCodeMigration> DiscoverMigrations()
   {
     foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())

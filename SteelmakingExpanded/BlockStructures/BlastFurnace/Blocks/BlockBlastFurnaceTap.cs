@@ -1,4 +1,5 @@
 using System.Linq;
+using ExpandedLib;
 using ExpandedLib.EntityRegistry;
 using SteelmakingExpanded.BlockNetworkMolten.Blocks;
 using SteelmakingExpanded.BlockStructures.BlastFurnace.BlockEntities;
@@ -58,7 +59,7 @@ public class BlockBlastFurnaceTap : Block
         tap.TogglePouring();
 
       world.PlaySoundAt(
-        SmexSounds.CokeOvenDoorOpen,
+        ExSounds.CokeOvenDoorOpen,
         blockSel.Position.X,
         blockSel.Position.Y,
         blockSel.Position.Z,

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ExpandedLib;
 using ExpandedLib.EntityRegistry;
 using SteelmakingExpanded.BlockNetworkMolten.BlockEntities;
 using Vintagestory.API.Client;
@@ -471,7 +472,7 @@ public class BlockMoltenBarrel : Block
       && !be.IsHardened
     )
       world.PlaySoundAt(
-        SmexSounds.Sizzle,
+        ExSounds.Sizzle,
         pos.X + 0.5,
         pos.Y + 0.5,
         pos.Z + 0.5,

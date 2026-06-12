@@ -51,6 +51,33 @@ public class BlockNetworkModSystem : ModSystem
       ? net
       : null;
 
+  /// <summary>
+  /// Returns the network in the cell adjacent to <paramref name="connectorPos"/> across
+  /// <paramref name="connectorFace"/>, but only when the block occupying that cell actually
+  /// exposes a network connector back toward <paramref name="connectorPos"/> (on
+  /// <paramref name="connectorFace"/>'s opposite face).
+  /// <para>
+  /// This is the reciprocal-connection test a fixed machine port must apply before it draws
+  /// gas / liquid from — or feeds — a pipe run. A pipe that merely occupies the adjacent cell
+  /// without a connector facing the port is <em>not</em> plumbed into it (its orientation
+  /// points elsewhere), so the port must not operate on its network. Returns <c>null</c> when
+  /// there is no reciprocating connector, or no network in that cell.
+  /// </para>
+  /// </summary>
+  public BlockNetwork? GetConnectedNetworkAcross(
+    IBlockAccessor world,
+    BlockPos connectorPos,
+    BlockFacing connectorFace
+  )
+  {
+    BlockPos neighbourPos = connectorPos.AddCopy(connectorFace);
+    return
+      world.GetBlock(neighbourPos) is INetworkConnector neighbour
+      && neighbour.HasConnectorAt(world, neighbourPos, connectorFace.Opposite)
+      ? GetNetworkAt(neighbourPos)
+      : null;
+  }
+
   private BlockNetwork CreateNetwork(string networkType)
   {
     if (_factories.TryGetValue(networkType, out var factory))
@@ -387,8 +414,9 @@ public class BlockNetworkModSystem : ModSystem
   {
     if (
       neighbourBlock is not INetworkConnector neighbourConn
-      || neighbourConn.NetworkType != sourceNode.NetworkType
-      || !neighbourConn.HasConnectorAt(facing.Opposite)
+      || neighbourConn.NetworkTypeAt(world, neighbourPos)
+        != sourceNode.NetworkType
+      || !neighbourConn.HasConnectorAt(world, neighbourPos, facing.Opposite)
     )
       return false;
 
@@ -426,6 +454,20 @@ public class BlockNetworkModSystem : ModSystem
   /// <summary>Returns <c>true</c> when <paramref name="neighbour"/> is a network block of type <paramref name="id"/>.</summary>
   public static bool IsCompatibleNetworkBlock(Block neighbour, string id) =>
     neighbour is INetworkConnector connector && connector.NetworkType == id;
+
+  /// <summary>
+  /// Position-aware compatibility — like <see cref="IsCompatibleNetworkBlock"/> but consults
+  /// the connector's per-cell network type, so a structure filler that exposes a port on one
+  /// footprint cell reads as compatible only on that cell.
+  /// </summary>
+  public static bool IsCompatibleNetworkBlockAt(
+    IBlockAccessor world,
+    BlockPos pos,
+    Block neighbour,
+    string id
+  ) =>
+    neighbour is INetworkConnector connector
+    && connector.NetworkTypeAt(world, pos) == id;
 
   public override void Dispose()
   {

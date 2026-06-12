@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using ExpandedLib.BlockNetworks;
 using ExpandedLib.EntityRegistry;
-using PipesAndPowerExpanded.BlockNetworkPipe.Blocks;
 using Vintagestory.API.Common;
+using Vintagestory.API.MathTools;
 
 namespace SteelmakingExpanded.Structures.Metalworking.CowperStove.Blocks;
 
@@ -11,10 +12,19 @@ namespace SteelmakingExpanded.Structures.Metalworking.CowperStove.Blocks;
 /// shared <c>MultiblockStructure</c> block behavior declared in the block JSON.
 /// </summary>
 [EntityRegister]
-public class BlockCowperStoveIntake : BlockPipePassthrough
+public class BlockCowperStoveIntake : Block, INetworkConnector
 {
-  public override Dictionary<string, string[]> AllowedOrientations =>
-    new() { { "intake", ["n", "s", "w", "e"] } };
+  public string NetworkType => "pipe";
 
-  protected override string GetFallbackOrientation(string? type) => "n";
+  public bool HasConnectorAt(BlockFacing face)
+  {
+    var orient = Variant["side"];
+    return orient != null
+      && (
+        (orient == "north" && face == BlockFacing.SOUTH)
+        || (orient == "east" && face == BlockFacing.WEST)
+        || (orient == "south" && face == BlockFacing.NORTH)
+        || (orient == "west" && face == BlockFacing.EAST)
+      );
+  }
 }

@@ -1,3 +1,4 @@
+using ExpandedLib;
 using ExpandedLib.BlockNetworks;
 using ExpandedLib.BlockStructures;
 using ExpandedLib.EntityRegistry;
@@ -11,14 +12,14 @@ namespace PipesAndPowerExpanded.BlockStructures.Engine.Blocks;
 /// and left (delivery) faces, rotated to the placed orientation.
 /// </summary>
 [EntityRegister]
-public class BlockEngineFluidPump : Block, INetworkConnector
+public class BlockEngineFluidPump : BlockEngineSubmachine, INetworkConnector
 {
   public string NetworkType => "pipe";
 
   private BlockFacing LeftFace =>
-    StructureFillers.RotateFacing(
+    ExOrientation.RotateFacing(
       BlockFacing.WEST,
-      StructureFillers.AngleFromSide(Variant["side"])
+      ExOrientation.AngleFromSide(Variant["side"])
     );
 
   public bool HasConnectorAt(BlockFacing face) =>
