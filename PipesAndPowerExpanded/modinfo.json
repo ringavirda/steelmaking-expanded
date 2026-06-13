@@ -5,7 +5,7 @@
   "name": "Pipes and Power Expanded",
   "authors": ["fallenstar"],
   "description": "Pipe network and modular steam power machinery!",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "dependencies": {
     "game": "1.22.0",
     "exlib": "0.1.0"
