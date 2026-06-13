@@ -30,6 +30,12 @@ namespace ExpandedLib.BlockMigrations;
 /// also implements <see cref="IBlockEntityMigration"/> opts into block-entity handling:
 /// the old block entity's tree is read just before the swap and handed to the migration
 /// to copy or reshape onto the new block entity.</para>
+///
+/// <para>The same migrated blocks can also exist as item stacks rather than placed blocks —
+/// in container block entities (chests, ground storage, mold racks) and in player
+/// inventories. Those are rewritten too: container inventories during the chunk scan, and
+/// player inventories on join. Stack size and attributes (e.g. a filled mold's stored
+/// contents) are preserved.</para>
 /// </summary>
 public class BlockMigrationModSystem : ModSystem
 {
@@ -65,6 +71,9 @@ public class BlockMigrationModSystem : ModSystem
     //   - the event handler for every chunk column that loads afterwards.
     api.Event.ServerRunPhase(EnumServerRunPhase.RunGame, SweepLoadedChunks);
     api.Event.ChunkColumnLoaded += OnChunkColumnLoaded;
+    // Molds (and other migrated blocks) can also sit as item stacks in a player's
+    // inventory; the chunk scan never sees those, so remap them as each player joins.
+    api.Event.PlayerJoin += OnPlayerJoin;
   }
 
   /// <summary>Builds the remap table on first use; returns false if nothing to migrate.</summary>
@@ -171,12 +180,98 @@ public class BlockMigrationModSystem : ModSystem
       migrated++;
     }
 
+    // Block entities that hold an inventory (chests, ground storage, mold racks, …) can be
+    // storing migrated blocks as item stacks. The voxel loop above only saw the container
+    // block itself, so scan each container's slots too. Snapshot the values first: the
+    // ReplaceBlock calls above may have added/removed entries in this same dictionary.
+    if (chunk.BlockEntities != null)
+      foreach (BlockEntity be in chunk.BlockEntities.Values.ToArray())
+        if (be is IBlockEntityContainer { Inventory: { } inv })
+        {
+          int n = RemapInventory(inv);
+          if (n > 0)
+          {
+            be.MarkDirty(true);
+            migrated += n;
+          }
+        }
+
     return migrated;
+  }
+
+  /// <summary>
+  /// Rewrites every item stack in <paramref name="inv"/> whose block is a migration source
+  /// to the replacement block, preserving stack size and attributes (e.g. a filled mold's
+  /// stored contents). Returns how many slots changed.
+  /// </summary>
+  private int RemapInventory(IInventory inv)
+  {
+    int changed = 0;
+    foreach (ItemSlot slot in inv)
+    {
+      ItemStack? stack = slot.Itemstack;
+      if (
+        stack?.Collectible?.Code == null
+        || !_remap.TryGetValue(stack.Collectible.Code, out RemapEntry entry)
+      )
+        continue;
+
+      ItemStack replacement = new(entry.NewBlock, stack.StackSize);
+      if (stack.Attributes is { Count: > 0 })
+        replacement.Attributes = stack.Attributes.Clone();
+      slot.Itemstack = replacement;
+      slot.MarkDirty();
+      changed++;
+    }
+    return changed;
+  }
+
+  /// <summary>Remaps any migrated blocks a joining player is carrying as item stacks.</summary>
+  private void OnPlayerJoin(IServerPlayer player)
+  {
+    if (!EnsureInitialized())
+      return;
+
+    int changed = 0;
+    foreach (
+      KeyValuePair<string, IInventory> kv in player.InventoryManager.Inventories
+    )
+    {
+      // The creative inventory is a virtual search list, not real storage, and its Count
+      // getter NREs on the server during join — skip it (nothing migratable lives there).
+      if (
+        kv.Value is not { } inv
+        || inv.ClassName == GlobalConstants.creativeInvClassName
+      )
+        continue;
+
+      // Be defensive: a single misbehaving (e.g. modded) inventory must not abort the join.
+      try
+      {
+        changed += RemapInventory(inv);
+      }
+      catch (Exception e)
+      {
+        _sapi.Logger.Warning(
+          Tag + " Skipped inventory '{0}' for {1} during migration: {2}",
+          kv.Key,
+          player.PlayerName,
+          e.Message
+        );
+      }
+    }
+
+    if (changed > 0)
+      _sapi.Logger.Notification(
+        Tag + " Migrated {0} carried item stack(s) for {1}.",
+        changed,
+        player.PlayerName
+      );
   }
 
   private void LogColumn(int migrated, int chunkX, int chunkZ) =>
     _sapi.Logger.Notification(
-      Tag + " Migrated {0} block(s) in chunk column {1},{2}.",
+      Tag + " Migrated {0} block(s)/stack(s) in chunk column {1},{2}.",
       migrated,
       chunkX,
       chunkZ

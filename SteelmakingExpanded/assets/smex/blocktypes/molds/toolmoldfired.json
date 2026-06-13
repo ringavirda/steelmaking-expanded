@@ -1,0 +1,127 @@
+{
+  "code": "toolmold",
+  "class": "BlockToolMold",
+  "entityClass": "ToolMold",
+  "behaviors": [{ "name": "Lockable" }, { "name": "UnstableFalling" }],
+  "entityBehaviors": [{ "name": "TemperatureSensitive" }],
+  "variantgroups": [
+    {
+      "code": "color",
+      "states": [
+        "blue",
+        "fire",
+        "black",
+        "brown",
+        "cream",
+        "earthyorange",
+        "gray",
+        "orange",
+        "red",
+        "tan"
+      ]
+    },
+    { "code": "materialtype", "states": ["fired"] },
+    { "code": "tooltype", "states": ["plate", "doubleingot", "quadrod"] }
+  ],
+  "shapebytype": {
+    "*-plate": { "base": "smex:molten/molds/plate", "rotateY": 90 },
+    "*-doubleingot": { "base": "smex:molten/molds/doubleingot", "rotateY": 90 },
+    "*-quadrod": { "base": "smex:molten/molds/quadrod", "rotateY": 90 }
+  },
+  "textures": {
+    "floor": { "base": "game:block/clay/hardened/{color}" },
+    "other": { "base": "game:block/clay/hardened/{color}" }
+  },
+  "heldTpIdleAnimation": "holdbothhandslarge",
+  "attributes": {
+    "reinforcable": true,
+    "shatteredShape": { "base": "game:block/clay/mold/shattered-ingot" },
+    "onTongTransform": {
+      "translation": { "x": -1.7, "y": -1.3, "z": -0.57 },
+      "rotation": { "x": 98, "y": 16, "z": 3 },
+      "scale": 0.55
+    },
+    "handbook": {
+      "groupBy": ["toolmold-*-{materialtype}-{tooltype}"]
+    },
+    "onMetalTongTransform": {
+      "translation": { "x": -2.1, "y": -0.19, "z": -1 },
+      "rotation": { "x": 180, "y": 7, "z": 4 },
+      "origin": { "x": 0.5, "y": 0, "z": 0.5 },
+      "scale": 0.55
+    }
+  },
+  "attributesByType": {
+    "toolmold-*-fired-plate": {
+      "requiredUnits": 200,
+      "fillHeight": 1,
+      "moldrackable": true,
+      "onmoldrackTransform": { "rotation": { "z": 90 } },
+      "fillQuadsByLevel": [{ "x1": 2, "z1": 2, "x2": 14, "z2": 14 }],
+      "drop": { "type": "item", "code": "game:metalplate-{metal}" }
+    },
+    "toolmold-*-fired-doubleingot": {
+      "requiredUnits": 200,
+      "fillHeight": 1,
+      "moldrackable": true,
+      "onmoldrackTransform": { "rotation": { "z": 90 } },
+      "fillQuadsByLevel": [{ "x1": 2, "z1": 2, "x2": 14, "z2": 14 }],
+      "drop": { "type": "item", "code": "game:ingot-{metal}", "quantity": 2 }
+    },
+    "toolmold-*-fired-quadrod": {
+      "requiredUnits": 200,
+      "fillHeight": 1,
+      "moldrackable": true,
+      "onmoldrackTransform": { "rotation": { "z": 90 } },
+      "fillQuadsByLevel": [{ "x1": 2, "z1": 2, "x2": 14, "z2": 14 }],
+      "drop": { "type": "item", "code": "game:rod-{metal}", "quantity": 4 }
+    }
+  },
+  "blockmaterial": "Ceramic",
+  "creativeinventory": { "general": ["*"], "construction": ["*"] },
+  "replaceable": 700,
+  "resistance": 1.5,
+  "maxStackSize": 8,
+  "lightAbsorption": 0,
+  "sounds": {
+    "walk": "game:walk/stone"
+  },
+  "collisionbox": {
+    "x1": 0.0625,
+    "y1": 0,
+    "z1": 0.0625,
+    "x2": 0.9375,
+    "y2": 0.125,
+    "z2": 0.9375
+  },
+  "selectionbox": {
+    "x1": 0.0625,
+    "y1": 0,
+    "z1": 0.0625,
+    "x2": 0.9375,
+    "y2": 0.125,
+    "z2": 0.9375
+  },
+  "sideopaque": {
+    "all": false
+  },
+  "sidesolid": {
+    "all": false
+  },
+  "guiTransform": {
+    "translation": { "x": 0, "y": 3, "z": 0 },
+    "origin": { "x": 0.5, "y": 0.0625, "z": 0.5 },
+    "scale": 1.33
+  },
+  "tpHandTransform": {
+    "translation": { "x": -1.6, "y": -1, "z": -0.5 },
+    "rotation": { "x": 102, "y": -16, "z": -77 },
+    "scale": 0.55
+  },
+  "groundTransform": {
+    "translation": { "x": 0, "y": 0, "z": 0 },
+    "rotation": { "x": 0, "y": -45, "z": 0 },
+    "origin": { "x": 0.5, "y": 0, "z": 0.5 },
+    "scale": 2.2
+  }
+}

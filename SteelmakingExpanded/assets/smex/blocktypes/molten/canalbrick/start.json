@@ -1,0 +1,73 @@
+{
+  "code": "moltencanal",
+  "class": "smex.BlockMoltenCanalStart",
+  "entityClass": "smex.BlockEntityMoltenCanalStart",
+  "blockmaterial": "Ceramic",
+  "sounds": {
+    "walk": "game:walk/stone",
+    "place": "game:block/ceramicplace",
+    "byTool": {
+      "Pickaxe": {
+        "hit": "game:block/rock-hit-pickaxe",
+        "break": "game:block/rock-break-pickaxe"
+      }
+    }
+  },
+  "maxstacksize": 1,
+  "creativeinventory": {
+    "general": ["*-start-*-s"],
+    "smex": ["*-start-*-s"]
+  },
+  "attributes": {
+    "fillHeight": 1,
+    "fillStart": 14,
+    "fillQuadsByLevel": [
+      { "x1": 5, "z1": 5, "x2": 11, "z2": 11 },
+      { "x1": 7, "z1": 11, "x2": 9, "z2": 16 }
+    ],
+    "handbook": { "groupBy": ["moltencanal-start-*"] }
+  },
+  "textures": {
+    "granite1": {
+      "base": "game:block/clay/brick/four/running/cream1",
+      "overlays": ["game:block/clay/brick/four/running/{brick}1"]
+    }
+  },
+  "behaviors": [{ "name": "Lockable" }],
+  "variantgroups": [
+    { "code": "type", "states": ["start"] },
+    {
+      "code": "brick",
+      "states": [
+        "fire",
+        "black",
+        "brown",
+        "cream",
+        "gray",
+        "orange",
+        "red",
+        "tan"
+      ]
+    },
+    { "code": "orientation", "states": ["n", "w", "s", "e"] }
+  ],
+  "shapebytype": {
+    "*-start-*-s": {
+      "base": "smex:molten/canal/start"
+    },
+    "*-start-*-w": {
+      "base": "smex:molten/canal/start",
+      "rotateY": 270
+    },
+    "*-start-*-n": {
+      "base": "smex:molten/canal/start",
+      "rotateY": 180
+    },
+    "*-start-*-e": {
+      "base": "smex:molten/canal/start",
+      "rotateY": 90
+    }
+  },
+  "sidesolid": { "all": false },
+  "sideopaque": { "all": false }
+}

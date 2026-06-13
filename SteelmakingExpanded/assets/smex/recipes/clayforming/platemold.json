@@ -40,5 +40,5 @@
     ]
   ],
   "name": "Plate Mold",
-  "output": { "type": "block", "code": "game:toolmold-{color}-raw-plate" }
+  "output": { "type": "block", "code": "smex:toolmold-{color}-raw-plate" }
 }

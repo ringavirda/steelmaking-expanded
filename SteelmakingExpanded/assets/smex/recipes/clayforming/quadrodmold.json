@@ -40,5 +40,5 @@
     ]
   ],
   "name": "Quad Rod Mold",
-  "output": { "type": "block", "code": "game:toolmold-{color}-raw-quadrod" }
+  "output": { "type": "block", "code": "smex:toolmold-{color}-raw-quadrod" }
 }

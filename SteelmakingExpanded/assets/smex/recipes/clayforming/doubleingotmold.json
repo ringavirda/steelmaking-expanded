@@ -40,5 +40,5 @@
     ]
   ],
   "name": "Double Ingot Mold",
-  "output": { "type": "block", "code": "game:toolmold-{color}-raw-doubleingot" }
+  "output": { "type": "block", "code": "smex:toolmold-{color}-raw-doubleingot" }
 }
