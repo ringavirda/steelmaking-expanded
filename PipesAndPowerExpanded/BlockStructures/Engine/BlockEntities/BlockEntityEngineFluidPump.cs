@@ -45,19 +45,12 @@ public class BlockEntityEngineFluidPump : BlockEntityEngineSubmachine
     if (intake == null)
       return;
 
-    // Output pressure tracks the driving engine's inlet steam pressure × efficiency, and
-    // the volume scales with the engine's power fraction (throttle / tier).
-    float power01 = power * 3 / Math.Max(0.01f, Engine?.MaxPower ?? 1f);
     float pressure =
       (Engine?.InletPressure ?? 0f) * PpexValues.SteamEngineEfficiency;
-    float amount = PpexValues.PumpWaterPerSecond * power01 * dt;
+    // Output scales with the engine's absolute mechanical power, so a stronger engine pumps
+    // proportionally more (Watt at 0.3 → 5 L/s, Cornish 0.2/0.4/0.8 → 3.3/6.7/13.3 L/s).
+    float amount = PpexValues.PumpWaterPerSecond * power * dt;
 
-    // Transfer the standing water already in the bottom (source) network out into the
-    // water line first — capped by the output's free capacity — then have the intake
-    // refill the bottom network. Refilling last leaves the bottom net holding ~amount of
-    // water (and a feed pressure) at broadcast time, so it reads as a water line rather
-    // than the empty "Air" gas pool that the shared pipe would otherwise report. Surplus
-    // the output cannot hold simply stays in the bottom net up to its capacity.
     float move = Math.Min(amount, OutputFreeCapacity(leftNet));
     float drawn = bottomNet?.TryConsumeLiquid(move, ba) ?? 0f;
     if (drawn > 0f)

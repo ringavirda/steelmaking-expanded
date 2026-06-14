@@ -224,9 +224,10 @@ public class PpexConfig
   /// it drags the engine below half speed, where it overstresses and stops.</summary>
   public float MpLoadPerEnginePower { get; set; } = 0.875f;
 
-  /// <summary>Water (L/s) the pump injects at full engine power (scales with the engine's
-  /// power fraction, so a throttled or overclocked engine moves proportionally less/more).</summary>
-  public float PumpWaterPerSecond { get; set; } = 5f;
+  /// <summary>Water (L/s) the engine fluid pump moves per unit of the engine's mechanical power
+  /// output — output scales directly with that power, so a stronger or throttled-up engine moves
+  /// proportionally more (Watt at 0.3 → 5 L/s, Cornish 0.2/0.4/0.8 → 3.3/6.7/13.3 L/s).</summary>
+  public float PumpWaterPerSecond { get; set; } = 16.67f;
 
   /// <summary>Water (L/s) the manual (hand-cranked) fluid pump transfers from its intake line to
   /// its output line at a fixed 1 atm — a manual boiler-startup feed, slower than the engine pump.</summary>

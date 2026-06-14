@@ -1,4 +1,3 @@
-using System;
 using ExpandedLib;
 using ExpandedLib.EntityRegistry;
 using PipesAndPowerExpanded;
@@ -51,10 +50,11 @@ public class BlockEntityEngineAirBlower : BlockEntityEngineSubmachine
     if (leftNet == null)
       return;
 
-    float power01 = power * 3 / Math.Max(0.01f, Engine?.MaxPower ?? 1f);
     float maxPressure =
       (Engine?.InletPressure ?? 0f) * PpexValues.SteamEngineEfficiency;
-    float amount = SmexValues.AirBlowerOutputPerSecond * power01 * dt;
+    // Output scales with the engine's absolute mechanical power; a Cornish at 0.2/0.4/0.8
+    // blows 9.6/19.2/38.4 L/s, a Watt at 0.3 → 14.4 L/s.
+    float amount = SmexValues.AirBlowerOutputPerSecond * power * dt;
 
     leftNet.TryProduceGas(
       amount,

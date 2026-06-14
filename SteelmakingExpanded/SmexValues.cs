@@ -64,10 +64,11 @@ public class SmexConfig
   /// <summary>Pressure (atm) at or above which air in a pipe network counts as "blast".</summary>
   public float BlastPressureThreshold { get; set; } = 2.5f;
 
-  /// <summary>Air (L/s) the air blower injects at full engine power (scales with the
-  /// engine's power fraction). Output pressure tracks the engine's inlet steam pressure
+  /// <summary>Air (L/s) the air blower injects per unit of the engine's mechanical power output —
+  /// output scales directly with that power (Cornish 0.2/0.4/0.8 → 9.6/19.2/38.4 L/s, Watt at
+  /// 0.3 → 14.4 L/s). Output pressure tracks the engine's inlet steam pressure
   /// × <see cref="PipesAndPowerExpanded.PpexValues.SteamEngineEfficiency"/>.</summary>
-  public float AirBlowerOutputPerSecond { get; set; } = 16f;
+  public float AirBlowerOutputPerSecond { get; set; } = 48f;
   #endregion
 
   #region Player safety
