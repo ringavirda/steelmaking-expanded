@@ -6,7 +6,10 @@ using Vintagestory.API.Datastructures;
 
 namespace SteelmakingExpanded.BlockStructures.BlastFurnace.BlockEntities;
 
-/// <summary>Block entity for the solidified-slag block; tracks how many slag units it will drop.</summary>
+/// <summary>
+/// Block entity for the solidified-slag block; tracks how many slag units it
+/// will drop.
+/// </summary>
 [EntityRegister]
 public class BlockEntitySlag : BlockEntity
 {

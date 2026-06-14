@@ -4,7 +4,7 @@ using SteelmakingExpanded.BlockStructures.CowperStove.BlockEntities;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 
-namespace SteelmakingExpanded.Structures.Metalworking.CowperStove.Blocks;
+namespace SteelmakingExpanded.BlockStructures.CowperStove.Blocks;
 
 /// <summary>
 /// Heat sink block on the cowper stove: glows with the stored regenerator heat.

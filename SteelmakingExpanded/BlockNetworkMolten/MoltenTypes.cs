@@ -4,7 +4,10 @@ using Vintagestory.API.MathTools;
 
 namespace SteelmakingExpanded.BlockNetworkMolten;
 
-/// <summary>Defines a horizontal fill footprint (x/z extents) for the molten-surface renderer.</summary>
+/// <summary>
+/// Defines a horizontal fill footprint (x/z extents) for the molten-surface
+/// renderer.
+/// </summary>
 public struct FillQuadDef
 {
   public float x1,

@@ -7,7 +7,6 @@ using ExpandedLib.EntityRegistry;
 using PipesAndPowerExpanded.BlockNetworkPipe;
 using PipesAndPowerExpanded.BlockNetworkPipe.BlockEntities;
 using SteelmakingExpanded.Patches;
-using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
@@ -15,19 +14,6 @@ using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 
 namespace SteelmakingExpanded.BlockStructures.BlastFurnace.BlockEntities;
-
-/// <summary>Operating state of the blast furnace.</summary>
-public enum BlastFurnaceState
-{
-  /// <summary>Not lit.</summary>
-  Idle,
-
-  /// <summary>Lit and heating up, but not yet hot enough to melt iron.</summary>
-  Firing,
-
-  /// <summary>Hot enough to melt iron; producing molten iron and slag.</summary>
-  Melting,
-}
 
 /// <summary>
 /// Block entity for the blast furnace multiblock. Drives the firing/melting state

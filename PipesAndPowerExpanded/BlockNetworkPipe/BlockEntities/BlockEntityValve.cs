@@ -1,7 +1,6 @@
 using System;
 using System.Text;
 using ExpandedLib.EntityRegistry;
-using PipesAndPowerExpanded.BlockNetworkPipe.Blocks;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;

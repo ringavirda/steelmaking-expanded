@@ -5,7 +5,9 @@ using Vintagestory.API.MathTools;
 
 namespace SteelmakingExpanded.BlockNetworkMolten;
 
-/// <summary>Coarse thermal state of a metal stack relative to its melting point.</summary>
+/// <summary>
+/// Coarse thermal state of a metal stack relative to its melting point.
+/// </summary>
 public enum MoltenState
 {
   /// <summary>Above 80% of the melting point - flows freely.</summary>

@@ -1,11 +1,10 @@
-using System.Collections.Generic;
 using ExpandedLib;
 using ExpandedLib.BlockNetworks;
 using ExpandedLib.EntityRegistry;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 
-namespace SteelmakingExpanded.Structures.Metalworking.CowperStove.Blocks;
+namespace SteelmakingExpanded.BlockStructures.CowperStove.Blocks;
 
 /// <summary>
 /// Intake/anchor block of the cowper-stove multiblock. Routes exhaust gas into the

@@ -14,12 +14,10 @@ namespace SteelmakingExpanded.BlockStructures.Converter.BlockEntities;
 /// feeds the converter's control block, which reads the network speed.
 /// </summary>
 [EntityRegister]
-public class BEBehaviorMPConverterTransmission : BEBehaviorMPBase
+public class BEBehaviorMPConverterTransmission(BlockEntity blockentity)
+  : BEBehaviorMPBase(blockentity)
 {
   private MeshData? _baseMesh;
-
-  public BEBehaviorMPConverterTransmission(BlockEntity blockentity)
-    : base(blockentity) { }
 
   public override float GetResistance() => 0.25f;
 

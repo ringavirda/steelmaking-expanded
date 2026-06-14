@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using ExpandedLib.EntityRegistry;
 using SteelmakingExpanded.BlockStructures.BlastFurnace.BlockEntities;
-using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
-using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 
 namespace SteelmakingExpanded.BlockStructures.BlastFurnace.Blocks;

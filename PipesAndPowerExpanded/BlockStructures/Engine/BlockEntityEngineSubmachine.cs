@@ -1,9 +1,7 @@
 using System;
 using ExpandedLib;
 using ExpandedLib.BlockNetworks;
-using ExpandedLib.BlockStructures;
 using PipesAndPowerExpanded.BlockNetworkPipe;
-using PipesAndPowerExpanded.BlockStructures.Engine.BlockEntities;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;

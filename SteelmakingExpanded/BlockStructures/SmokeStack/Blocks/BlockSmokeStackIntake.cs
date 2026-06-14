@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using ExpandedLib.EntityRegistry;
 using PipesAndPowerExpanded.BlockNetworkPipe.Blocks;
-using Vintagestory.API.Common;
 
 namespace SteelmakingExpanded.BlockStructures.SmokeStack.Blocks;
 

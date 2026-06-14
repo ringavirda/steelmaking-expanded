@@ -5,7 +5,6 @@ using ExpandedLib.BlockNetworks;
 using ExpandedLib.BlockStructures;
 using ExpandedLib.EntityRegistry;
 using PipesAndPowerExpanded.BlockNetworkPipe;
-using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;

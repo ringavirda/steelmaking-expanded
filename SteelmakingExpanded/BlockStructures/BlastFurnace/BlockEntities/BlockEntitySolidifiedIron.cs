@@ -6,7 +6,10 @@ using Vintagestory.API.Datastructures;
 
 namespace SteelmakingExpanded.BlockStructures.BlastFurnace.BlockEntities;
 
-/// <summary>Block entity for the solidified-iron block; tracks how many iron bits it will drop.</summary>
+/// <summary>
+/// Block entity for the solidified-iron block; tracks how many iron bits it
+/// will drop.
+/// </summary>
 [EntityRegister]
 public class BlockEntitySolidifiedIron : BlockEntity
 {

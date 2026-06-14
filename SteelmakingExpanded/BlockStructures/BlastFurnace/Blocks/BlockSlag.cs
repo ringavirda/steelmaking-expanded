@@ -1,4 +1,3 @@
-using ExpandedLib;
 using ExpandedLib.EntityRegistry;
 using SteelmakingExpanded.BlockStructures.BlastFurnace.BlockEntities;
 using Vintagestory.API.Common;

@@ -6,7 +6,10 @@ using Vintagestory.API.MathTools;
 
 namespace SteelmakingExpanded.BlockStructures.BlastFurnace.Blocks;
 
-/// <summary>The bell hopper block; its <see cref="BlockEntityHopperBell"/> crafts blast mix and drops it into the furnace.</summary>
+/// <summary>
+/// The bell hopper block; its <see cref="BlockEntityHopperBell"/> crafts blast
+/// mix and drops it into the furnace.
+/// </summary>
 [EntityRegister]
 public class BlockHopperBell : Block
 {
