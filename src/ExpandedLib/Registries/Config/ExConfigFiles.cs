@@ -65,4 +65,58 @@ public static class ExConfigFiles
       );
     }
   }
+
+  /// <summary>
+  /// True when <paramref name="fileName"/> exists under <c>ModConfig</c> but holds nothing but
+  /// whitespace. Such a file deserializes to <c>null</c> rather than throwing, so without this check
+  /// it is indistinguishable from "no file yet" and the player's file is replaced by defaults with
+  /// nothing at all written to the log.
+  /// </summary>
+  public static bool IsPresentButBlank(string fileName)
+  {
+    try
+    {
+      string path = Path.Combine(GamePaths.ModConfig, fileName);
+      return File.Exists(path)
+        && string.IsNullOrWhiteSpace(File.ReadAllText(path));
+    }
+    catch
+    {
+      return false; // unreadable for another reason; the caller's own error path covers it.
+    }
+  }
+
+  /// <summary>
+  /// Copies a config file that could not be read to <c>&lt;name&gt;.corrupt</c> before the caller
+  /// overwrites it with defaults, so a hand-edited file is never lost without trace. Best effort:
+  /// any IO failure is logged and swallowed, since failing startup over a backup would be worse.
+  /// </summary>
+  public static void BackupCorrupt(ICoreAPI api, string modId, string fileName)
+  {
+    try
+    {
+      string path = Path.Combine(GamePaths.ModConfig, fileName);
+      if (!File.Exists(path))
+        return;
+
+      string backup = path + ".corrupt";
+      File.Copy(path, backup, overwrite: true);
+      api.Logger.Error(
+        "[{0}] Config '{1}' could not be read; your file was copied to '{2}' and is being "
+          + "replaced with defaults. Fix the copy and rename it back to keep your values.",
+        modId,
+        fileName,
+        Path.GetFileName(backup)
+      );
+    }
+    catch (Exception e)
+    {
+      api.Logger.Warning(
+        "[{0}] Could not back up the unreadable config '{1}'. {2}",
+        modId,
+        fileName,
+        e
+      );
+    }
+  }
 }

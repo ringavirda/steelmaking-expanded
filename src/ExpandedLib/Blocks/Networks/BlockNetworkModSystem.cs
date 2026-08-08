@@ -330,9 +330,18 @@ public class BlockNetworkModSystem : ModSystem
   }
 
   #region Tick
+  /// <summary>How many of the 1 s tick intervals one dispatch may integrate over. See
+  /// <see cref="OnServerTick"/>.</summary>
+  private const float MaxCatchupTickSeconds = 2f;
+
   /// <summary>Called once per second; dispatches <see cref="BlockNetwork.OnTick"/> for every live network.</summary>
   private void OnServerTick(IBlockAccessor blockAccessor, float dt)
   {
+    // This listener is server-global: unlike a block entity's, it is never unregistered on chunk
+    // unload, so a stall or a rejoin delivers one huge dt straight into the networks' over-pressure
+    // accumulators, which would fail a run in a single step. Clamp before dispatch.
+    dt = GameMath.Min(dt, MaxCatchupTickSeconds);
+
     foreach (var network in _networks.Values.ToList())
       network.OnTick(blockAccessor, dt, this);
   }

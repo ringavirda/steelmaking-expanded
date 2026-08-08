@@ -283,6 +283,86 @@ public class ConfigEditTests
   }
   #endregion
 
+  #region Unreadable file is preserved, not overwritten
+
+  // A config the player edited by hand is their data. Every path that fails to reproduce their
+  // values used to end in an unconditional rewrite from defaults, which is how an edited value
+  // "reverts on its own" and then sticks after a second edit.
+
+  [Fact]
+  public void Load_backs_up_a_file_that_cannot_be_parsed()
+  {
+    using var dir = new TempModConfig();
+    File.WriteAllText(dir.Path("new.json"), "{ this is not json");
+
+    var api = FakeApiLoading(null);
+    api.LoadModConfig<EditableConfig>(Arg.Any<string>())
+      .Returns(_ => throw new System.Exception("bad json"));
+
+    new ExConfigRegister<EditableConfig>("new.json", "fakemod").Load(api);
+
+    Assert.True(
+      File.Exists(dir.Path("new.json.corrupt")),
+      "the unreadable file should be preserved"
+    );
+    Assert.Equal(
+      "{ this is not json",
+      File.ReadAllText(dir.Path("new.json.corrupt"))
+    );
+  }
+
+  [Fact]
+  public void Load_backs_up_a_present_but_blank_file()
+  {
+    using var dir = new TempModConfig();
+    // Whitespace deserializes to null rather than throwing, so this never reached the error path.
+    File.WriteAllText(dir.Path("new.json"), "   \n  ");
+
+    new ExConfigRegister<EditableConfig>("new.json", "fakemod").Load(FakeApi());
+
+    Assert.True(File.Exists(dir.Path("new.json.corrupt")));
+  }
+
+  // Control: a first run has no file at all, which is normal and must not produce a backup.
+  [Fact]
+  public void Load_does_not_back_up_when_no_file_exists_yet()
+  {
+    using var dir = new TempModConfig();
+
+    new ExConfigRegister<EditableConfig>("new.json", "fakemod").Load(FakeApi());
+
+    Assert.False(File.Exists(dir.Path("new.json.corrupt")));
+  }
+
+  [Fact]
+  public void Load_does_not_write_the_shared_file_from_the_client()
+  {
+    using var dir = new TempModConfig();
+    var api = FakeApiLoading(null);
+    api.Side.Returns(EnumAppSide.Client);
+
+    new ExConfigRegister<EditableConfig>("new.json", "fakemod").Load(api);
+
+    // In singleplayer both sides load the same file; only the server may own it.
+    api.DidNotReceive()
+      .StoreModConfig(Arg.Any<EditableConfig>(), Arg.Any<string>());
+  }
+
+  [Fact]
+  public void Load_still_writes_the_file_from_the_server()
+  {
+    using var dir = new TempModConfig();
+    var api = FakeApiLoading(null);
+    api.Side.Returns(EnumAppSide.Server);
+
+    new ExConfigRegister<EditableConfig>("new.json", "fakemod").Load(api);
+
+    api.Received()
+      .StoreModConfig(Arg.Any<EditableConfig>(), Arg.Any<string>());
+  }
+
+  #endregion
+
   /// <summary>A fake API whose <c>LoadModConfig</c> returns null (so Load falls back to defaults) and
   /// whose mod version resolves; the legacy rename runs against the real filesystem via GamePaths.</summary>
   private static ICoreAPI FakeApi() => FakeApiLoading(null);

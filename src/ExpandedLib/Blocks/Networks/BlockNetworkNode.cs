@@ -254,7 +254,10 @@ public abstract class BlockNetworkNode
     {
       requiredChars.RemoveAll(c =>
       {
-        BlockFacing? facing = BlockFacing.FromCode(c.ToString());
+        // Orientation letters ("n", "u", ...), not face codes: BlockFacing.FromCode wants the full
+        // word ("north") and returns null for every letter, which made this whole relaxation a no-op
+        // and left the caller to break the block instead.
+        BlockFacing? facing = BlockNetworkModSystem.SideToFace(c.ToString());
         if (facing == null)
           return false;
         BlockPos nPos = pos.AddCopy(facing);

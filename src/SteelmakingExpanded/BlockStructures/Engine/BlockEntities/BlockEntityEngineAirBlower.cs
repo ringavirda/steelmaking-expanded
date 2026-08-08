@@ -52,7 +52,7 @@ public class BlockEntityEngineAirBlower : BlockEntityEngineSubmachine
 
     float maxPressure =
       (Engine?.InletPressure ?? 0f) * PpexValues.SteamEngineEfficiency;
-    float amount = SmexValues.AirBlowerOutputPerSecond * 3 * power * dt;
+    float amount = SmexValues.AirBlowerOutputPerSecond * power * dt;
 
     leftNet.TryProduceGas(
       amount,

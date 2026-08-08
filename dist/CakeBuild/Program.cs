@@ -190,12 +190,21 @@ public sealed class PackageTask : FrostingTask<BuildContext>
 
         // Authoritative modinfo: the source declares the current game version, so point the game
         // dependency at this target's version (no-op for the current one).
-        string modinfo = File.ReadAllText(
-            $"../../src/{project.Folder}/modinfo.json"
-          )
-          .Replace(
-            $"\"game\": \"{BuildContext.SourceGameVersion}\"",
-            $"\"game\": \"{target.GameVersion}\""
+        string modinfoSource = File.ReadAllText(
+          $"../../src/{project.Folder}/modinfo.json"
+        );
+        string modinfo = modinfoSource.Replace(
+          $"\"game\": \"{BuildContext.SourceGameVersion}\"",
+          $"\"game\": \"{target.GameVersion}\""
+        );
+        // The rewrite is a literal match, so a source modinfo that spells its game dependency any
+        // other way ("1.21" for "1.21.0", say) silently no-ops and ships a legacy package carrying
+        // the CURRENT game dependency, which the target game then rejects. Fail the build instead.
+        if (!target.IsCurrent && modinfo == modinfoSource)
+          throw new Exception(
+            $"{project.Folder}/modinfo.json: expected to rewrite \"game\": \"{BuildContext.SourceGameVersion}\" "
+              + $"to \"{target.GameVersion}\", but the text was unchanged. The legacy package would ship "
+              + "the current game dependency and be rejected by the game."
           );
         File.WriteAllText($"{stageDir}/modinfo.json", modinfo);
 

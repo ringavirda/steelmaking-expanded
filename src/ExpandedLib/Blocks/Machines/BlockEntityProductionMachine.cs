@@ -64,8 +64,18 @@ public abstract class BlockEntityProductionMachine : BlockEntity
     }
   }
 
+  /// <summary>
+  /// How many of its own intervals a single tick may integrate over. A server hitch, a rejoin or a
+  /// slow chunk load hands the listener the whole stalled interval as one dt; machines integrate over
+  /// it (over-pressure grace timers most of all), so an unclamped step can cross a burst threshold in
+  /// one tick and destroy a machine that was never actually over pressure. Catching up slowly is the
+  /// lesser evil - the alternative is a boiler that explodes because the server lagged.
+  /// </summary>
+  private const float MaxCatchupTickMultiple = 2f;
+
   private void RunProductionTick(float dt)
   {
+    dt = GameMath.Min(dt, ProductionTickMs / 1000f * MaxCatchupTickMultiple);
     if (CanRunProduction)
       OnProductionTick(dt);
     else

@@ -125,9 +125,40 @@ public class MoltenFlowTests
 
     world.Tick();
 
-    Assert.True(b.CellAmount > 0, "metal should flow into the empty neighbour");
-    Assert.True(a.CellAmount < 40, "the giver should lose metal");
+    // Exact split, not just "some moved": levelling halves the gap, so 40/0 settles at 20/20. The
+    // direction-only form of this assertion passed just as happily when the pair swapped to 0/40.
+    Assert.Equal(20, a.CellAmount);
+    Assert.Equal(20, b.CellAmount);
     Assert.Equal(40, a.CellAmount + b.CellAmount); // nothing created or destroyed
+  }
+
+  [Fact]
+  public void A_levelling_tick_never_overshoots_the_midpoint()
+  {
+    var (world, a, b) = Run();
+    a.PushMetal(40, MetalStack(world), world.World);
+
+    world.Tick();
+
+    // Moving the whole difference inverts the pair - the giver must never end up below the receiver.
+    Assert.True(
+      a.CellAmount >= b.CellAmount,
+      $"giver ended at {a.CellAmount} below receiver at {b.CellAmount}: the pair inverted"
+    );
+  }
+
+  [Fact]
+  public void A_pair_settles_instead_of_sloshing_back_and_forth()
+  {
+    var (world, a, b) = Run();
+    a.PushMetal(40, MetalStack(world), world.World);
+
+    for (int i = 0; i < 20; i++)
+      world.Tick();
+
+    // Twenty ticks in, a two-cell run must be at rest, not still swapping its charge every tick.
+    Assert.Equal(20, a.CellAmount);
+    Assert.Equal(20, b.CellAmount);
   }
 
   [Fact]

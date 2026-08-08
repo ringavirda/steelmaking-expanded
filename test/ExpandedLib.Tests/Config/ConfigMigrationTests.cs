@@ -46,6 +46,9 @@ public class ConfigMigrationTests
     var api = Substitute.For<ICoreAPI>();
     api.Logger.Returns(Substitute.For<ILogger>());
     api.LoadModConfig<FakeConfig>(FileName).Returns(stored);
+    // Only the server writes the shared file, so a store test must say which side it is; the
+    // substitute's default is Client, under which no write happens at all.
+    api.Side.Returns(EnumAppSide.Server);
 
     var modLoader = Substitute.For<IModLoader>();
     modLoader.GetMod(ModId).Returns(FakeMod(runningVersion));

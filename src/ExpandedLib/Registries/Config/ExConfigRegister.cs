@@ -62,17 +62,25 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
   }
 
   /// <summary>Loads the config (falling back to defaults), applies any version-change resets, stamps
-  /// the current mod version and writes the file back. Call once during mod startup, before any
-  /// value is read. Safe on either side; each side reads its own local copy.</summary>
+  /// the current mod version and - on the server - writes the file back. Call once during mod
+  /// startup, before any value is read. Both sides read; only the server writes, because in
+  /// singleplayer the two sides share one <c>ModConfig</c> folder rather than each holding a local
+  /// copy, so two writers would race over the player's file.</summary>
   public void Load(ICoreAPI api)
   {
     _api = api;
     ExConfigFiles.RenameLegacy(api, _modId, _fileName, LegacyFileNames);
 
     TConfig config;
+    // A file that is present but unreadable is the player's hand-edited data. Preserve a copy
+    // before the defaults overwrite it - silently replacing it is how an edited value "reverts".
+    bool unreadable = false;
     try
     {
       config = api.LoadModConfig<TConfig>(_fileName) ?? new TConfig();
+      // An empty or whitespace-only file deserializes to null instead of throwing, so it lands here
+      // rather than in the catch and would otherwise be the one destructive case that logs nothing.
+      unreadable = ExConfigFiles.IsPresentButBlank(_fileName);
     }
     catch (Exception e)
     {
@@ -83,7 +91,11 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
         e
       );
       config = new TConfig();
+      unreadable = true;
     }
+
+    if (unreadable)
+      ExConfigFiles.BackupCorrupt(api, _modId, _fileName);
 
     string current =
       api.ModLoader.GetMod(_modId)?.Info?.Version ?? string.Empty;
@@ -92,7 +104,13 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
     config.ConfigVersion = current;
 
     Config = config;
-    Save();
+
+    // Singleplayer runs a client and a server ModLoader on two threads against the SAME ModConfig
+    // folder, so a client write lands on top of the server's read - or on the player's edit - and
+    // the file comes back as defaults. The recipe catalogue registry already rules the same way:
+    // the client keeps its in-memory copy, the server owns the file.
+    if (api.Side == EnumAppSide.Server)
+      Save();
   }
 
   /// <summary>

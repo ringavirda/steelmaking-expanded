@@ -44,9 +44,17 @@ public abstract class BlockEntityMultiblockStructure
   {
     // Base registers the production tick (only when already complete, via AutoStartProduction).
     base.Initialize(api);
-    // The monitor tick runs unconditionally to detect both completion and breakage.
     if (api.Side == EnumAppSide.Server)
+    {
+      // Establish the structure angle up front. _currentAngle is not persisted, and the only other
+      // caller is the 3000 ms monitor - so a structure that loads already complete would take three
+      // production ticks at angle -1, which ExOrientation silently reads as unrotated. Every
+      // structure-local offset (hearth cells, tuyeres, gas outlets) would resolve to the wrong
+      // block for those ticks, which is long enough for a furnace to declare itself disrupted.
+      UpdateStructureRotation();
+      // The monitor tick runs unconditionally to detect both completion and breakage.
       StartMonitorTick();
+    }
   }
 
   /// <summary>Starts both the completion monitor and the production tick.</summary>

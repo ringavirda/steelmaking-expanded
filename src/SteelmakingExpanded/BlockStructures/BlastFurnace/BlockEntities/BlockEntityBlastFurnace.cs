@@ -264,15 +264,17 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
 
     bool dirty = false;
 
-    bool failedAny = false;
+    bool anyOutlet = false;
+    bool anyAccepted = false;
     if (State != BlastFurnaceState.Idle)
     {
       foreach (var pos in _gasOutlets)
       {
         if (Api.World.BlockAccessor.GetBlockEntity(pos) is IPipeNode outlet)
         {
-          if (!outlet.TryProduce(24f, _internalTemp * 0.8f, "Exhaust"))
-            failedAny = true;
+          anyOutlet = true;
+          if (outlet.TryProduce(24f, _internalTemp * 0.8f, "Exhaust"))
+            anyAccepted = true;
         }
         else
         {
@@ -281,9 +283,13 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
       }
     }
 
-    if (IsChoked != failedAny)
+    // Choked means the flue has nowhere to go at all. Judging it on ANY outlet refusing made a
+    // furnace with one outlet piped and the other left bare permanently choked: the lone one is a
+    // single-node network that fills in two ticks and then refuses forever.
+    bool choked = anyOutlet && !anyAccepted;
+    if (IsChoked != choked)
     {
-      IsChoked = failedAny;
+      IsChoked = choked;
       dirty = true;
     }
 
@@ -357,8 +363,10 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
         disruptionCount++;
       if (tuyeresReceiveExhaust)
         disruptionCount++;
-      if (IsChoked)
-        disruptionCount++;
+      // A blocked flue is NOT a disruption: it stalls the furnace (see the choke gates on the heat
+      // target and on molten accumulation) instead of killing the campaign. Swapping the regenerator
+      // stoves the way the handbook teaches necessarily shuts the exhaust for a while, and counting
+      // that here made a correctly operated plant extinguish itself.
       if (isDoorOpen)
         disruptionCount++;
       if (isLiquidCapacityReached)
@@ -402,8 +410,12 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
         32f
       );
 
+      // A choked flue cannot carry the hot-blast boost away, so the furnace falls back to its
+      // natural draught ceiling - which sits below the iron melting point, so melting stalls and
+      // the existing below-melting demotion walks the campaign back to Firing. It resumes as soon
+      // as the exhaust is reopened.
       float targetTemp =
-        hotBlastTemp >= _blastBoostThreshold
+        !IsChoked && hotBlastTemp >= _blastBoostThreshold
           ? _boostedMaxTemp
           : _naturalMaxTemp;
       float oldTemp = _internalTemp;
@@ -466,7 +478,9 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
             dirty = true;
           _belowMeltingSeconds = 0;
 
-          if (!isLiquidCapacityReached)
+          // Halt the melt on the same tick the flue blocks, rather than waiting for the temperature
+          // to drift down to the natural ceiling first.
+          if (!isLiquidCapacityReached && !IsChoked)
           {
             _meltSeconds += dt;
             if (_meltSeconds >= _meltIntervalSec)
@@ -806,6 +820,12 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
               );
             sb.AppendLine(Lang.Get("smex:bf-info-meltingin", pct));
           }
+
+          // The choke stalls a lit furnace, so its reason belongs here. It used to be printed only
+          // in the Idle branch below, where IsChoked is never set - so the player saw a furnace
+          // stop with no explanation at all.
+          if (IsChoked)
+            sb.AppendLine(Lang.Get("smex:bf-info-exhaustfull"));
 
           if (_extinguishSeconds > 0)
           {

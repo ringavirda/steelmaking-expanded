@@ -125,6 +125,24 @@ public class SteamPlantScenarioTests
   }
 
   [Fact]
+  public void The_air_blower_injects_its_published_rate_per_unit_of_engine_power()
+  {
+    var scene = new Scene().Network("pipe", s => new PipeNetwork(s));
+    var plant = new AirBlowerPlant(scene, new BlockPos(0, 8, 0));
+    scene.Build();
+
+    plant.RunWithSteam(7f, 1); // one tick, so the injected volume is one second's output
+
+    // The exact rate, which no test asserted before: a stray x3 shipped the blower at 43.2 L/s
+    // against the 14.4 its own config comment publishes for a 0.3-power engine.
+    Assert.Equal(
+      SmexValues.AirBlowerOutputPerSecond * plant.Engine.AvailablePower,
+      plant.BlastVolume,
+      2
+    );
+  }
+
+  [Fact]
   public void Without_steam_the_air_blower_produces_no_blast()
   {
     var scene = new Scene().Network("pipe", s => new PipeNetwork(s));
@@ -183,7 +201,14 @@ public class SteamPlantScenarioTests
       engine.IsRunning,
       "the boiler's steam should engage the engine"
     );
-    Assert.True(output() > 0f, "the boiler-driven pump should produce water");
+    // Exact throughput, not merely "some water". A Watt engine's 0.3 power against the documented
+    // 16.67 L/s per unit of power is 5 L/s, so five ticks lift 25 L. The direction-only form of this
+    // assertion is precisely what let a stray x3 ship the pump at three times its published rate.
+    Assert.Equal(
+      5f * PpexValues.PumpWaterPerSecond * engine.MaxPower,
+      output(),
+      2
+    );
   }
 
   /// <summary>

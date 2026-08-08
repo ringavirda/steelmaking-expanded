@@ -247,15 +247,25 @@ public class MoltenNetwork(BlockNetworkModSystem system) : BlockNetwork(system)
     )
       return;
 
-    // Whole units only, never less than the minimum per tick - except into a drain fitting
-    // (pedestal/tap), which takes the final sub-minimum dregs so a run can empty completely.
-    var transfer = diff > maxFlow ? maxFlow : diff;
-    if (
-      transfer < SmexValues.MoltenMinFlowAmount
-      && receiver is not BlockEntityMoltenCanalMoldPedestal
-      && receiver is not BlockEntityMoltenCanalTap
-    )
+    // A drain fitting (pedestal/tap) is not a levelling partner: it takes everything offered, down
+    // to the final sub-minimum dregs, so a run can empty completely.
+    bool drain =
+      receiver is BlockEntityMoltenCanalMoldPedestal
+      || receiver is BlockEntityMoltenCanalTap;
+
+    // Whole units only, never less than the minimum per tick. The floor is on the GAP, not on the
+    // step below, or halving would put a gap between one and two minimums permanently out of reach.
+    if (!drain && diff < SmexValues.MoltenMinFlowAmount)
       return;
+
+    // Level toward the midpoint instead of moving the whole difference: the latter overshoots and
+    // inverts the pair, so 40/0 becomes 0/40 and a run sloshes back and forth every tick forever
+    // rather than settling.
+    var step = drain ? diff : diff / 2;
+    if (step <= 0)
+      return;
+
+    var transfer = step > maxFlow ? maxFlow : step;
 
     var accepted = receiver.PushMetalRaw(
       transfer,

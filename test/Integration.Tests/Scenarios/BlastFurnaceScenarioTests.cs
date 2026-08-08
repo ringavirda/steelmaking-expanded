@@ -109,6 +109,73 @@ public class BlastFurnaceScenarioTests
 
   #endregion
 
+  #region Blocked flue
+
+  // Regression (player-reported, two independent reports): shutting the hot exhaust off to the
+  // cowper stoves - which the handbook's own regenerator swap requires - counted as a disruption
+  // and extinguished the furnace 30 s later, destroying a 20-minute campaign. A blocked flue now
+  // stalls production instead, and picks up again when the exhaust is reopened.
+
+  private static BlastFurnaceRig ChokedRig() =>
+    new BlastFurnaceRig()
+      .WithBlockedExhaust()
+      .SetState(BlastFurnaceState.Melting)
+      .SetTemp(SmexValues.BfIronMeltingPoint + 20f)
+      .FeedBlast();
+
+  [Fact]
+  public void A_blocked_flue_does_not_count_toward_extinguishing()
+  {
+    var rig = ChokedRig();
+
+    rig.Tick(60); // twice the old 30 s extinguish threshold
+
+    Assert.True(
+      rig.Furnace.IsChoked,
+      "the sealed stub should have saturated - without that this asserts nothing"
+    );
+    Assert.Equal(0f, rig.ExtinguishSeconds);
+    Assert.NotEqual(BlastFurnaceState.Idle, rig.State);
+  }
+
+  [Fact]
+  public void A_blocked_flue_halts_the_melt()
+  {
+    var rig = ChokedRig();
+    rig.Tick(1); // one tick to populate the cached hearth count
+    int mixBefore = rig.MixCount;
+
+    rig.Tick(60);
+
+    // No melt cycle completes while the flue is blocked, so the charge is untouched.
+    Assert.True(rig.Furnace.IsChoked);
+    Assert.Equal(mixBefore, rig.MixCount);
+  }
+
+  // Control: the same furnace with somewhere for its exhaust to go does consume its charge, so the
+  // two assertions above are about the blockage and not about the rig never working in the first
+  // place.
+  [Fact]
+  public void An_open_flue_keeps_the_furnace_consuming_its_charge()
+  {
+    var rig = new BlastFurnaceRig()
+      .SetState(BlastFurnaceState.Melting)
+      .SetTemp(SmexValues.BfIronMeltingPoint + 20f)
+      .FeedBlast();
+    rig.Tick(1); // one tick to populate the cached hearth count
+    int mixBefore = rig.MixCount;
+
+    rig.Tick(60);
+
+    Assert.False(rig.Furnace.IsChoked);
+    Assert.True(
+      rig.MixCount < mixBefore || mixBefore == 0,
+      $"an unblocked furnace should burn its charge; mix went {mixBefore} -> {rig.MixCount}"
+    );
+  }
+
+  #endregion
+
   #region Live config
 
   // Regression (player-reported): /exmod config smex bfmeltstartdelay 30 used to take effect only

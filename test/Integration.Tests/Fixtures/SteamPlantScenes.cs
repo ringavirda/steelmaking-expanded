@@ -376,4 +376,5 @@ internal sealed class AirBlowerPlant
   public PipeNetwork? BlastNet => _scene.NetworkAt<PipeNetwork>(_blast);
   public string BlastMedium => BlastNet?.State?.MediumType ?? "";
   public float BlastPressure => BlastNet?.State?.Pressure ?? 0f;
+  public float BlastVolume => BlastNet?.State?.Volume ?? 0f;
 }

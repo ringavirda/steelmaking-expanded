@@ -108,6 +108,28 @@ internal sealed class BlastFurnaceRig
     return (PipeNetwork)World.NetworkAt(pos)!;
   }
 
+  /// <summary>
+  /// Puts a one-pipe stub on each gas-outlet cell. A single node holds only one pipe's worth, so it
+  /// saturates within a couple of ticks and the flue reads as blocked - the state a player reaches
+  /// by valving their cowper stoves off the exhaust main, as the handbook's regenerator swap
+  /// requires. Without this the rig has no outlets at all and the choke path never runs.
+  /// </summary>
+  public BlastFurnaceRig WithBlockedExhaust()
+  {
+    Tuyere(_pos.AddCopy(0, 3, 1), 30);
+    Tuyere(_pos.AddCopy(0, 3, 3), 31);
+    // Seal both stubs. An open end vents a fixed 8 L/s, which frees enough room for the next tick
+    // to be accepted - so an unsealed stub only chokes intermittently and the extinguish timer
+    // keeps resetting. The player's case is a main whose sink has been valved away: sealed, full,
+    // and refusing every tick.
+    foreach (var z in new[] { 0, 2, 4 })
+      World.Place(
+        _pos.AddCopy(0, 3, z),
+        TestBlocks.Configure(new Block(), "game:rock", 90 + z)
+      );
+    return this;
+  }
+
   /// <summary>Turns the air blowers on: hot blast (≥800 °C, pressurised) at the tuyeres each tick.</summary>
   public BlastFurnaceRig FeedBlast(float temp = 950f)
   {
@@ -217,6 +239,15 @@ internal sealed class BlastFurnaceRig
   public BlastFurnaceState State => Furnace.State;
   public float Temp =>
     (float)ReflectionHelpers.GetField(Furnace, "_internalTemp")!;
+  /// <summary>Blast mix still in the hearth, as the last tick counted it. Falls only when a melt
+  /// cycle actually completes, so it is the honest witness for "is this furnace still working".</summary>
+  public int MixCount =>
+    (int)ReflectionHelpers.GetField(Furnace, "_cachedMixCount")!;
+
+  /// <summary>Seconds accrued toward extinguishing. Stays 0 while nothing counts as a disruption.</summary>
+  public float ExtinguishSeconds =>
+    (float)ReflectionHelpers.GetField(Furnace, "_extinguishSeconds")!;
+
   public float MoltenIron =>
     (float)ReflectionHelpers.GetField(Furnace, "_moltenIron")!;
   public int CanalIron => Canal?.CellAmount ?? 0;

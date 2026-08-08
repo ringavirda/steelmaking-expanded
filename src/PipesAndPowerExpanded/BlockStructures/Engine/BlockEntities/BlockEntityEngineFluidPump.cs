@@ -44,7 +44,7 @@ public class BlockEntityEngineFluidPump : BlockEntityEngineSubmachine
 
     float pressure =
       (Engine?.InletPressure ?? 0f) * PpexValues.SteamEngineEfficiency;
-    float amount = PpexValues.PumpWaterPerSecond * 3 * power * dt;
+    float amount = PpexValues.PumpWaterPerSecond * power * dt;
 
     float move = Math.Min(amount, OutputFreeCapacity(leftNet));
     float drawn = bottomNet?.TryConsumeLiquid(move, ba) ?? 0f;
