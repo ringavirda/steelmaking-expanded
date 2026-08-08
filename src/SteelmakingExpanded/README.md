@@ -8,7 +8,7 @@ steel production chain on top of vanilla metalworking. Requires
 ## What it adds
 
 - **Blast furnace** - a tall refractory multiblock fed by a hopper pair that combines
-  crushed iron ore, crushed coke and lime into blast mix. Fired and held above iron's
+  crushed iron ore, coke and lime into blast mix. Fired and held above iron's
   melting point, it pools molten iron and slag.
 - **Hot blast machinery** - cowper stoves that recycle furnace exhaust into scorching
   blast air, a smoke stack that vents the surplus, and a steam-driven air blower

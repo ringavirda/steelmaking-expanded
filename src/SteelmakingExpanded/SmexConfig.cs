@@ -58,6 +58,18 @@ public class SmexConfig : IExVersionedConfig
         nameof(AirBlowerOutputPerSecond),
       ],
     },
+    // 0.9.5: the blast furnace takes coke directly instead of crushed coke, so the per-batch coke
+    // cost is restated in whole coke (3 crushed = 1.5 coke -> 2). Also pushes the raised exhaust
+    // output pressure, without which the relief valve in the setup diagrams can never open.
+    new()
+    {
+      ToVersion = "0.9.5",
+      ResetFields =
+      [
+        nameof(HopperCokeRequired),
+        nameof(BfExhaustOutputPressure),
+      ],
+    },
   ];
 
   #region Molten system
@@ -181,6 +193,15 @@ public class SmexConfig : IExVersionedConfig
   /// <summary>Seconds a fired furnace burns before it extinguishes.</summary>
   public int BfMaxFuelBurnTime { get; set; } = 1200;
 
+  /// <summary>
+  /// Pressure ceiling the furnace pushes its exhaust to. This is what the flue can build against a
+  /// sealed main, so it also sets how much headroom the run has before it saturates and the furnace
+  /// stalls. At the old implicit 1 atm the pressure-relief valve in the setup diagrams could never
+  /// open, since its own gate defaults to 1 atm. Well under the 5 atm iron / 10 atm steel burst.
+  /// A run with any open end is clamped back to 1 atm regardless.
+  /// </summary>
+  public float BfExhaustOutputPressure { get; set; } = 2.0f;
+
   /// <summary>Seconds above the melting point before the furnace transitions to the melting phase.</summary>
   public float BfMeltStartDelay { get; set; } = 300f;
 
@@ -239,8 +260,9 @@ public class SmexConfig : IExVersionedConfig
   /// <summary>Iron ore consumed per blast-mix batch.</summary>
   public int HopperIronOreRequired { get; set; } = 12;
 
-  /// <summary>Coke consumed per blast-mix batch.</summary>
-  public int HopperCokeRequired { get; set; } = 3;
+  /// <summary>Coke consumed per blast-mix batch. Whole coke: the furnace no longer takes the
+  /// crushed intermediate, and 3 crushed coke was 1.5 coke at the old 1:2 crush ratio.</summary>
+  public int HopperCokeRequired { get; set; } = 2;
 
   /// <summary>Lime consumed per blast-mix batch.</summary>
   public int HopperLimeRequired { get; set; } = 1;
@@ -262,15 +284,6 @@ public class SmexConfig : IExVersionedConfig
   // and hides it from creative/the handbook on the next world load, and stops any already-placed
   // mold of that type from yielding a casting immediately. Toggled in-game by a server admin via
   // /exmod molds <plate|ingot|rod|all> <on|off>; persisted to smex_values.json.
-
-  /// <summary>
-  /// Whether Expanded Matter's hammer-on-coke grid recipe stays available when both mods are
-  /// installed. It turns one coke into four crushed coal - roughly double the fuel duration the
-  /// coke itself carries - which undercuts smex's own coke chain, so it is off by default. Turn it
-  /// on to keep EM's crafting route as the bridge between the two mods. Only that one recipe is
-  /// affected; EM's charcoal and coal-ore crushing recipes are never touched.
-  /// </summary>
-  public bool EnableEmCokeCrushing { get; set; } = false;
 
   /// <summary>Whether the plate mold (casts metal plates) is available.</summary>
   public bool EnablePlateMold { get; set; } = true;

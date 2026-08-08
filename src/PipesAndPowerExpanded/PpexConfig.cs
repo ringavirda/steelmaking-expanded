@@ -37,6 +37,14 @@ public class PpexConfig : IExVersionedConfig
     // 0.6.0: the engine fluid pump now scales off absolute engine power, so its base
     // throughput was retuned (5 -> 16.67 L/s) - push the new default to existing configs.
     new() { ToVersion = "0.6.0", ResetFields = [nameof(PumpWaterPerSecond)] },
+    // 0.6.5: the MP overstress ceiling now scales with every engine on the shaft, and the load an
+    // engine holds per unit of power was raised (0.875 -> 1.37) so a steam plant is worth building
+    // against an electrical generator - push the new default to existing configs.
+    new()
+    {
+      ToVersion = "0.6.5",
+      ResetFields = [nameof(MpLoadPerEnginePower)],
+    },
   ];
 
   #region Pipes
@@ -255,9 +263,11 @@ public class PpexConfig : IExVersionedConfig
   public float MpRatedSpeed { get; set; } = 1.0f;
 
   /// <summary>MP load an engine's generator holds at <see cref="MpRatedSpeed"/> per unit of engine
-  /// power. A Watt at full power (0.3) × this = ~0.5 = four helve hammers. Load past the rated amount
-  /// slows the network (speed = budget / load); past double it the engine stalls and stops.</summary>
-  public float MpLoadPerEnginePower { get; set; } = 0.875f;
+  /// power. A Watt at full power (0.3) × this = ~0.41 = three helve hammers. Load past the rated
+  /// amount slows the network (speed = budget / load); past double it the engine stalls and stops.
+  /// Raised from 0.875 so a steam plant is worth building against an electrical generator: three
+  /// Cornish engines on a shared shaft now reach roughly 500 W where they made about 320 W.</summary>
+  public float MpLoadPerEnginePower { get; set; } = 1.37f;
 
   /// <summary>Water (L/s) the engine fluid pump moves per unit of mechanical power (Watt 0.3 → 5 L/s,
   /// Cornish 0.2/0.4/0.8 → 3.3/6.7/13.3 L/s).</summary>

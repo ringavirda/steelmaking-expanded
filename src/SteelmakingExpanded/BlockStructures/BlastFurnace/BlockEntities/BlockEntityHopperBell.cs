@@ -342,8 +342,10 @@ public class BlockEntityHopperBell : BlockEntity
   private bool IsIronOre(ItemStack stack) =>
     IronOreCompat.IsCrushedIronOre(stack.Collectible.Code.Path);
 
+  // Coke goes into the burden whole. The crushed intermediate is retired: it existed only to be
+  // fed here, and its pulverizer route collided with other mods' crushing economies.
   private bool IsCoke(ItemStack stack) =>
-    stack.Collectible.Code.Path.Equals("crushed-coke");
+    stack.Collectible.Code.Path.Equals("coke");
 
   private bool IsLime(ItemStack stack) =>
     stack.Collectible.Code.Path.Equals("lime");

@@ -173,9 +173,19 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
   public float MpPowerBudget =>
     AvailablePower * PpexValues.MpLoadPerEnginePower * PpexValues.MpRatedSpeed;
 
-  /// <summary>True when MP <paramref name="load"/> exceeds what keeps the network above half rated
-  /// speed - the engine can no longer drive it and stalls until load is shed.</summary>
-  public bool IsMpOverstressed(float load) => load > 2f * MpRatedLoad;
+  /// <summary>
+  /// True when MP <paramref name="load"/> exceeds twice <paramref name="ratedLoad"/> - the combined
+  /// rating of every engine on the shaft, not just this one. Re-engages only once back under 1.6x,
+  /// so a load parked on the threshold cannot chatter on and off at the production tick.
+  /// (The ceiling is twice the NOMINAL rating, which for a throttled engine is several times its
+  /// live budget: it is a stall guard, not a half-speed point.)
+  /// </summary>
+  public bool IsMpOverstressed(float load, float ratedLoad) =>
+    load > (IsRunning ? 2f : 1.6f) * ratedLoad;
+
+  /// <summary>Single-engine overload: this engine alone drives the shaft.</summary>
+  public bool IsMpOverstressed(float load) =>
+    IsMpOverstressed(load, MpRatedLoad);
 
   #endregion
 

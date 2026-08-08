@@ -50,7 +50,18 @@ public class BlockEntityHopperReinforced : BlockEntityContainer
       InventoryClassName + "-" + Pos.X + "/" + Pos.Y + "/" + Pos.Z,
       api
     );
+
+    // Machines mutate this inventory directly - the bell hopper below, and any vanilla chute
+    // pushing in through the Container behavior. Both mark only the SLOT, which the engine
+    // delivers solely to players who have the dialog open at that moment; a client with it closed
+    // reads these contents from this block entity's tree and would keep a stale copy until relog.
+    // No unsubscribe needed: the inventory does not outlive the block entity. No feedback loop
+    // either - loading the tree assigns slots directly and never raises this event.
+    if (api.Side == EnumAppSide.Server)
+      _inventory.SlotModified += OnServerSlotModified;
   }
+
+  private void OnServerSlotModified(int slotId) => MarkDirty();
 
   /// <summary>Opens the hopper inventory, or (with Ctrl held) toggles dropping on the bell hopper below.</summary>
   public void OnInteract(IPlayer byPlayer)
@@ -290,7 +301,7 @@ public class ItemSlotBlastFurnace : ItemSlotSurvival
       && (IronOreCompat.IsCrushedIronOre(path) || path.Equals("blastmix"))
     )
       return base.CanTakeFrom(sourceSlot, priority);
-    if (AllowedType == "coke" && path.Equals("crushed-coke"))
+    if (AllowedType == "coke" && path.Equals("coke"))
       return base.CanTakeFrom(sourceSlot, priority);
     if (AllowedType == "lime" && path.Equals("lime"))
       return base.CanTakeFrom(sourceSlot, priority);

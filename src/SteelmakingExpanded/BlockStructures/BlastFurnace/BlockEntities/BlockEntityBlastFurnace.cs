@@ -273,7 +273,14 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
         if (Api.World.BlockAccessor.GetBlockEntity(pos) is IPipeNode outlet)
         {
           anyOutlet = true;
-          if (outlet.TryProduce(24f, _internalTemp * 0.8f, "Exhaust"))
+          if (
+            outlet.TryProduce(
+              24f,
+              _internalTemp * 0.8f,
+              "Exhaust",
+              maxOutputPressure: SmexValues.BfExhaustOutputPressure
+            )
+          )
             anyAccepted = true;
         }
         else

@@ -51,6 +51,35 @@ public class BEBehaviorEngineMPGenerator(BlockEntity blockentity)
 
   public override float GetResistance() => 0.0005f;
 
+  /// <summary>
+  /// Summed rated MP load of every engine currently driving this shaft - this engine's own rating
+  /// when the network is not resolved yet. The overstress ceiling has to be judged against what is
+  /// actually turning the shaft: measuring a shared network's whole resistance against ONE engine's
+  /// rating froze the ceiling at a single engine's worth, so adding engines could not raise it and
+  /// a bank stalled well below what it could really drive.
+  /// </summary>
+  public float DrivenRatedLoad
+  {
+    get
+    {
+      float own =
+        (Blockentity as BlockEntityEngineMpGenerator)?.Engine?.MpRatedLoad ?? 0f;
+      if (Network == null)
+        return own;
+
+      float total = 0f;
+      foreach (var node in Network.nodes.Values)
+        if (
+          node is BEBehaviorEngineMPGenerator gen
+          && (gen.Blockentity as BlockEntityEngineMpGenerator)?.Engine is
+          { } e
+        )
+          total += e.MpRatedLoad;
+
+      return total > 0f ? total : own;
+    }
+  }
+
   public override float GetTorque(long tick, float speed, out float resistance)
   {
     resistance = 0f;

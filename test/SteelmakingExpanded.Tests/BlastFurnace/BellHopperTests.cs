@@ -143,7 +143,7 @@ public class BellHopperTests
     Put(
       hopper.Inventory,
       2,
-      "game:crushed-coke",
+      "game:coke",
       SmexValues.HopperCokeRequired
     );
     Put(hopper.Inventory, 3, "game:lime", SmexValues.HopperLimeRequired);
@@ -174,7 +174,7 @@ public class BellHopperTests
     Put(
       hopper.Inventory,
       2,
-      "game:crushed-coke",
+      "game:coke",
       SmexValues.HopperCokeRequired
     );
 

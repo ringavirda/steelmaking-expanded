@@ -40,7 +40,10 @@ public class BlockEntityEngineMpGenerator
       if (Engine is not { } engine)
         return 0f;
       float load = _mp?.Network?.NetworkResistance ?? 0f;
-      return engine.IsMpOverstressed(load) ? 0f : 1f;
+      // Judged against every engine on the shaft, not just this one - two engines can drive twice
+      // the load, and the ceiling has to say so.
+      float rated = _mp?.DrivenRatedLoad ?? engine.MpRatedLoad;
+      return engine.IsMpOverstressed(load, rated) ? 0f : 1f;
     }
   }
 
