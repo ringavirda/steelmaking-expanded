@@ -1,9 +1,0 @@
-[
-  {
-    "file": "em:recipes/grid/crushing.json",
-    "op": "add",
-    "path": "/2/enabled",
-    "value": false,
-    "dependsOn": [{ "modid": "em" }]
-  }
-]

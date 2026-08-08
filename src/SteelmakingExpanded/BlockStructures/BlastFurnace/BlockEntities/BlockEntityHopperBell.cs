@@ -116,6 +116,10 @@ public class BlockEntityHopperBell : BlockEntity
     if (inv == null)
       return;
 
+    // Set when this tick took anything out of the hopper above, so the sync below costs one packet
+    // per tick rather than one per craft cycle.
+    bool feedChanged = false;
+
     int ironOreReq = SmexValues.HopperIronOreRequired;
     int cokeReq = SmexValues.HopperCokeRequired;
     int limeReq = SmexValues.HopperLimeRequired;
@@ -132,6 +136,7 @@ public class BlockEntityHopperBell : BlockEntity
       {
         ConsumeItems(inv, IsBlastmix, reclaim);
         _blastMixMagazine += reclaim;
+        feedChanged = true;
         MarkDirty(true);
       }
     }
@@ -149,6 +154,7 @@ public class BlockEntityHopperBell : BlockEntity
         ConsumeItems(inv, IsLime, limeReq);
 
         _blastMixMagazine += blastmixProd;
+        feedChanged = true;
         MarkDirty(true);
       }
       else
@@ -167,6 +173,15 @@ public class BlockEntityHopperBell : BlockEntity
         MarkDirty(true);
       }
     }
+
+    // The feed inventory belongs to the hopper ABOVE, and the client reads it from THAT block
+    // entity's tree - MarkDirty is per position, so marking ourselves only ever shipped the
+    // magazine. slot.MarkDirty() alone reaches a client only while that client has the dialog
+    // open, which is why the contents looked right until you closed and reopened it, and why
+    // relogging cleared it. Not MarkDirty(true): the hopper's pile mesh is driven by the bell's
+    // magazine, so a retessellation here would be wasted every second the furnace is fed.
+    if (feedChanged)
+      topHopper.MarkDirty();
   }
 
   /// <summary>Returns <c>true</c> when the furnace shaft below has no room for more blast mix.</summary>

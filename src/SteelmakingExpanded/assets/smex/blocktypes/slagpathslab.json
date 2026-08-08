@@ -72,7 +72,7 @@
   },
   "blockmaterial": "Gravel",
   "replaceable": 900,
-  "lightAbsorption": 99,
+  "lightAbsorption": 0,
   "faceCullMode": "FlushExceptTop",
   "sideopaque": {
     "all": false,

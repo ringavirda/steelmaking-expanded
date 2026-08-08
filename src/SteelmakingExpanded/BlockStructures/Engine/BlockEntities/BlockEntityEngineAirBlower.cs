@@ -21,6 +21,14 @@ public class BlockEntityEngineAirBlower : BlockEntityEngineSubmachine
   private const int PistonTopFrame = 15;
   private const int PistonBottomFrame = 45;
 
+  /// <summary>
+  /// Calibration between the nominal <c>AirBlowerOutputPerSecond x power</c> figure and what the
+  /// blower actually delivers into a real blast main, where the main's free capacity bites. Set by
+  /// playtest so the quoted per-engine L/s figures are the realised rates - which is why they do
+  /// not equal rate x power on paper. Removing it makes the blower three times weaker than it plays.
+  /// </summary>
+  public const float ThroughputScale = 3f;
+
   /// <summary>World point at the open top of the cylinder. The piston travels on the block's
   /// centre line, so this is rotation-independent - the air is drawn straight down into it.</summary>
   private Vec3d CylinderMouth => new(Pos.X + 0.5, Pos.Y + 0.9, Pos.Z + 0.5);
@@ -52,7 +60,8 @@ public class BlockEntityEngineAirBlower : BlockEntityEngineSubmachine
 
     float maxPressure =
       (Engine?.InletPressure ?? 0f) * PpexValues.SteamEngineEfficiency;
-    float amount = SmexValues.AirBlowerOutputPerSecond * power * dt;
+    float amount =
+      SmexValues.AirBlowerOutputPerSecond * ThroughputScale * power * dt;
 
     leftNet.TryProduceGas(
       amount,

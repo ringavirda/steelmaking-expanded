@@ -263,6 +263,15 @@ public class SmexConfig : IExVersionedConfig
   // mold of that type from yielding a casting immediately. Toggled in-game by a server admin via
   // /exmod molds <plate|ingot|rod|all> <on|off>; persisted to smex_values.json.
 
+  /// <summary>
+  /// Whether Expanded Matter's hammer-on-coke grid recipe stays available when both mods are
+  /// installed. It turns one coke into four crushed coal - roughly double the fuel duration the
+  /// coke itself carries - which undercuts smex's own coke chain, so it is off by default. Turn it
+  /// on to keep EM's crafting route as the bridge between the two mods. Only that one recipe is
+  /// affected; EM's charcoal and coal-ore crushing recipes are never touched.
+  /// </summary>
+  public bool EnableEmCokeCrushing { get; set; } = false;
+
   /// <summary>Whether the plate mold (casts metal plates) is available.</summary>
   public bool EnablePlateMold { get; set; } = true;
 

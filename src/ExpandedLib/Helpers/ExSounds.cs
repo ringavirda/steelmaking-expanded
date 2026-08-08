@@ -319,6 +319,10 @@ public static class ExSounds
         Range = range,
         Pitch = pitch,
         RelativePosition = false,
+        // A machine loop is ambience, not an effect. SoundParams has no initialiser for this, so
+        // every mod sound defaulted to EnumSoundType.Sound - which is why accessibility mods could
+        // not see or mute them, and why they sat outside the game's ambient handling.
+        SoundType = EnumSoundType.Ambient,
       }
     );
   }

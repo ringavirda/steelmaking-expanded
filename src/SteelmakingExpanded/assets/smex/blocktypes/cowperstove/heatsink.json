@@ -11,7 +11,7 @@
     "walk": "game:walk/stone"
   },
   "maxstacksize": 4,
-  "lightAbsorption": 99,
+  "lightAbsorption": 1,
   "creativeinventory": {
     "general": ["*-north"],
     "smex": ["*-north"]

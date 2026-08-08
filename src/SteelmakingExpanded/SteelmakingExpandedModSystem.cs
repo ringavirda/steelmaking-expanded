@@ -46,6 +46,7 @@ public class SteelmakingExpandedModSystem : ModSystem
     // Enforce any config-disabled molds on the client too, so they vanish from the creative
     // inventory and handbook (recipes have resolved by StartClientSide).
     MoldGating.ApplyDisables(api);
+    Compat.EmCokeCrushingGate.Apply(api);
     // The recipe cost level is mirrored on the client centrally by exlib (ExRecipeProfiles).
     CommandRegistry.RegisterAll(api, Mod, GetType().Assembly); // client-side sub-commands (none yet)
   }
@@ -60,6 +61,7 @@ public class SteelmakingExpandedModSystem : ModSystem
 
     // Strip the clay-forming recipes of any config-disabled molds (recipes have resolved by now).
     MoldGating.ApplyDisables(api);
+    Compat.EmCokeCrushingGate.Apply(api);
     // The recipe cost level is applied centrally by exlib (ExRecipeProfiles); /exmod recipes smex
     // <level> is the generic switch.
     // Server-side sub-commands: /exmod molds.

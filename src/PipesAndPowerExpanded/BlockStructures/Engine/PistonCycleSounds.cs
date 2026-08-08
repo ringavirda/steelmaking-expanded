@@ -69,7 +69,7 @@ public static class PistonCycleSounds
 
   /// <summary>
   /// True when <paramref name="threshold"/> falls in the half-open interval the frame swept
-  /// from <paramref name="last"/> to <paramref name="cur"/> this tick, accounting for the
+  /// forward from <paramref name="last"/> to <paramref name="cur"/> this tick, accounting for the
   /// animation looping back to 0.
   /// </summary>
   private static bool Crossed(
@@ -81,9 +81,26 @@ public static class PistonCycleSounds
   {
     if (totalFrames <= 1)
       return false;
-    if (cur >= last) // normal advance within the loop
-      return last < threshold && threshold <= cur;
-    // Wrapped past the end this tick: crossed if the threshold is after `last` or up to `cur`.
-    return threshold > last || threshold <= cur;
+
+    // Distance travelled forward this tick, measured on the loop so a wrap past the end is just a
+    // small positive delta.
+    float delta = cur - last;
+    if (delta < 0f)
+      delta += totalFrames;
+
+    // A cycle running backwards - a reversed mechanical network, or a sub-machine phase-lock that
+    // writes the frame directly and can jump back - also arrives as cur < last, and is
+    // indistinguishable from a wrap by sign alone. It shows up here as a delta close to a whole
+    // loop, which no real 50 ms tick covers. Reading those as wraps fired nearly every keyframe on
+    // nearly every tick, which is what exhausted the game's concurrent-sound cap.
+    if (delta <= 0f || delta > totalFrames / 2f)
+      return false;
+
+    // Where the threshold sits ahead of `last`, on the loop.
+    float offset = threshold - last;
+    if (offset < 0f)
+      offset += totalFrames;
+
+    return offset > 0f && offset <= delta;
   }
 }

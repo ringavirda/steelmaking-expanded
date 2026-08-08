@@ -121,7 +121,7 @@
   },
   "blockmaterial": "Gravel",
   "replaceable": 900,
-  "lightAbsorption": 99,
+  "lightAbsorption": 0,
   "faceCullMode": "NeverCull",
   "emitSideAo": { "all": true },
   "sideopaque": { "all": false, "down": true },

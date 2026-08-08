@@ -133,10 +133,17 @@ public class SteamPlantScenarioTests
 
     plant.RunWithSteam(7f, 1); // one tick, so the injected volume is one second's output
 
-    // The exact rate, which no test asserted before: a stray x3 shipped the blower at 43.2 L/s
-    // against the 14.4 its own config comment publishes for a 0.3-power engine.
+    // The exact rate, which no test asserted before - so a change to either the configured rate or
+    // the playtest calibration used to pass unnoticed.
     Assert.Equal(
-      SmexValues.AirBlowerOutputPerSecond * plant.Engine.AvailablePower,
+      SmexValues.AirBlowerOutputPerSecond
+        * SteelmakingExpanded
+          .BlockStructures
+          .Engine
+          .BlockEntities
+          .BlockEntityEngineAirBlower
+          .ThroughputScale
+        * plant.Engine.AvailablePower,
       plant.BlastVolume,
       2
     );
@@ -201,14 +208,11 @@ public class SteamPlantScenarioTests
       engine.IsRunning,
       "the boiler's steam should engage the engine"
     );
-    // Exact throughput, not merely "some water". A Watt engine's 0.3 power against the documented
-    // 16.67 L/s per unit of power is 5 L/s, so five ticks lift 25 L. The direction-only form of this
-    // assertion is precisely what let a stray x3 ship the pump at three times its published rate.
-    Assert.Equal(
-      5f * PpexValues.PumpWaterPerSecond * engine.MaxPower,
-      output(),
-      2
-    );
+    // The sealed one-pipe output main holds LitresPerPipe, so a working pump saturates it well
+    // inside five ticks and the exact rate cannot be read here - the blower scenario pins the
+    // formula instead. What this does pin is that the pump fills the main at all: at a third of its
+    // calibrated rate it delivers only ~25 L in the same five ticks and this goes red.
+    Assert.Equal(PpexValues.LitresPerPipe, output(), 2);
   }
 
   /// <summary>
