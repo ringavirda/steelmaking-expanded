@@ -62,14 +62,11 @@ public partial class BlockStructureFiller
       || be.HostedBehaviors == null
     )
       return false;
-    // A mechanical axle couples along an axis, so a port declared on one face accepts a connection
-    // on that face or its opposite (both ends of the axle line), letting an axle run straight
-    // through the cell and attach from either side.
+    // The declared face only. A port cell is where a machine takes power in, not a length of
+    // shafting: accepting the opposite face as well turned every hosted port into a passthrough that
+    // carried rotation out the far side of the machine.
     foreach (FillerBehavior b in be.HostedBehaviors)
-      if (
-        b.ConnectorFace != null
-        && (b.ConnectorFace == face || b.ConnectorFace.Opposite == face)
-      )
+      if (b.ConnectorFace == face)
         return true;
     return false;
   }

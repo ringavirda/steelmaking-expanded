@@ -154,23 +154,44 @@ public class SmexConfig : IExVersionedConfig {
   #endregion
 
   #region Mechanical blower
-  /// <summary>Air (L/s) the twin-tub blower delivers at or above <see cref="MpBlowerMaxSpeed"/>.
-  /// A vanilla waterwheel turns at roughly speed 1, that is half rated output, which still covers
-  /// the two tuyeres of one blast furnace.</summary>
-  public float MpBlowerOutputPerSecond { get; set; } = 60f;
+  /// <summary>
+  /// Air (L/s) the twin-tub blower delivers per unit of axle speed. The tubs are a positive
+  /// displacement - one turn of the shaft sweeps them once - so throughput is simply proportional
+  /// to shaft speed, with no threshold below which it delivers nothing and no speed past which it
+  /// stops gaining.
+  /// <para>
+  /// Sized off the WATERWHEEL, which is the drive this is meant to be built around. A vanilla
+  /// waterwheel tops out at speed 0.3 (<c>BEBehaviorMPWaterWheel.TargetSpeed</c> is
+  /// <c>min(0.3, flowRate)</c>) and only reaches that unloaded; against this blower a well-fed
+  /// wheel settles near 0.18, where this figure just covers the two tuyeres of one blast furnace.
+  /// A poor stream will not run a furnace at all, which is the intent. An engine's MP generator
+  /// tapers out at speed 1.5, so steam drives the same blower some eight times faster - that spread
+  /// IS the progression, and it is why the figure looks large next to the old rated output.
+  /// </para>
+  /// </summary>
+  public float MpBlowerLitresPerSpeed { get; set; } = 140f;
 
   /// <summary>
-  /// Pressure ceiling (atm) the twin-tub blower raises its run to. Above
+  /// Pressure ceiling (atm) the bellows can seal against, whatever drives them. Above
   /// <see cref="BfBlastPressureThreshold"/> so bellows run a blast furnace, below
-  /// <see cref="BlastPressureThreshold"/> so they can never blow the converter.
+  /// <see cref="BlastPressureThreshold"/> so they can never blow the converter - the gate between
+  /// an iron shop and a steel one. Reaching it is a separate question from being allowed to: that
+  /// is what <see cref="MpBlowerLoadPerAtm"/> decides.
   /// </summary>
   public float MpBlowerMaxPressure { get; set; } = 2.0f;
 
-  /// <summary>Axle speed at or below which the bellows deliver nothing.</summary>
-  public float MpBlowerMinSpeed { get; set; } = 0.5f;
+  /// <summary>Shaft load the bellows draw against an empty main - their own linkage friction.</summary>
+  public float MpBlowerBaseLoad { get; set; } = 0.05f;
 
-  /// <summary>Axle speed at or above which the bellows deliver full output.</summary>
-  public float MpBlowerMaxSpeed { get; set; } = 1.5f;
+  /// <summary>
+  /// Extra shaft load per atm of back-pressure in the blast main. A displacement blower's torque
+  /// draw is set by the pressure it works against, which is what makes the drive decide the
+  /// pressure actually reached: a weak drive is dragged slower as the main fills and settles at a
+  /// lower pressure, a strong one holds full output up to <see cref="MpBlowerMaxPressure"/>. Keep
+  /// the load at that ceiling under twice an engine's rated load or the generator reads it as an
+  /// overload and cuts out, cycling the line instead of merely labouring.
+  /// </summary>
+  public float MpBlowerLoadPerAtm { get; set; } = 0.05f;
   #endregion
 
   #region Player safety

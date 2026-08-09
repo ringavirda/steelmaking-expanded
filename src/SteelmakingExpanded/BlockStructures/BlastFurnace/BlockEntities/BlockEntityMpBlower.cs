@@ -21,11 +21,24 @@ namespace SteelmakingExpanded.BlockStructures.BlastFurnace.BlockEntities;
 /// The twin-tub mechanical blower. Once a second it samples the axle coupled to its
 /// mechanical-power port cell and pushes that second's air into the pipe network attached at its
 /// outlet cell, at ambient temperature and clamped at <see cref="SmexValues.MpBlowerMaxPressure"/>.
-/// It is the only air source that needs no steam, and its pressure ceiling is what keeps it to
-/// iron: it clears the blast furnace's gate and never reaches the converter's.
 /// </summary>
 [BlockEntityRegister]
-public class BlockEntityMpBlower : BlockEntity {
+public class BlockEntityMpBlower : BlockEntity, IRenderer {
+  /// <summary>
+  /// Renders nothing. The blower registers itself only to get a per-render-frame callback, which is
+  /// the one place the cycle can be pinned to the axle: the 250 ms client tick is four updates a
+  /// second and shows as stepping. Runs before the opaque pass so the frame is already in step when
+  /// the mesh is drawn.
+  /// </summary>
+  public double RenderOrder => 0.0;
+
+  public int RenderRange => 64;
+
+  public void OnRenderFrame(float dt, EnumRenderStage stage) =>
+    LockCycleToAxle();
+
+  public void Dispose() { }
+
   /// <summary>Server-side blow interval; matches the pipe network's own per-second tick.</summary>
   private const int BlowIntervalMs = 1000;
 
@@ -45,8 +58,8 @@ public class BlockEntityMpBlower : BlockEntity {
   /// <summary>True once every construction stage is built; an unfinished frame does no work.</summary>
   public bool IsConstructed => _rcc?.IsComplete ?? false;
 
-  /// <summary>Fraction of rated output the bellows are currently delivering.</summary>
-  public float OutputFraction => SpeedFraction(_lastSpeed);
+  /// <summary>Air (L/s) the bellows deliver at the speed sampled on the last blow tick.</summary>
+  public float OutputPerSecond => OutputAt(_lastSpeed);
 
   public override void Initialize(ICoreAPI api) {
     base.Initialize(api);
@@ -59,9 +72,14 @@ public class BlockEntityMpBlower : BlockEntity {
       if (_rcc != null)
         _rcc.OnShapeChanged += OnConstructShapeChanged;
       RebuildAnimator(_rcc?.shape?.SelectiveElements);
-      _animBlowing = OutputFraction > 0f;
+      _animBlowing = OutputPerSecond > 0f;
       ApplyAnim(_animBlowing);
       _clientTickId = RegisterGameTickListener(OnClientTick, 250);
+      (api as ICoreClientAPI)?.Event.RegisterRenderer(
+        this,
+        EnumRenderStage.Before,
+        "smex-mpblower-cycle"
+      );
     }
   }
 
@@ -75,6 +93,8 @@ public class BlockEntityMpBlower : BlockEntity {
     if (!IsConstructed)
       return;
 
+    UpdateShaftLoad();
+
     float speed = PortSpeed();
     if (speed != _lastSpeed) {
       _lastSpeed = speed;
@@ -85,32 +105,75 @@ public class BlockEntityMpBlower : BlockEntity {
   }
 
   /// <summary>
+  /// Tells the shaft what the bellows currently cost to turn: their own friction plus the torque it
+  /// takes to push against the pressure already in the main. This is the whole of the drive-size
+  /// relationship - the network settles where the drive's torque meets this load, so a weak drive is
+  /// dragged slower as the main fills and its output falls away, while a strong one holds speed to
+  /// the pressure ceiling. Nothing here caps the pressure; the ceiling emerges from the shaft
+  /// stopping, and <see cref="SmexValues.MpBlowerMaxPressure"/> is only the seal's own limit.
+  /// </summary>
+  private void UpdateShaftLoad() =>
+    Port?.SetLoad(ShaftLoadAt(BlastNetwork()?.State?.Pressure ?? 0f));
+
+  /// <summary>
+  /// Shaft load at <paramref name="pressure"/> atm of back-pressure. Public so the balance can be
+  /// checked without a mechanical network or a pipe run.
+  /// </summary>
+  public static float ShaftLoadAt(float pressure) =>
+    SmexValues.MpBlowerBaseLoad
+    + SmexValues.MpBlowerLoadPerAtm * GameMath.Max(0f, pressure);
+
+  /// <summary>
   /// Pushes <paramref name="dt"/> seconds of air into the attached blast main at axle speed
-  /// <paramref name="speed"/>, and returns the litres that actually landed - 0 below
-  /// <see cref="SmexValues.MpBlowerMinSpeed"/>, with no main attached, or once the run is at the
-  /// pressure ceiling. Public so the balance can be driven without a mechanical network.
+  /// <paramref name="speed"/>, and returns the litres that actually landed - 0 with the shaft
+  /// stopped, with no main attached, or once the run is at the pressure ceiling. Public so the
+  /// balance can be driven without a mechanical network.
   /// </summary>
   public float ProduceAir(float speed, float dt) {
-    float fraction = SpeedFraction(speed);
-    if (fraction <= 0f || dt <= 0f)
+    float output = OutputAt(speed);
+    if (output <= 0f || dt <= 0f)
       return 0f;
 
     PipeNetwork? net = BlastNetwork();
-    if (net == null)
+    if (net == null) {
+      // Working bellows with nothing to feed still move air - it just blows out of the open
+      // outlet. Showing that is the only way a player can tell a driven blower from a stalled one
+      // when the main is missing or has come off.
+      VentToOpenAir();
       return 0f;
+    }
 
     // Cold blast: the air enters at ambient temperature, preheating is the cowper's job.
     // TryProduceGas reports only whether it accepted anything and clamps at the pressure ceiling,
     // so the litres that landed are the change in the pool, not the amount asked for.
     float before = net.State?.Volume ?? 0f;
     net.TryProduceGas(
-      SmexValues.MpBlowerOutputPerSecond * fraction * dt,
+      output * dt,
       AmbientTemperature,
       "Air",
       Api.World.BlockAccessor,
       maxOutputPressure: SmexValues.MpBlowerMaxPressure
     );
     return GameMath.Max(0f, (net.State?.Volume ?? 0f) - before);
+  }
+
+  /// <summary>
+  /// Blasts the air out of the bare outlet, with the same bellows note the working blower makes.
+  /// Server-side: particles replicate to clients, and this runs on the blow tick.
+  /// <see cref="ExParticles.GasLeak"/> rather than <c>GasVent</c> - the latter deliberately draws
+  /// nothing for plain air, which is right for a valve venting steam and wrong here, where the air
+  /// blast IS the thing to show.
+  /// </summary>
+  private void VentToOpenAir() {
+    if (Api is not { Side: EnumAppSide.Server } || BlowerBlock is not { } block)
+      return;
+
+    ExParticles.GasLeak(
+      Api.World,
+      block.BlastOutletWorldPos(Pos),
+      block.OutletFace
+    );
+    ExSounds.PlayLocal(Api.World, Pos, ExSounds.Bellows, 0.5f, 16f);
   }
 
   /// <summary>
@@ -130,14 +193,38 @@ public class BlockEntityMpBlower : BlockEntity {
       : null;
   }
 
+  /// <summary>The mechanical-power port hosted on the footprint cell, or null when it is absent.</summary>
+  private BEBehaviorMPFillerPort? Port =>
+    BlowerBlock is { } block
+      ? Api
+        ?.World?.BlockAccessor?.GetBlockEntity(block.MpPortWorldPos(Pos))
+        ?.GetBehavior<BEBehaviorMPFillerPort>()
+      : null;
+
   /// <summary>The driving axle's speed, or 0 when no axle is coupled to the port cell.</summary>
-  private float PortSpeed() {
-    if (BlowerBlock is not { } block)
-      return 0f;
-    var port = Api
-      .World.BlockAccessor.GetBlockEntity(block.MpPortWorldPos(Pos))
-      ?.GetBehavior<BEBehaviorMPFillerPort>();
-    return port is { IsTurning: true } ? port.Speed : 0f;
+  private float PortSpeed() => Port is { IsTurning: true } p ? p.Speed : 0f;
+
+  /// <summary>
+  /// Pins the running <c>cycle</c> clip to the axle's angle, so the crank rod, the walking beam and
+  /// the two tub pistons all move in step with the shaft the player can see, at any speed, instead
+  /// of free-running at a fixed rate. The axle lives on a footprint cell, cells away from this
+  /// block, so the angle comes back through the hosted port. A no-op while the blower is idle -
+  /// <c>idle</c> is the clip running then, and it has no cycle to lock.
+  /// </summary>
+  private void LockCycleToAxle() {
+    if (!_animBlowing || _animatable == null || !_animatorReady)
+      return;
+    if (Port is not { } port)
+      return;
+    // Reversed: the clip turns its Axle element through +360 over the cycle, which runs against the
+    // vanilla axle for a rising angle - the blower's shaft span the wrong way beside the axle
+    // driving it.
+    MPAnim.LockFrameToAngle(
+      _animatable.animUtil,
+      "cycle",
+      port.CurrentAngleRad,
+      reverse: true
+    );
   }
 
   /// <summary>Ambient air temperature at the bellows, falling back to 20 °C with no climate data.</summary>
@@ -145,26 +232,20 @@ public class BlockEntityMpBlower : BlockEntity {
     Api?.World?.BlockAccessor?.GetClimateAt(Pos)?.Temperature ?? 20f;
 
   /// <summary>
-  /// Fraction of rated output the bellows deliver at <paramref name="speed"/>: 0 at or below
-  /// <see cref="SmexValues.MpBlowerMinSpeed"/>, 1 at or above
-  /// <see cref="SmexValues.MpBlowerMaxSpeed"/>, linear between.
+  /// Air (L/s) the bellows deliver at axle <paramref name="speed"/> - straight proportion, because
+  /// the tubs displace a fixed volume per turn of the shaft. No threshold and no ceiling: a shaft
+  /// barely turning moves a little air, which is what a bellows does. What limits the blower is the
+  /// pressure it works against, through <see cref="ShaftLoadAt"/>, not a band drawn on its speed.
   /// </summary>
-  public static float SpeedFraction(float speed) {
-    float min = SmexValues.MpBlowerMinSpeed;
-    float max = SmexValues.MpBlowerMaxSpeed;
-    if (speed <= min)
-      return 0f;
-    if (max <= min)
-      return 1f;
-    return GameMath.Clamp((speed - min) / (max - min), 0f, 1f);
-  }
+  public static float OutputAt(float speed) =>
+    SmexValues.MpBlowerLitresPerSpeed * GameMath.Max(0f, speed);
 
   #endregion
 
   #region Client animation
 
   private void OnClientTick(float dt) {
-    bool blowing = OutputFraction > 0f;
+    bool blowing = OutputPerSecond > 0f;
     if (blowing == _animBlowing)
       return;
     _animBlowing = blowing;
@@ -206,6 +287,12 @@ public class BlockEntityMpBlower : BlockEntity {
   /// Holds one animation at a time - <c>cycle</c> while the bellows work, <c>idle</c> otherwise.
   /// Keeping one active stops the animator mesh vanishing.
   /// </summary>
+  /// <remarks>
+  /// The ease-in has to be fast. Its factor is what the animator weights every pose by, and it
+  /// starts at zero on each <c>StartAnimation</c>, so until it climbs the machine is drawn part way
+  /// back toward its unposed shape. At the vanilla default of 10 that takes a moment; at 1 it takes
+  /// seconds, and every animator rebuild - every construction stage - restarts it.
+  /// </remarks>
   private void ApplyAnim(bool blowing) {
     if (_animatable == null || !_animatorReady)
       return;
@@ -217,7 +304,7 @@ public class BlockEntityMpBlower : BlockEntity {
         Animation = blowing ? "cycle" : "idle",
         Code = blowing ? "cycle" : "idle",
         AnimationSpeed = 1f,
-        EaseInSpeed = 1f,
+        EaseInSpeed = 10f,
         EaseOutSpeed = 5f,
       }.Init()
     );
@@ -245,14 +332,14 @@ public class BlockEntityMpBlower : BlockEntity {
     if (!IsConstructed)
       return;
 
-    float fraction = OutputFraction;
+    float output = OutputPerSecond;
     dsc.AppendLine(
-      fraction <= 0f
+      output <= 0f
         ? Lang.Get("smex:mpblower-info-idle")
         : Lang.Get(
           "smex:mpblower-info-blowing",
-          ExMeasure.FlowRate(SmexValues.MpBlowerOutputPerSecond * fraction),
-          (int)(fraction * 100f)
+          ExMeasure.FlowRate(output),
+          ExMeasure.Pressure(SmexValues.MpBlowerMaxPressure)
         )
     );
   }
@@ -270,6 +357,12 @@ public class BlockEntityMpBlower : BlockEntity {
   private void UnregisterTicks() {
     if (_rcc != null)
       _rcc.OnShapeChanged -= OnConstructShapeChanged;
+    // The renderer holds a reference to this block entity; leaving it registered keeps a removed
+    // blower alive and still writing frames.
+    (Api as ICoreClientAPI)?.Event.UnregisterRenderer(
+      this,
+      EnumRenderStage.Before
+    );
     if (_blowTickId != 0) {
       UnregisterGameTickListener(_blowTickId);
       _blowTickId = 0;

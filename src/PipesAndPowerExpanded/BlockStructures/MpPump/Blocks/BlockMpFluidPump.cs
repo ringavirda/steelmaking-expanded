@@ -18,12 +18,12 @@ namespace PipesAndPowerExpanded.BlockStructures.MpPump.Blocks;
 /// in <see cref="BlockEntityMpFluidPump"/>.
 /// </summary>
 /// <remarks>
-/// Footprint in the north orientation, Y-Z slice (rows run -Y, columns run +Z):
+/// Footprint in the structure frame, Y-Z slice (rows run -Y, columns run +Z):
 /// <code>
-/// .  .  P     P = delivery port filler, south face
+/// .  .  P     P = delivery port filler, local south face
 /// O  #  S     S = source port filler, down face
 /// </code>
-/// The body extends south of the principal, so the shape is drawn rotated a further 180°.
+/// The principal carries the axle coupling on its local east face.
 /// </remarks>
 [BlockRegister]
 public partial class BlockMpFluidPump
@@ -34,11 +34,27 @@ public partial class BlockMpFluidPump
   public int Angle => ExOrientation.AngleFromSide(Variant["side"]);
 
   /// <summary>
-  /// The delivery face at the far, high end of the housing - south in the north orientation, that
-  /// is, pointing away from the principal along the body.
+  /// The rotation the footprint and the ports share, offset 180° from <see cref="Angle"/> so the
+  /// housing is raised AWAY from the player - the same convention as <c>BlockBoiler</c>. Every
+  /// offset and facing must go through this, never <see cref="Angle"/>: mixing the two puts the
+  /// fillers where the player is standing and turns every connector to face the wrong way.
+  /// <para>
+  /// The shape does NOT take this angle. Its art is drawn along local -z while <c>fillerOffsets</c>
+  /// are authored along local +z, so <c>shapebytype</c>'s rotateY is the plain placement angle and
+  /// the two meet in the middle. Rotating both by the same amount points the model and the volume
+  /// in opposite directions.
+  /// </para>
+  /// </summary>
+  public int StructureAngle => (Angle + 180) % 360;
+
+  /// <summary>
+  /// The delivery face of the high cell - local north, looking back along the body into the notch
+  /// of the L, which is where the shape opens the valve column. Not the far face: the cell beyond
+  /// the far end is outside the structure, while the notch cell is the one a delivery main can
+  /// actually be run into.
   /// </summary>
   public BlockFacing OutputFace =>
-    ExOrientation.RotateFacing(BlockFacing.SOUTH, Angle);
+    ExOrientation.RotateFacing(BlockFacing.NORTH, StructureAngle);
 
   /// <summary>
   /// The source face: the underside of the far, low cell, where the shape opens the bottom of the
@@ -46,15 +62,26 @@ public partial class BlockMpFluidPump
   /// </summary>
   public static BlockFacing SourceFace => BlockFacing.DOWN;
 
-  /// <summary>The face the drive axle couples on - east in the north orientation.</summary>
+  /// <summary>
+  /// The face the drive axle couples on - local east, where the shape draws the gear. This is the
+  /// single source for the coupling side: <c>BEBehaviorMpPumpDrive</c> seeds its network-discovery
+  /// facing from it, so the face the axle is accepted on and the face the network is discovered
+  /// through can never drift apart.
+  /// </summary>
   public BlockFacing DriveFace =>
-    ExOrientation.RotateFacing(BlockFacing.EAST, Angle);
+    ExOrientation.RotateFacing(BlockFacing.EAST, StructureAngle);
 
   private BlockPos OffsetWorldPos(
     BlockPos pumpPos,
     JsonObject? offsetNode,
     Vec3i fallback
-  ) => ExOrientation.WorldPosFromAttr(pumpPos, offsetNode, fallback, Angle);
+  ) =>
+    ExOrientation.WorldPosFromAttr(
+      pumpPos,
+      offsetNode,
+      fallback,
+      StructureAngle
+    );
 
   /// <summary>World cell of the filler carrying the source port; the intake line attaches below it.</summary>
   public BlockPos SourceWorldPos(BlockPos pumpPos) =>
@@ -69,7 +96,10 @@ public partial class BlockMpFluidPump
 
   #region Mechanical power
 
-  /// <summary>Accepts an axle on the drive face or its opposite - both ends of the same shaft line.</summary>
+  /// <summary>
+  /// Accepts an axle on the drive face and nowhere else. The pump is an end of a line, not a length
+  /// of shafting: it takes power in at the gear and does not pass it out the far side.
+  /// </summary>
   public bool HasMechPowerConnectorAt(
     IWorldAccessor world,
     BlockPos pos,
@@ -78,7 +108,7 @@ public partial class BlockMpFluidPump
     ,
     BlockMPBase forBlock
 #endif
-  ) => face == DriveFace || face == DriveFace.Opposite;
+  ) => face == DriveFace;
 
   public void DidConnectAt(
     IWorldAccessor world,
@@ -105,7 +135,11 @@ public partial class BlockMpFluidPump
     if (!base.CanPlaceBlock(world, byPlayer, blockSel, ref failureCode))
       return false;
 
-    var cells = StructureFillers.FootprintCells(this, blockSel.Position, Angle);
+    var cells = StructureFillers.FootprintCells(
+      this,
+      blockSel.Position,
+      StructureAngle
+    );
     if (!StructureFillers.CanPlace(world, cells)) {
       failureCode = "notenoughspace";
       return false;
@@ -122,7 +156,7 @@ public partial class BlockMpFluidPump
     StructureFillers.PlaceFillers(
       world,
       blockPos,
-      StructureFillers.FootprintCells(this, blockPos, Angle)
+      StructureFillers.FootprintCells(this, blockPos, StructureAngle)
     );
     MarkPort(world, SourceWorldPos(blockPos), SourceFace);
     MarkPort(world, OutletWorldPos(blockPos), OutputFace);
@@ -158,7 +192,7 @@ public partial class BlockMpFluidPump
     StructureFillers.RemoveFillers(
       world,
       pos,
-      StructureFillers.FootprintCells(this, pos, Angle)
+      StructureFillers.FootprintCells(this, pos, StructureAngle)
     );
     base.OnBlockBroken(world, pos, byPlayer, dropQuantityMultiplier);
   }

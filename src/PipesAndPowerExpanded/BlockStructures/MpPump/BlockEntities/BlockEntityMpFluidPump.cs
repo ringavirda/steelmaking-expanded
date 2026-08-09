@@ -26,7 +26,22 @@ namespace PipesAndPowerExpanded.BlockStructures.MpPump.BlockEntities;
 /// each tick the standing source water is moved out first and the intake refills it afterwards.
 /// </summary>
 [BlockEntityRegister]
-public class BlockEntityMpFluidPump : BlockEntity {
+public class BlockEntityMpFluidPump : BlockEntity, IRenderer {
+  /// <summary>
+  /// Renders nothing. The pump registers itself only to get a per-render-frame callback, which is
+  /// the one place the cycle can be pinned to the axle: the 250 ms client tick is four updates a
+  /// second and shows as stepping. Runs before the opaque pass so the frame is already in step when
+  /// the mesh is drawn.
+  /// </summary>
+  public double RenderOrder => 0.0;
+
+  public int RenderRange => 64;
+
+  public void OnRenderFrame(float dt, EnumRenderStage stage) =>
+    LockCycleToAxle();
+
+  public void Dispose() { }
+
   /// <summary>Server-side work interval; matches the pipe network's own per-second tick.</summary>
   private const int WorkIntervalMs = 1000;
 
@@ -51,7 +66,7 @@ public class BlockEntityMpFluidPump : BlockEntity {
   public bool IsConstructed => _rcc?.IsComplete ?? false;
 
   /// <summary>Fraction of the rated rate the beam is currently moving.</summary>
-  public float OutputFraction => SpeedFraction(_lastSpeed);
+  public float OutputPerSecond => OutputAt(_lastSpeed);
 
   public override void Initialize(ICoreAPI api) {
     base.Initialize(api);
@@ -64,9 +79,14 @@ public class BlockEntityMpFluidPump : BlockEntity {
       if (_rcc != null)
         _rcc.OnShapeChanged += OnConstructShapeChanged;
       RebuildAnimator(_rcc?.shape?.SelectiveElements);
-      _animRunning = OutputFraction > 0f;
+      _animRunning = OutputPerSecond > 0f;
       ApplyAnim(_animRunning);
       _clientTickId = RegisterGameTickListener(OnClientTick, 250);
+      (api as ICoreClientAPI)?.Event.RegisterRenderer(
+        this,
+        EnumRenderStage.Before,
+        "ppex-mppump-cycle"
+      );
     }
   }
 
@@ -92,8 +112,8 @@ public class BlockEntityMpFluidPump : BlockEntity {
   /// mechanical network.
   /// </summary>
   public float DoWork(float speed, float dt) {
-    float fraction = SpeedFraction(speed);
-    if (fraction <= 0f || dt <= 0f) {
+    float output = OutputAt(speed);
+    if (output <= 0f || dt <= 0f) {
       SetDrawing(false);
       return 0f;
     }
@@ -108,7 +128,13 @@ public class BlockEntityMpFluidPump : BlockEntity {
     if (intake == null)
       return 0f;
 
-    float amount = PpexValues.MpPumpWaterPerSecond * fraction * dt;
+    float amount = output * dt;
+    // A working beam with no delivery line still lifts water - it just throws it out of the bare
+    // outlet. Showing that is the only way a player can tell a driven pump from a stalled one when
+    // the delivery main is missing or has come off.
+    if (deliveryNet == null)
+      SpillFromOpenOutlet();
+
     float move = Math.Min(amount, OutputFreeCapacity(deliveryNet));
     float drawn = sourceNet?.TryConsumeLiquid(move, ba) ?? 0f;
     if (drawn > 0f)
@@ -157,19 +183,14 @@ public class BlockEntityMpFluidPump : BlockEntity {
   }
 
   /// <summary>
-  /// Fraction of the rated rate the pump moves at <paramref name="speed"/>: 0 at or below
-  /// <see cref="PpexValues.MpPumpMinSpeed"/>, 1 at or above
-  /// <see cref="PpexValues.MpPumpMaxSpeed"/>, linear between.
+  /// Water (L/s) the pump moves at axle <paramref name="speed"/> - straight proportion, because the
+  /// beam drives a fixed displacement per turn of the shaft. No threshold and no ceiling: a shaft
+  /// barely turning moves a trickle, which is what a beam pump does. What limits the pump is the
+  /// head it lifts, through <see cref="BEBehaviorMpPumpDrive.PumpResistance"/>, not a band drawn on
+  /// its speed.
   /// </summary>
-  public static float SpeedFraction(float speed) {
-    float min = PpexValues.MpPumpMinSpeed;
-    float max = PpexValues.MpPumpMaxSpeed;
-    if (speed <= min)
-      return 0f;
-    if (max <= min)
-      return 1f;
-    return GameMath.Clamp((speed - min) / (max - min), 0f, 1f);
-  }
+  public static float OutputAt(float speed) =>
+    PpexValues.MpPumpLitresPerSpeed * GameMath.Max(0f, speed);
 
   /// <summary>The first fluid intake on <paramref name="net"/> that can currently draw water, or <c>null</c>.</summary>
   private BlockEntityFluidIntake? FindIntake(PipeNetwork? net) {
@@ -187,6 +208,23 @@ public class BlockEntityMpFluidPump : BlockEntity {
   }
 
   /// <summary>Litres of water the delivery network can still accept.</summary>
+  /// <summary>
+  /// Throws the lifted water out of the bare delivery port, with the splash to match - the same
+  /// spill the engine makes when its condensate has nowhere to drain. Server-side: particles
+  /// replicate to clients, and this runs on the work tick.
+  /// </summary>
+  private void SpillFromOpenOutlet() {
+    if (Api is not { Side: EnumAppSide.Server } || PumpBlock is not { } block)
+      return;
+
+    ExParticles.WaterJet(
+      Api.World,
+      block.OutletWorldPos(Pos),
+      block.OutputFace
+    );
+    ExSounds.SplashSound(Api.World, Pos);
+  }
+
   private static float OutputFreeCapacity(PipeNetwork? net) =>
     net == null
       ? 0f
@@ -205,7 +243,7 @@ public class BlockEntityMpFluidPump : BlockEntity {
   #region Client animation + sound
 
   private void OnClientTick(float dt) {
-    bool running = OutputFraction > 0f;
+    bool running = OutputPerSecond > 0f;
     if (running != _animRunning) {
       _animRunning = running;
       ApplyAnim(running);
@@ -216,6 +254,28 @@ public class BlockEntityMpFluidPump : BlockEntity {
   private void OnConstructShapeChanged(CompositeShape cs) {
     RebuildAnimator(cs?.SelectiveElements);
     ApplyAnim(_animRunning);
+  }
+
+  /// <summary>
+  /// Pins the running <c>cycle</c> clip to the drive shaft's angle, so the gear, the connecting rod,
+  /// the piston and the two valve flaps all move in step with the axle the player can see, at any
+  /// speed, instead of free-running at a fixed rate. A no-op while the pump is idle - <c>idle</c> is
+  /// the clip that is running then, and it has no cycle to lock.
+  /// </summary>
+  private void LockCycleToAxle() {
+    if (!_animRunning || _animatable == null || !_animatorReady)
+      return;
+    if (GetBehavior<BEBehaviorMpPumpDrive>() is not { } drive)
+      return;
+    // Reversed: the clip turns its Axle element through +360 over the cycle, which runs against the
+    // vanilla axle for a rising angle - the pump's shaft span the wrong way beside the axle driving
+    // it.
+    MPAnim.LockFrameToAngle(
+      _animatable.animUtil,
+      "cycle",
+      drive.CurrentAngleRad,
+      reverse: true
+    );
   }
 
   /// <summary>
@@ -248,6 +308,12 @@ public class BlockEntityMpFluidPump : BlockEntity {
   /// Holds one animation at a time - <c>cycle</c> while the beam works, <c>idle</c> otherwise.
   /// Keeping one active stops the animator mesh vanishing.
   /// </summary>
+  /// <remarks>
+  /// The ease-in has to be fast. Its factor is what the animator weights every pose by, and it
+  /// starts at zero on each <c>StartAnimation</c>, so until it climbs the machine is drawn part way
+  /// back toward its unposed shape. At the vanilla default of 10 that takes a moment; at 1 it takes
+  /// seconds, and every animator rebuild - every construction stage - restarts it.
+  /// </remarks>
   private void ApplyAnim(bool running) {
     if (_animatable == null || !_animatorReady)
       return;
@@ -259,7 +325,7 @@ public class BlockEntityMpFluidPump : BlockEntity {
         Animation = running ? "cycle" : "idle",
         Code = running ? "cycle" : "idle",
         AnimationSpeed = 1f,
-        EaseInSpeed = 1f,
+        EaseInSpeed = 10f,
         EaseOutSpeed = 5f,
       }.Init()
     );
@@ -314,8 +380,8 @@ public class BlockEntityMpFluidPump : BlockEntity {
     if (!IsConstructed)
       return;
 
-    float fraction = OutputFraction;
-    if (fraction <= 0f) {
+    float output = OutputPerSecond;
+    if (output <= 0f) {
       dsc.AppendLine(Lang.Get("ppex:mpfluidpump-info-idle"));
       return;
     }
@@ -323,8 +389,8 @@ public class BlockEntityMpFluidPump : BlockEntity {
     dsc.AppendLine(
       Lang.Get(
         "ppex:mpfluidpump-info-running",
-        ExMeasure.FlowRate(PpexValues.MpPumpWaterPerSecond * fraction),
-        (int)(fraction * 100f)
+        ExMeasure.FlowRate(output),
+        ExMeasure.Pressure(PpexValues.MpPumpDeliveryPressure)
       )
     );
     if (!_drawingWater)
@@ -346,6 +412,12 @@ public class BlockEntityMpFluidPump : BlockEntity {
   private void UnregisterTicks() {
     if (_rcc != null)
       _rcc.OnShapeChanged -= OnConstructShapeChanged;
+    // The renderer holds a reference to this block entity; leaving it registered keeps a removed
+    // pump alive and still writing frames.
+    (Api as ICoreClientAPI)?.Event.UnregisterRenderer(
+      this,
+      EnumRenderStage.Before
+    );
     if (_serverTickId != 0) {
       UnregisterGameTickListener(_serverTickId);
       _serverTickId = 0;

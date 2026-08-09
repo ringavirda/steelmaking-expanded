@@ -14,7 +14,9 @@ namespace ExpandedLib.Blocks.Structures;
 /// participant at the cell where an axle couples - the principal block, cells away, cannot accept
 /// power at that face. The port renders nothing and only loads the network with a configurable
 /// resistance; the principal reads back the resulting <see cref="BEBehaviorMPBase.Network"/> speed
-/// and angle to drive its parts in sync. Orientation comes from the principal:
+/// and angle to drive its parts in sync. It couples on its declared face alone, never the opposite
+/// one: a machine's intake is the end of a line, not a length of shafting that carries rotation out
+/// the far side. Orientation comes from the principal:
 /// <see cref="ConfigureFromFiller"/> passes the connector face already rotated into the placed
 /// orientation, not the shared filler block's own always-north variant.
 /// </summary>
@@ -27,6 +29,7 @@ public class BEBehaviorMPFillerPort(BlockEntity blockentity)
 
   private BlockFacing _face = BlockFacing.NORTH;
   private float _resistance = DefaultResistance;
+  private float? _liveLoad;
 
   /// <summary>The face this port couples an axle on (already in the placed orientation).</summary>
   public BlockFacing PortFacing => _face;
@@ -63,17 +66,18 @@ public class BEBehaviorMPFillerPort(BlockEntity blockentity)
       _resistance = properties["resistance"].AsFloat(DefaultResistance);
   }
 
-  public override void Initialize(ICoreAPI api, JsonObject properties) {
-    base.Initialize(api, properties);
+  /// <summary>
+  /// Overrides the declared resistance with what the machine currently draws, for a principal whose
+  /// torque demand is not constant - a pump or blower working against a pressure it raises itself
+  /// draws in proportion to that pressure, so its load has to be told to the shaft rather than
+  /// declared once in the block file. Pass null to fall back to the declared figure. The principal
+  /// writes this from its own tick; <see cref="GetResistance"/> is read by the network solver every
+  /// tick and must not go looking for the machine's state itself.
+  /// </summary>
+  public void SetLoad(float? load) =>
+    _liveLoad = load is { } l && l >= 0f ? l : null;
 
-    // The base seeds only the single OutFacingForNetworkDiscovery face. Couple the opposite end of
-    // the axis too, so a row of ports merges into one network and power passes straight through: an
-    // axle on either side drives the same line.
-    if (api.Side == EnumAppSide.Server && OutFacingForNetworkDiscovery != null)
-      tryConnect(OutFacingForNetworkDiscovery.Opposite);
-  }
-
-  public override float GetResistance() => _resistance;
+  public override float GetResistance() => _liveLoad ?? _resistance;
 
   public override void SetOrientations() {
     OutFacingForNetworkDiscovery = _face;

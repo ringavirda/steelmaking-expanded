@@ -45,11 +45,14 @@ public class PpexConfig : IExVersionedConfig {
       ResetFields = [nameof(MpLoadPerEnginePower)],
     },
     // 0.6.6: mining a machine intact now returns all of its construction materials (0.8 -> 1.0);
-    // the salvage tax only discouraged rebuilding a plant. Bursting one is still penalised.
+    // the salvage tax only discouraged rebuilding a plant. Bursting one is still penalised. Also:
+    // an overloaded engine now labours instead of cutting out, and the load it holds per unit of
+    // power was raised (1.37 -> 2.0) so a steam engine out-pulls a vanilla waterwheel rather than
+    // giving up where the wheel merely bogs down.
     new()
     {
       ToVersion = "0.6.6",
-      ResetFields = [nameof(RccBrokenDropsRatio)],
+      ResetFields = [nameof(RccBrokenDropsRatio), nameof(MpLoadPerEnginePower)],
     },
   ];
 
@@ -271,12 +274,21 @@ public class PpexConfig : IExVersionedConfig {
   /// rated capacity; light loads can't push past it, heavier loads drag it below.</summary>
   public float MpRatedSpeed { get; set; } = 1.0f;
 
-  /// <summary>MP load an engine's generator holds at <see cref="MpRatedSpeed"/> per unit of engine
-  /// power. A Watt at full power (0.3) × this = ~0.41 = three helve hammers. Load past the rated
-  /// amount slows the network (speed = budget / load); past double it the engine stalls and stops.
-  /// Raised from 0.875 so a steam plant is worth building against an electrical generator: three
-  /// Cornish engines on a shared shaft now reach roughly 500 W where they made about 320 W.</summary>
-  public float MpLoadPerEnginePower { get; set; } = 1.37f;
+  /// <summary>
+  /// MP load an engine's generator holds at <see cref="MpRatedSpeed"/> per unit of engine power - in
+  /// effect the engine's torque scale. A Watt at full power (0.3) × this = 0.6, near five helve
+  /// hammers. Load past that slows the network (speed = budget / load) without ever cutting it out;
+  /// the shaft comes to a stand only past four times the budget, where the generator's own torque
+  /// clamp runs out.
+  /// <para>
+  /// Raised from 1.37 so a steam engine decisively out-pulls a vanilla waterwheel, which turns up to
+  /// <c>0.3 × flowRate</c> and bogs down rather than stopping - a strong stream was holding more
+  /// load than a Watt could. This is the right knob for that: engine top speed is capped by
+  /// <c>BlockEntityEngine.ShaftSpeed</c>, so raising this adds pulling power and load capacity
+  /// without touching the speeds the blower and pump are tuned around.
+  /// </para>
+  /// </summary>
+  public float MpLoadPerEnginePower { get; set; } = 2.0f;
 
   /// <summary>Water (L/s) the engine fluid pump moves per unit of mechanical power (Watt 0.3 → 5 L/s,
   /// Cornish 0.2/0.4/0.8 → 3.3/6.7/13.3 L/s).</summary>
@@ -286,20 +298,33 @@ public class PpexConfig : IExVersionedConfig {
   /// its output line at a fixed 1 atm - a manual boiler-startup feed, slower than the engine pump.</summary>
   public float ManualPumpWaterPerSecond { get; set; } = 2f;
 
-  /// <summary>Water (L/s) the mechanical fluid pump moves at or above <see cref="MpPumpMaxSpeed"/>.
-  /// Between the hand crank and the engine pump: it runs off a line shaft, so it can fill a boiler
-  /// that has no engine of its own yet.</summary>
-  public float MpPumpWaterPerSecond { get; set; } = 8f;
+  /// <summary>
+  /// Water (L/s) the mechanical fluid pump moves per unit of axle speed. The beam drives a
+  /// displacement plunger, so throughput is a straight proportion of shaft speed with no threshold
+  /// and no ceiling of its own.
+  /// <para>
+  /// Sized off the WATERWHEEL, which is the drive this is meant to be built around: a vanilla wheel
+  /// tops out at speed 0.3 and settles near 0.18 against this pump, where it lands between the hand
+  /// crank and the engine pump - the pre-steam way to fill a boiler whose fire is out. Driven from
+  /// an engine instead it runs to speed 1.5 and well past the engine pump's rate, which is intended:
+  /// that costs an engine, a generator and a line shaft, where the engine pump bolts straight on.
+  /// </para>
+  /// </summary>
+  public float MpPumpLitresPerSpeed { get; set; } = 20f;
 
   /// <summary>Delivery head (atm) the mechanical fluid pump commands, independent of axle speed -
   /// the walking beam lifts the same column however fast it runs.</summary>
   public float MpPumpDeliveryPressure { get; set; } = 1.5f;
 
-  /// <summary>Axle speed at or below which the mechanical fluid pump moves nothing.</summary>
-  public float MpPumpMinSpeed { get; set; } = 0.5f;
+  /// <summary>Shaft load the beam draws with the delivery line empty - its own linkage friction.</summary>
+  public float MpPumpBaseLoad { get; set; } = 0.05f;
 
-  /// <summary>Axle speed at or above which the mechanical fluid pump moves its full rate.</summary>
-  public float MpPumpMaxSpeed { get; set; } = 1.5f;
+  /// <summary>
+  /// Extra shaft load per atm of delivery head. The plunger's torque draw is set by the column it
+  /// lifts, so a pump commanded to a higher head costs the shaft more and a weak drive turns it
+  /// slower - which is what makes drive size decide the rate rather than a band drawn on speed.
+  /// </summary>
+  public float MpPumpLoadPerAtm { get; set; } = 0.05f;
 
   /// <summary>A fluid intake only draws water when the whole cube of this depth directly below it is water.</summary>
   public int FluidIntakeWaterDepth { get; set; } = 3;

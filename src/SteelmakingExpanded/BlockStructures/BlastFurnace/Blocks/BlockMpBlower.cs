@@ -16,12 +16,11 @@ namespace SteelmakingExpanded.BlockStructures.BlastFurnace.Blocks;
 /// <see cref="BlockEntities.BlockEntityMpBlower"/>.
 /// </summary>
 /// <remarks>
-/// Footprint in the north orientation, Y-Z slice (rows run -Y, columns run +Z):
+/// Footprint in the structure frame, Y-Z slice (rows run -Y, columns run +Z):
 /// <code>
-/// M  #  #     M = mechanical-power port filler, east face
-/// O  #  B     B = blast outlet port filler, south face
+/// M  #  #     M = mechanical-power port filler, local east face
+/// O  #  B     B = blast outlet port filler, local south face
 /// </code>
-/// The body extends south of the principal, so the shape is drawn rotated a further 180°.
 /// </remarks>
 [BlockRegister]
 public partial class BlockMpBlower : Block, IFillerHost {
@@ -29,17 +28,37 @@ public partial class BlockMpBlower : Block, IFillerHost {
   public int Angle => ExOrientation.AngleFromSide(Variant["side"]);
 
   /// <summary>
-  /// The face the blast main leaves on - south in the north orientation, that is, the far end of
-  /// the housing where the shape draws its pipe stub.
+  /// The rotation the footprint and the ports share, offset 180° from <see cref="Angle"/> so the
+  /// housing is raised AWAY from the player - the same convention as <c>BlockBoiler</c>. Every
+  /// offset and facing must go through this, never <see cref="Angle"/>: mixing the two puts the
+  /// fillers where the player is standing and turns every connector to face the wrong way.
+  /// <para>
+  /// The shape does NOT take this angle. Its art is drawn along local -z while <c>fillerOffsets</c>
+  /// are authored along local +z, so <c>shapebytype</c>'s rotateY is the plain placement angle and
+  /// the two meet in the middle. Rotating both by the same amount points the model and the volume
+  /// in opposite directions.
+  /// </para>
+  /// </summary>
+  public int StructureAngle => (Angle + 180) % 360;
+
+  /// <summary>
+  /// The face the blast main leaves on - local south, the far end of the housing where the shape
+  /// draws its pipe stub.
   /// </summary>
   public BlockFacing OutletFace =>
-    ExOrientation.RotateFacing(BlockFacing.SOUTH, Angle);
+    ExOrientation.RotateFacing(BlockFacing.SOUTH, StructureAngle);
 
   private BlockPos OffsetWorldPos(
     BlockPos blowerPos,
     JsonObject? offsetNode,
     Vec3i fallback
-  ) => ExOrientation.WorldPosFromAttr(blowerPos, offsetNode, fallback, Angle);
+  ) =>
+    ExOrientation.WorldPosFromAttr(
+      blowerPos,
+      offsetNode,
+      fallback,
+      StructureAngle
+    );
 
   /// <summary>World cell of the filler that hosts the mechanical-power port.</summary>
   public BlockPos MpPortWorldPos(BlockPos blowerPos) =>
@@ -63,7 +82,11 @@ public partial class BlockMpBlower : Block, IFillerHost {
 
     // Refuse placement unless the whole volume is clear: without the fillers there is no port cell
     // for the axle and no outlet cell for the main, so the blower would stand inert.
-    var cells = StructureFillers.FootprintCells(this, blockSel.Position, Angle);
+    var cells = StructureFillers.FootprintCells(
+      this,
+      blockSel.Position,
+      StructureAngle
+    );
     if (!StructureFillers.CanPlace(world, cells)) {
       failureCode = "notenoughspace";
       return false;
@@ -80,7 +103,7 @@ public partial class BlockMpBlower : Block, IFillerHost {
     StructureFillers.PlaceFillers(
       world,
       blockPos,
-      StructureFillers.FootprintCells(this, blockPos, Angle)
+      StructureFillers.FootprintCells(this, blockPos, StructureAngle)
     );
     MarkBlastPort(world, blockPos);
   }
@@ -112,7 +135,7 @@ public partial class BlockMpBlower : Block, IFillerHost {
     StructureFillers.RemoveFillers(
       world,
       pos,
-      StructureFillers.FootprintCells(this, pos, Angle)
+      StructureFillers.FootprintCells(this, pos, StructureAngle)
     );
     base.OnBlockBroken(world, pos, byPlayer, dropQuantityMultiplier);
   }

@@ -29,20 +29,17 @@ public class BlockEntityEngineMpGenerator
   public double RenderOrder => 0.0;
   public int RenderRange => 64;
 
-  // Full power while an engine is attached and the MP load is within what it can drive; once the
-  // load overstresses the engine it cuts out (demand 0) until machines are removed. Judged by the
-  // network's resistance, not live speed, so a stalled engine recovers when load is shed.
-  public override float PowerDemand {
-    get {
-      if (Engine is not { } engine)
-        return 0f;
-      float load = _mp?.Network?.NetworkResistance ?? 0f;
-      // Judged against every engine on the shaft, not just this one - two engines can drive twice
-      // the load, and the ceiling has to say so.
-      float rated = _mp?.DrivenRatedLoad ?? engine.MpRatedLoad;
-      return engine.IsMpOverstressed(load, rated) ? 0f : 1f;
-    }
-  }
+  /// <summary>
+  /// Full power whenever an engine is attached. An overloaded engine LABOURS, it does not switch
+  /// off: cutting demand to zero stopped the whole line dead and left a waterwheel - which merely
+  /// bogs down and keeps grinding - looking like the stronger machine. Demand stays at full and the
+  /// network settles at <c>speed = budget / load</c>, so a heavy shaft simply crawls, and it comes
+  /// to a genuine stand only when the load passes the torque the generator can raise at all - which
+  /// the divisor clamp in <see cref="BEBehaviorEngineMPGenerator.GetTorque"/> puts at four times the
+  /// budget. <c>IsMpOverstressed</c> survives to TELL the player the engine is labouring rather than
+  /// to punish them for it.
+  /// </summary>
+  public override float PowerDemand => Engine != null ? 1f : 0f;
 
   // No pipe work - power leaves as MP torque via the behavior.
   protected override void DoWork(float power, float dt) { }

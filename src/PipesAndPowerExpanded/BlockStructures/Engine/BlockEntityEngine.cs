@@ -44,11 +44,6 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine {
   // it to choose cyclemp vs idlemp. See DriveMpCycleFrame.
   private bool _mpTurning;
 
-  // Forward-accumulated cyclemp frame + last axle angle, so we advance by the rotation
-  // MAGNITUDE each frame. See DriveMpCycleFrame for why the signed angle can't be used.
-  private float _mpCycleFrame;
-  private float _lastDriveAngle;
-
   // Constant low planetary-gear hum from the gear housing while the engine runs (client only).
   private ILoadedSound? _gearSound;
 
@@ -155,11 +150,45 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine {
   #region MP generator drive
 
   /// <summary>
-  /// MP load the generator can hold at <see cref="PpexValues.MpRatedSpeed"/> when this engine is at
-  /// FULL power. The network slows past this and the engine stalls past double it. Constant (uses
-  /// <see cref="MaxPower"/>, not current output) so the stall check can't latch off once stopped.
+  /// Clip-speed multiplier for the engine's 60-frame beam cycle at its current output. This is an
+  /// ANIMATION rate, not a network speed - see <see cref="ShaftSpeed"/> for the conversion.
   /// </summary>
-  public float MpRatedLoad => MaxPower * PpexValues.MpLoadPerEnginePower;
+  private float CycleAnimationSpeed => 0.5f + AvailablePower;
+
+  /// <summary>
+  /// Network speed per unit of cycle-animation speed, and the reason the two cannot be used
+  /// interchangeably. The animator advances a clip at <c>30 x AnimationSpeed</c> frames a second, so
+  /// the 60-frame beam cycle strokes at <c>0.5 x AnimationSpeed</c> cycles a second. The network
+  /// turns its axle at <c>5 x speed</c> radians a second (<c>ServerTick</c> hands <c>UpdateAngle</c>
+  /// <c>speed * dt * 50</c> and <c>UpdateAngle</c> adds <c>speed / 10</c>), that is
+  /// <c>5 / 2pi</c> revolutions a second, and <see cref="DriveMpCycleFrame"/> maps one revolution
+  /// onto one beam cycle. Equating the two gives <c>speed = (pi / 5) x AnimationSpeed</c>.
+  /// </summary>
+  private const float NetworkSpeedPerAnimSpeed = MathF.PI / 5f;
+
+  /// <summary>
+  /// How fast the engine's own shaft turns at its current output, in mechanical-network speed units.
+  /// Rises with power, so a throttled or steam-starved engine genuinely turns slower.
+  /// <para>
+  /// This caps the network, because a shaft coupled straight to the engine cannot turn faster than
+  /// the engine turns it. It matters visibly as well as physically: under an MP generator the beam is
+  /// phase-locked to the axle, one stroke per revolution, so a line allowed to outrun this would
+  /// drive the engine's own beam faster than its steam can work it. Gearing is the exception and is
+  /// handled where it belongs - the network hands each node its own geared speed, so a geared-up
+  /// branch may still run faster while the engine's own coupling does not.
+  /// </para>
+  /// </summary>
+  public float ShaftSpeed => CycleAnimationSpeed * NetworkSpeedPerAnimSpeed;
+
+  /// <summary>
+  /// The MP load this engine carries without labouring, at its CURRENT throttle. Read from
+  /// <see cref="RunPower"/>, not <see cref="MaxPower"/>: the Cornish's nominal ceiling is the same
+  /// number at every setting, so judging by it made the low setting deliver less power than a Watt
+  /// while tolerating three times the load - a throttled-back engine reading as the tougher one.
+  /// Nothing latches off this any more (see <c>BlockEntityEngineMpGenerator.PowerDemand</c>), so it
+  /// is free to follow the throttle.
+  /// </summary>
+  public float MpRatedLoad => RunPower * PpexValues.MpLoadPerEnginePower;
 
   /// <summary>
   /// Constant mechanical-power budget the generator delivers at the engine's CURRENT output. As a
@@ -296,7 +325,7 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine {
     AvailablePower = power;
     bool run = power > 0.001f;
 
-    float newSpeed = run ? 0.5f + power : 1f;
+    float newSpeed = run ? CycleAnimationSpeed : 1f;
     if (run != _running || Math.Abs(newSpeed - AnimationSpeed) > 0.05f) {
       AnimationSpeed = newSpeed;
       _running = run;
@@ -572,7 +601,6 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine {
   /// cycling while the flywheel coasts. Pushed every render frame by
   /// <see cref="BlockEntityEngineMpGenerator"/>; <paramref name="angleRad"/> is the axle's render
   /// angle (0..2π, the axle's render angle), <paramref name="turning"/> whether the network moves.
-  /// We accumulate the signed delta so the cycle follows the axle's direction - see the body.
   /// </summary>
   public void DriveMpCycleFrame(bool turning, float angleRad) {
     if (Api is not ICoreClientAPI || _animatable == null || !_animatorReady)
@@ -582,28 +610,15 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine {
     if (turning != _mpTurning) {
       _mpTurning = turning;
       ApplyPose();
-      // Reset the baseline so the first frame after (re)start doesn't jump by a stale delta.
-      _lastDriveAngle = angleRad;
     }
     if (!turning)
       return;
 
-    var st = _animatable.animUtil.animator?.GetAnimationState("cyclemp");
-    if (st?.Animation == null)
-      return;
-    int total = st.Animation.QuantityFrames;
-
-    // Advance by the SIGNED rotation so the engine cycle follows the axle's visible direction - when
-    // the axle reverses (orientation flip / driven the other way) the cycle plays backwards too,
-    // instead of always cranking forward. The caller passes the axle's render angle, whose signed
-    // per-frame delta matches what the player sees the axle do.
-    float delta = GameMath.AngleRadDistance(_lastDriveAngle, angleRad);
-    _lastDriveAngle = angleRad;
-    _mpCycleFrame = GameMath.Mod(
-      _mpCycleFrame + delta / GameMath.TWOPI * total,
-      total
-    );
-    st.CurrentFrame = _mpCycleFrame;
+    // Map the axle's render angle straight onto the frame rather than accumulating per-frame
+    // deltas. The absolute mapping cannot drift out of phase over a long run, needs no baseline to
+    // reset when the clip restarts, and still follows a reversal for free - the angle itself runs
+    // backwards, so the cycle does too.
+    MPAnim.LockFrameToAngle(_animatable.animUtil, "cyclemp", angleRad);
   }
 
   private void ApplyPose() {
@@ -642,10 +657,15 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine {
   /// Progress (0..1) through the engine's currently-running cycle animation, read by the
   /// attached sub-machine to phase-lock its own cycle. 0 when not animating client-side.
   /// </summary>
+  /// <remarks>
+  /// Divides by the whole frame count, not the last keyframe's number: the animator's live frame
+  /// space is <c>[0, QuantityFrames)</c>, the stretch from the last keyframe back to the first being
+  /// an ordinary segment it renders like any other. See <see cref="MPAnim.FrameFromAngle"/>.
+  /// </remarks>
   public float CycleAnimProgress {
     get {
       var (frame, total) = ReadCycleFrame();
-      return total > 1 ? frame / (total - 1) : 0f;
+      return total > 1 ? frame / total : 0f;
     }
   }
 

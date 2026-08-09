@@ -286,7 +286,7 @@ public class StructureFillerBehaviorTests {
   #region Mechanical-power connector glue
 
   [Fact]
-  public void A_hosting_cell_accepts_an_axle_on_either_end_of_its_port_axis() {
+  public void A_hosting_cell_accepts_an_axle_on_its_declared_face_only() {
     var (world, filler) = NewWorld();
     var pos = new BlockPos(0, 0, 0);
     var be = new BlockEntityStructureFiller {
@@ -305,10 +305,12 @@ public class StructureFillerBehaviorTests {
     ];
     be.Behaviors.Add(new BEBehaviorMPFillerPort(be));
 
-    // An axle couples along the axis, so both ends of the declared face connect,
+    // The declared face couples,
     Assert.True(HasMechConnector(filler, world, pos, BlockFacing.WEST));
-    Assert.True(HasMechConnector(filler, world, pos, BlockFacing.EAST));
-    // but a perpendicular face does not.
+    // and nothing else does - including the opposite face. A port is where a machine takes power
+    // in, not a length of shafting: accepting both ends made every hosted port a passthrough that
+    // carried rotation out the far side of the machine.
+    Assert.False(HasMechConnector(filler, world, pos, BlockFacing.EAST));
     Assert.False(HasMechConnector(filler, world, pos, BlockFacing.NORTH));
     Assert.False(HasMechConnector(filler, world, pos, BlockFacing.SOUTH));
   }

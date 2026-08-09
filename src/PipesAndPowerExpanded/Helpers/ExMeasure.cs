@@ -150,7 +150,10 @@ public static class ExMeasure {
       ),
     };
 
-    string sig = string.Join("", conversions.Select(c => c.MetricSymbol));
+    // U+0001 joins the symbols because no unit symbol can contain it, so the signature cannot
+    // collide with one built from a different split. Written as an escape: a literal control byte
+    // is invisible in an editor, which is how nine of them went unnoticed in a recipe file.
+    string sig = string.Join("\u0001", conversions.Select(c => c.MetricSymbol));
     if (sig == _conversionSig && _metricRegex != null)
       return;
 

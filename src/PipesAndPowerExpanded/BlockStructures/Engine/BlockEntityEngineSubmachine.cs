@@ -257,8 +257,12 @@ public abstract class BlockEntityEngineSubmachine : BlockEntityProductionMachine
     var st = animator.GetAnimationState("cycle");
     if (st?.Animation == null || st.Animation.QuantityFrames <= 1)
       return;
-    st.CurrentFrame =
-      engine.CycleAnimProgress * (st.Animation.QuantityFrames - 1);
+    // Spans the whole frame count to match CycleAnimProgress, which is a fraction of the animator's
+    // full [0, QuantityFrames) frame space rather than of the last keyframe's number.
+    st.CurrentFrame = GameMath.Mod(
+      engine.CycleAnimProgress * st.Animation.QuantityFrames,
+      st.Animation.QuantityFrames
+    );
   }
 
   /// <summary>

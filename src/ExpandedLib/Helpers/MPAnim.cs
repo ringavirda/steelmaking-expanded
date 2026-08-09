@@ -1,3 +1,4 @@
+using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 
 namespace ExpandedLib.Helpers;
@@ -37,17 +38,64 @@ public static class MPAnim {
   /// <summary>
   /// Maps a network rotation angle straight onto a cyclic animation frame, so a driven part stays
   /// locked to the axle's absolute angle rather than merely spinning at the same rate. Angle
-  /// <c>0..2π</c> maps onto frame <c>0..(totalFrames-1)</c> and wraps at <c>2π</c>; a full-turn
-  /// animation's first and last keyframes share an orientation, so the wrap is invisible. Use
+  /// <c>0..2π</c> maps onto frame <c>0..totalFrames</c> and wraps at <c>2π</c>. Use
   /// <see cref="AdvanceFrame"/> instead when only speed and direction matter, such as an oscillating
   /// piston that need not align to an absolute angle.
   /// </summary>
+  /// <remarks>
+  /// The span is the FULL frame count, not the last keyframe's number. The animator's live frame
+  /// space is <c>[0, QuantityFrames)</c>, and the stretch from the last keyframe back to the first
+  /// is an ordinary interpolation segment that gets rendered like any other - one frame wide, and
+  /// carrying the last <c>360/QuantityFrames</c> degrees of the turn. Spanning <c>total-1</c> maps a
+  /// whole revolution onto everything but that segment, which both compresses the cycle and leaves
+  /// the segment to be reached only by the clip's own advance, out of step with the axle. So a clip
+  /// driven from here is authored the way vanilla authors one: last keyframe at
+  /// <c>360 * (frames-1) / frames</c> with <c>rotShortestDistance</c> set, never a duplicate of
+  /// frame 0.
+  /// </remarks>
   public static float FrameFromAngle(float angleRad, int totalFrames) {
     if (totalFrames <= 1)
       return 0f;
-    // Span over the keyframe range [0, total-1]: the last keyframe ends the turn and the wrap
-    // (total-1 -> 0) is the same orientation, so it never interpolates backward through the loop.
-    int span = totalFrames - 1;
-    return GameMath.Mod(angleRad / GameMath.TWOPI * span, span);
+    return GameMath.Mod(angleRad / GameMath.TWOPI * totalFrames, totalFrames);
+  }
+
+  /// <summary>
+  /// Pins the running <paramref name="animCode"/> clip's frame to <paramref name="angleRad"/>, so
+  /// the part it drives turns with the axle instead of merely at the same rate. Call once per render
+  /// frame; a client tick is far too coarse and shows as stepping. A no-op when the clip is not
+  /// running or the animator has not resolved, so it is safe to call unconditionally.
+  /// <para>
+  /// Two things have to be true for the write to be visible, and neither is obvious. The clip must
+  /// have been started with a NON-ZERO <c>AnimationSpeed</c> - the animator does not pose a
+  /// zero-speed animation at all, so every frame written here would be discarded. And it must loop
+  /// (<c>onAnimationEnd: Repeat</c>), or the animator drops it at the end and an animator-rendered
+  /// block loses its mesh. The clip's own advance cannot be switched off and lands AFTER this write
+  /// - the animator ticks at <c>EnumRenderStage.Opaque</c>, one stage later - so the frame actually
+  /// posed leads the one written here by <c>30 * dt</c>. That is a constant lead of a few degrees of
+  /// shaft, harmless as long as the frame space is continuous across the wrap.
+  /// </para>
+  /// </summary>
+  /// <param name="reverse">
+  /// Set when the clip's own shaft is keyframed turning the opposite way to the axle. A cycle that
+  /// rotates its shaft element through +360 plays with the axle; one authored the other way, or a
+  /// machine whose gearing reverses the sense, needs the frame run backwards or the two shafts turn
+  /// against each other - obvious the moment a vanilla axle is placed alongside.
+  /// </param>
+  public static void LockFrameToAngle(
+    AnimationUtil? animUtil,
+    string animCode,
+    float angleRad,
+    bool reverse = false
+  ) {
+    if (reverse)
+      angleRad = -angleRad;
+    if (animUtil?.animator?.GetAnimationState(animCode) is not { } state)
+      return;
+    if (state.Animation == null)
+      return;
+    state.CurrentFrame = FrameFromAngle(
+      angleRad,
+      state.Animation.QuantityFrames
+    );
   }
 }

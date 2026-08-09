@@ -124,15 +124,15 @@
     "outletOffset": { "x": 0, "y": 1, "z": 2 },
     "fillerOffsets": [
       { "x": 0, "y": 0, "z": 1 },
-      { "x": 0, "y": 0, "z": 2 },
-      { "x": 0, "y": 1, "z": 2 }
+      { "x": 0, "y": 0, "z": 2, "allowAttach": true },
+      { "x": 0, "y": 1, "z": 2, "allowAttach": true }
     ]
   },
   "shapebytype": {
-    "*-north": { "base": "ppex:mpfluidpump", "rotateY": 180 },
-    "*-east": { "base": "ppex:mpfluidpump", "rotateY": 90 },
-    "*-south": { "base": "ppex:mpfluidpump", "rotateY": 0 },
-    "*-west": { "base": "ppex:mpfluidpump", "rotateY": 270 }
+    "*-north": { "base": "ppex:mpfluidpump", "rotateY": 0 },
+    "*-east": { "base": "ppex:mpfluidpump", "rotateY": 270 },
+    "*-south": { "base": "ppex:mpfluidpump", "rotateY": 180 },
+    "*-west": { "base": "ppex:mpfluidpump", "rotateY": 90 }
   },
   "sidesolid": { "all": false },
   "sideopaque": { "all": false }

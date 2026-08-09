@@ -116,25 +116,26 @@
         "x": 0,
         "y": 1,
         "z": 0,
+        "allowAttach": true,
         "behaviors": [
           {
             "code": "exlib.BEBehaviorMPFillerPort",
             "face": "east",
-            "properties": { "resistance": 0.8 }
+            "properties": { "resistance": 0.05 }
           }
         ]
       },
       { "x": 0, "y": 0, "z": 1 },
       { "x": 0, "y": 1, "z": 1 },
-      { "x": 0, "y": 0, "z": 2 },
+      { "x": 0, "y": 0, "z": 2, "allowAttach": true },
       { "x": 0, "y": 1, "z": 2 }
     ]
   },
   "shapebytype": {
-    "*-north": { "base": "smex:blastfurnace/mpblower", "rotateY": 180 },
-    "*-east": { "base": "smex:blastfurnace/mpblower", "rotateY": 90 },
-    "*-south": { "base": "smex:blastfurnace/mpblower", "rotateY": 0 },
-    "*-west": { "base": "smex:blastfurnace/mpblower", "rotateY": 270 }
+    "*-north": { "base": "smex:blastfurnace/mpblower", "rotateY": 0 },
+    "*-east": { "base": "smex:blastfurnace/mpblower", "rotateY": 270 },
+    "*-south": { "base": "smex:blastfurnace/mpblower", "rotateY": 180 },
+    "*-west": { "base": "smex:blastfurnace/mpblower", "rotateY": 90 }
   },
   "sidesolid": { "all": false },
   "sideopaque": { "all": false }

@@ -5,7 +5,7 @@
   "blockdesc-engineairblower-*": "Steam-engine sub-machine that pressurises air.",
 
   "block-mpblower-*": "Twin-Tub Blower",
-  "blockdesc-mpblower-*": "Axle-driven bellows. Blows a blast furnace without steam, but never reaches converter pressure.",
+  "blockdesc-mpblower-*": "Axle-driven twin-tub bellows. Supplies blast air to the pipe line at its outlet.",
 
   "game:item-crushed-coke": "Crushed Coke",
   "block-toolmold-*-raw-plate": "Raw plate ceramic mold",
@@ -161,7 +161,7 @@
   "bf-error-complete": "Blast Furnace structure is complete!",
 
   "mpblower-info-idle": "Bellows idle - no axle turning",
-  "mpblower-info-blowing": "Blowing {0} ({1}% of rated output)",
+  "mpblower-info-blowing": "Blowing {0}, up to {1}",
 
   "rcc-ingredient-metalplate": "Iron or Steel Plate",
   "rcc-ingredient-rod": "Iron or Steel Rod",

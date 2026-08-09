@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Linq;
+using ExpandedLib.Blocks.Structures;
 using ExpandedLib.Testing;
 using Newtonsoft.Json.Linq;
 using PipesAndPowerExpanded.BlockNetworkPipe;
@@ -118,85 +120,64 @@ public class MpFluidPumpTests {
   #region Speed response
 
   [Fact]
-  public void At_or_below_the_minimum_speed_the_beam_moves_nothing() {
-    float min = PpexValues.MpPumpMinSpeed;
+  public void Throughput_is_a_straight_proportion_of_axle_speed() {
+    // A displacement pump moves what its plunger sweeps, so the rate follows the shaft with no
+    // threshold and no ceiling. The band this replaced had its full-rate point at speed 1.5, which
+    // is the MP generator's UNLOADED top speed - unreachable once the pump itself loads the shaft,
+    // so the whole usable range was squeezed into the bottom of the ramp and a Watt engine read as
+    // single-digit percent.
+    float rate = PpexValues.MpPumpLitresPerSpeed;
 
-    Assert.Equal(0f, BlockEntityMpFluidPump.SpeedFraction(0f), 4);
-    Assert.Equal(0f, BlockEntityMpFluidPump.SpeedFraction(min * 0.5f), 4);
-    Assert.Equal(0f, BlockEntityMpFluidPump.SpeedFraction(min), 4);
+    Assert.Equal(0f, BlockEntityMpFluidPump.OutputAt(0f), 4);
+    Assert.Equal(rate * 0.25f, BlockEntityMpFluidPump.OutputAt(0.25f), 4);
+    Assert.Equal(rate, BlockEntityMpFluidPump.OutputAt(1f), 4);
+    Assert.Equal(rate * 3f, BlockEntityMpFluidPump.OutputAt(3f), 4);
   }
 
   [Fact]
-  public void At_or_above_the_maximum_speed_the_beam_moves_its_full_rate() {
-    float max = PpexValues.MpPumpMaxSpeed;
-
-    Assert.Equal(1f, BlockEntityMpFluidPump.SpeedFraction(max), 4);
-    Assert.Equal(1f, BlockEntityMpFluidPump.SpeedFraction(max * 2f), 4);
-    Assert.Equal(1f, BlockEntityMpFluidPump.SpeedFraction(1000f), 4);
+  public void A_barely_turning_shaft_still_moves_water() {
+    // The point of dropping the floor: a slow line shaft is meant to trickle, not to deliver
+    // nothing at all.
+    Assert.True(BlockEntityMpFluidPump.OutputAt(0.05f) > 0f);
   }
 
   [Fact]
-  public void The_response_rises_linearly_across_the_band() {
-    float min = PpexValues.MpPumpMinSpeed;
-    float band = PpexValues.MpPumpMaxSpeed - min;
-
-    Assert.Equal(
-      0.25f,
-      BlockEntityMpFluidPump.SpeedFraction(min + band * 0.25f),
-      4
-    );
-    Assert.Equal(
-      0.5f,
-      BlockEntityMpFluidPump.SpeedFraction(min + band * 0.5f),
-      4
-    );
-    Assert.Equal(
-      0.75f,
-      BlockEntityMpFluidPump.SpeedFraction(min + band * 0.75f),
-      4
-    );
+  public void A_reversed_or_stopped_shaft_moves_nothing() {
+    Assert.Equal(0f, BlockEntityMpFluidPump.OutputAt(0f), 4);
+    Assert.Equal(0f, BlockEntityMpFluidPump.OutputAt(-1f), 4);
   }
 
   [Fact]
-  public void Retuning_the_band_moves_the_response_curve() {
-    float min = PpexValues.MpPumpMinSpeed;
-    float max = PpexValues.MpPumpMaxSpeed;
+  public void Retuning_the_displacement_scales_the_whole_curve() {
+    float rate = PpexValues.MpPumpLitresPerSpeed;
     try {
-      PpexValues.Edit(c => {
-        c.MpPumpMinSpeed = 2f;
-        c.MpPumpMaxSpeed = 4f;
-      });
+      PpexValues.Edit(c => c.MpPumpLitresPerSpeed = 20f);
 
-      Assert.Equal(0f, BlockEntityMpFluidPump.SpeedFraction(2f), 4);
-      Assert.Equal(0.5f, BlockEntityMpFluidPump.SpeedFraction(3f), 4);
-      Assert.Equal(1f, BlockEntityMpFluidPump.SpeedFraction(4f), 4);
-      // The speed that ran the old band at full rate now sits under the new floor.
-      Assert.Equal(0f, BlockEntityMpFluidPump.SpeedFraction(max), 4);
+      Assert.Equal(20f, BlockEntityMpFluidPump.OutputAt(1f), 4);
+      Assert.Equal(10f, BlockEntityMpFluidPump.OutputAt(0.5f), 4);
     } finally {
-      PpexValues.Edit(c => {
-        c.MpPumpMinSpeed = min;
-        c.MpPumpMaxSpeed = max;
-      });
+      PpexValues.Edit(c => c.MpPumpLitresPerSpeed = rate);
     }
   }
 
   [Fact]
-  public void A_collapsed_band_is_all_or_nothing() {
-    float min = PpexValues.MpPumpMinSpeed;
-    float max = PpexValues.MpPumpMaxSpeed;
+  public void The_shaft_load_carries_the_delivery_head() {
+    // This is where drive size enters: the beam's torque draw is set by the column it lifts, so the
+    // network settles at speed = drive budget / this load. Raise the head and every drive turns the
+    // pump slower, which is the rate falling off - not a band redrawn on speed.
+    float head = PpexValues.MpPumpDeliveryPressure;
+    float atHead = BEBehaviorMpPumpDrive.PumpResistance;
     try {
-      PpexValues.Edit(c => {
-        c.MpPumpMinSpeed = 1f;
-        c.MpPumpMaxSpeed = 1f;
-      });
+      PpexValues.Edit(c => c.MpPumpDeliveryPressure = head * 2f);
 
-      Assert.Equal(0f, BlockEntityMpFluidPump.SpeedFraction(1f), 4);
-      Assert.Equal(1f, BlockEntityMpFluidPump.SpeedFraction(1.01f), 4);
+      Assert.True(BEBehaviorMpPumpDrive.PumpResistance > atHead);
+      Assert.Equal(
+        PpexValues.MpPumpBaseLoad + PpexValues.MpPumpLoadPerAtm * head * 2f,
+        BEBehaviorMpPumpDrive.PumpResistance,
+        4
+      );
     } finally {
-      PpexValues.Edit(c => {
-        c.MpPumpMinSpeed = min;
-        c.MpPumpMaxSpeed = max;
-      });
+      PpexValues.Edit(c => c.MpPumpDeliveryPressure = head);
     }
   }
 
@@ -205,11 +186,13 @@ public class MpFluidPumpTests {
   #region Rate placement
 
   [Fact]
-  public void The_rated_flow_sits_between_the_hand_crank_and_the_engine_pump() {
-    // The ordering is the machine's design intent: a mechanical pump beats hand cranking and
-    // loses to steam. The engine pump's realised rate is its nominal figure times its throughput
-    // calibration times the engine's power, so the weakest engine setting is the ceiling the
-    // mechanical pump has to stay under.
+  public void At_a_waterwheel_the_flow_sits_between_the_hand_crank_and_the_engine_pump() {
+    // The ordering is the machine's design intent, and it is anchored at the WATERWHEEL - the drive
+    // this pump exists for, the pre-steam way to fill a boiler whose fire is out. Driven from an
+    // engine instead it runs well past the engine pump, which is intended: that costs an engine, a
+    // generator and a line shaft where the engine pump bolts straight onto the engine.
+    // A vanilla wheel is speed-seeking, settling at min(0.3, flowRate) - load/flowRate, and cannot
+    // pass 0.3 even unloaded.
     float weakestEnginePower = Math.Min(
       PpexValues.WattEngineMaxPower,
       PpexValues.CornishEnginePowerLow
@@ -219,12 +202,23 @@ public class MpFluidPumpTests {
       * BlockEntityEngineFluidPump.ThroughputScale
       * weakestEnginePower;
 
+    float wheelSpeed = Math.Max(
+      0f,
+      Math.Min(0.3f, 1f) - BEBehaviorMpPumpDrive.PumpResistance / 1f
+    );
+    float atWaterwheel = BlockEntityMpFluidPump.OutputAt(wheelSpeed);
+
     Assert.True(
-      PpexValues.ManualPumpWaterPerSecond < PpexValues.MpPumpWaterPerSecond,
+      wheelSpeed > 0f,
+      "a waterwheel must be able to turn the pump at all"
+    );
+
+    Assert.True(
+      PpexValues.ManualPumpWaterPerSecond < atWaterwheel,
       "the mechanical pump should beat the hand crank"
     );
     Assert.True(
-      PpexValues.MpPumpWaterPerSecond < weakestEnginePump,
+      atWaterwheel < weakestEnginePump,
       "the mechanical pump should lose to the weakest engine pump"
     );
   }
@@ -301,19 +295,24 @@ public class MpFluidPumpTests {
   public void DoWork_lifts_source_water_into_the_delivery_line() {
     var (_, pump, _, delivery) = Rig();
 
-    float moved = pump.DoWork(PpexValues.MpPumpMaxSpeed, 1f);
+    float moved = pump.DoWork(1f, 1f);
 
     Assert.True(Drawing(pump)); // an intake is present on the source line
-    Assert.Equal(PpexValues.MpPumpWaterPerSecond, moved, 3);
+    Assert.Equal(BlockEntityMpFluidPump.OutputAt(1f), moved, 3);
     Assert.True(delivery.State!.IsLiquid);
-    Assert.Equal(PpexValues.MpPumpWaterPerSecond, delivery.State!.Volume, 3);
+    Assert.Equal(
+      BlockEntityMpFluidPump.OutputAt(1f),
+      delivery.State!.Volume,
+      3
+    );
   }
 
   [Fact]
   public void The_delivery_head_is_the_same_at_any_axle_speed() {
-    float band = PpexValues.MpPumpMaxSpeed - PpexValues.MpPumpMinSpeed;
-    float slow = PpexValues.MpPumpMinSpeed + band * 0.25f;
-    float fast = PpexValues.MpPumpMaxSpeed * 2f;
+    // Two speeds an order of magnitude apart: the plunger lifts the same column either way, only
+    // more often, so the head must not move with the shaft even though the volume does.
+    float slow = 0.2f;
+    float fast = 3f;
 
     float slowHead = DeliveredHead(slow, out float slowMoved);
     float fastHead = DeliveredHead(fast, out float fastMoved);
@@ -337,10 +336,12 @@ public class MpFluidPumpTests {
   }
 
   [Fact]
-  public void Below_the_minimum_speed_no_water_moves() {
+  public void A_stopped_shaft_moves_no_water() {
+    // There is no minimum speed any more - only a stopped shaft does nothing. A slow one trickles,
+    // which is checked in the speed-response region.
     var (_, pump, _, delivery) = Rig();
 
-    float moved = pump.DoWork(PpexValues.MpPumpMinSpeed, 1f);
+    float moved = pump.DoWork(0f, 1f);
 
     Assert.Equal(0f, moved, 4);
     Assert.False(Drawing(pump));
@@ -353,7 +354,7 @@ public class MpFluidPumpTests {
     // stays where it is.
     var (_, pump, _, delivery) = Rig(withIntake: false);
 
-    float moved = pump.DoWork(PpexValues.MpPumpMaxSpeed, 1f);
+    float moved = pump.DoWork(1f, 1f);
 
     Assert.Equal(0f, moved, 4);
     Assert.False(Drawing(pump));
@@ -364,11 +365,15 @@ public class MpFluidPumpTests {
 
   #region Axle coupling
 
+  // The drive face must equal the behaviour's discovery face, not merely share its axis. Both
+  // tables below therefore read the same: while DriveFace was derived off the un-offset angle it
+  // came out as the OPPOSITE of the discovery face, and nothing caught it, because
+  // HasMechPowerConnectorAt accepts a face or its opposite so an axle still coupled in tests.
   [Theory]
-  [InlineData("north", "east")]
-  [InlineData("east", "south")]
-  [InlineData("south", "west")]
-  [InlineData("west", "north")]
+  [InlineData("north", "west")]
+  [InlineData("east", "north")]
+  [InlineData("south", "east")]
+  [InlineData("west", "south")]
   public void The_drive_face_rotates_with_the_side_variant(
     string side,
     string face
@@ -376,14 +381,34 @@ public class MpFluidPumpTests {
     Assert.Equal(BlockFacing.FromCode(face), PumpBlock(side).DriveFace);
   }
 
+  [Theory]
+  [InlineData("north")]
+  [InlineData("east")]
+  [InlineData("south")]
+  [InlineData("west")]
+  public void The_drive_face_is_exactly_the_discovery_face(string side) {
+    var world = new TestWorld();
+    var pump = Pump(world, new BlockPos(0, 8, 0), side);
+    var drive = Drive(pump);
+
+    drive.SetOrientations();
+
+    Assert.Equal(
+      ((BlockMpFluidPump)pump.Block).DriveFace,
+      drive.OutFacingForNetworkDiscovery
+    );
+  }
+
   [Fact]
-  public void The_axle_couples_on_both_ends_of_the_drive_line() {
+  public void The_axle_couples_on_the_drive_face_only() {
     var world = new TestWorld();
     var pos = new BlockPos(0, 8, 0);
     var block = PumpBlock();
 
     Assert.True(HasMechConnector(block, world, pos, block.DriveFace));
-    Assert.True(HasMechConnector(block, world, pos, block.DriveFace.Opposite));
+    // Not the far side: the pump is the end of a line, not a length of shafting. Accepting the
+    // opposite face made it a passthrough that carried rotation straight out the other side.
+    Assert.False(HasMechConnector(block, world, pos, block.DriveFace.Opposite));
   }
 
   [Fact]
@@ -479,8 +504,9 @@ public class MpFluidPumpTests {
     var block = PumpBlock();
     var pos = new BlockPos(4, 8, 4);
 
+    // The body is raised away from the player, so local +z lands at world -z for a north pump.
     Assert.Equal(BlockFacing.DOWN, BlockMpFluidPump.SourceFace);
-    Assert.Equal(pos.AddCopy(0, 0, 2), block.SourceWorldPos(pos));
+    Assert.Equal(pos.AddCopy(0, 0, -2), block.SourceWorldPos(pos));
   }
 
   [Fact]
@@ -488,15 +514,45 @@ public class MpFluidPumpTests {
     var block = PumpBlock();
     var pos = new BlockPos(4, 8, 4);
 
+    // The delivery looks back along the body, into the notch of the L - the far face has no cell
+    // to run a main into, the notch does.
     Assert.Equal(BlockFacing.SOUTH, block.OutputFace);
-    Assert.Equal(pos.AddCopy(0, 1, 2), block.OutletWorldPos(pos));
+    Assert.Equal(pos.AddCopy(0, 1, -2), block.OutletWorldPos(pos));
   }
 
+  [Fact]
+  public void Both_port_cells_accept_an_attached_block() {
+    // A port cell exists to be attached to, so its filler must opt into allowAttach. Without it the
+    // filler swallows the click and the line can only be sneak-placed onto the port - which reads
+    // as the connector not working at all.
+    var block = PumpBlock();
+    var pos = new BlockPos(4, 8, 4);
+    var cells = StructureFillers.FootprintCells(
+      block,
+      pos,
+      block.StructureAngle
+    );
+
+    foreach (
+      BlockPos port in new[]
+      {
+        block.SourceWorldPos(pos),
+        block.OutletWorldPos(pos),
+      }
+    )
+      Assert.True(
+        cells.Single(c => c.Pos.Equals(port)).AllowAttach,
+        $"the filler at {port} carries a port, so it must allow attachment"
+      );
+  }
+
+  // The cells run away from the player (a north pump reserves world -z) while the delivery faces
+  // back down the body, so the port face is the opposite of the side variant.
   [Theory]
-  [InlineData("north", 0, 2, "south")]
-  [InlineData("west", 2, 0, "east")]
-  [InlineData("south", 0, -2, "north")]
-  [InlineData("east", -2, 0, "west")]
+  [InlineData("north", 0, -2, "south")]
+  [InlineData("west", -2, 0, "east")]
+  [InlineData("south", 0, 2, "north")]
+  [InlineData("east", 2, 0, "west")]
   public void The_ports_rotate_with_the_side_variant(
     string side,
     int dx,
@@ -519,7 +575,7 @@ public class MpFluidPumpTests {
   public void Run_state_round_trips_through_the_tree() {
     var world = new TestWorld();
     var src = Pump(world, new BlockPos(0, 8, 0));
-    ReflectionHelpers.SetField(src, "_lastSpeed", PpexValues.MpPumpMaxSpeed);
+    ReflectionHelpers.SetField(src, "_lastSpeed", 1f);
     ReflectionHelpers.SetField(src, "_drawingWater", true);
 
     var tree = new TreeAttribute();
@@ -528,7 +584,7 @@ public class MpFluidPumpTests {
     var dst = Pump(world, new BlockPos(0, 8, 0));
     dst.FromTreeAttributes(tree, world.World);
 
-    Assert.Equal(1f, dst.OutputFraction, 4);
+    Assert.Equal(BlockEntityMpFluidPump.OutputAt(1f), dst.OutputPerSecond, 4);
     Assert.True(Drawing(dst));
   }
 

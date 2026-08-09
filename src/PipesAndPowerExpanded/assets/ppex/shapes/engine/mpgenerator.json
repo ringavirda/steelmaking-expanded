@@ -1308,7 +1308,12 @@
         {
           "frame": 59,
           "elements": {
-            "Axle": { "rotationX": 0.0, "rotationY": 0.0, "rotationZ": 180.0 }
+            "Axle": {
+              "rotationX": 0.0,
+              "rotationY": 0.0,
+              "rotationZ": 174.0,
+              "rotShortestDistanceZ": true
+            }
           }
         }
       ]

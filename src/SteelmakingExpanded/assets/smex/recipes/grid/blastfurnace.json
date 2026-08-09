@@ -6,9 +6,9 @@
       "B": {
         "type": "item",
         "code": "game:refractorybrick-fired-*",
-"name": "tier",
-"allowedVariants": ["tier1", "tier2", "tier3"],
-"quantity": 4
+        "name": "tier",
+        "allowedVariants": ["tier1", "tier2", "tier3"],
+        "quantity": 4
       },
       "R": {
         "type": "item",
@@ -46,9 +46,9 @@
       "B": {
         "type": "item",
         "code": "game:refractorybrick-fired-*",
-"name": "tier",
-"allowedVariants": ["tier1", "tier2", "tier3"],
-"quantity": 2
+        "name": "tier",
+        "allowedVariants": ["tier1", "tier2", "tier3"],
+        "quantity": 2
       },
       "F": {
         "type": "item",
@@ -87,9 +87,9 @@
       "B": {
         "type": "item",
         "code": "game:refractorybrick-fired-*",
-"name": "tier",
-"allowedVariants": ["tier1", "tier2", "tier3"],
-"quantity": 2
+        "name": "tier",
+        "allowedVariants": ["tier1", "tier2", "tier3"],
+        "quantity": 2
       },
       "P": {
         "type": "block",

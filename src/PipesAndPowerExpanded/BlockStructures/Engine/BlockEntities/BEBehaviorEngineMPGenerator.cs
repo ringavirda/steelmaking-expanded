@@ -84,16 +84,28 @@ public class BEBehaviorEngineMPGenerator(BlockEntity blockentity)
     // Constant-power source: torque = budget / speed, so the network settles at speed = budget /
     // load (rated speed at rated load, slower under more). Clamp the divisor so spin-up asks bounded
     // torque. Torque stays positive - direction lives in the discovery seed / AxisSign.
-    float ratedSpeed = PpexValues.MpRatedSpeed;
-    float torque = budget / Math.Max(speed, 0.25f * ratedSpeed);
+    float torque = budget / Math.Max(speed, 0.25f * PpexValues.MpRatedSpeed);
 
-    // Soft top-speed cap: taper torque to zero between rated speed and 1.5× it, so a light load
-    // settles just above rated (an unloaded line near 1.5×) without the sawtooth a hard cap makes.
-    float capEnd = 1.5f * ratedSpeed;
+    // The shaft cannot outrun the engine turning it. The cap is the engine's OWN rotation rate, not
+    // a constant, so a throttled or steam-starved engine drives its line slowly and only a bigger
+    // engine spins it hard. Two things follow that a fixed cap got wrong: chaining engines onto one
+    // machine no longer buys speed, because each generator stops pushing at its own engine's rate
+    // and the line settles at the fastest of them rather than the sum - it buys load capacity
+    // instead, which is what a second engine is for; and the beam the player watches always turns in
+    // step with the machines it drives.
+    // Gearing stays possible: the network hands each node its own geared speed, so this bounds only
+    // the engine's own coupling, and a geared-up branch may still run faster.
+    float capEnd = engine?.ShaftSpeed ?? 0f;
     if (speed >= capEnd)
       return 0f;
-    if (speed > ratedSpeed)
-      torque *= (capEnd - speed) / (capEnd - ratedSpeed);
+
+    // Taper over the top third rather than cutting hard, and keep that proportion whatever the cap
+    // is: a hard cut sawtooths, because the solver's speed step overshoots the crossing and the
+    // torque flips between full and nothing either side of it. Narrowing the band brings the
+    // oscillation back - a third is the shape the old fixed 1.0-to-1.5 cap had.
+    float taperStart = capEnd * 2f / 3f;
+    if (speed > taperStart)
+      torque *= (capEnd - speed) / (capEnd - taperStart);
     return torque;
   }
 

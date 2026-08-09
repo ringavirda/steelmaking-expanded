@@ -10,9 +10,17 @@
   <Import Project="$(MSBuildThisFileDirectory)..\src\Directory.Build.props" />
 
   <PropertyGroup>
-    <!-- Run the test assemblies in parallel across all cores (xunit.runner.json adds within-assembly
-         collection parallelism). Applied automatically by `dotnet test` / the IDE runner. The
-         scripts/run-tests.* helper runs the per-version suites concurrently on top of this. -->
+    <!-- Run the test assemblies in parallel across all cores. Applied automatically by
+         `dotnet test` / the IDE runner. The scripts/run-tests.* helper runs the per-version suites
+         concurrently on top of this.
+
+         Within an assembly, xunit.runner.json turns collection parallelism OFF. The mods read their
+         config live from a process-global register (SmexValues/PpexValues), and several tests retune
+         it mid-run - so a class exercising production code could observe another class's temporary
+         values. That produced a 1.20 smex failure that appeared only under parallel load and passed
+         on every standalone re-run. Assembly-level parallelism is where the wall-clock actually
+         comes from anyway: a whole suite is a few hundred milliseconds. -->
+
     <RunSettingsFilePath>$(MSBuildThisFileDirectory)parallel.runsettings</RunSettingsFilePath>
   </PropertyGroup>
 
