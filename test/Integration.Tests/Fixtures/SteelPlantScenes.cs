@@ -160,8 +160,16 @@ internal sealed class ConverterRig {
 
   public ConverterRig Fill() => Invoke("TickFilling");
 
-  /// <summary>One refining tick (consumes blast, holds temperature, advances the process clock).</summary>
-  public ConverterRig Refine() => Invoke("TickNormal");
+  /// <summary>
+  /// One refining tick (consumes blast, holds temperature, advances the process clock). The blast
+  /// pressure is sampled the way the production tick samples it, so the rig reads the same intake
+  /// the machine would.
+  /// </summary>
+  public ConverterRig Refine() {
+    float pressure = (float)ReflectionHelpers.Invoke(Control, "BlastPressure")!;
+    ReflectionHelpers.Invoke(Control, "TickNormal", 1f, pressure);
+    return this;
+  }
 
   public ConverterRig Pour() => Invoke("TickPouring");
 

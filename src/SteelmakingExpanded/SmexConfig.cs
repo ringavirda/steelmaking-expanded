@@ -102,6 +102,13 @@ public class SmexConfig : IExVersionedConfig {
         // Converter
         nameof(BessemerConverterCapacity),
         nameof(BessemerBlastPerSecond),
+        // The scrap heat penalty never reached the bath model; wiring it in makes these live
+        // numbers for the first time, and the blast bonus they are set against now saturates.
+        // The conversion-rate ramp moves with them so air and speed top out at the same pressure.
+        nameof(BessemerColdScrapLossCoefficient),
+        nameof(BessemerPressureTempGainMax),
+        nameof(BessemerPressureTempGainHalf),
+        nameof(BessemerPressureReference),
         // Molten flow
         nameof(MoltenFlowRate),
         nameof(MoltenMinFlowAmount),
@@ -480,24 +487,32 @@ public class SmexConfig : IExVersionedConfig {
   public float BessemerRefineTemperature { get; set; } = 1500f;
 
   /// <summary>
-  /// Bath temperature (°C) gained per atm of blast pressure over
-  /// <see cref="BlastPressureThreshold"/>. Harder blast burns the carbon faster and hotter, which is
-  /// what buys back the heat a cold scrap charge costs - so a plant that wants to remelt a lot of
-  /// scrap builds pressure for it rather than being handed a fixed allowance.
+  /// Ceiling (°C) on the bath heat blast pressure can buy, approached but never reached - see
+  /// <see cref="BessemerPressureTempGainHalf"/> for the curve. Harder blast burns the carbon faster
+  /// and hotter, which is what pays for a cold scrap charge, so a plant that wants to remelt a lot
+  /// of scrap builds pressure for it rather than being handed a fixed allowance.
   /// </summary>
-  public float BessemerPressureTempGain { get; set; } = 100f;
+  public float BessemerPressureTempGainMax { get; set; } = 580f;
+
+  /// <summary>
+  /// Blast pressure (atm) over <see cref="BlastPressureThreshold"/> at which half of
+  /// <see cref="BessemerPressureTempGainMax"/> is realised. The gain saturates rather than climbing
+  /// per atm without end: the first atmosphere over the gate is worth far more than the fifth, so
+  /// the scrap allowance tops out at a pressure a real plant can hold instead of one no line
+  /// survives. Same saturating shape the twin-tub blower's output uses.
+  /// </summary>
+  public float BessemerPressureTempGainHalf { get; set; } = 0.7f;
 
   /// <summary>
   /// Bath temperature (°C) lost per unit of cold scrap charged. There is deliberately no scrap cap:
   /// scrap is pure cold mass on the heat balance, and the point where it drags the bath under
-  /// <see cref="BessemerRefineTemperature"/> is the limit. At the minimum blast pressure that lands
-  /// near a fifth of a full vessel; at 4 atm, nearer a quarter.
+  /// <see cref="BessemerRefineTemperature"/> is the limit. Set against the blast curve so the
+  /// allowance runs from about 16% of capacity on the minimum blast to 40% at 6 atm - the ceiling a
+  /// Cornish engine driving an air blower can hold, its 8 atm break pressure through the engine's
+  /// 0.75 efficiency - and never reaches half the vessel at any pressure. A full stack of 128 bits
+  /// is 640 units, about 27% of capacity, and needs roughly 3 atm behind it.
   /// </summary>
-  public float BessemerColdScrapLossCoefficient { get; set; } = 0.7f;
-
-  /// <summary>Share of charged scrap that ends up as steel; the rest burns off with the carbon.</summary>
-  [ExConfigRange(0, 1)]
-  public float BessemerScrapSteelYield { get; set; } = 0.97f;
+  public float BessemerColdScrapLossCoefficient { get; set; } = 0.8f;
 
   /// <summary>
   /// Comma-separated item codes the converter accepts as cold scrap. The converter is the remelter -
@@ -514,9 +529,14 @@ public class SmexConfig : IExVersionedConfig {
   /// <summary>Maximum conversion-rate multiplier, however hard the vessel is blown.</summary>
   public float BessemerSpeedMax { get; set; } = 2.0f;
 
-  /// <summary>Blast pressure (atm) over <see cref="BlastPressureThreshold"/> that buys the full
-  /// conversion rate. At the default the gate pressure gives the minimum and 4 atm the maximum.</summary>
-  public float BessemerPressureReference { get; set; } = 1.5f;
+  /// <summary>
+  /// Blast pressure (atm) over <see cref="BlastPressureThreshold"/> that buys the full conversion
+  /// rate. At the default the gate pressure gives the minimum and 6 atm the maximum - the same
+  /// ceiling <see cref="BessemerPressureTempGainMax"/> is set against, so air drawn, blow speed and
+  /// scrap tolerance all stop rewarding at the pressure a plant can actually hold. A shorter
+  /// reference would leave pressure above it buying scrap tolerance at no cost in air.
+  /// </summary>
+  public float BessemerPressureReference { get; set; } = 3.5f;
 
   /// <summary>Minimum geared mechanical speed for the converter to count as powered.</summary>
   public float BessemerPowerSpeedThreshold { get; set; } = 0.1f;

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using ExpandedLib.Blocks.Machines;
 using ExpandedLib.Blocks.Networks;
@@ -67,9 +68,31 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
   private ItemStack? _content;
   private int _contentUnits;
 
-  /// <summary>Cold scrap charged into the vessel, in molten units. Counts against capacity
-  /// alongside the molten charge and melts in when the blow completes.</summary>
-  private int _scrapUnits;
+  /// <summary>
+  /// Cold scrap charged into the vessel, in molten units, kept per item code. It counts against
+  /// capacity alongside the molten charge and melts into the heat when the blow completes - but
+  /// until it does it is still the bits the player threw in, so a vessel broken mid-charge has to
+  /// give back iron bits as iron and steel bits as steel rather than one lump of whatever the
+  /// molten charge happened to be.
+  /// </summary>
+  private readonly Dictionary<string, int> _scrap = [];
+
+  /// <summary>Total cold scrap in the vessel, in molten units.</summary>
+  private int _scrapUnits {
+    get {
+      int total = 0;
+      foreach (int units in _scrap.Values)
+        total += units;
+      return total;
+    }
+  }
+
+  /// <summary>Books <paramref name="units"/> of scrap in under its item code.</summary>
+  private void AddScrap(string code, int units) {
+    if (units <= 0)
+      return;
+    _scrap[code] = _scrap.TryGetValue(code, out int had) ? had + units : units;
+  }
 
   private float _processSeconds;
   private bool _solidified;
@@ -78,6 +101,11 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
   // Last tick's operating point. Synced, since the bath is never blown client-side.
   private float _processTemp;
   private float _convSpeed;
+
+  // Blast figures for the look-at panel, sampled server-side (see SampleBlastReadout).
+  private float _blastPressure;
+  private float _airDrawn;
+  private float _airDemand;
 
   private BEBehaviorAnimatable? _animatable;
 
@@ -143,28 +171,56 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
     UpdateSolidified();
     SyncContentCooldown();
 
+    // Sampled once here and handed down: the blast figures have to be read on the server and synced,
+    // and only the refining path draws air at all.
+    float pressure = BlastPressure();
+
     switch (OpState) {
       case ConverterOpState.Filling:
+        SampleBlastReadout(pressure, 0f, 0f);
         TickFilling(dt);
         break;
       case ConverterOpState.Pouring:
+        SampleBlastReadout(pressure, 0f, 0f);
         TickPouring(dt);
         break;
       default:
-        TickNormal(dt);
+        TickNormal(dt, pressure);
         break;
     }
   }
 
-  private void TickNormal(float dt) {
+  /// <summary>
+  /// Records the blast figures the look-at panel prints. <c>GetBlockInfo</c> runs CLIENT-side off the
+  /// synced tree, and the pipe network it would have to ask exists only on the server, so a figure
+  /// looked up when the panel is drawn reads zero however much air is really arriving. Synced only
+  /// when one of them moves enough to show, to keep this off the wire every tick.
+  /// </summary>
+  private void SampleBlastReadout(float pressure, float drawn, float demand) {
+    if (
+      Math.Abs(pressure - _blastPressure) < 0.01f
+      && Math.Abs(drawn - _airDrawn) < 0.1f
+      && Math.Abs(demand - _airDemand) < 0.1f
+    )
+      return;
+
+    _blastPressure = pressure;
+    _airDrawn = drawn;
+    _airDemand = demand;
+    MarkDirty();
+  }
+
+  private void TickNormal(float dt, float pressure) {
     // Idle while holding the charge; run the bessemer refining process if the
     // charge is molten iron and the gas intake is fed blast.
     if (_content == null || _contentUnits <= 0) {
+      SampleBlastReadout(pressure, 0f, 0f);
       SetStatus(Lang.Get("smex:bessemer-status-empty"));
       return;
     }
 
     if (_solidified) {
+      SampleBlastReadout(pressure, 0f, 0f);
       SetStatus(SolidifiedStatus());
       return;
     }
@@ -172,6 +228,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
     // Refining applies only to molten iron: steel just waits to be poured, anything else is
     // foreign. Either way stop here so no blast is drawn and no process particles are emitted.
     if (!IsMoltenIron()) {
+      SampleBlastReadout(pressure, 0f, 0f);
       bool isSteel = _content.Collectible.Code.ToString() == SteelCode;
       SetStatus(
         Lang.Get(
@@ -184,10 +241,15 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
     }
 
     // Refining requires blast: harder blast draws more air and converts quicker, in step.
-    float pressure = BlastPressure();
     _convSpeed = ConversionSpeed(pressure);
     float demand = BlastPerSecond * _convSpeed * dt;
     float consumed = TryConsumeBlast(demand);
+    // Per second, which is what the panel prints - demand and draw are both per-tick here.
+    SampleBlastReadout(
+      pressure,
+      dt > 0f ? consumed / dt : 0f,
+      BlastPerSecond * _convSpeed
+    );
     if (consumed <= 0f) {
       _convSpeed = 0f;
       SetStatus(
@@ -210,10 +272,10 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
     // toward the solidify/chisel path.
     if (_processTemp < SmexValues.BessemerRefineTemperature) {
       _convSpeed = 0f;
+      // The bath's own temperature is on the charge line; only the threshold is new here.
       SetStatus(
         Lang.Get(
           "smex:bessemer-status-toocold",
-          ExMeasure.Temperature(_processTemp),
           ExMeasure.Temperature(SmexValues.BessemerRefineTemperature)
         )
       );
@@ -325,9 +387,8 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
     // A fresh charge of iron restarts the refining clock.
     if (IsMoltenIron())
       _processSeconds = 0f;
-    SetStatus(
-      Lang.Get("smex:bessemer-status-filling", _contentUnits, CapacityUnits)
-    );
+    // The fill figure lives in the charge line, which counts scrap against the same volume.
+    SetStatus(Lang.Get("smex:bessemer-status-filling"));
     MarkDirty();
   }
 
@@ -380,9 +441,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
       _processSeconds = 0f;
       SetStatus(Lang.Get("smex:bessemer-status-emptied"));
     } else {
-      SetStatus(
-        Lang.Get("smex:bessemer-status-pouring", _contentUnits, CapacityUnits)
-      );
+      SetStatus(Lang.Get("smex:bessemer-status-pouring"));
     }
     MarkDirty();
   }
@@ -399,12 +458,11 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
       return;
     _content = steelStack;
 
-    // Scrap melts into the finished heat, less what burns off. It joins only here - until the blow
-    // ends it is heat load, not metal.
+    // Scrap melts into the finished heat, unit for unit. It joins only here - until the blow ends
+    // it is heat load, not metal.
     if (_scrapUnits > 0) {
-      _contentUnits += (int)
-        System.Math.Round(_scrapUnits * SmexValues.BessemerScrapSteelYield);
-      _scrapUnits = 0;
+      _contentUnits += _scrapUnits;
+      _scrap.Clear();
     }
 
     _processSeconds = ProcessDurationSec;
@@ -435,12 +493,33 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
   /// whatever drags the bath under <see cref="SmexConfig.BessemerRefineTemperature"/>.
   /// </para>
   /// </summary>
-  private static float ProcessTemperature(float pressure) {
-    float overGate = Math.Max(0f, pressure - SmexValues.BlastPressureThreshold);
+  private float ProcessTemperature(float pressure) {
     return SmexValues.BessemerBaseTemperature
-      + overGate * SmexValues.BessemerPressureTempGain
-      - SmexValues.BessemerRadiationLoss;
+      + BlastHeatGain(pressure)
+      - SmexValues.BessemerRadiationLoss
+      - ScrapHeatCost;
   }
+
+  /// <summary>
+  /// Bath heat (°C) the blast buys above the gate pressure, saturating towards
+  /// <see cref="SmexConfig.BessemerPressureTempGainMax"/>. Diminishing returns are the point: the
+  /// scrap allowance has to top out at a pressure a plant can actually hold, not climb linearly
+  /// until it would need a line no pipe survives.
+  /// </summary>
+  private static float BlastHeatGain(float pressure) {
+    float overGate = Math.Max(0f, pressure - SmexValues.BlastPressureThreshold);
+    float half = Math.Max(0.0001f, SmexValues.BessemerPressureTempGainHalf);
+    return SmexValues.BessemerPressureTempGainMax
+      * overGate
+      / (overGate + half);
+  }
+
+  /// <summary>
+  /// Bath heat the scrap currently in the vessel costs, the term the blow has to buy back with blast
+  /// pressure. Shown on the charge line so the player can judge the next handful before charging it.
+  /// </summary>
+  private float ScrapHeatCost =>
+    SmexValues.BessemerColdScrapLossCoefficient * _scrapUnits;
 
   /// <summary>How fast the blow runs, from the pressure behind it. Scales both the air drawn and
   /// the refining clock.</summary>
@@ -680,13 +759,18 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
     if (Api.Side != EnumAppSide.Server)
       return true;
 
-    int taken = ExInventory.TakeHotbar(byPlayer, IsScrap, roomBits);
-    if (taken <= 0)
+    // The held stack alone. Sweeping the hotbar for everything that matches swallowed a player's
+    // steel bits when they meant to charge iron, and gave them no way to charge one kind at a time.
+    ItemSlot? slot = byPlayer.InventoryManager?.ActiveHotbarSlot;
+    int taken = Math.Min(roomBits, held!.StackSize);
+    if (slot == null || taken <= 0)
       return true;
+    slot.TakeOut(taken);
+    slot.MarkDirty();
 
-    _scrapUnits += taken * ScrapUnitValue;
+    AddScrap(held.Collectible.Code.ToString(), taken * ScrapUnitValue);
     ExSounds.Play(Api, Pos.AddCopy(0, 0, 2), ExSounds.MetalGrinding, 0.6f);
-    SetStatus(Lang.Get("smex:bessemer-status-scrap-charged", _scrapUnits));
+    SetStatus(Lang.Get("smex:bessemer-status-scrap-charged"));
     MarkDirty(true);
     return true;
   }
@@ -874,14 +958,15 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
     ItemStack? drops = null;
     if (_solidified && _content != null && _contentUnits > 0)
       drops = BuildSolidifiedDrops();
-    else if (_scrapUnits > 0 && _content != null) {
-      // Scrap that never melted comes back whole - it was already solid.
-      drops = BuildRecoveryDrops(_scrapUnits);
-    }
+
+    // Scrap that never melted comes back whole and in kind - it was already solid, and it is still
+    // the bits it went in as. Spawned here rather than returned, since the break hands back a single
+    // stack and a mixed charge needs one per metal.
+    SpawnUnmeltedScrap();
 
     _content = null;
     _contentUnits = 0;
-    _scrapUnits = 0;
+    _scrap.Clear();
     _processSeconds = 0f;
     _processTemp = 0f;
     _convSpeed = 0f;
@@ -893,12 +978,33 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
 
   private ItemStack? BuildSolidifiedDrops() {
     // Breaking the vessel mangles part of the charge: a few units less than chiselling recovers.
-    // Unmelted scrap is not mangled.
+    // Unmelted scrap is not mangled, and is returned separately by SpawnUnmeltedScrap.
     int randLoss = Random.Shared.Next(3) * SmexValues.MoltenUnitsPerBit;
     int remaining = _contentUnits - randLoss;
     if (remaining <= 0)
       remaining = _contentUnits;
-    return BuildRecoveryDrops(remaining + _scrapUnits);
+    return BuildRecoveryDrops(remaining);
+  }
+
+  /// <summary>
+  /// Drops the cold scrap still sitting in the vessel, one stack per item code, and clears the
+  /// ledger. Nothing here has melted, so each kind comes back exactly as it went in.
+  /// </summary>
+  private void SpawnUnmeltedScrap() {
+    if (Api?.Side != EnumAppSide.Server || _scrap.Count == 0)
+      return;
+
+    Vec3d at = Pos.ToVec3d().Add(0.5, 0.5, 0.5);
+    foreach (var (code, units) in _scrap) {
+      int bits = units / Math.Max(1, ScrapUnitValue);
+      if (bits <= 0)
+        continue;
+      Item? item = Api.World.GetItem(new AssetLocation(code));
+      if (item == null)
+        continue;
+      Api.World.SpawnItemEntity(new ItemStack(item, bits), at);
+    }
+    _scrap.Clear();
   }
 
   /// <summary>
@@ -948,10 +1054,11 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
     if (Api?.Side != EnumAppSide.Server || !CanChiselOut())
       return null;
 
-    ItemStack? recovered = BuildRecoveryDrops(_contentUnits + _scrapUnits);
+    ItemStack? recovered = BuildRecoveryDrops(_contentUnits);
+    // Cold scrap in a frozen charge never melted into it, so it comes back in kind alongside.
+    SpawnUnmeltedScrap();
     _content = null;
     _contentUnits = 0;
-    _scrapUnits = 0;
     _processSeconds = 0f;
     _processTemp = 0f;
     _convSpeed = 0f;
@@ -1092,40 +1199,55 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
       return;
     }
 
-    // Only the charge (amount/metal/temp) is unique info; empty/solidified are in the status line.
+    // One charge line. Scrap and molten metal share the vessel's volume, so the fill figure is the
+    // two together; the split follows it, since only the molten part refines and the scrap is
+    // limited by the bath heat it costs. Temperature is read off the charge itself - while blowing,
+    // HoldTemperature keeps that equal to the bath, so a second bath figure would say nothing new.
     if (_content != null && _contentUnits > 0) {
       float temp = _content.Collectible.GetTemperature(Api.World, _content);
       string path = _content.Collectible.Code.Path;
       string metal = path.StartsWith("ingot-") ? path[6..] : path;
       dsc.AppendLine(
+        _scrapUnits > 0
+          ? Lang.Get(
+            "smex:bessemer-info-charge-scrap",
+            _contentUnits + _scrapUnits,
+            CapacityUnits,
+            ExMeasure.Temperature(temp),
+            _contentUnits,
+            metal,
+            _scrapUnits,
+            ExMeasure.Temperature(ScrapHeatCost)
+          )
+          : Lang.Get(
+            "smex:bessemer-info-charge",
+            _contentUnits,
+            CapacityUnits,
+            metal,
+            ExMeasure.Temperature(temp)
+          )
+      );
+    } else if (_scrapUnits > 0) {
+      // Scrap is charged before the iron, so a vessel holding nothing but cold scrap is a normal
+      // state and still has to report what is taking up the room.
+      dsc.AppendLine(
         Lang.Get(
-          "smex:bessemer-info-charge",
-          _contentUnits,
+          "smex:bessemer-info-charge-scraponly",
+          _scrapUnits,
           CapacityUnits,
-          metal,
-          ExMeasure.Temperature(temp)
+          ExMeasure.Temperature(ScrapHeatCost)
         )
       );
     }
 
-    // Scrap is limited by the heat it costs, so both figures are needed to judge the next handful.
-    if (_scrapUnits > 0)
+    // Air drawn against air asked for. This is the blow rate as well - the draw is the rate times a
+    // constant - so printing the multiplier next to it would be the same fact twice.
+    if (_airDemand > 0f)
       dsc.AppendLine(
         Lang.Get(
-          "smex:bessemer-info-scrap",
-          _scrapUnits,
-          ExMeasure.Temperature(
-            SmexValues.BessemerColdScrapLossCoefficient * _scrapUnits
-          )
-        )
-      );
-
-    if (_convSpeed > 0f)
-      dsc.AppendLine(
-        Lang.Get(
-          "smex:bessemer-info-blowrate",
-          _convSpeed.ToString("0.0#"),
-          ExMeasure.Temperature(_processTemp)
+          "smex:bessemer-info-air",
+          ExMeasure.FlowRate(_airDrawn),
+          ExMeasure.FlowRate(_airDemand)
         )
       );
 
@@ -1135,7 +1257,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
     dsc.AppendLine(
       Lang.Get(
         "smex:bessemer-info-blastpressure",
-        ExMeasure.Pressure(BlastPressure()),
+        ExMeasure.Pressure(_blastPressure),
         ExMeasure.Pressure(SmexValues.BlastPressureThreshold)
       )
     );
@@ -1160,10 +1282,16 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
     tree.SetInt("opState", (int)OpState);
     tree.SetItemstack("content", _content);
     tree.SetInt("contentUnits", _contentUnits);
-    tree.SetInt("scrapUnits", _scrapUnits);
+    var scrapTree = new TreeAttribute();
+    foreach (var (code, units) in _scrap)
+      scrapTree.SetInt(code, units);
+    tree["scrap"] = scrapTree;
     tree.SetFloat("processSeconds", _processSeconds);
     tree.SetFloat("processTemp", _processTemp);
     tree.SetFloat("convSpeed", _convSpeed);
+    tree.SetFloat("blastPressure", _blastPressure);
+    tree.SetFloat("airDrawn", _airDrawn);
+    tree.SetFloat("airDemand", _airDemand);
     tree.SetBool("solidified", _solidified);
     tree.SetString("status", _status);
   }
@@ -1178,10 +1306,20 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
     _content = tree.GetItemstack("content");
     _content?.ResolveBlockOrItem(worldForResolving);
     _contentUnits = tree.GetInt("contentUnits");
-    _scrapUnits = tree.GetInt("scrapUnits");
+    _scrap.Clear();
+    if (tree["scrap"] is ITreeAttribute scrapTree)
+      foreach (var (code, value) in scrapTree)
+        AddScrap(code, value.GetValue() is int units ? units : 0);
+    else
+      // Charges saved before scrap was tracked per code are all iron bits: steel scrap only became
+      // chargeable with the same change, so nothing else can be sitting in an older vessel.
+      AddScrap("game:metalbit-iron", tree.GetInt("scrapUnits"));
     _processSeconds = tree.GetFloat("processSeconds");
     _processTemp = tree.GetFloat("processTemp");
     _convSpeed = tree.GetFloat("convSpeed");
+    _blastPressure = tree.GetFloat("blastPressure");
+    _airDrawn = tree.GetFloat("airDrawn");
+    _airDemand = tree.GetFloat("airDemand");
     _solidified = tree.GetBool("solidified");
     _status = tree.GetString("status", Lang.Get("smex:bessemer-status-idle"));
 

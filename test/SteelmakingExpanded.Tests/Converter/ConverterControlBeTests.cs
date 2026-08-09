@@ -66,6 +66,43 @@ public class ConverterControlBeTests {
     Assert.True((bool)ReflectionHelpers.GetField(dst, "_solidified")!);
   }
 
+  /// <summary>
+  /// Every figure the look-at panel prints, checked as a set. <c>GetBlockInfo</c> runs CLIENT-side
+  /// off the synced tree, and the blast figures come from a pipe network that exists only on the
+  /// server - so one left out of <c>ToTreeAttributes</c> is not stale, it reads as zero whatever the
+  /// server measured. The blast pressure shipped that way and showed 0 atm on a converter with 2.6
+  /// atm standing at its intake.
+  /// </summary>
+  [Fact]
+  public void Every_field_the_readout_prints_reaches_the_client() {
+    string[] readoutFields =
+    [
+      "_processTemp",
+      "_convSpeed",
+      "_blastPressure",
+      "_airDrawn",
+      "_airDemand",
+    ];
+
+    var src = Control();
+    // A distinct value per field, so a mix-up between two fails as loudly as a missing one.
+    for (int i = 0; i < readoutFields.Length; i++)
+      ReflectionHelpers.SetField(src, readoutFields[i], 3f + i);
+
+    var tree = new TreeAttribute();
+    src.ToTreeAttributes(tree);
+
+    var dst = Control();
+    dst.FromTreeAttributes(tree, ResolveWorld.World);
+
+    for (int i = 0; i < readoutFields.Length; i++)
+      Assert.Equal(
+        3f + i,
+        (float)ReflectionHelpers.GetField(dst, readoutFields[i])!,
+        2
+      );
+  }
+
   [Fact]
   public void Breaking_a_solidified_converter_returns_drops_and_clears_the_charge() {
     var world = new TestWorld();
