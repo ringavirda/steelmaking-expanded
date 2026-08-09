@@ -127,6 +127,29 @@ public class HotBlastScenarioTests {
     );
   }
 
+  /// <summary>
+  /// Regression (player-reported: stoves discharged abnormally fast). The cold run's volume is the
+  /// gas STANDING in the whole main, not a per-tick flow, so scaling the core's heat loss by it let
+  /// main length and pressure set the discharge rate - a run holding several intakes' worth cost the
+  /// brickwork that multiple of its rated heat every tick. What the stove can draw is its intake.
+  /// </summary>
+  [Fact]
+  public void Discharge_drains_the_core_at_its_rated_rate_whatever_the_cold_main_holds() {
+    static float DropFrom1000(float litresStanding) {
+      var rig = new CowperRig();
+      ReflectionHelpers.SetField(rig.Stove, "_internalTemperature", 1000f);
+      rig.DischargeAir(airTemp: 20f, litres: litresStanding);
+      return 1000f - rig.CoreTemperature;
+    }
+
+    // Exactly one intake standing in the cold main, against a main holding nearly four times that.
+    float oneIntake = DropFrom1000(SmexValues.CowperIntakeVolume);
+    float fullMain = DropFrom1000(90f);
+
+    Assert.True(oneIntake > 0f, "the premise: discharging cools the core");
+    Assert.Equal(oneIntake, fullMain, 3);
+  }
+
   [Fact]
   public void A_cold_cowper_stove_cannot_make_hot_blast() {
     var rig = new CowperRig();

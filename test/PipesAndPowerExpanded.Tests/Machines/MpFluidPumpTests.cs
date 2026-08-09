@@ -469,6 +469,23 @@ public class MpFluidPumpTests {
     Assert.Equal(1.2f, drive.DriveSpeed, 4);
   }
 
+  /// <summary>
+  /// A network's speed is expressed in the frame of whichever node seeded it, and which node that is
+  /// depends on chunk load order. Only <c>GearedRatio</c> converts it to this shaft's own speed, so a
+  /// pump behind a gear train that read the raw figure reported the drive's speed on one load and its
+  /// own on the next.
+  /// </summary>
+  [Fact]
+  public void Drive_speed_is_geared_into_this_shafts_own_frame() {
+    var world = new TestWorld();
+    var pump = Pump(world, new BlockPos(0, 8, 0));
+
+    var drive = Drive(pump, 0.3f);
+    drive.GearedRatio = 5.5f;
+
+    Assert.Equal(1.65f, drive.DriveSpeed, 4);
+  }
+
   [Fact]
   public void A_stalled_or_uncoupled_shaft_is_not_turning() {
     var world = new TestWorld();

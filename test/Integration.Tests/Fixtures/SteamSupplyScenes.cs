@@ -26,6 +26,9 @@ internal sealed class RegulatedEnginePlant {
   private readonly BlockPos _main;
   private readonly BlockPos _drain;
 
+  /// <summary>The engine's placed block, for a test that needs one of its connector faces.</summary>
+  public BlockEngineWatt EngineBlock => (BlockEngineWatt)Engine.Block;
+
   public RegulatedEnginePlant(Scene scene, BlockPos enginePos, float gateAtm) {
     _scene = scene;
 

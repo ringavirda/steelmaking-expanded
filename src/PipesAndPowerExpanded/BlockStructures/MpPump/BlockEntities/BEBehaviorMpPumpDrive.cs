@@ -29,8 +29,14 @@ public class BEBehaviorMpPumpDrive(BlockEntity blockentity)
     PpexValues.MpPumpBaseLoad
     + PpexValues.MpPumpLoadPerAtm * PpexValues.MpPumpDeliveryPressure;
 
-  /// <summary>The network's rotation speed, absolute; 0 when no axle is coupled.</summary>
-  public float DriveSpeed => Network != null ? Math.Abs(Network.Speed) : 0f;
+  /// <summary>
+  /// This drive's own rotation speed, absolute; 0 when no axle is coupled. Geared through
+  /// <see cref="BEBehaviorMPBase.GearedRatio"/>, as vanilla's <c>BEBehaviorMPConsumer.TrueSpeed</c>
+  /// is: a network's speed is held in the frame of whichever node seeded it, so only the ratio makes
+  /// it this shaft's speed rather than some other node's.
+  /// </summary>
+  public float DriveSpeed =>
+    Network != null ? Math.Abs(Network.Speed * GearedRatio) : 0f;
 
   /// <summary>
   /// The axle's render angle (radians), for phase-locking the pump's cycle animation to the shaft

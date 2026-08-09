@@ -1,5 +1,6 @@
 using ExpandedLib.Testing;
 using PipesAndPowerExpanded.BlockNetworkPipe;
+using PipesAndPowerExpanded.BlockStructures.Engine;
 using Vintagestory.API.MathTools;
 using Xunit;
 
@@ -13,6 +14,83 @@ namespace PipesAndPowerExpanded.Tests;
 /// advance them together.
 /// </summary>
 public class SteamSupplyScenarioTests {
+  #region Condensate outlet
+
+  /// <summary>
+  /// A running engine's condensate has to reach a line plumbed onto its water-outlet face. Nothing
+  /// else in the fixtures wires that face, so this is the only cover on the outlet half of the water
+  /// loop - the half a player closes back into the boiler.
+  /// </summary>
+  [Fact]
+  public void A_running_engine_sends_its_condensate_into_a_plumbed_outlet() {
+    var scene = new Scene().Network("pipe", s => new PipeNetwork(s));
+    var enginePos = new BlockPos(0, 8, 0);
+    var plant = new RegulatedEnginePlant(scene, enginePos, gateAtm: 2.5f);
+
+    // A sealed one-cell condensate line on the engine's water-outlet face.
+    var outletFace = plant.EngineBlock.WaterOutletFace;
+    BlockPos outlet = enginePos.AddCopy(outletFace);
+    EnginePlant.Pipe(scene, outlet, EnginePlant.Axis(outletFace), 90);
+    scene.Block(outlet.AddCopy(outletFace), PpexScenes.Cap(91));
+    scene.Build();
+
+    plant.RunCharged(3f, 4);
+
+    Assert.True(plant.Engine.IsRunning, "the engine should be driven");
+    Assert.True(
+      scene.NetworkAt<PipeNetwork>(outlet)!.State?.Volume > 0f,
+      "the condensate should have gone into the connected line"
+    );
+  }
+
+  /// <summary>
+  /// A closed water loop holds its main brim-full, which is the normal state of a working plant, not
+  /// a fault: the outlet must back up quietly there. Only a face with nothing plumbed onto it, or one
+  /// plumbed into a run carrying gas, sprays where the player can see it.
+  /// </summary>
+  [Fact]
+  public void Only_an_outlet_with_nowhere_to_send_water_sprays() {
+    var scene = new Scene().Network("pipe", s => new PipeNetwork(s));
+    var line = new BlockPos(0, 8, 0);
+    EnginePlant.Pipe(scene, line, "we", 92);
+    scene.Block(line.WestCopy(), PpexScenes.Cap(93));
+    scene.Block(line.EastCopy(), PpexScenes.Cap(94));
+    scene.Build();
+
+    var net = scene.NetworkAt<PipeNetwork>(line)!;
+
+    Assert.True(
+      BlockEntityEngine.OutletSpills(null),
+      "an unplumbed outlet should spray"
+    );
+
+    // Brim-full of water: the line refuses more, but a closed loop always reads this way.
+    net.TryProduceLiquid(
+      PpexValues.LitresPerPipe * 4f,
+      90f,
+      0f,
+      scene.World.Accessor
+    );
+    Assert.False(
+      net.TryProduceLiquid(1f, 90f, 0f, scene.World.Accessor),
+      "the premise: a brim-full line takes no more water"
+    );
+    Assert.False(
+      BlockEntityEngine.OutletSpills(net),
+      "a backed-up water line should not spray"
+    );
+
+    // The same line carrying gas can never take water - that is a plumbing mistake worth showing.
+    net.TryConsumeLiquid(net.State!.Volume, scene.World.Accessor);
+    net.TryProduceGas(60f, 150f, "Steam", scene.World.Accessor);
+    Assert.True(
+      BlockEntityEngine.OutletSpills(net),
+      "an outlet plumbed into a gas run should spray"
+    );
+  }
+
+  #endregion
+
   #region Pressure-valve regulation (boiler main → relief valve → engine in band)
 
   [Fact]

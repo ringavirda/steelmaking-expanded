@@ -205,11 +205,12 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure {
       float tempDiff = _internalTemperature - airTemp;
       if (tempDiff > 0) {
         airTemp = _internalTemperature;
-        // Scale the loss by how much air is actually passing through. Delivering the stove's full
-        // temperature to a trickle used to cost it exactly what a torrent did, so a furnace on
-        // baseline and one in overdrive drained a stove at the same rate. A heavy blast now empties
-        // it in proportion, which is what makes alternating two stoves a real operating decision.
-        float flowShare = _intakeVolume > 0f ? airVol / _intakeVolume : 1f;
+        // Scaled by the air actually drawn through the brickwork: a full intake costs the rated
+        // heat, a trickle proportionally less. The measure is the stove's own intake, never the
+        // cold run's standing volume - that is a stored quantity, and a long or pressurised main
+        // holds many intakes' worth of it, which would make main length set the discharge rate.
+        float drawn = System.Math.Min(passthroughVol, _intakeVolume);
+        float flowShare = _intakeVolume > 0f ? drawn / _intakeVolume : 1f;
         _internalTemperature -= tempDiff * _coolingSpeedAir * flowShare * dt;
       }
 

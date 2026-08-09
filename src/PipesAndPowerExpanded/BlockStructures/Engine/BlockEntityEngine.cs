@@ -334,14 +334,30 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine {
   }
 
   /// <summary>
-  /// Sends condensed water out the outlet. A connected pipe network with room takes it (at no
-  /// pressure - only the pump pressurises water); otherwise it spills with a splash particle.
+  /// Sends condensed water out the outlet. A connected line takes what it has room for (at no
+  /// pressure - only the pump pressurises water); anything it cannot hold backs up and is lost.
   /// </summary>
   private void OutputCondensate(float amount, IBlockAccessor ba) {
     var outNet = ConnectedNetwork<PipeNetwork>(EngineBlock!.WaterOutletFace);
-    bool piped = outNet?.TryProduceLiquid(amount, 90f, 0f, ba) == true;
-    if (!piped)
+    if (OutletSpills(outNet)) {
       SpawnWaterSpill();
+      return;
+    }
+    outNet!.TryProduceLiquid(amount, 90f, 0f, ba);
+  }
+
+  /// <summary>
+  /// Whether condensate leaving the outlet sprays into the world: when the face is unplumbed, or the
+  /// line there carries a medium water cannot join. A water line that is merely brim-full backs up
+  /// quietly - a pressurised main is full by definition, so a full line is the normal state of a
+  /// correctly closed loop, not a fault to show the player.
+  /// </summary>
+  public static bool OutletSpills(PipeNetwork? outNet) {
+    if (outNet == null)
+      return true;
+    // An empty run accepts water whatever medium it last carried, matching TryProduceLiquid.
+    return outNet.State is { Volume: > 0f } state
+      && !PipeNetworkState.MediaCompatible(state.MediumType, "Water");
   }
 
   /// <summary>Water jets out of the outlet (and an occasional splash) when the condensate has nowhere to go.</summary>
