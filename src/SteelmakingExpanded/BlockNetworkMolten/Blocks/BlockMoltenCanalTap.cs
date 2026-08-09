@@ -52,8 +52,7 @@ public partial class BlockMoltenCanalTap : BlockMoltenCanal {
     bool opposite = byPlayer.Entity.Controls.CtrlKey;
     if (!sneak && !opposite)
       return be.Solidified
-        ? base.OnBlockInteractStart(world, byPlayer, blockSel)
-        : false;
+        && TryChiselClear(world, byPlayer, blockSel, be);
 
     if (world.Side == EnumAppSide.Client)
       return true;

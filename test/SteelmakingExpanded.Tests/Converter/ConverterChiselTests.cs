@@ -22,9 +22,19 @@ public class ConverterChiselTests {
   private const string Iron = "game:ingot-iron";
   private const string Steel = "game:ingot-steel";
 
-  // Iron melts at 1500: hardened below 0.3x = 450, liquid above 0.8x = 1200. Capacity 1200, so the
-  // 20% chisel ceiling is 240 units.
+  // Iron melts at 1500: hardened below 0.3x = 450, liquid above 0.8x = 1200.
   private const float IronMelt = 1500f;
+
+  // Residue sizes either side of the chisel ceiling, derived from config so they track a capacity
+  // change instead of pinning the test to one vessel size.
+  private static int ChiselCeiling =>
+    (int)(
+      SmexValues.BessemerChiselMaxFraction
+      * SmexValues.BessemerConverterCapacity
+    );
+
+  private static int LargeResidue => ChiselCeiling + 10;
+  private static int SmallResidue => ChiselCeiling / 2;
 
   private static readonly (int x, int y, int z) InputTapLocal = (1, 1, 2);
 
@@ -160,7 +170,7 @@ public class ConverterChiselTests {
   public void A_solidified_but_still_hot_residue_cannot_be_chiselled() {
     var world = NewWorld();
     var be = Control(world);
-    PrimeCharge(be, world, 800f, 100, solidified: true); // 450 < 800 < 1500 -> cooling, not hardened
+    PrimeCharge(be, world, 800f, SmallResidue, solidified: true); // 450 < 800 < 1500 -> cooling, not hardened
 
     Assert.False(be.ChargeIsHardened);
     Assert.False(be.CanChiselOut());
@@ -170,7 +180,7 @@ public class ConverterChiselTests {
   public void A_large_hardened_charge_cannot_be_chiselled_only_broken() {
     var world = NewWorld();
     var be = Control(world);
-    PrimeCharge(be, world, 300f, 300, solidified: true); // hardened but 300 >= 240 (20% of 1200)
+    PrimeCharge(be, world, 300f, LargeResidue, solidified: true);
 
     Assert.True(be.ChargeIsHardened);
     Assert.False(be.CanChiselOut());
@@ -260,7 +270,7 @@ public class ConverterChiselTests {
   public void Status_tells_the_player_to_break_a_large_solidified_charge() {
     var world = NewWorld();
     var be = Control(world);
-    PrimeCharge(be, world, 300f, 300, solidified: true); // hardened but 300 >= 240
+    PrimeCharge(be, world, 300f, LargeResidue, solidified: true);
 
     Assert.Equal("smex:bessemer-status-solidified", SolidifiedStatus(be));
   }
@@ -269,7 +279,7 @@ public class ConverterChiselTests {
   public void Status_tells_the_player_to_wait_for_a_small_hot_residue_to_harden() {
     var world = NewWorld();
     var be = Control(world);
-    PrimeCharge(be, world, 800f, 100, solidified: true); // small (100 < 240) but not yet hardened
+    PrimeCharge(be, world, 800f, SmallResidue, solidified: true); // small, but not yet hardened
 
     Assert.Equal("smex:bessemer-status-coolingtochisel", SolidifiedStatus(be));
   }

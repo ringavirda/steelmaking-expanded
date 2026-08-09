@@ -45,6 +45,19 @@ public partial class BlockConverterControl : Block {
       return true;
     }
 
+    // Holding scrap charges it instead of selecting a state - the converter is the remelter, and a
+    // handful of bits in hand is an unambiguous intent. Falls through when the held item is not
+    // scrap, so every other interaction is unchanged.
+    if (be.TryChargeScrap(byPlayer, out string scrapError)) {
+      if (world.Side == EnumAppSide.Client && scrapError.Length > 0)
+        (byPlayer as IClientPlayer)?.ShowChatNotification(scrapError);
+      else
+        (byPlayer as IClientPlayer)?.TriggerFpAnimation(
+          EnumHandInteract.HeldItemInteract
+        );
+      return true;
+    }
+
     ConverterOpState target = ResolveTarget(byPlayer);
 
     // Pouring is destructive (drains the entire charge), so rather than firing on
@@ -143,6 +156,12 @@ public partial class BlockConverterControl : Block {
 
     // Operational phase: state transition hints.
     return baseHelp
+      .Append(
+        new WorldInteraction {
+          ActionLangCode = "smex:blockhelp-bessemer-scrap",
+          MouseButton = EnumMouseButton.Right,
+        }
+      )
       .Append(
         new WorldInteraction {
           ActionLangCode = "smex:blockhelp-bessemer-normal",

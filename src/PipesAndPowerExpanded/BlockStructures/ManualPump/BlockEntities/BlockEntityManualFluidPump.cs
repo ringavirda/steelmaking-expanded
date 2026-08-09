@@ -133,9 +133,14 @@ public class BlockEntityManualFluidPump : BlockEntity {
       float move = Math.Min(amount, OutputFreeCapacity(outputNet));
       float drawn = inputNet?.TryConsumeLiquid(move, ba) ?? 0f;
       if (drawn > 0f)
-        // Hand-cranked head: a fixed 1 atm - enough to lift water into a boiler.
-        outputNet?.TryProduceLiquid(drawn, 20f, 1f, ba);
-      intake!.ProduceWater(amount, 20f, ba);
+        // Hand-cranked head, independent of how fast the handle is turned.
+        outputNet?.TryProduceLiquid(
+          drawn,
+          ExClimate.AmbientAt(this),
+          PpexValues.ManualPumpDeliveryPressure,
+          ba
+        );
+      intake!.ProduceWater(amount, ExClimate.AmbientAt(this), ba);
     }
 
     if (drawing != _drawingWater) {

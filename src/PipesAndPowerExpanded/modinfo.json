@@ -7,7 +7,7 @@
     "fallenstar"
   ],
   "description": "Pipe network and modular steam power machinery!",
-  "version": "0.6.6",
+  "version": "0.6.7",
   "dependencies": {
     "game": "1.22.0",
     "exlib": "0.7.1"

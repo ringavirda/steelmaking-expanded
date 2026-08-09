@@ -235,15 +235,15 @@ public class MoltenNetwork(BlockNetworkModSystem system) : BlockNetwork(system) 
       receiver is BlockEntityMoltenCanalMoldPedestal
       || receiver is BlockEntityMoltenCanalTap;
 
-    // Whole units only, never less than the minimum per tick. The floor is on the GAP, not on the
-    // step below, or halving would put a gap between one and two minimums permanently out of reach.
-    if (!drain && diff < SmexValues.MoltenMinFlowAmount)
-      return;
-
     // Level toward the midpoint instead of moving the whole difference: the latter overshoots and
     // inverts the pair, so 40/0 becomes 0/40 and a run sloshes back and forth every tick forever
     // rather than settling.
     var step = drain ? diff : diff / 2;
+
+    // Whole units only. The floor is on the TRANSFER, not on the gap: a floor on the gap costs its
+    // whole value in head at every block, which strands a run a few blocks from its source.
+    if (!drain && step < SmexValues.MoltenMinFlowAmount)
+      return;
     if (step <= 0)
       return;
 

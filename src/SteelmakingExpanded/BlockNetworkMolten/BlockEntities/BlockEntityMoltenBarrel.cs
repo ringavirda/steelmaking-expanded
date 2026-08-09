@@ -235,8 +235,8 @@ public class BlockEntityMoltenBarrel
   // The barrel is chiselable once its stored metal hardens; there's no size cap, so the hardened state
   // is both the claim gate and the can-chisel gate (and there is no "too hot" feedback - a chisel + hammer
   // click on a still-soft barrel falls through to its other interactions). The shared MoltenChisel ritual
-  // (give/spawn, sound) runs from the block; here we only clear and recover. Bits are 10 units each (the
-  // barrel's long-standing chisel ratio), distinct from the 5-unit break drop in GetMetalDrops.
+  // (give/spawn, sound) runs from the block; here we only clear and recover, at the shared
+  // MoltenUnitsPerBit rate.
   bool IChiselableMolten.HasChiselableContent =>
     MetalContent != null && CurrentUnitAmount > 0 && IsHardened;
 
@@ -259,8 +259,7 @@ public class BlockEntityMoltenBarrel
       Api.World,
       MetalContent.Collectible.Code,
       Temperature,
-      CurrentUnitAmount,
-      unitsPerBit: 10
+      CurrentUnitAmount
     );
     MetalContent = null;
     CurrentUnitAmount = 0;

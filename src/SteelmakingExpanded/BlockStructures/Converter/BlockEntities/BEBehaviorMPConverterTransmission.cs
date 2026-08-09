@@ -18,7 +18,8 @@ public class BEBehaviorMPConverterTransmission(BlockEntity blockentity)
   : BEBehaviorMPBase(blockentity) {
   private MeshData? _baseMesh;
 
-  public override float GetResistance() => 0.25f;
+  public override float GetResistance() =>
+    SmexValues.BessemerTransmissionResistance;
 
   public override void SetOrientations() {
     OutFacingForNetworkDiscovery = Block.Variant["side"] switch {

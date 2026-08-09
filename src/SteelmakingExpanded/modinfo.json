@@ -7,7 +7,7 @@
     "fallenstar"
   ],
   "description": "Industrial iron and steel production using blast furnace and Bessemer process!",
-  "version": "0.9.6",
+  "version": "0.9.7",
   "dependencies": {
     "game": "1.22.0",
     "exlib": "0.7.1",

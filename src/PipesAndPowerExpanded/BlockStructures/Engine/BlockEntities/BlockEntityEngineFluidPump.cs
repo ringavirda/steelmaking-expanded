@@ -24,15 +24,6 @@ public class BlockEntityEngineFluidPump : BlockEntityEngineSubmachine {
 
   private ILoadedSound? _waterSound;
 
-  /// <summary>
-  /// Calibration between the nominal <c>PumpWaterPerSecond x power</c> figure and what the pump
-  /// actually delivers in a real line, where the intake draw and the output main's free capacity
-  /// both bite. Set by playtest so a Watt engine lands on the ~5 L/s its config comment quotes -
-  /// that quoted figure is the realised rate, which is why it does not equal rate x power on paper.
-  /// Not a stray coefficient: removing it makes the pump three times slower than it plays.
-  /// </summary>
-  public const float ThroughputScale = 3f;
-
   protected override void DoWork(float power, float dt) {
     if (power <= 0f) {
       SetDrawing(false);
@@ -50,7 +41,7 @@ public class BlockEntityEngineFluidPump : BlockEntityEngineSubmachine {
 
     float pressure =
       (Engine?.InletPressure ?? 0f) * PpexValues.SteamEngineEfficiency;
-    float amount = PpexValues.PumpWaterPerSecond * ThroughputScale * power * dt;
+    float amount = PpexValues.PumpWaterPerSecond * power * dt;
 
     float move = Math.Min(amount, OutputFreeCapacity(leftNet));
     float drawn = bottomNet?.TryConsumeLiquid(move, ba) ?? 0f;

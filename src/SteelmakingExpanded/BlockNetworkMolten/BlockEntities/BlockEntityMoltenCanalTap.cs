@@ -106,11 +106,14 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal {
     Block.Attributes?["drainSpeed"].AsFloat(SmexValues.CanalDefaultDrainSpeed)
     ?? SmexValues.CanalDefaultDrainSpeed;
 
-  // Cooldown rate for metal cast in the parked mold: the molten-system base scaled by the tap's mold
-  // coefficient (mirrors the converter's charge cooldown). The parked barrel cools at a fixed slow
-  // rate by design and is unaffected. Read live so a config change applies immediately.
+  // Cooldown rates for the tap's parked content: the molten-system base scaled by the coefficient
+  // for that fitting, matching the standalone barrel and the converter charge. Read live so a config
+  // change applies immediately.
   private static float MoldCooldownSpeed =>
     SmexValues.MoltenCooldownSpeed * SmexValues.TapMoldCooldownCoefficient;
+
+  private static float BarrelCooldownSpeed =>
+    SmexValues.MoltenCooldownSpeed * SmexValues.BarrelCooldownCoefficient;
 
   public override void Initialize(ICoreAPI api) {
     base.Initialize(api);
@@ -351,14 +354,20 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal {
   #region Server tick: drain network into the current content
 
   private void OnServerTick(float dt) {
-    // Keep the parked mold's cooldown rate in step with the live config (the parked barrel cools at a
-    // fixed slow rate by design, so it is left alone) - this runs every tick, before the pour gate, so
-    // a `/exmod config smex MoltenCooldownSpeed ...` change affects metal already cast in the mold.
+    // Keep the parked content's cooldown rate in step with the live config - this runs every tick,
+    // before the pour gate, so a `/exmod config smex MoltenCooldownSpeed ...` change reaches metal
+    // already cast in the mold or standing in the barrel.
     if (IsMold && MoldMetalContent != null && MoldCurrentUnits > 0)
       MoltenMetal.SyncCooldownSpeed(
         Api.World,
         MoldMetalContent,
         MoldCooldownSpeed
+      );
+    else if (IsBarrel && BarrelMetalContent != null && BarrelCurrentUnits > 0)
+      MoltenMetal.SyncCooldownSpeed(
+        Api.World,
+        BarrelMetalContent,
+        BarrelCooldownSpeed
       );
 
     // The tap drains its own cell (where the run delivers metal) into the parked barrel/mold.
@@ -373,7 +382,7 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal {
         ref content,
         BarrelCurrentUnits,
         BarrelMaxUnits,
-        300f
+        BarrelCooldownSpeed
       );
       if (drained > 0) {
         BarrelMetalContent = content;

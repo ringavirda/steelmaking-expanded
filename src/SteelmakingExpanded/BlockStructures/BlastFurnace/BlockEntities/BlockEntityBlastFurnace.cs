@@ -38,13 +38,17 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure {
 
   // Timers accumulate elapsed seconds (dt) so durations are independent of the
   // production-tick interval. Thresholds below are in seconds.
-  private float _secondsAboveMelting = 0;
   private float _meltSeconds = 0;
   private float _extinguishSeconds = 0;
   private float _belowMeltingSeconds = 0;
   private float _moltenIron = 0;
   private float _moltenSlag = 0;
-  private float _fuelBurnSeconds = 0;
+
+  // Last tick's operating point, for the readout.
+  private float _targetTemp = 20f;
+  private float _meltSpeed = 0f;
+  private float _airDrawn = 0f;
+  private float _airRequested = 0f;
 
   /// <summary>Base yaw (radians) of the furnace door, used to orient the multiblock structure.</summary>
   public float BaseAngleRad { get; set; } = -1f;
@@ -58,12 +62,23 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure {
   private long _lastInfoUpdate = 0;
 
   // Block attributes cached at init instead of re-parsing the JsonObject every tick / HUD refresh.
+  private float _ambientTemp;
+  private float _ignitionTemp;
+  private int _blastMixRequiredToRun;
+  private float _disruptionGraceSeconds;
+  private float _doorOpenGraceSeconds;
   private float _naturalMaxTemp;
   private float _boostedMaxTemp;
-  private float _blastBoostThreshold;
+  private float _blastTempReference;
+  private float _heatRateBase;
+  private float _heatRateHot;
+  private float _heatRateUnblown;
   private float _ironMeltingPoint;
-  private int _maxFuelBurnTime;
-  private float _meltStartDelay;
+  private float _meltStallSeconds;
+  private float _meltSpeedBase;
+  private float _meltGainPer100C;
+  private float _meltSpeedMin;
+  private float _meltSpeedMax;
   private float _meltIntervalSec;
   private float _ironPerMeltCycle;
   private float _slagPerMeltCycle;
@@ -123,12 +138,23 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure {
   }
 
   private void CacheAttributes() {
+    _ambientTemp = ExClimate.AmbientAt(this);
+    _ignitionTemp = SmexValues.BfIgnitionTemperature;
+    _blastMixRequiredToRun = SmexValues.BlastMixRequiredToRun;
+    _disruptionGraceSeconds = SmexValues.BfDisruptionGraceSeconds;
+    _doorOpenGraceSeconds = SmexValues.BfDoorOpenGraceSeconds;
     _naturalMaxTemp = SmexValues.BfNaturalMaxTemp;
     _boostedMaxTemp = SmexValues.BfBoostedMaxTemp;
-    _blastBoostThreshold = SmexValues.BfBlastBoostThreshold;
+    _blastTempReference = SmexValues.BfBlastTempReference;
+    _heatRateBase = SmexValues.BfHeatRateBase;
+    _heatRateHot = SmexValues.BfHeatRateHot;
+    _heatRateUnblown = SmexValues.BfHeatRateUnblown;
     _ironMeltingPoint = SmexValues.BfIronMeltingPoint;
-    _maxFuelBurnTime = SmexValues.BfMaxFuelBurnTime;
-    _meltStartDelay = SmexValues.BfMeltStartDelay;
+    _meltStallSeconds = SmexValues.BfMeltStallSeconds;
+    _meltSpeedBase = SmexValues.BfMeltSpeedBase;
+    _meltGainPer100C = SmexValues.BfMeltGainPer100C;
+    _meltSpeedMin = SmexValues.BfMeltSpeedMin;
+    _meltSpeedMax = SmexValues.BfMeltSpeedMax;
     _meltIntervalSec = SmexValues.BfMeltIntervalSec;
     _ironPerMeltCycle = SmexValues.BfIronPerMeltCycle;
     _slagPerMeltCycle = SmexValues.BfSlagPerMeltCycle;
@@ -173,12 +199,8 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure {
     )
       return;
 
-    int units = Math.Min(20, (int)_moltenIron);
-    ItemStack? ironStack = CreateMoltenStack(
-      "iron",
-      (int)Math.Ceiling(units * 0.6f),
-      _internalTemp
-    );
+    int units = Math.Min(SmexValues.BfIronTapDrainPerTick, (int)_moltenIron);
+    ItemStack? ironStack = CreateMoltenStack("iron", units, _internalTemp);
     if (ironStack == null)
       return;
 
@@ -207,12 +229,8 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure {
     )
       return;
 
-    int units = Math.Min(20, (int)_moltenSlag);
-    ItemStack? slagStack = CreateMoltenStack(
-      "slag",
-      (int)Math.Ceiling(units * 0.8),
-      _internalTemp
-    );
+    int units = Math.Min(SmexValues.BfSlagTapDrainPerTick, (int)_moltenSlag);
+    ItemStack? slagStack = CreateMoltenStack("slag", units, _internalTemp);
     if (slagStack == null)
       return;
 
@@ -254,13 +272,19 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure {
     bool anyOutlet = false;
     bool anyAccepted = false;
     if (State != BlastFurnaceState.Idle) {
+      // Flue volume tracks the blast: what is blown in comes back out. Uses the previous tick's
+      // draw - the tuyeres are metered further down.
+      float exhaustVolume = Math.Max(
+        SmexValues.BfExhaustBaseVolume,
+        _airDrawn * SmexValues.BfExhaustPerAirDrawn
+      );
       foreach (var pos in _gasOutlets) {
         if (Api.World.BlockAccessor.GetBlockEntity(pos) is IPipeNode outlet) {
           anyOutlet = true;
           if (
             outlet.TryProduce(
-              24f,
-              _internalTemp * 0.8f,
+              exhaustVolume,
+              _internalTemp * SmexValues.BfExhaustTempFraction,
               "Exhaust",
               maxOutputPressure: SmexValues.BfExhaustOutputPressure
             )
@@ -291,12 +315,21 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure {
     _cachedIsFull = isFull;
 
     bool tuyeresReceiveExhaust = false;
-    float hotBlastTemp = 20f;
+    float hotBlastTemp = _ambientTemp;
     bool receivingBlast = false;
+
+    // Air demand follows the melt rate the heat margin supports, so a hotter hearth breathes harder.
+    // Taken from the temperature this tick opens with: the draw leads the heating by one tick.
+    float heatFactor = HeatFactor(_internalTemp);
+    float perTuyereDemand = _tuyereIntakeVolume * heatFactor;
+    _airRequested = _tuyeres.Count * perTuyereDemand;
+    _airDrawn = 0f;
 
     foreach (var pos in _tuyeres) {
       if (Api.World.BlockAccessor.GetBlockEntity(pos) is IPipeNode tuyere) {
-        float consumed = tuyere.TryConsume(_tuyereIntakeVolume);
+        // An unlit furnace reads its tuyeres but draws nothing through them.
+        if (State != BlastFurnaceState.Idle)
+          _airDrawn += tuyere.TryConsume(perTuyereDemand);
         if (tuyere is BlockEntityPipe pipe) {
           if (pipe.Medium == "Exhaust")
             tuyeresReceiveExhaust = true;
@@ -328,8 +361,7 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure {
       CheckHearthBurning(hearthPiles, out _, out bool allBurning);
       if (allBurning) {
         State = BlastFurnaceState.Firing;
-        _fuelBurnSeconds = 0;
-        _internalTemp = 900f;
+        _internalTemp = _ignitionTemp;
         dirty = true;
         // Whoosh as the charge catches.
         ExSounds.Play(Api, GetGlobalPos(0, 0, 2), ExSounds.Ignite, 1f, 32f);
@@ -338,28 +370,24 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure {
 
     if (State != BlastFurnaceState.Idle) {
       int disruptionCount = 0;
-      if (mixCount < 144)
+      if (mixCount < _blastMixRequiredToRun)
         disruptionCount++;
       if (tuyeresReceiveExhaust)
         disruptionCount++;
-      // A blocked flue is NOT a disruption: it stalls the furnace (see the choke gates on the heat
-      // target and on molten accumulation) instead of killing the campaign. Swapping the regenerator
-      // stoves the way the handbook teaches necessarily shuts the exhaust for a while, and counting
-      // that here made a correctly operated plant extinguish itself.
+      // A blocked flue and a full reservoir are stalls, not disruptions - they gate the melt below
+      // and leave the campaign alive. Swapping the regenerator stoves shuts the exhaust by design.
       if (isDoorOpen)
-        disruptionCount++;
-      if (isLiquidCapacityReached)
         disruptionCount++;
 
       if (disruptionCount > 0) {
         _extinguishSeconds += dt;
         dirty = true;
 
-        int extinguishThreshold = 30;
+        float extinguishThreshold = _disruptionGraceSeconds;
         if (disruptionCount >= 2)
-          extinguishThreshold = 0;
+          extinguishThreshold = 0f;
         else if (isDoorOpen)
-          extinguishThreshold = 10;
+          extinguishThreshold = _doorOpenGraceSeconds;
 
         if (_extinguishSeconds >= extinguishThreshold) {
           Extinguish();
@@ -384,55 +412,45 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure {
         32f
       );
 
-      // A choked flue cannot carry the hot-blast boost away, so the furnace falls back to its
-      // natural draught ceiling - which sits below the iron melting point, so melting stalls and
-      // the existing below-melting demotion walks the campaign back to Firing. It resumes as soon
-      // as the exhaust is reopened.
-      float targetTemp =
-        !IsChoked && hotBlastTemp >= _blastBoostThreshold
-          ? _boostedMaxTemp
-          : _naturalMaxTemp;
+      // Ceiling and heating rate both interpolate with the blast temperature; cold blast still
+      // clears the melting point. A choked flue reads as no blast.
+      float blastFraction = BlastFraction(hotBlastTemp);
+      _targetTemp =
+        _naturalMaxTemp + (_boostedMaxTemp - _naturalMaxTemp) * blastFraction;
+
       float oldTemp = _internalTemp;
       // Heating/cooling rates are per-second; scale by dt for tick-independence.
-      float heatRate = receivingBlast ? 4f : 2f;
+      float heatRate = receivingBlast
+        ? _heatRateBase + (_heatRateHot - _heatRateBase) * blastFraction
+        : _heatRateUnblown;
 
-      if (_internalTemp < targetTemp)
-        _internalTemp = Math.Min(_internalTemp + heatRate * dt, targetTemp);
-      else if (_internalTemp > targetTemp)
-        _internalTemp = Math.Max(_internalTemp - 4f * dt, targetTemp);
+      if (_internalTemp < _targetTemp)
+        _internalTemp = Math.Min(_internalTemp + heatRate * dt, _targetTemp);
+      else if (_internalTemp > _targetTemp)
+        _internalTemp = Math.Max(_internalTemp - _heatRateBase * dt, _targetTemp);
 
-      _internalTemp = GameMath.Clamp(_internalTemp, 20f, 1700f);
+      _internalTemp = GameMath.Clamp(
+        _internalTemp,
+        _ambientTemp,
+        Math.Max(_naturalMaxTemp, _boostedMaxTemp)
+      );
       if (Math.Abs(_internalTemp - oldTemp) > 0.1f)
         dirty = true;
 
       if (State == BlastFurnaceState.Firing) {
-        _fuelBurnSeconds += dt;
-        if (_fuelBurnSeconds >= _maxFuelBurnTime) {
-          Extinguish();
-          return;
-        }
-
+        _meltSpeed = 0f;
         if (_internalTemp >= _ironMeltingPoint) {
-          _secondsAboveMelting += dt;
-          dirty = true;
-          if (_secondsAboveMelting >= _meltStartDelay) {
-            TransitionToMelting();
-            return;
-          }
-        } else {
-          if (_secondsAboveMelting != 0)
-            dirty = true;
-          _secondsAboveMelting = 0;
+          TransitionToMelting();
+          return;
         }
       } else if (State == BlastFurnaceState.Melting) {
         if (_internalTemp < _ironMeltingPoint) {
+          _meltSpeed = 0f;
           _belowMeltingSeconds += dt;
           dirty = true;
-          if (_belowMeltingSeconds >= 30) {
+          if (_belowMeltingSeconds >= _meltStallSeconds) {
             State = BlastFurnaceState.Firing;
-            _secondsAboveMelting = 0;
             _belowMeltingSeconds = 0;
-            _fuelBurnSeconds = 0;
             dirty = true;
           }
         } else {
@@ -440,12 +458,19 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure {
             dirty = true;
           _belowMeltingSeconds = 0;
 
-          // Halt the melt on the same tick the flue blocks, rather than waiting for the temperature
-          // to drift down to the natural ceiling first.
+          // Melt rate = the heat margin's rate, scaled by the share of the air it asked for that
+          // arrived. Scaling rather than compounding keeps air demand out of the rate that set it.
+          float airFactor =
+            _airRequested > 0f
+              ? GameMath.Clamp(_airDrawn / _airRequested, 0f, 1f)
+              : 0f;
+          _meltSpeed = heatFactor * airFactor;
+
+          // Halts on the same tick the flue blocks or the reservoir fills.
           if (!isLiquidCapacityReached && !IsChoked) {
-            _meltSeconds += dt;
+            _meltSeconds += _meltSpeed * dt;
             if (_meltSeconds >= _meltIntervalSec) {
-              _meltSeconds = 0;
+              _meltSeconds -= _meltIntervalSec;
               ConsumeForMelting(
                 hearthPiles,
                 _blastMixPerMeltCycle,
@@ -460,11 +485,38 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure {
           DrainSlagTap(ref dirty);
         }
       }
+    } else {
+      _meltSpeed = 0f;
     }
 
     if (dirty)
       MarkDirty(true);
   }
+
+  #endregion
+
+  #region Heat and melt model
+
+  /// <summary>
+  /// How far the blast is toward <see cref="SmexConfig.BfBlastTempReference"/>, 0..1. The hearth
+  /// ceiling and the heating rate both interpolate across it. A choked flue reads as no blast.
+  /// </summary>
+  private float BlastFraction(float blastTemp) =>
+    IsChoked || _blastTempReference <= 0f
+      ? 0f
+      : GameMath.Clamp(blastTemp / _blastTempReference, 0f, 1f);
+
+  /// <summary>
+  /// The melt-rate multiplier the hearth's heat margin supports, before the air supply is applied.
+  /// Also sets the tuyere draw.
+  /// </summary>
+  private float HeatFactor(float hearthTemp) =>
+    GameMath.Clamp(
+      _meltSpeedBase
+        + (hearthTemp - _ironMeltingPoint) / 100f * _meltGainPer100C,
+      _meltSpeedMin,
+      _meltSpeedMax
+    );
 
   #endregion
 
@@ -514,7 +566,7 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure {
   private void TransitionToMelting() {
     State = BlastFurnaceState.Melting;
     _meltSeconds = 0;
-    _fuelBurnSeconds = 0;
+    _belowMeltingSeconds = 0;
     MarkDirty(true);
   }
 
@@ -547,8 +599,18 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure {
         Api.World.BlockAccessor.SetBlock(0, pos);
     }
 
-    _moltenIron = System.Math.Min(_moltenIron + ironProduced, _maxMoltenIron);
-    _moltenSlag = System.Math.Min(_moltenSlag + slagProduced, _maxMoltenSlag);
+    // Yield is proportional to the mix actually consumed. Paying the full cycle for a part charge
+    // would let a drip-fed hearth print iron.
+    float yieldShare =
+      blastmixToConsume > 0 ? (float)consumed / blastmixToConsume : 0f;
+    _moltenIron = System.Math.Min(
+      _moltenIron + ironProduced * yieldShare,
+      _maxMoltenIron
+    );
+    _moltenSlag = System.Math.Min(
+      _moltenSlag + slagProduced * yieldShare,
+      _maxMoltenSlag
+    );
   }
 
   private void Extinguish() {
@@ -556,7 +618,10 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure {
       ExSounds.Play(Api, GetGlobalPos(0, 0, 2), ExSounds.Extinguish, 1f, 32f);
 
     State = BlastFurnaceState.Idle;
-    _internalTemp = 20f;
+    _internalTemp = _ambientTemp;
+    _meltSpeed = 0f;
+    _airDrawn = 0f;
+    _airRequested = 0f;
 
     if (_moltenIron > 0) {
       Block? solidIronBlock = Api.World.GetBlock(
@@ -565,7 +630,7 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure {
       if (solidIronBlock != null) {
         int totalNuggets = System.Math.Max(
           1,
-          (int)System.Math.Floor(_moltenIron / 5f)
+          (int)System.Math.Floor(_moltenIron / SmexValues.MoltenUnitsPerBit)
         );
         int nuggets1 =
           totalNuggets < 3 ? 1 : Api.World.Rand.Next(1, totalNuggets - 1);
@@ -596,12 +661,12 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure {
 
     _moltenIron = 0;
     _moltenSlag = 0;
-    _secondsAboveMelting = 0;
     _meltSeconds = 0;
     _extinguishSeconds = 0;
     _belowMeltingSeconds = 0;
-    _fuelBurnSeconds = 0;
 
+    // Hand the hearth piles back to their own burn clock and put them out. The mix itself is left
+    // as loaded, ready to be lit again.
     BlockPos centerHearth = GetGlobalPos(0, 0, 2);
     Api.World.BlockAccessor.WalkBlocks(
       centerHearth.AddCopy(-1, -3, -1),
@@ -612,10 +677,8 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure {
           if (
             Api.World.BlockAccessor.GetBlockEntity(pos)
             is BlockEntityCoalPile pileBe
-          ) {
-            BlastmixPiles.SetManagedByFurnace(pileBe, false);
-            BlastmixPiles.ConvertToSlag(pileBe);
-          }
+          )
+            BlastmixPiles.Release(pileBe);
         }
       }
     );
@@ -669,13 +732,16 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure {
     IsChoked = tree.GetBool("isChoked");
     State = (BlastFurnaceState)tree.GetInt("bfState", 0);
     _internalTemp = tree.GetFloat("internalTemp", 20f);
-    _secondsAboveMelting = tree.GetFloat("secondsAboveMelting", 0);
     _meltSeconds = tree.GetFloat("meltSeconds", 0);
     _extinguishSeconds = tree.GetFloat("extinguishSeconds", 0);
     _belowMeltingSeconds = tree.GetFloat("belowMeltingSeconds", 0);
     _moltenIron = tree.GetFloat("moltenIron", 0f);
     _moltenSlag = tree.GetFloat("moltenSlag", 0f);
-    _fuelBurnSeconds = tree.GetFloat("fuelBurnSeconds", 0);
+    _meltSpeed = tree.GetFloat("meltSpeed", 0f);
+    _airDrawn = tree.GetFloat("airDrawn", 0f);
+    _airRequested = tree.GetFloat("airRequested", 0f);
+    _targetTemp = tree.GetFloat("targetTemp", 20f);
+    // "secondsAboveMelting" and "fuelBurnSeconds" are vestigial keys in old saves - not read.
     _cachedMixCount = tree.GetInt("cachedMixCount", 0);
     _cachedIsFull = tree.GetBool("cachedIsFull", false);
     BaseAngleRad = tree.GetFloat("baseAngleRad", -1f);
@@ -686,13 +752,15 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure {
     tree.SetBool("isChoked", IsChoked);
     tree.SetInt("bfState", (int)State);
     tree.SetFloat("internalTemp", _internalTemp);
-    tree.SetFloat("secondsAboveMelting", _secondsAboveMelting);
     tree.SetFloat("meltSeconds", _meltSeconds);
     tree.SetFloat("extinguishSeconds", _extinguishSeconds);
     tree.SetFloat("belowMeltingSeconds", _belowMeltingSeconds);
     tree.SetFloat("moltenIron", _moltenIron);
     tree.SetFloat("moltenSlag", _moltenSlag);
-    tree.SetFloat("fuelBurnSeconds", _fuelBurnSeconds);
+    tree.SetFloat("meltSpeed", _meltSpeed);
+    tree.SetFloat("airDrawn", _airDrawn);
+    tree.SetFloat("airRequested", _airRequested);
+    tree.SetFloat("targetTemp", _targetTemp);
     tree.SetInt("cachedMixCount", _cachedMixCount);
     tree.SetBool("cachedIsFull", _cachedIsFull);
     tree.SetFloat("baseAngleRad", BaseAngleRad);
@@ -722,32 +790,42 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure {
             "smex:bf-state-" + State.ToString().ToLowerInvariant()
           );
           sb.AppendLine(Lang.Get("smex:bf-info-state", stateName));
+          // The ceiling sits next to the temperature: a hearth resting at it is at its limit for
+          // the blast it is getting, not stuck.
           sb.AppendLine(
-            Lang.Get("smex:bf-info-temp", ExMeasure.Temperature(_internalTemp))
+            Lang.Get(
+              "smex:bf-info-temp",
+              ExMeasure.Temperature(_internalTemp),
+              ExMeasure.Temperature(_targetTemp)
+            )
           );
 
+          // Drawn short of requested is the diagnosis for a slow melt.
+          if (_airRequested > 0f)
+            sb.AppendLine(
+              Lang.Get(
+                "smex:bf-info-air",
+                ExMeasure.FlowRate(_airDrawn),
+                ExMeasure.FlowRate(_airRequested)
+              )
+            );
+
           if (State == BlastFurnaceState.Melting) {
+            sb.AppendLine(
+              Lang.Get("smex:bf-info-meltrate", _meltSpeed.ToString("0.0#"))
+            );
             sb.AppendLine(
               Lang.Get("smex:bf-info-molteniron", _moltenIron, _maxMoltenIron)
             );
             sb.AppendLine(
               Lang.Get("smex:bf-info-moltenslag", _moltenSlag, _maxMoltenSlag)
             );
-          } else if (
-              State == BlastFurnaceState.Firing
-              && _internalTemp >= _ironMeltingPoint
-            ) {
-            // Progress toward the Melting phase as a percentage (matches the
-            // Bessemer converter's readout) rather than a raw seconds countdown.
-            int pct = (int)
-              GameMath.Clamp(
-                100f
-                  * _secondsAboveMelting
-                  / System.Math.Max(1f, _meltStartDelay),
-                0,
-                100
-              );
-            sb.AppendLine(Lang.Get("smex:bf-info-meltingin", pct));
+            // A full reservoir stalls the melt silently; tapping either vessel resumes it.
+            if (
+              _moltenIron >= _maxMoltenIron
+              || _moltenSlag >= _maxMoltenSlag
+            )
+              sb.AppendLine(Lang.Get("smex:bf-info-reservoirfull"));
           }
 
           // The choke stalls a lit furnace, so its reason belongs in this branch: IsChoked is
@@ -757,8 +835,10 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure {
             sb.AppendLine(Lang.Get("smex:bf-info-exhaustfull"));
 
           if (_extinguishSeconds > 0) {
-            int maxExtinguish =
-              (GetBehavior<BEBehaviorDoor>()?.Opened == true) ? 10 : 30;
+            float maxExtinguish =
+              (GetBehavior<BEBehaviorDoor>()?.Opened == true)
+                ? _doorOpenGraceSeconds
+                : _disruptionGraceSeconds;
             int remainingSeconds = (int)
               System.Math.Max(0f, maxExtinguish - _extinguishSeconds);
             sb.AppendLine(

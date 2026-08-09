@@ -54,6 +54,16 @@ public class PpexConfig : IExVersionedConfig {
       ToVersion = "0.6.6",
       ResetFields = [nameof(RccBrokenDropsRatio), nameof(MpLoadPerEnginePower)],
     },
+    // 0.6.7: the engine fluid pump's rate is now the realised rate. It used to be multiplied by a
+    // hidden playtest calibration of 3 in code, so the configured figure meant nothing on its own
+    // and no saved value could be read at face value; that factor is folded into the default
+    // (16.67 -> 100) and the pump moves exactly what it says. Sized at 3:1 against the mechanical
+    // pump on the same engine.
+    new()
+    {
+      ToVersion = "0.6.7",
+      ResetFields = [nameof(PumpWaterPerSecond)],
+    },
   ];
 
   #region Pipes
@@ -290,13 +300,25 @@ public class PpexConfig : IExVersionedConfig {
   /// </summary>
   public float MpLoadPerEnginePower { get; set; } = 2.0f;
 
-  /// <summary>Water (L/s) the engine fluid pump moves per unit of mechanical power (Watt 0.3 → 5 L/s,
-  /// Cornish 0.2/0.4/0.8 → 3.3/6.7/13.3 L/s).</summary>
-  public float PumpWaterPerSecond { get; set; } = 16.67f;
+  /// <summary>
+  /// Water (L/s) the engine fluid pump moves per unit of mechanical power (Watt 0.3 → 30 L/s,
+  /// Cornish 0.2/0.4/0.8 → 20/40/80 L/s).
+  /// <para>
+  /// Sized against <see cref="MpPumpLitresPerSpeed"/> at 3:1 on the same engine - the engine pump
+  /// has the larger cylinder and the longer stroke, so it does the work of three mechanical pumps
+  /// and needs neither a generator nor a line shaft to do it. That ratio is the reason to bolt one
+  /// straight onto an engine rather than gear one off it.
+  /// </para>
+  /// </summary>
+  public float PumpWaterPerSecond { get; set; } = 100f;
 
   /// <summary>Water (L/s) the manual (hand-cranked) fluid pump transfers from its intake line to
-  /// its output line at a fixed 1 atm - a manual boiler-startup feed, slower than the engine pump.</summary>
+  /// its output line - a manual boiler-startup feed, slower than every powered pump.</summary>
   public float ManualPumpWaterPerSecond { get; set; } = 2f;
+
+  /// <summary>Delivery head (atm) the hand crank commands - enough to lift water into a boiler, and
+  /// no more.</summary>
+  public float ManualPumpDeliveryPressure { get; set; } = 1f;
 
   /// <summary>
   /// Water (L/s) the mechanical fluid pump moves per unit of axle speed. The beam drives a

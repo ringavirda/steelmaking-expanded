@@ -76,6 +76,37 @@ public class SmexConfig : IExVersionedConfig {
       ToVersion = "0.9.6",
       ResetFields = [nameof(RccBrokenDropsRatio)],
     },
+    // 0.9.7: the furnace and converter rebalance. Melting is now a rate metered by heat margin and
+    // air rather than a gate, the blast furnace out-yields a bloomery, the converter remelts scrap,
+    // and every figure downstream of those moved with them. A saved config carrying the old numbers
+    // would leave a furnace that cannot reach its own melting point on cold blast, or blowers that
+    // cannot feed the new air demand, so the whole rebalanced set is pushed out.
+    new()
+    {
+      ToVersion = "0.9.7",
+      ResetFields =
+      [
+        // Heat and melt model
+        nameof(BfNaturalMaxTemp),
+        nameof(BfMaxMoltenIron),
+        nameof(BfMaxMoltenSlag),
+        nameof(BfIronPerMeltCycle),
+        nameof(BfSlagPerMeltCycle),
+        nameof(BfIronTapDrainPerTick),
+        nameof(BfSlagTapDrainPerTick),
+        // Air, exhaust and stack
+        nameof(TuyereIntakeVolume),
+        nameof(AirBlowerOutputPerSecond),
+        nameof(SmokestackGasIntakeVolume),
+        // Converter
+        nameof(BessemerConverterCapacity),
+        nameof(BessemerBlastPerSecond),
+        // Molten flow
+        nameof(MoltenFlowRate),
+        nameof(MoltenMinFlowAmount),
+        nameof(CanalDefaultUnitCapacity),
+      ],
+    },
   ];
 
   #region Molten system
@@ -96,13 +127,26 @@ public class SmexConfig : IExVersionedConfig {
   public float MoldPedestalCooldownCoefficient { get; set; } = 1f;
 
   /// <summary>Max metal (units) flowing across one canal connection per second; balance against <see cref="MoltenCooldownSpeed"/>.</summary>
-  public int MoltenFlowRate { get; set; } = 50;
+  public int MoltenFlowRate { get; set; } = 100;
 
-  /// <summary>Minimum metal (units) that must move across a canal connection for any flow that tick (stops sub-unit dribbles).</summary>
-  public int MoltenMinFlowAmount { get; set; } = 10;
+  /// <summary>
+  /// Minimum metal (units) that must actually move across a canal connection for any flow that tick.
+  /// This is a floor on the transfer, not on the difference between the two cells: a floor on the
+  /// difference costs its whole value in head at every block, which is what used to leave a canal
+  /// delivering nothing past about eight blocks.
+  /// </summary>
+  public int MoltenMinFlowAmount { get; set; } = 1;
+
+  /// <summary>
+  /// Metal (units) one metal bit is worth. The exchange rate between the molten system's units and
+  /// solid metal, used wherever the two meet: chiselling a frozen charge or canal, the nuggets a
+  /// furnace leaves when it goes out, and the scrap a converter remelts. One key rather than one per
+  /// site, so the recovery rate and the remelt rate cannot drift apart into a duplication loop.
+  /// </summary>
+  public int MoltenUnitsPerBit { get; set; } = 5;
 
   /// <summary>Default per-canal-block capacity (units) when a block sets no <c>maxUnits</c> attribute.</summary>
-  public int CanalDefaultUnitCapacity { get; set; } = 50;
+  public int CanalDefaultUnitCapacity { get; set; } = 100;
 
   /// <summary>Default canal-tap network drain speed (units/s) when no <c>drainSpeed</c> attribute is set.</summary>
   public float CanalDefaultDrainSpeed { get; set; } = 20f;
@@ -124,7 +168,20 @@ public class SmexConfig : IExVersionedConfig {
   /// <summary>Blast-mix units that must be loaded into the hearth before the furnace can fire.</summary>
   public int BlastMixRequiredToFire { get; set; } = 320;
 
-  /// <summary>Burn time (seconds) granted by a blast-mix charge burning in a coal pile.</summary>
+  /// <summary>
+  /// Blast-mix units a lit furnace must keep in its hearth to stay lit. A furnace robbed below this
+  /// has too thin a column to hold a working bed and goes out; the mix left in the piles is not
+  /// consumed or spoiled, so a relit furnace picks it back up once the hearth is refilled to
+  /// <see cref="BlastMixRequiredToFire"/>.
+  /// </summary>
+  public int BlastMixRequiredToRun { get; set; } = 144;
+
+  /// <summary>
+  /// Seconds a lit blast-mix pile keeps burning outside a blown furnace before it goes out. A pile
+  /// no furnace is drawing air through has nothing feeding it, so it burns down and stops - the mix
+  /// is left cold and unchanged, ready to be lit again. Long enough to light a whole hearth by hand
+  /// before the first piles die.
+  /// </summary>
   public int BlastmixBurnTime { get; set; } = 300;
   #endregion
 
@@ -147,10 +204,19 @@ public class SmexConfig : IExVersionedConfig {
   /// </summary>
   public float BlastPressureThreshold { get; set; } = 2.5f;
 
-  /// <summary>Air (L/s) the blower injects per unit of engine power (Cornish 0.2/0.4/0.8 →
-  /// 9.6/19.2/38.4 L/s, Watt 0.3 → 14.4 L/s); output pressure tracks the engine's inlet steam ×
-  /// <see cref="PipesAndPowerExpanded.PpexValues.SteamEngineEfficiency"/>.</summary>
-  public float AirBlowerOutputPerSecond { get; set; } = 48f;
+  /// <summary>
+  /// Air (L/s) the blower injects per unit of engine power (Cornish 0.2/0.4/0.8 → 60/120/240 L/s,
+  /// Watt 0.3 → 90 L/s); output pressure tracks the engine's inlet steam ×
+  /// <see cref="PipesAndPowerExpanded.PpexValues.SteamEngineEfficiency"/>.
+  /// <para>
+  /// Sized so a steam blower feeds SEVERAL blast furnaces, or one driven hard - a Watt covers three
+  /// at cold-blast baseline, and a Cornish on high covers one in full overdrive with room to spare.
+  /// That spread is the whole point of building one: the mechanical blower it replaces manages
+  /// exactly one furnace at baseline. The old 48 could not manage even that - 48 × 0.3 = 14.4 L/s
+  /// against a 24 L/s draw - which is why a steam-blown plant ran slower than a water-driven one.
+  /// </para>
+  /// </summary>
+  public float AirBlowerOutputPerSecond { get; set; } = 300f;
   #endregion
 
   #region Mechanical blower
@@ -215,34 +281,99 @@ public class SmexConfig : IExVersionedConfig {
   /// <summary>Per-second rate the soaked-up exhaust gives its heat to the regenerator.</summary>
   public float CowperCoolingSpeedExhaust { get; set; } = 0.3f;
 
-  /// <summary>Per-second rate the regenerator loses heat into the air it reheats into hot blast.</summary>
+  /// <summary>
+  /// Per-second rate the regenerator loses heat into the air it reheats into hot blast, at a draw of
+  /// <see cref="CowperIntakeVolume"/>. Scaled by the air actually flowing, so a furnace in overdrive
+  /// drains its stove several times faster than one on baseline - which is what makes alternating
+  /// two stoves an operating decision rather than a formality.
+  /// </summary>
   public float CowperCoolingSpeedAir { get; set; } = 0.0012f;
 
-  /// <summary>Gas (L/s) the cowper stove draws each tick from each of its intakes - the furnace exhaust it soaks heat from, and the air it reheats into hot blast.</summary>
+  /// <summary>
+  /// Per-second rate a stove bleeds heat to its surroundings whatever else it is doing, toward
+  /// the ambient air temperature where it stands. Brickwork this size holds its charge a long while - the
+  /// default is a half-life of roughly twenty minutes - but a charged stove cannot be banked
+  /// indefinitely and left as a permanent asset.
+  /// </summary>
+  public float CowperIdleCoolingSpeed { get; set; } = 0.0006f;
+
+  /// <summary>Share of its temperature the spent exhaust keeps after the regenerator has taken its
+  /// heat, on its way out to the smoke stack.</summary>
+  [ExConfigRange(0, 1)]
+  public float CowperSpentExhaustTempFraction { get; set; } = 0.4f;
+
+  /// <summary>Gas (L/s) the cowper stove draws each tick from each of its intakes - the furnace exhaust it soaks heat from, and the air it reheats into hot blast. Also the reference draw its air-side heat loss is scaled against.</summary>
   public float CowperIntakeVolume { get; set; } = 24f;
   #endregion
 
   #region Blast furnace
-  /// <summary>Maximum hearth temperature (°C) without a hot-blast boost.</summary>
-  public float BfNaturalMaxTemp { get; set; } = 1420f;
+  /// <summary>
+  /// Hearth ceiling (°C) on cold blast - air straight off a blower. Deliberately set
+  /// above <see cref="BfIronMeltingPoint"/>: a furnace blown with plain air melts iron on its own,
+  /// just slowly and with little margin. Hot blast is an improvement, never a requirement.
+  /// </summary>
+  public float BfNaturalMaxTemp { get; set; } = 1540f;
 
-  /// <summary>Maximum hearth temperature (°C) when fed hot blast above the boost threshold.</summary>
+  /// <summary>Hearth ceiling (°C) on blast at or above <see cref="BfBlastTempReference"/>.</summary>
   public float BfBoostedMaxTemp { get; set; } = 1740f;
 
-  /// <summary>Hot-blast temperature (°C) at or above which the furnace reaches its boosted max temp.</summary>
-  public float BfBlastBoostThreshold { get; set; } = 800f;
+  /// <summary>
+  /// Blast temperature (°C) that buys the full boost. The ceiling and the heating rate both
+  /// interpolate from their cold-blast figure to their hot-blast one across
+  /// ambient..this, so a part-charged stove gives a part boost instead of
+  /// nothing. Equal to <see cref="CowperMaxTemperature"/>, so a fully charged regenerator is exactly
+  /// what it takes.
+  /// </summary>
+  public float BfBlastTempReference { get; set; } = 1240f;
+
+  /// <summary>Hearth heating rate (°C/s) on cold blast.</summary>
+  public float BfHeatRateBase { get; set; } = 4f;
+
+  /// <summary>Hearth heating rate (°C/s) on blast at or above <see cref="BfBlastTempReference"/>.</summary>
+  public float BfHeatRateHot { get; set; } = 8f;
+
+  /// <summary>Hearth heating rate (°C/s) with no blast at all - the natural draught through the stack.</summary>
+  public float BfHeatRateUnblown { get; set; } = 2f;
+
+  /// <summary>Hearth temperature (°C) the moment the charge catches, before the blast works on it.</summary>
+  public float BfIgnitionTemperature { get; set; } = 900f;
 
   /// <summary>Temperature (°C) the hearth must reach (and hold) to start melting iron.</summary>
   public float BfIronMeltingPoint { get; set; } = 1482f;
 
+  /// <summary>Seconds below <see cref="BfIronMeltingPoint"/> before a melting furnace falls back to firing.</summary>
+  public float BfMeltStallSeconds { get; set; } = 30f;
+
+  /// <summary>Melt-rate multiplier at zero margin over <see cref="BfIronMeltingPoint"/>.</summary>
+  public float BfMeltSpeedBase { get; set; } = 0.2f;
+
+  /// <summary>Extra melt-rate multiplier per 100 °C of margin over <see cref="BfIronMeltingPoint"/>.</summary>
+  public float BfMeltGainPer100C { get; set; } = 0.7f;
+
+  /// <summary>Floor on the melt-rate multiplier once the hearth is over the melting point.</summary>
+  public float BfMeltSpeedMin { get; set; } = 0.5f;
+
+  /// <summary>Ceiling on the melt-rate multiplier, however hot the hearth runs.</summary>
+  public float BfMeltSpeedMax { get; set; } = 2.0f;
+
   /// <summary>Maximum molten iron (units) the furnace can hold before stalling.</summary>
-  public float BfMaxMoltenIron { get; set; } = 2400f;
+  public float BfMaxMoltenIron { get; set; } = 4800f;
 
   /// <summary>Maximum molten slag (units) the furnace can hold before stalling.</summary>
-  public float BfMaxMoltenSlag { get; set; } = 600f;
+  public float BfMaxMoltenSlag { get; set; } = 1200f;
 
-  /// <summary>Seconds a fired furnace burns before it extinguishes.</summary>
-  public int BfMaxFuelBurnTime { get; set; } = 1200;
+  /// <summary>Seconds a single disruption (a starved hearth, exhaust drawn back down the tuyeres) is
+  /// tolerated before the furnace goes out. Two at once put it out immediately.</summary>
+  public float BfDisruptionGraceSeconds { get; set; } = 30f;
+
+  /// <summary>Seconds an open charging door is tolerated before the furnace goes out.</summary>
+  public float BfDoorOpenGraceSeconds { get; set; } = 10f;
+
+  /// <summary>Molten iron (units) drained per tick through an open lower tap.</summary>
+  public int BfIronTapDrainPerTick { get; set; } = 40;
+
+  /// <summary>Molten slag (units) drained per tick through an open upper tap.</summary>
+  public int BfSlagTapDrainPerTick { get; set; } = 40;
 
   /// <summary>
   /// Pressure ceiling the furnace pushes its exhaust to. This is what the flue can build against a
@@ -253,23 +384,38 @@ public class SmexConfig : IExVersionedConfig {
   /// </summary>
   public float BfExhaustOutputPressure { get; set; } = 2.0f;
 
-  /// <summary>Seconds above the melting point before the furnace transitions to the melting phase.</summary>
-  public float BfMeltStartDelay { get; set; } = 300f;
+  /// <summary>
+  /// Exhaust (L/s) each gas outlet vents per litre of blast the tuyeres drew. What is blown in has
+  /// to come back out, so a furnace driven hard makes proportionally more flue gas - which is what
+  /// charges the regenerators faster and closes the hot-blast loop.
+  /// </summary>
+  public float BfExhaustPerAirDrawn { get; set; } = 1.0f;
+
+  /// <summary>Exhaust (L/s) each gas outlet vents on natural draught alone, with no blast at all.</summary>
+  public float BfExhaustBaseVolume { get; set; } = 24f;
+
+  /// <summary>Share of the hearth temperature the flue gas carries out of the furnace.</summary>
+  [ExConfigRange(0, 1)]
+  public float BfExhaustTempFraction { get; set; } = 0.8f;
 
   /// <summary>Seconds between melt cycles while melting.</summary>
   public float BfMeltIntervalSec { get; set; } = 10f;
 
   /// <summary>Molten iron (units) produced per melt cycle.</summary>
-  public float BfIronPerMeltCycle { get; set; } = 60f;
+  public float BfIronPerMeltCycle { get; set; } = 102f;
 
   /// <summary>Molten slag (units) produced per melt cycle.</summary>
-  public float BfSlagPerMeltCycle { get; set; } = 10f;
+  public float BfSlagPerMeltCycle { get; set; } = 17f;
 
   /// <summary>Blast-mix consumed per melt cycle.</summary>
   public int BfBlastMixPerMeltCycle { get; set; } = 16;
 
-  /// <summary>Air/blast (L/s) the blast furnace draws through each tuyere.</summary>
-  public float TuyereIntakeVolume { get; set; } = 12f;
+  /// <summary>
+  /// Air/blast (L/s) one tuyere draws at a melt rate of 1.0. The furnace scales this by whatever
+  /// rate its heat margin supports, so a cold-blast furnace breathes about 24 L/s across both
+  /// tuyeres and one in overdrive about 80 - and the blast it actually gets meters the melt in turn.
+  /// </summary>
+  public float TuyereIntakeVolume { get; set; } = 20f;
 
   /// <summary>
   /// Pressure (atm) the air at a tuyere must reach before it counts as blast and the furnace will
@@ -281,19 +427,77 @@ public class SmexConfig : IExVersionedConfig {
 
   #region Bessemer converter
   /// <summary>Molten-metal capacity (units) of the converter vessel.</summary>
-  public int BessemerConverterCapacity { get; set; } = 1200;
+  public int BessemerConverterCapacity { get; set; } = 2400;
 
-  /// <summary>Blast (L/s) the converter draws from its gas intake while refining.</summary>
-  public float BessemerBlastPerSecond { get; set; } = 8.0f;
+  /// <summary>Blast (L/s) the converter draws from its gas intake at a conversion rate of 1.0.
+  /// Scaled by the rate the blast pressure supports, like the furnace's tuyere draw.</summary>
+  public float BessemerBlastPerSecond { get; set; } = 24.0f;
 
-  /// <summary>Seconds of blast a charge needs to refine iron into steel.</summary>
+  /// <summary>Seconds of blast a charge needs to refine iron into steel at a conversion rate of 1.0.</summary>
   public float BessemerProcessDuration { get; set; } = 300f;
 
-  /// <summary>Temperature (°C) the blast holds the charge at while refining.</summary>
-  public float BessemerProcessTemperature { get; set; } = 1800f;
+  /// <summary>
+  /// Bath temperature (°C) the blow itself produces, before losses. Burning the carbon out of the
+  /// iron is what heats a converter - it has no fuel of its own - so this is the ceiling the process
+  /// works down from rather than a temperature anything holds it at.
+  /// </summary>
+  public float BessemerBaseTemperature { get; set; } = 1850f;
+
+  /// <summary>Temperature (°C) the bath sheds to its surroundings continuously.</summary>
+  public float BessemerRadiationLoss { get; set; } = 50f;
+
+  /// <summary>
+  /// Temperature (°C) the bath must hold for the blow to refine. Below it the process stalls, and if
+  /// the bath keeps falling it freezes into the existing solidified/chisel path.
+  /// </summary>
+  public float BessemerRefineTemperature { get; set; } = 1500f;
+
+  /// <summary>
+  /// Bath temperature (°C) gained per atm of blast pressure over
+  /// <see cref="BlastPressureThreshold"/>. Harder blast burns the carbon faster and hotter, which is
+  /// what buys back the heat a cold scrap charge costs - so a plant that wants to remelt a lot of
+  /// scrap builds pressure for it rather than being handed a fixed allowance.
+  /// </summary>
+  public float BessemerPressureTempGain { get; set; } = 100f;
+
+  /// <summary>
+  /// Bath temperature (°C) lost per unit of cold scrap charged. There is deliberately no scrap cap:
+  /// scrap is pure cold mass on the heat balance, and the point where it drags the bath under
+  /// <see cref="BessemerRefineTemperature"/> is the limit. At the minimum blast pressure that lands
+  /// near a fifth of a full vessel; at 4 atm, nearer a quarter.
+  /// </summary>
+  public float BessemerColdScrapLossCoefficient { get; set; } = 0.7f;
+
+  /// <summary>Share of charged scrap that ends up as steel; the rest burns off with the carbon.</summary>
+  [ExConfigRange(0, 1)]
+  public float BessemerScrapSteelYield { get; set; } = 0.97f;
+
+  /// <summary>
+  /// Comma-separated item codes the converter accepts as cold scrap. The converter is the remelter -
+  /// the blast furnace smelts ore and takes no scrap at all, because a route that turns iron back
+  /// into furnace feed is a duplication loop. Each item is worth
+  /// <see cref="MoltenUnitsPerBit"/> units.
+  /// </summary>
+  public string BessemerScrapCodes { get; set; } =
+    "game:metalbit-iron,game:metalbit-steel";
+
+  /// <summary>Minimum conversion-rate multiplier, at or below <see cref="BlastPressureThreshold"/>.</summary>
+  public float BessemerSpeedMin { get; set; } = 0.5f;
+
+  /// <summary>Maximum conversion-rate multiplier, however hard the vessel is blown.</summary>
+  public float BessemerSpeedMax { get; set; } = 2.0f;
+
+  /// <summary>Blast pressure (atm) over <see cref="BlastPressureThreshold"/> that buys the full
+  /// conversion rate. At the default the gate pressure gives the minimum and 4 atm the maximum.</summary>
+  public float BessemerPressureReference { get; set; } = 1.5f;
 
   /// <summary>Minimum geared mechanical speed for the converter to count as powered.</summary>
   public float BessemerPowerSpeedThreshold { get; set; } = 0.1f;
+
+  /// <summary>Shaft load the converter's transmission puts on its axle network - the whole of the
+  /// vessel's drive cost. Keep it under what the intended drive can hold at
+  /// <see cref="BessemerPowerSpeedThreshold"/>, or the vessel will not turn.</summary>
+  public float BessemerTransmissionResistance { get; set; } = 0.25f;
 
   /// <summary>Multiplier on the converter charge's cooldown speed (vs <see cref="MoltenCooldownSpeed"/>).
   /// Below 1 the bath holds its heat longer, giving the player more time to pour before it solidifies
@@ -343,8 +547,11 @@ public class SmexConfig : IExVersionedConfig {
   #endregion
 
   #region Smoke stack
-  /// <summary>Exhaust gas (L/s) the smoke stack vents from the network.</summary>
-  public float SmokestackGasIntakeVolume { get; set; } = 48.0f;
+  /// <summary>
+  /// Exhaust gas (L/s) the smoke stack vents from the network. Sized to clear a furnace driven flat
+  /// out: a stack that cannot keep up chokes the flue, which stalls the furnace it is meant to serve.
+  /// </summary>
+  public float SmokestackGasIntakeVolume { get; set; } = 96.0f;
   #endregion
 
   #region Tool molds

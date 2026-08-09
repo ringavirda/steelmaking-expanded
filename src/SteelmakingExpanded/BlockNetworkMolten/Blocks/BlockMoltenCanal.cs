@@ -201,14 +201,7 @@ public partial class BlockMoltenCanal : BlockNetworkNode {
     // A solidified canal is chipped clear with a chisel in hand + hammer in the off-hand (shared
     // chisel-out ritual). A plain click on a still-clogged cell falls through to base.
     if (be.Solidified) {
-      var outcome = MoltenChisel.TryChisel(
-        world,
-        byPlayer,
-        blockSel.Position,
-        be,
-        ExSounds.StoneCrush
-      );
-      return outcome != ChiselOutcome.NotChiseling
+      return TryChiselClear(world, byPlayer, blockSel, be)
         || base.OnBlockInteractStart(world, byPlayer, blockSel);
     }
 
@@ -293,6 +286,27 @@ public partial class BlockMoltenCanal : BlockNetworkNode {
     && code.Path == FireClayCode.Path;
 
   private static ItemStack[]? _fireClayStacks;
+
+  /// <summary>
+  /// Runs the chisel-out on a clogged cell, returning true when the click was a chisel-out (chipped
+  /// or refused as too hot). Endpoints call this directly instead of chaining to
+  /// <c>base.OnBlockInteractStart</c>: the block and block-entity hierarchies are not parallel - the
+  /// pedestal's block derives from the tap's, its block entity from the canal's - so a chained call
+  /// lands on a type check it cannot satisfy.
+  /// </summary>
+  protected static bool TryChiselClear(
+    IWorldAccessor world,
+    IPlayer byPlayer,
+    BlockSelection blockSel,
+    BlockEntityMoltenCanal be
+  ) =>
+    MoltenChisel.TryChisel(
+      world,
+      byPlayer,
+      blockSel.Position,
+      be,
+      ExSounds.StoneCrush
+    ) != ChiselOutcome.NotChiseling;
 
   /// <summary>
   /// The "chip out the solidified cell" interaction hint, or <c>null</c> when the cell at

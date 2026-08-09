@@ -149,7 +149,7 @@ public class BlockEntityMpBlower : BlockEntity, IRenderer {
     float before = net.State?.Volume ?? 0f;
     net.TryProduceGas(
       output * dt,
-      AmbientTemperature,
+      ExClimate.AmbientAt(this),
       "Air",
       Api.World.BlockAccessor,
       maxOutputPressure: SmexValues.MpBlowerMaxPressure
@@ -226,10 +226,6 @@ public class BlockEntityMpBlower : BlockEntity, IRenderer {
       reverse: true
     );
   }
-
-  /// <summary>Ambient air temperature at the bellows, falling back to 20 °C with no climate data.</summary>
-  private float AmbientTemperature =>
-    Api?.World?.BlockAccessor?.GetClimateAt(Pos)?.Temperature ?? 20f;
 
   /// <summary>
   /// Air (L/s) the bellows deliver at axle <paramref name="speed"/> - straight proportion, because

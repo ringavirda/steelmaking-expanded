@@ -198,9 +198,7 @@ public class MpFluidPumpTests {
       PpexValues.CornishEnginePowerLow
     );
     float weakestEnginePump =
-      PpexValues.PumpWaterPerSecond
-      * BlockEntityEngineFluidPump.ThroughputScale
-      * weakestEnginePower;
+      PpexValues.PumpWaterPerSecond * weakestEnginePower;
 
     float wheelSpeed = Math.Max(
       0f,

@@ -34,7 +34,9 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure {
   private float _factorDefault;
   private float _coolingSpeedExhaust;
   private float _coolingSpeedAir;
+  private float _idleCoolingSpeed;
   private float _maxTemperature;
+  private float _ambientTemperature;
   private float _intakeVolume;
 
   public override void Initialize(ICoreAPI api) {
@@ -57,7 +59,9 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure {
     _factorDefault = SmexValues.CowperHeatingSpeedDefault;
     _coolingSpeedExhaust = SmexValues.CowperCoolingSpeedExhaust;
     _coolingSpeedAir = SmexValues.CowperCoolingSpeedAir;
+    _idleCoolingSpeed = SmexValues.CowperIdleCoolingSpeed;
     _maxTemperature = SmexValues.CowperMaxTemperature;
+    _ambientTemperature = ExClimate.AmbientAt(this);
     _intakeVolume = SmexValues.CowperIntakeVolume;
   }
 
@@ -96,10 +100,10 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure {
     // through the adjacent cell with its connectors pointing elsewhere is not
     // plumbed in (same reciprocity rule as the converter intake and the engines).
     var consumedExhaustVol = 0f;
-    float inputExhaustTemp = 20f;
+    float inputExhaustTemp = _ambientTemperature;
     bool isReceivingExhaust = false;
     if (ConnectedNetwork<PipeNetwork>(_connectorFace) is { } exhaustNet) {
-      inputExhaustTemp = exhaustNet.State?.Temperature ?? 20f;
+      inputExhaustTemp = exhaustNet.State?.Temperature ?? _ambientTemperature;
       consumedExhaustVol = exhaustNet.TryConsumeGas(
         _intakeVolume,
         Api.World.BlockAccessor
@@ -129,7 +133,7 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure {
     }
 
     float airVol = 0f;
-    float airTemp = 20f;
+    float airTemp = _ambientTemperature;
     string inGasType = "Air";
 
     BlockPos passthroughPos = GetGlobalPos(0, 1, 2);
@@ -190,7 +194,10 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure {
       )
         outlet2.TryProduce(
           consumedExhaustVol,
-          System.Math.Max(20f, inputExhaustTemp * 0.4f),
+          System.Math.Max(
+            _ambientTemperature,
+            inputExhaustTemp * SmexValues.CowperSpentExhaustTempFraction
+          ),
           "Exhaust"
         );
     } else if (airVol > 0) {
@@ -198,7 +205,13 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure {
       float tempDiff = _internalTemperature - airTemp;
       if (tempDiff > 0) {
         airTemp = _internalTemperature;
-        _internalTemperature -= tempDiff * _coolingSpeedAir * dt;
+        // Scale the loss by how much air is actually passing through. Delivering the stove's full
+        // temperature to a trickle used to cost it exactly what a torrent did, so a furnace on
+        // baseline and one in overdrive drained a stove at the same rate. A heavy blast now empties
+        // it in proportion, which is what makes alternating two stoves a real operating decision.
+        float flowShare =
+          _intakeVolume > 0f ? airVol / _intakeVolume : 1f;
+        _internalTemperature -= tempDiff * _coolingSpeedAir * flowShare * dt;
       }
 
       BlockPos hotAirOutletPos = GetGlobalPos(0, 1, 0);
@@ -217,6 +230,16 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure {
           passthrough.TryConsume(_intakeVolume);
       }
     }
+
+    // Ambient loss, applied whatever the stove is doing. The three branches above cover mixing,
+    // charging and delivering and have no else, so a stove with neither gas flowing never touched
+    // its temperature at all and held its charge across days and reloads - a regenerator that could
+    // be filled once and banked. Brickwork this size still holds heat for a long while; it just
+    // cannot hold it forever.
+    _internalTemperature -=
+      (_internalTemperature - _ambientTemperature) * _idleCoolingSpeed * dt;
+    if (_internalTemperature < _ambientTemperature)
+      _internalTemperature = _ambientTemperature;
 
     if (_lastStatus != newStatus) {
       _lastStatus = newStatus;

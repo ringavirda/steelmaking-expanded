@@ -27,6 +27,7 @@ internal sealed class BlastFurnaceRig {
   private readonly BlockPos _pos = new(0, 16, 0);
   private readonly PipeNetwork[] _tuyeres;
   private float _blastTemp = -1f;
+  private float _blastVolume = 150f;
 
   public BlastFurnaceRig(int blastMix = 400) {
     World = new TestWorld();
@@ -123,9 +124,18 @@ internal sealed class BlastFurnaceRig {
     return this;
   }
 
-  /// <summary>Turns the air blowers on: hot blast (≥800 °C, pressurised) at the tuyeres each tick.</summary>
-  public BlastFurnaceRig FeedBlast(float temp = 950f) {
+  /// <summary>
+  /// Turns the air blowers on: pressurised blast at <paramref name="temp"/> delivered to each tuyere
+  /// every tick. <paramref name="litresPerTuyere"/> is what the blowers can actually make - leave it
+  /// at the default for an unlimited supply, or set it below the furnace's demand to model a plant
+  /// whose blowers cannot keep up.
+  /// </summary>
+  public BlastFurnaceRig FeedBlast(
+    float temp = 950f,
+    float litresPerTuyere = 150f
+  ) {
     _blastTemp = temp;
+    _blastVolume = litresPerTuyere;
     return this;
   }
 
@@ -176,7 +186,7 @@ internal sealed class BlastFurnaceRig {
       if (_blastTemp >= 0f)
         foreach (var net in _tuyeres) {
           net.TryProduceGas(
-            150f,
+            _blastVolume,
             _blastTemp,
             "Air",
             World.Accessor,
@@ -201,8 +211,8 @@ internal sealed class BlastFurnaceRig {
     return this;
   }
 
-  public BlastFurnaceRig SetSecondsAboveMelting(float s) {
-    ReflectionHelpers.SetField(Furnace, "_secondsAboveMelting", s);
+  public BlastFurnaceRig SetBelowMeltingSeconds(float s) {
+    ReflectionHelpers.SetField(Furnace, "_belowMeltingSeconds", s);
     return this;
   }
 
@@ -232,6 +242,22 @@ internal sealed class BlastFurnaceRig {
   public float MoltenIron =>
     (float)ReflectionHelpers.GetField(Furnace, "_moltenIron")!;
   public int CanalIron => Canal?.CellAmount ?? 0;
+
+  /// <summary>The hearth ceiling the last tick computed from the blast it was fed.</summary>
+  public float TargetTemp =>
+    (float)ReflectionHelpers.GetField(Furnace, "_targetTemp")!;
+
+  /// <summary>The melt multiplier the last tick ran at - heat margin and air supply combined.</summary>
+  public float MeltSpeed =>
+    (float)ReflectionHelpers.GetField(Furnace, "_meltSpeed")!;
+
+  /// <summary>Air the tuyeres actually took last tick.</summary>
+  public float AirDrawn =>
+    (float)ReflectionHelpers.GetField(Furnace, "_airDrawn")!;
+
+  /// <summary>Air the melt asked for last tick.</summary>
+  public float AirRequested =>
+    (float)ReflectionHelpers.GetField(Furnace, "_airRequested")!;
 
   #endregion
 }

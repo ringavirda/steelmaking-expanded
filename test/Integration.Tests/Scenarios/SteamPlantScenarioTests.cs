@@ -125,17 +125,10 @@ public class SteamPlantScenarioTests {
 
     plant.RunWithSteam(7f, 1); // one tick, so the injected volume is one second's output
 
-    // The exact rate, which no test asserted before - so a change to either the configured rate or
-    // the playtest calibration used to pass unnoticed.
+    // The exact rate, which no test asserted before - so a change to the configured rate used to
+    // pass unnoticed.
     Assert.Equal(
-      SmexValues.AirBlowerOutputPerSecond
-        * SteelmakingExpanded
-          .BlockStructures
-          .Engine
-          .BlockEntities
-          .BlockEntityEngineAirBlower
-          .ThroughputScale
-        * plant.Engine.AvailablePower,
+      SmexValues.AirBlowerOutputPerSecond * plant.Engine.AvailablePower,
       plant.BlastVolume,
       2
     );

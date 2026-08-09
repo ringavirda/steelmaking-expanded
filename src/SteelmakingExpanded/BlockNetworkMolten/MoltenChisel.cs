@@ -46,16 +46,22 @@ public static class MoltenChisel {
   /// solid drop code via <see cref="MoltenNetwork.SolidDropLocation"/>. When the solid item doesn't
   /// resolve it falls back to slag (if <paramref name="slagFallback"/>) or returns <c>null</c>. Shared by
   /// every chisel/break drop path so the bit ratio and temperature handling live in one place.
+  /// <para>
+  /// <paramref name="unitsPerBit"/> defaults to <see cref="SmexValues.MoltenUnitsPerBit"/>, which
+  /// also prices scrap going back into the converter. A rate that differs from the remelt's opens a
+  /// duplication loop, so callers should leave it alone.
+  /// </para>
   /// </summary>
   public static ItemStack? BuildRecovery(
     IWorldAccessor world,
     AssetLocation metalCode,
     float temperature,
     int units,
-    int unitsPerBit = 5,
+    int? unitsPerBit = null,
     bool slagFallback = false
   ) {
-    int count = Math.Max(1, units / unitsPerBit);
+    int perBit = Math.Max(1, unitsPerBit ?? SmexValues.MoltenUnitsPerBit);
+    int count = Math.Max(1, units / perBit);
     AssetLocation loc = MoltenNetwork.SolidDropLocation(metalCode);
     Item? item = world.GetItem(loc);
     if (item == null) {

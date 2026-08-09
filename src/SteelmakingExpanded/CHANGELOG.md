@@ -5,6 +5,61 @@ All notable changes to this mod are documented here. The format is based on
 [Semantic Versioning](https://semver.org/). For changes before this file existed,
 see the git history.
 
+## [0.9.7] - 2026-08-09
+
+The furnace rebalance. Three long-standing complaints and one exploit, plus the machine retune they
+pull in.
+
+### Changed
+
+- **Melting is a rate now, not a gate.** The furnace no longer sits at a ceiling waiting for a
+  condition you cannot see. How fast it melts is set by two things at once - how far the hearth is
+  over iron's melting point, and how much of the blast it asked for actually arrived - and both are
+  on the block info, along with the multiplier it is running at.
+- **Cold blast melts iron.** A furnace blown with plain air reaches 1543 C, comfortably over the
+  1482 C melting point. Regenerator stoves are an improvement - a higher ceiling, faster heating,
+  faster melting, up to about 3.3x - and no longer a requirement. A part-charged stove is worth a
+  proportional share of that, rather than nothing until it crosses a threshold.
+- **The blast furnace out-yields a bloomery.** 102 units of iron per melt cycle against 60, roughly
+  1.7x what a bloomery returns for the same ore.
+- **Blast mix is never destroyed.** It no longer turns to slag when a furnace goes out. A lit pile
+  with no furnace drawing air through it simply burns down and goes cold, still blast mix, ready to
+  be lit again.
+- **No more 20-minute campaign clock.** A fed furnace runs until you stop it. A full reservoir and a
+  blocked flue now stall production instead of ending the run - tap the vessel or reopen the exhaust
+  and it picks straight back up.
+- **The converter remelts scrap.** Right-click it holding iron or steel bits. There is no fixed
+  limit: cold scrap drags the bath's temperature down, and the blow stalls if it falls under the
+  refining floor - so more blast pressure buys you more scrap. Pressure also decides how fast the
+  blow runs.
+- **The steam air blower is worth building.** It now feeds several furnaces, or one driven hard,
+  where the mechanical blower covers exactly one at baseline. The engine-driven water pump moves
+  three times what a mechanical pump does on the same engine.
+- **Canals reach.** A run used to deliver nothing from about eight blocks out. Canal capacity and
+  throughput are both doubled, and the flow rule no longer costs a chunk of head at every block.
+- Cowper stoves cool when idle and drain faster under a heavy blast, so alternating two of them is a
+  real decision rather than a formality.
+
+### Removed
+
+- **Iron bits no longer crush into crushed iron.** That loop was break-even at the old furnace yield
+  and would have printed iron at the new one. Scrap goes to the converter instead, which is where
+  remelting belongs.
+
+### Fixed
+
+- A clogged mold pedestal could not be chiselled clear. The interaction hint advertised it and the
+  click did nothing.
+- A barrel parked under a canal tap cooled roughly twelve times faster than a barrel anywhere else.
+- Chiselling a barrel returned half the metal that chiselling anything else did.
+- A cowper stove held its charge forever while idle.
+- A furnace with less than a full cycle's charge in the hearth produced a whole cycle's iron.
+
+### Configuration
+
+Every process constant above is a config key, live-editable with `/exmod config smex`. Existing
+configs pick up the rebalanced defaults automatically; anything you tuned outside that set is kept.
+
 ## [0.9.6] - 2026-08-09
 
 Covers the 0.9.3 through 0.9.5 development bumps, which were never published separately.

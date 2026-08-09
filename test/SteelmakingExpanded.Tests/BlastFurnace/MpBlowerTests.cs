@@ -175,7 +175,21 @@ public class MpBlowerTests {
       load: BlockEntityMpBlower.ShaftLoadAt(SmexValues.BfBlastPressureThreshold)
     );
     float delivered = BlockEntityMpBlower.OutputAt(speed);
-    float draw = FurnaceTuyeres * SmexValues.TuyereIntakeVolume;
+
+    // The furnace's draw scales with the melt rate its heat margin supports, so the figure to cover
+    // is the COLD-BLAST baseline: a mechanically blown plant has no regenerators, so its hearth sits
+    // at BfNaturalMaxTemp and melts at the rate that margin buys. Anything hotter than that is a
+    // steam blower's job, which is the progression the two machines exist to express.
+    float coldBlastMargin =
+      SmexValues.BfNaturalMaxTemp - SmexValues.BfIronMeltingPoint;
+    float baselineMeltSpeed = Math.Clamp(
+      SmexValues.BfMeltSpeedBase
+        + coldBlastMargin / 100f * SmexValues.BfMeltGainPer100C,
+      SmexValues.BfMeltSpeedMin,
+      SmexValues.BfMeltSpeedMax
+    );
+    float draw =
+      FurnaceTuyeres * SmexValues.TuyereIntakeVolume * baselineMeltSpeed;
 
     Assert.True(
       speed > 0f,
@@ -184,7 +198,29 @@ public class MpBlowerTests {
     Assert.True(
       draw <= delivered,
       $"a waterwheel settles the shaft at {speed} and delivers {delivered} L/s, "
-        + $"but two tuyeres draw {draw} L/s"
+        + $"but two tuyeres draw {draw} L/s at the cold-blast baseline"
+    );
+  }
+
+  [Fact]
+  public void A_waterwheel_cannot_hold_a_furnace_in_overdrive() {
+    // The other half of the same ruling: one mechanical blower covers one furnace at baseline and
+    // no more. Driving a hearth to its boosted ceiling takes air a waterwheel cannot make, so
+    // overdrive is what a steam blower is for.
+    float speed = WaterwheelSpeed(
+      flowRate: 1f,
+      load: BlockEntityMpBlower.ShaftLoadAt(SmexValues.BfBlastPressureThreshold)
+    );
+    float delivered = BlockEntityMpBlower.OutputAt(speed);
+    float overdriveDraw =
+      FurnaceTuyeres
+      * SmexValues.TuyereIntakeVolume
+      * SmexValues.BfMeltSpeedMax;
+
+    Assert.True(
+      delivered < overdriveDraw,
+      $"a waterwheel delivers {delivered} L/s, which should fall short of the "
+        + $"{overdriveDraw} L/s an overdriven furnace draws"
     );
   }
 
@@ -345,7 +381,8 @@ public class MpBlowerTests {
     // which is why the shaft ends the clip one frame short of a whole turn rather than back at its
     // starting value. LoopingAnimationTests holds that half of the rule for every shipped shape.
     JToken cycle = Assert.Single(
-      Shape()["animations"]!.Where(a => (string?)a["name"] == "cycle")
+      Shape()["animations"]!,
+      a => (string?)a["name"] == "cycle"
     );
     int last = (int)cycle["quantityframes"]! - 1;
 

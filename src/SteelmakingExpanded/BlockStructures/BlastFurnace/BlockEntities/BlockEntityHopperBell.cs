@@ -242,7 +242,7 @@ public class BlockEntityHopperBell : BlockEntity {
           return true;
 
         if (slot.Itemstack.Collectible.Code.Path.Equals("blastmix")) {
-          if (slot.StackSize + dropAmount <= 16)
+          if (slot.StackSize + dropAmount <= pileBe.MaxStackSize)
             return true;
         }
       }

@@ -88,10 +88,12 @@ public class MoltenFlowTests {
   [Fact]
   public void PushMetal_clamps_to_the_cell_capacity() {
     var (world, a, _) = Run();
-    // Capacity defaults to 50 units; a 200-unit push tops out there.
-    int accepted = a.PushMetal(200, MetalStack(world), world.World);
-    Assert.Equal(50, accepted);
-    Assert.Equal(50, a.CellAmount);
+    int capacity = SmexValues.CanalDefaultUnitCapacity;
+
+    int accepted = a.PushMetal(capacity * 4, MetalStack(world), world.World);
+
+    Assert.Equal(capacity, accepted);
+    Assert.Equal(capacity, a.CellAmount);
   }
 
   [Fact]

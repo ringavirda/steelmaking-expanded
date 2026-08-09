@@ -5,6 +5,16 @@ All notable changes to this mod are documented here. The format is based on
 [Semantic Versioning](https://semver.org/). For changes before this file existed,
 see the git history.
 
+## [0.6.7] - 2026-08-09
+
+### Changed
+
+- **The engine fluid pump's configured rate is the rate you get.** It was quietly multiplied by three
+  in code, so the number in the config meant nothing on its own. That factor is folded into the
+  default and the pump now moves exactly what it says: 30 L/s on a Watt, 20/40/80 on a Cornish.
+  Sized at three mechanical pumps to one engine pump on the same engine.
+- The hand pump's delivery head is a config key rather than a fixed value.
+
 ## [0.6.6] - 2026-08-09
 
 Covers the 0.6.4 and 0.6.5 development bumps, which were never published separately.
