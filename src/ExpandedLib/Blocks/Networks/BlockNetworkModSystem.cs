@@ -12,8 +12,7 @@ namespace ExpandedLib.Blocks.Networks;
 /// dispatch. All type-specific state and logic live in the concrete <see cref="BlockNetwork"/>
 /// subclasses.
 /// </summary>
-public class BlockNetworkModSystem : ModSystem
-{
+public class BlockNetworkModSystem : ModSystem {
   #region Graph storage
   private readonly Dictionary<Guid, BlockNetwork> _networks = [];
   private readonly Dictionary<BlockPos, Guid> _posToNetwork = [];
@@ -35,8 +34,7 @@ public class BlockNetworkModSystem : ModSystem
   /// </summary>
   public IServerWorldAccessor? ServerWorld { get; private set; }
 
-  public override void StartServerSide(ICoreServerAPI api)
-  {
+  public override void StartServerSide(ICoreServerAPI api) {
     ServerWorld = api.World;
     api.Event.RegisterGameTickListener(
       dt => OnServerTick(api.World.BlockAccessor, dt),
@@ -67,8 +65,7 @@ public class BlockNetworkModSystem : ModSystem
     IBlockAccessor world,
     BlockPos connectorPos,
     BlockFacing connectorFace
-  )
-  {
+  ) {
     BlockPos neighbourPos = connectorPos.AddCopy(connectorFace);
     return
       world.GetBlock(neighbourPos) is INetworkConnector neighbour
@@ -77,8 +74,7 @@ public class BlockNetworkModSystem : ModSystem
       : null;
   }
 
-  private BlockNetwork CreateNetwork(string networkType)
-  {
+  private BlockNetwork CreateNetwork(string networkType) {
     if (_factories.TryGetValue(networkType, out var factory))
       return factory();
     throw new InvalidOperationException(
@@ -102,8 +98,7 @@ public class BlockNetworkModSystem : ModSystem
     BlockPos pos,
     string networkType,
     bool broadcast = true
-  )
-  {
+  ) {
     var connectedNeighbors = GetConnectedNeighbors(world, pos, networkType)
       .ToList();
 
@@ -113,30 +108,25 @@ public class BlockNetworkModSystem : ModSystem
       .Distinct()
       .ToList();
 
-    if (adjacentNetworks.Count == 0)
-    {
+    if (adjacentNetworks.Count == 0) {
       // Isolated new node - standalone network, no broadcast needed.
       var net = CreateNetwork(networkType);
       net.Nodes.Add(pos);
       _networks[net.Id] = net;
       _posToNetwork[pos] = net.Id;
       net.OnTopologyChanged();
-    }
-    else
-    {
+    } else {
       // Join the first adjacent network and merge any others into it.
       var primaryNet = adjacentNetworks[0];
       primaryNet.Nodes.Add(pos);
       _posToNetwork[pos] = primaryNet.Id;
 
-      for (int i = 1; i < adjacentNetworks.Count; i++)
-      {
+      for (int i = 1; i < adjacentNetworks.Count; i++) {
         var netToMerge = adjacentNetworks[i];
         if (!primaryNet.CanMerge(netToMerge, world))
           continue;
 
-        foreach (var nPos in netToMerge.Nodes)
-        {
+        foreach (var nPos in netToMerge.Nodes) {
           primaryNet.Nodes.Add(nPos);
           _posToNetwork[nPos] = primaryNet.Id;
         }
@@ -163,8 +153,7 @@ public class BlockNetworkModSystem : ModSystem
     IBlockAccessor world,
     BlockPos pos,
     bool broadcast = true
-  )
-  {
+  ) {
     if (!_posToNetwork.TryGetValue(pos, out Guid netId))
       return;
     if (!_networks.TryGetValue(netId, out BlockNetwork? network))
@@ -173,8 +162,7 @@ public class BlockNetworkModSystem : ModSystem
     network.Nodes.Remove(pos);
     _posToNetwork.Remove(pos);
 
-    if (network.Nodes.Count == 0)
-    {
+    if (network.Nodes.Count == 0) {
       _networks.Remove(netId);
       return;
     }
@@ -185,26 +173,22 @@ public class BlockNetworkModSystem : ModSystem
     var queue = new Queue<BlockPos>();
     queue.Enqueue(startNode);
 
-    while (queue.Count > 0)
-    {
+    while (queue.Count > 0) {
       var curr = queue.Dequeue();
       foreach (
         var adj in GetConnectedNeighbors(world, curr, network.NetworkType)
-      )
-      {
+      ) {
         if (network.Nodes.Contains(adj) && visited.Add(adj))
           queue.Enqueue(adj);
       }
     }
 
-    if (visited.Count < network.Nodes.Count)
-    {
+    if (visited.Count < network.Nodes.Count) {
       // Network fractured - rebuild each connected component as its own network.
       var unassigned = new HashSet<BlockPos>(network.Nodes);
       _networks.Remove(netId);
 
-      while (unassigned.Count > 0)
-      {
+      while (unassigned.Count > 0) {
         var newStart = unassigned.First();
         var newNet = CreateNetwork(network.NetworkType);
         _networks[newNet.Id] = newNet;
@@ -215,15 +199,12 @@ public class BlockNetworkModSystem : ModSystem
         newNet.Nodes.Add(newStart);
         _posToNetwork[newStart] = newNet.Id;
 
-        while (bfsQueue.Count > 0)
-        {
+        while (bfsQueue.Count > 0) {
           var curr = bfsQueue.Dequeue();
           foreach (
             var adj in GetConnectedNeighbors(world, curr, network.NetworkType)
-          )
-          {
-            if (unassigned.Contains(adj))
-            {
+          ) {
+            if (unassigned.Contains(adj)) {
               unassigned.Remove(adj);
               newNet.Nodes.Add(adj);
               _posToNetwork[adj] = newNet.Id;
@@ -239,9 +220,7 @@ public class BlockNetworkModSystem : ModSystem
         if (broadcast)
           newNet.BroadcastUpdate(world);
       }
-    }
-    else
-    {
+    } else {
       // No fracture - network is still fully connected.
       network.OnTopologyChanged();
       if (broadcast)
@@ -260,8 +239,7 @@ public class BlockNetworkModSystem : ModSystem
     BlockPos rootPos,
     string networkType,
     bool broadcast = true
-  )
-  {
+  ) {
     if (world.GetBlock(rootPos) is not BlockNetworkNode)
       return null;
 
@@ -271,11 +249,9 @@ public class BlockNetworkModSystem : ModSystem
     reachable.Add(rootPos);
     bfsQueue.Enqueue(rootPos);
 
-    while (bfsQueue.Count > 0)
-    {
+    while (bfsQueue.Count > 0) {
       var curr = bfsQueue.Dequeue();
-      foreach (var neighbor in GetConnectedNeighbors(world, curr, networkType))
-      {
+      foreach (var neighbor in GetConnectedNeighbors(world, curr, networkType)) {
         if (reachable.Add(neighbor))
           bfsQueue.Enqueue(neighbor);
       }
@@ -283,8 +259,7 @@ public class BlockNetworkModSystem : ModSystem
 
     // Collect old network IDs that overlap with the reachable set.
     var oldNetIds = new HashSet<Guid>();
-    foreach (var pos in reachable)
-    {
+    foreach (var pos in reachable) {
       if (_posToNetwork.TryGetValue(pos, out Guid id))
         oldNetIds.Add(id);
     }
@@ -297,10 +272,8 @@ public class BlockNetworkModSystem : ModSystem
         : null;
 
     // Tear down all overlapping old networks.
-    foreach (var id in oldNetIds)
-    {
-      if (_networks.TryGetValue(id, out var oldNet))
-      {
+    foreach (var id in oldNetIds) {
+      if (_networks.TryGetValue(id, out var oldNet)) {
         foreach (var p in oldNet.Nodes)
           _posToNetwork.Remove(p);
         _networks.Remove(id);
@@ -314,8 +287,7 @@ public class BlockNetworkModSystem : ModSystem
     if (rootOldNet != null)
       newNet.InheritStateFrom(rootOldNet);
 
-    foreach (var pos in reachable)
-    {
+    foreach (var pos in reachable) {
       newNet.Nodes.Add(pos);
       _posToNetwork[pos] = newNet.Id;
     }
@@ -335,8 +307,7 @@ public class BlockNetworkModSystem : ModSystem
   private const float MaxCatchupTickSeconds = 2f;
 
   /// <summary>Called once per second; dispatches <see cref="BlockNetwork.OnTick"/> for every live network.</summary>
-  private void OnServerTick(IBlockAccessor blockAccessor, float dt)
-  {
+  private void OnServerTick(IBlockAccessor blockAccessor, float dt) {
     // This listener is server-global: unlike a block entity's, it is never unregistered on chunk
     // unload, so a stall or a rejoin delivers one huge dt straight into the networks' over-pressure
     // accumulators, which would fail a run in a single step. Clamp before dispatch.
@@ -356,11 +327,9 @@ public class BlockNetworkModSystem : ModSystem
     IBlockAccessor world,
     BlockPos pos,
     BlockNetworkNode node
-  )
-  {
+  ) {
     var open = new List<BlockFacing>();
-    foreach (var face in BlockFacing.ALLFACES)
-    {
+    foreach (var face in BlockFacing.ALLFACES) {
       if (!node.HasConnectorAt(face))
         continue;
 
@@ -384,8 +353,7 @@ public class BlockNetworkModSystem : ModSystem
     IBlockAccessor world,
     BlockPos pos,
     string networkType
-  )
-  {
+  ) {
     if (world.GetBlock(pos) is not BlockNetworkNode node)
       yield break;
 
@@ -398,10 +366,8 @@ public class BlockNetworkModSystem : ModSystem
     )
       yield break;
 
-    foreach (var face in BlockFacing.ALLFACES)
-    {
-      if (node.HasConnectorAt(face))
-      {
+    foreach (var face in BlockFacing.ALLFACES) {
+      if (node.HasConnectorAt(face)) {
         BlockPos neighborPos = pos.AddCopy(face);
         if (
           IsValidNetworkNeighbour(
@@ -423,8 +389,7 @@ public class BlockNetworkModSystem : ModSystem
     Block neighbourBlock,
     BlockPos neighbourPos,
     BlockFacing facing
-  )
-  {
+  ) {
     if (
       neighbourBlock is not INetworkConnector neighbourConn
       || neighbourConn.NetworkTypeAt(world, neighbourPos)
@@ -435,8 +400,7 @@ public class BlockNetworkModSystem : ModSystem
 
     // Full network nodes carry extra gating (endpoints, severed connections); fixed structure
     // ports (INetworkConnector that isn't a node) have none.
-    if (neighbourBlock is BlockNetworkNode neighbourNode)
-    {
+    if (neighbourBlock is BlockNetworkNode neighbourNode) {
       if (neighbourNode.IsNetworkEndPoint)
         return false;
 
@@ -452,8 +416,7 @@ public class BlockNetworkModSystem : ModSystem
 
   /// <summary>Maps a single-char side code ("n","s","e","w","u","d") to its <see cref="BlockFacing"/>.</summary>
   public static BlockFacing? SideToFace(string? side) =>
-    side switch
-    {
+    side switch {
       "n" => BlockFacing.NORTH,
       "s" => BlockFacing.SOUTH,
       "e" => BlockFacing.EAST,
@@ -481,8 +444,7 @@ public class BlockNetworkModSystem : ModSystem
     neighbour is INetworkConnector connector
     && connector.NetworkTypeAt(world, pos) == id;
 
-  public override void Dispose()
-  {
+  public override void Dispose() {
     _networks.Clear();
     _posToNetwork.Clear();
     base.Dispose();

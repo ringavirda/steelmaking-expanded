@@ -8,8 +8,7 @@ namespace PipesAndPowerExpanded.BlockNetworkPipe;
 /// network-compatible blocks without inheriting from <c>BlockEntityPipe</c> - implement
 /// this and delegate to the <c>PipeNetwork</c> at the block's position.
 /// </summary>
-public interface IPipeNode
-{
+public interface IPipeNode {
   /// <summary>Injects <paramref name="volume"/> litres of <paramref name="gasType"/> at <paramref name="temperature"/> °C into the network. Returns <c>true</c> if any was accepted.</summary>
   bool TryProduce(
     float volume,

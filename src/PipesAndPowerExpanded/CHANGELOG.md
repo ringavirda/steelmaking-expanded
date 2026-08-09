@@ -5,6 +5,43 @@ All notable changes to this mod are documented here. The format is based on
 [Semantic Versioning](https://semver.org/). For changes before this file existed,
 see the git history.
 
+## [0.6.6] - 2026-08-09
+
+Covers the 0.6.4 and 0.6.5 development bumps, which were never published separately.
+
+### Added
+
+- **Mechanical Fluid Pump** - a walking-beam pump driven from the mechanical power
+  network instead of by steam, so it can fill a boiler whose fire is out. It sits between
+  the hand crank and the engine pump: 8 L/s at full axle speed against a fixed 1.5 atm
+  head, scaling down to nothing below half speed. Right-click constructed - the grid
+  recipe gives a wooden frame, and the axle, piston, pipework and reservoir follow. The
+  axle couples on the east face; water is drawn from beneath the far cell and delivered
+  from its top.
+
+### Changed
+
+- **The mechanical-power overstress ceiling scales with the shaft.** It judged a shared
+  network's whole resistance against a single engine's rating, so adding engines could not
+  raise it and a bank stalled well below what it should carry. The load an engine holds
+  per unit of power was raised from 0.875 to 1.37 to match, which puts three Cornish
+  engines on one shaft at roughly 500 W where they previously reached about 320 W.
+- **The engine pump's `x3` throughput factor is now a named constant.** It is playtest
+  calibration rather than a stray coefficient: the quoted rates are what the pump actually
+  delivers once the intake draw and the output main's free capacity bite. Both the pump's and
+  the blower's rates are now pinned by tests.
+
+### Fixed
+
+- **Engine stroke sounds no longer fire on a backward step.** The cycle predicate read a
+  decreasing frame as "the animation wrapped", but a backward-running cycle arrives the
+  same way - so a single engine emitted roughly twenty plays a second per keyframe instead
+  of two a revolution. A handful of machines then exhausted the game's concurrent-sound
+  cap, at which point all audio starts being dropped, the game's own included.
+- **Pipe bends no longer pop out of the world** when a neighbour changes beside a
+  connector that faces a solid wall.
+- **A blocked or over-pressured line no longer bursts from one long server tick.**
+
 ## [0.6.3] - 2026-06-21
 
 ### Added

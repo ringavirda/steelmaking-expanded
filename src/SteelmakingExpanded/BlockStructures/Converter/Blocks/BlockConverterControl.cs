@@ -13,14 +13,12 @@ namespace SteelmakingExpanded.BlockStructures.Converter.Blocks;
 /// state once complete.
 /// </summary>
 [BlockRegister]
-public partial class BlockConverterControl : Block
-{
+public partial class BlockConverterControl : Block {
   public override bool OnBlockInteractStart(
     IWorldAccessor world,
     IPlayer byPlayer,
     BlockSelection blockSel
-  )
-  {
+  ) {
     if (
       world.BlockAccessor.GetBlockEntity(blockSel.Position)
       is not BlockEntityConverterControl be
@@ -36,16 +34,12 @@ public partial class BlockConverterControl : Block
       return base.OnBlockInteractStart(world, byPlayer, blockSel);
 
     // Before the converter exists: RMB tries to spawn it from carried materials.
-    if (!be.IsConverterPresent())
-    {
-      if (be.TrySpawnConverter(byPlayer, out string spawnError))
-      {
+    if (!be.IsConverterPresent()) {
+      if (be.TrySpawnConverter(byPlayer, out string spawnError)) {
         (byPlayer as IClientPlayer)?.TriggerFpAnimation(
           EnumHandInteract.HeldItemInteract
         );
-      }
-      else if (world.Side == EnumAppSide.Client && spawnError.Length > 0)
-      {
+      } else if (world.Side == EnumAppSide.Client && spawnError.Length > 0) {
         (byPlayer as IClientPlayer)?.ShowChatNotification(spawnError);
       }
       return true;
@@ -57,12 +51,10 @@ public partial class BlockConverterControl : Block
     // the click we begin a hold here and only commit once the pour-hold time has
     // elapsed in OnBlockInteractStep. Validate up front so the player isn't left
     // holding a doomed interaction; surface the same error a click would.
-    if (target == ConverterOpState.Pouring)
-    {
+    if (target == ConverterOpState.Pouring) {
       if (be.OpState == ConverterOpState.Pouring)
         return false; // already pouring - nothing to hold for
-      if (!be.CanOperate(out string pourError))
-      {
+      if (!be.CanOperate(out string pourError)) {
         if (world.Side == EnumAppSide.Client && pourError.Length > 0)
           (byPlayer as IClientPlayer)?.ShowChatNotification(pourError);
         return false;
@@ -74,14 +66,11 @@ public partial class BlockConverterControl : Block
     }
 
     // Normal / Filling are non-destructive - apply immediately on click.
-    if (be.TrySetState(byPlayer, target, out string error))
-    {
+    if (be.TrySetState(byPlayer, target, out string error)) {
       (byPlayer as IClientPlayer)?.TriggerFpAnimation(
         EnumHandInteract.HeldItemInteract
       );
-    }
-    else if (world.Side == EnumAppSide.Client && error.Length > 0)
-    {
+    } else if (world.Side == EnumAppSide.Client && error.Length > 0) {
       (byPlayer as IClientPlayer)?.ShowChatNotification(error);
     }
     return true;
@@ -92,8 +81,7 @@ public partial class BlockConverterControl : Block
     IWorldAccessor world,
     IPlayer byPlayer,
     BlockSelection blockSel
-  )
-  {
+  ) {
     if (
       world.BlockAccessor.GetBlockEntity(blockSel.Position)
       is not BlockEntityConverterControl be
@@ -119,8 +107,7 @@ public partial class BlockConverterControl : Block
 
   // Operational intent from the held modifier keys: Sneak = filling,
   // Sprint = pouring, plain RMB = normal.
-  private static ConverterOpState ResolveTarget(IPlayer byPlayer)
-  {
+  private static ConverterOpState ResolveTarget(IPlayer byPlayer) {
     var controls = byPlayer.Entity.Controls;
     return controls.Sneak ? ConverterOpState.Filling
       : controls.Sprint ? ConverterOpState.Pouring
@@ -131,8 +118,7 @@ public partial class BlockConverterControl : Block
     IWorldAccessor world,
     BlockSelection selection,
     IPlayer forPlayer
-  )
-  {
+  ) {
     var baseHelp =
       base.GetPlacedBlockInteractionHelp(world, selection, forPlayer) ?? [];
 
@@ -144,12 +130,10 @@ public partial class BlockConverterControl : Block
 
     // Construction phase: converter-spawn hint (the structure-projection hint is
     // contributed by the shared MultiblockStructure behavior via base).
-    if (!be.IsConverterPresent())
-    {
+    if (!be.IsConverterPresent()) {
       return baseHelp
         .Append(
-          new WorldInteraction
-          {
+          new WorldInteraction {
             ActionLangCode = "smex:blockhelp-bessemer-spawn",
             MouseButton = EnumMouseButton.Right,
           }
@@ -160,23 +144,20 @@ public partial class BlockConverterControl : Block
     // Operational phase: state transition hints.
     return baseHelp
       .Append(
-        new WorldInteraction
-        {
+        new WorldInteraction {
           ActionLangCode = "smex:blockhelp-bessemer-normal",
           MouseButton = EnumMouseButton.Right,
         }
       )
       .Append(
-        new WorldInteraction
-        {
+        new WorldInteraction {
           ActionLangCode = "smex:blockhelp-bessemer-filling",
           HotKeyCodes = ["sneak"],
           MouseButton = EnumMouseButton.Right,
         }
       )
       .Append(
-        new WorldInteraction
-        {
+        new WorldInteraction {
           ActionLangCode = "smex:blockhelp-bessemer-pouring",
           HotKeyCodes = ["sprint"],
           MouseButton = EnumMouseButton.Right,

@@ -22,8 +22,7 @@ namespace SteelmakingExpanded.BlockStructures.BlastFurnace.BlockEntities;
 /// through the gas outlets, accumulates molten iron and slag, and feeds the taps.
 /// </summary>
 [BlockEntityRegister]
-public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
-{
+public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure {
   /// <summary>Whether the exhaust network is full, stalling production.</summary>
   public bool IsChoked { get; private set; }
 
@@ -77,13 +76,11 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
 
   #region Abstract method implementations
 
-  protected override void UpdateStructureRotation()
-  {
+  protected override void UpdateStructureRotation() {
     if (Block == null)
       return;
 
-    if (BaseAngleRad < 0)
-    {
+    if (BaseAngleRad < 0) {
       var doorBehavior = GetBehavior<BEBehaviorDoor>();
       BaseAngleRad = doorBehavior != null ? doorBehavior.RotateYRad : 0;
     }
@@ -100,8 +97,7 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
 
   protected override void OnStructureCompleted() => ScanForOutlets();
 
-  protected override void OnStructureLost()
-  {
+  protected override void OnStructureLost() {
     if (State != BlastFurnaceState.Idle)
       Extinguish();
   }
@@ -119,16 +115,14 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
   /// <summary>Forces the structure rotation to be recomputed (call after placement).</summary>
   public void Init() => UpdateStructureRotation();
 
-  public override void Initialize(ICoreAPI api)
-  {
+  public override void Initialize(ICoreAPI api) {
     base.Initialize(api);
     CacheAttributes();
     if (api.Side == EnumAppSide.Server && StructureComplete)
       ScanForOutlets();
   }
 
-  private void CacheAttributes()
-  {
+  private void CacheAttributes() {
     _naturalMaxTemp = SmexValues.BfNaturalMaxTemp;
     _boostedMaxTemp = SmexValues.BfBoostedMaxTemp;
     _blastBoostThreshold = SmexValues.BfBlastBoostThreshold;
@@ -148,8 +142,7 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
 
   #region Molten stack construction
 
-  private ItemStack? CreateMoltenStack(string metalCode, int units, float temp)
-  {
+  private ItemStack? CreateMoltenStack(string metalCode, int units, float temp) {
     // Use the item codes the molten network/molds expect downstream: iron as game:ingot-iron,
     // slag as smex:slag.
     AssetLocation loc =
@@ -170,8 +163,7 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
 
   #region Tap draining
 
-  private void DrainIronTap(ref bool dirty)
-  {
+  private void DrainIronTap(ref bool dirty) {
     BlockPos lowerTapPos = GetGlobalPos(2, -2, 2);
     if (
       Api.World.BlockAccessor.GetBlockEntity(lowerTapPos)
@@ -191,8 +183,7 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
       return;
 
     int accepted = lowerTap.TryPourMetal(ironStack, _internalTemp);
-    if (accepted > 0)
-    {
+    if (accepted > 0) {
       _moltenIron -= accepted;
       dirty = true;
       ExSounds.PlayThrottled(
@@ -206,8 +197,7 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
     }
   }
 
-  private void DrainSlagTap(ref bool dirty)
-  {
+  private void DrainSlagTap(ref bool dirty) {
     BlockPos higherTapPos = GetGlobalPos(-2, -1, 2);
     if (
       Api.World.BlockAccessor.GetBlockEntity(higherTapPos)
@@ -227,8 +217,7 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
       return;
 
     int accepted = higherTap.TryPourMetal(slagStack, _internalTemp);
-    if (accepted > 0)
-    {
+    if (accepted > 0) {
       _moltenSlag -= accepted;
       dirty = true;
       ExSounds.PlayThrottled(
@@ -246,14 +235,12 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
 
   #region Tick
 
-  private void ScanForOutlets()
-  {
+  private void ScanForOutlets() {
     _gasOutlets = [GetGlobalPos(0, 3, 1), GetGlobalPos(0, 3, 3)];
     _tuyeres = [GetGlobalPos(0, -2, 1), GetGlobalPos(0, -2, 3)];
   }
 
-  protected override void OnProductionTick(float dt)
-  {
+  protected override void OnProductionTick(float dt) {
     if (!StructureComplete)
       return;
 
@@ -266,12 +253,9 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
 
     bool anyOutlet = false;
     bool anyAccepted = false;
-    if (State != BlastFurnaceState.Idle)
-    {
-      foreach (var pos in _gasOutlets)
-      {
-        if (Api.World.BlockAccessor.GetBlockEntity(pos) is IPipeNode outlet)
-        {
+    if (State != BlastFurnaceState.Idle) {
+      foreach (var pos in _gasOutlets) {
+        if (Api.World.BlockAccessor.GetBlockEntity(pos) is IPipeNode outlet) {
           anyOutlet = true;
           if (
             outlet.TryProduce(
@@ -282,9 +266,7 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
             )
           )
             anyAccepted = true;
-        }
-        else
-        {
+        } else {
           ScanForOutlets();
         }
       }
@@ -294,8 +276,7 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
     // furnace with one outlet piped and the other left bare permanently choked: the lone one is a
     // single-node network that fills in two ticks and then refuses forever.
     bool choked = anyOutlet && !anyAccepted;
-    if (IsChoked != choked)
-    {
+    if (IsChoked != choked) {
       IsChoked = choked;
       dirty = true;
     }
@@ -313,28 +294,22 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
     float hotBlastTemp = 20f;
     bool receivingBlast = false;
 
-    foreach (var pos in _tuyeres)
-    {
-      if (Api.World.BlockAccessor.GetBlockEntity(pos) is IPipeNode tuyere)
-      {
+    foreach (var pos in _tuyeres) {
+      if (Api.World.BlockAccessor.GetBlockEntity(pos) is IPipeNode tuyere) {
         float consumed = tuyere.TryConsume(_tuyereIntakeVolume);
-        if (tuyere is BlockEntityPipe pipe)
-        {
+        if (tuyere is BlockEntityPipe pipe) {
           if (pipe.Medium == "Exhaust")
             tuyeresReceiveExhaust = true;
 
           if (
             pipe.Medium == "Air"
-            && pipe.Pressure >= SmexValues.BlastPressureThreshold
-          )
-          {
+            && pipe.Pressure >= SmexValues.BfBlastPressureThreshold
+          ) {
             hotBlastTemp = Math.Max(hotBlastTemp, pipe.Temperature);
             receivingBlast = true;
           }
         }
-      }
-      else
-      {
+      } else {
         ScanForOutlets();
       }
     }
@@ -349,11 +324,9 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
       && _cachedIsFull
       && !IsChoked
       && !isDoorOpen
-    )
-    {
+    ) {
       CheckHearthBurning(hearthPiles, out _, out bool allBurning);
-      if (allBurning)
-      {
+      if (allBurning) {
         State = BlastFurnaceState.Firing;
         _fuelBurnSeconds = 0;
         _internalTemp = 900f;
@@ -363,8 +336,7 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
       }
     }
 
-    if (State != BlastFurnaceState.Idle)
-    {
+    if (State != BlastFurnaceState.Idle) {
       int disruptionCount = 0;
       if (mixCount < 144)
         disruptionCount++;
@@ -379,8 +351,7 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
       if (isLiquidCapacityReached)
         disruptionCount++;
 
-      if (disruptionCount > 0)
-      {
+      if (disruptionCount > 0) {
         _extinguishSeconds += dt;
         dirty = true;
 
@@ -390,22 +361,18 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
         else if (isDoorOpen)
           extinguishThreshold = 10;
 
-        if (_extinguishSeconds >= extinguishThreshold)
-        {
+        if (_extinguishSeconds >= extinguishThreshold) {
           Extinguish();
           return;
         }
-      }
-      else
-      {
+      } else {
         if (_extinguishSeconds != 0)
           dirty = true;
         _extinguishSeconds = 0;
       }
     }
 
-    if (State == BlastFurnaceState.Firing || State == BlastFurnaceState.Melting)
-    {
+    if (State == BlastFurnaceState.Firing || State == BlastFurnaceState.Melting) {
       // Roaring furnace ambience while lit.
       ExSounds.PlayThrottled(
         Api,
@@ -438,60 +405,46 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
       if (Math.Abs(_internalTemp - oldTemp) > 0.1f)
         dirty = true;
 
-      if (State == BlastFurnaceState.Firing)
-      {
+      if (State == BlastFurnaceState.Firing) {
         _fuelBurnSeconds += dt;
-        if (_fuelBurnSeconds >= _maxFuelBurnTime)
-        {
+        if (_fuelBurnSeconds >= _maxFuelBurnTime) {
           Extinguish();
           return;
         }
 
-        if (_internalTemp >= _ironMeltingPoint)
-        {
+        if (_internalTemp >= _ironMeltingPoint) {
           _secondsAboveMelting += dt;
           dirty = true;
-          if (_secondsAboveMelting >= _meltStartDelay)
-          {
+          if (_secondsAboveMelting >= _meltStartDelay) {
             TransitionToMelting();
             return;
           }
-        }
-        else
-        {
+        } else {
           if (_secondsAboveMelting != 0)
             dirty = true;
           _secondsAboveMelting = 0;
         }
-      }
-      else if (State == BlastFurnaceState.Melting)
-      {
-        if (_internalTemp < _ironMeltingPoint)
-        {
+      } else if (State == BlastFurnaceState.Melting) {
+        if (_internalTemp < _ironMeltingPoint) {
           _belowMeltingSeconds += dt;
           dirty = true;
-          if (_belowMeltingSeconds >= 30)
-          {
+          if (_belowMeltingSeconds >= 30) {
             State = BlastFurnaceState.Firing;
             _secondsAboveMelting = 0;
             _belowMeltingSeconds = 0;
             _fuelBurnSeconds = 0;
             dirty = true;
           }
-        }
-        else
-        {
+        } else {
           if (_belowMeltingSeconds != 0)
             dirty = true;
           _belowMeltingSeconds = 0;
 
           // Halt the melt on the same tick the flue blocks, rather than waiting for the temperature
           // to drift down to the natural ceiling first.
-          if (!isLiquidCapacityReached && !IsChoked)
-          {
+          if (!isLiquidCapacityReached && !IsChoked) {
             _meltSeconds += dt;
-            if (_meltSeconds >= _meltIntervalSec)
-            {
+            if (_meltSeconds >= _meltIntervalSec) {
               _meltSeconds = 0;
               ConsumeForMelting(
                 hearthPiles,
@@ -521,15 +474,13 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
   /// Walks the 3×7×3 hearth region once and returns every coal-pile BE, so all per-tick pile
   /// reads/writes share one walk.
   /// </summary>
-  private List<(BlockPos pos, BlockEntityCoalPile pile)> CollectHearthPiles()
-  {
+  private List<(BlockPos pos, BlockEntityCoalPile pile)> CollectHearthPiles() {
     var piles = new List<(BlockPos, BlockEntityCoalPile)>();
     BlockPos centerHearth = GetGlobalPos(0, 0, 2);
     Api.World.BlockAccessor.WalkBlocks(
       centerHearth.AddCopy(-1, -3, -1),
       centerHearth.AddCopy(1, 3, 1),
-      (block, x, y, z) =>
-      {
+      (block, x, y, z) => {
         if (block.Code?.Path.StartsWith("coalpile") != true)
           return;
         BlockPos pos = new(x, y, z, Pos.dimension);
@@ -547,12 +498,10 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
     List<(BlockPos pos, BlockEntityCoalPile pile)> piles,
     out bool anyBurning,
     out bool allBurning
-  )
-  {
+  ) {
     bool any = false;
     bool all = true;
-    foreach (var (_, pileBe) in piles)
-    {
+    foreach (var (_, pileBe) in piles) {
       if (pileBe.IsBurning)
         any = true;
       else
@@ -562,8 +511,7 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
     allBurning = all && piles.Count > 0;
   }
 
-  private void TransitionToMelting()
-  {
+  private void TransitionToMelting() {
     State = BlastFurnaceState.Melting;
     _meltSeconds = 0;
     _fuelBurnSeconds = 0;
@@ -575,14 +523,12 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
     int blastmixToConsume,
     float ironProduced,
     float slagProduced
-  )
-  {
+  ) {
     int consumed = 0;
 
     // Consume top-down so upper piles empty first, matching the original drip order.
     piles.Sort((a, b) => b.pos.Y.CompareTo(a.pos.Y));
-    foreach (var (pos, pileBe) in piles)
-    {
+    foreach (var (pos, pileBe) in piles) {
       if (consumed >= blastmixToConsume)
         break;
       if (pileBe.inventory is not { Count: > 0 })
@@ -605,21 +551,18 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
     _moltenSlag = System.Math.Min(_moltenSlag + slagProduced, _maxMoltenSlag);
   }
 
-  private void Extinguish()
-  {
+  private void Extinguish() {
     if (State != BlastFurnaceState.Idle)
       ExSounds.Play(Api, GetGlobalPos(0, 0, 2), ExSounds.Extinguish, 1f, 32f);
 
     State = BlastFurnaceState.Idle;
     _internalTemp = 20f;
 
-    if (_moltenIron > 0)
-    {
+    if (_moltenIron > 0) {
       Block? solidIronBlock = Api.World.GetBlock(
         new AssetLocation("smex", "solidifiediron")
       );
-      if (solidIronBlock != null)
-      {
+      if (solidIronBlock != null) {
         int totalNuggets = System.Math.Max(
           1,
           (int)System.Math.Floor(_moltenIron / 5f)
@@ -635,8 +578,7 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
         if (
           Api.World.BlockAccessor.GetBlockEntity(pos1)
           is BlockEntitySolidifiedIron be1
-        )
-        {
+        ) {
           be1.IronCount = nuggets1;
           be1.MarkDirty(true);
         }
@@ -645,8 +587,7 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
         if (
           Api.World.BlockAccessor.GetBlockEntity(pos2)
           is BlockEntitySolidifiedIron be2
-        )
-        {
+        ) {
           be2.IronCount = nuggets2;
           be2.MarkDirty(true);
         }
@@ -665,16 +606,13 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
     Api.World.BlockAccessor.WalkBlocks(
       centerHearth.AddCopy(-1, -3, -1),
       centerHearth.AddCopy(1, 3, 1),
-      (block, x, y, z) =>
-      {
-        if (block.Code?.Path.StartsWith("coalpile") == true)
-        {
+      (block, x, y, z) => {
+        if (block.Code?.Path.StartsWith("coalpile") == true) {
           BlockPos pos = new BlockPos(x, y, z, Pos.dimension);
           if (
             Api.World.BlockAccessor.GetBlockEntity(pos)
             is BlockEntityCoalPile pileBe
-          )
-          {
+          ) {
             BlastmixPiles.SetManagedByFurnace(pileBe, false);
             BlastmixPiles.ConvertToSlag(pileBe);
           }
@@ -688,20 +626,16 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
   private int GetBlastMixCount(
     List<(BlockPos pos, BlockEntityCoalPile pile)> piles,
     out bool isFull
-  )
-  {
+  ) {
     int totalMix = 0;
-    foreach (var (_, pileBe) in piles)
-    {
+    foreach (var (_, pileBe) in piles) {
       // While lit, the furnace manages and keeps its hearth piles burning.
-      if (State != BlastFurnaceState.Idle)
-      {
+      if (State != BlastFurnaceState.Idle) {
         BlastmixPiles.SetManagedByFurnace(pileBe, true);
         if (!pileBe.IsBurning)
           pileBe.TryIgnite();
       }
-      foreach (var slot in pileBe.inventory)
-      {
+      foreach (var slot in pileBe.inventory) {
         if (
           !slot.Empty && slot.Itemstack.Collectible.Code.Path.Equals("blastmix")
         )
@@ -717,8 +651,7 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
 
   #region Block lifecycle
 
-  public override void OnBlockRemoved()
-  {
+  public override void OnBlockRemoved() {
     if (Api?.Side == EnumAppSide.Server && State != BlastFurnaceState.Idle)
       Extinguish();
     base.OnBlockRemoved();
@@ -731,8 +664,7 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
   public override void FromTreeAttributes(
     ITreeAttribute tree,
     IWorldAccessor worldAccessForResolve
-  )
-  {
+  ) {
     base.FromTreeAttributes(tree, worldAccessForResolve);
     IsChoked = tree.GetBool("isChoked");
     State = (BlastFurnaceState)tree.GetInt("bfState", 0);
@@ -749,8 +681,7 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
     BaseAngleRad = tree.GetFloat("baseAngleRad", -1f);
   }
 
-  public override void ToTreeAttributes(ITreeAttribute tree)
-  {
+  public override void ToTreeAttributes(ITreeAttribute tree) {
     base.ToTreeAttributes(tree);
     tree.SetBool("isChoked", IsChoked);
     tree.SetInt("bfState", (int)State);
@@ -771,18 +702,13 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
 
   #region HUD
 
-  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
-  {
+  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc) {
     long now = Api.World.ElapsedMilliseconds;
-    if (now - _lastInfoUpdate > 1000)
-    {
+    if (now - _lastInfoUpdate > 1000) {
       StringBuilder sb = new StringBuilder();
-      if (!StructureComplete)
-      {
+      if (!StructureComplete) {
         sb.AppendLine(Lang.Get("smex:bf-info-incomplete"));
-      }
-      else
-      {
+      } else {
         sb.AppendLine(
           Lang.Get(
             "smex:bf-info-mixloaded",
@@ -791,8 +717,7 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
           )
         );
 
-        if (State != BlastFurnaceState.Idle)
-        {
+        if (State != BlastFurnaceState.Idle) {
           string stateName = Lang.Get(
             "smex:bf-state-" + State.ToString().ToLowerInvariant()
           );
@@ -801,20 +726,17 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
             Lang.Get("smex:bf-info-temp", ExMeasure.Temperature(_internalTemp))
           );
 
-          if (State == BlastFurnaceState.Melting)
-          {
+          if (State == BlastFurnaceState.Melting) {
             sb.AppendLine(
               Lang.Get("smex:bf-info-molteniron", _moltenIron, _maxMoltenIron)
             );
             sb.AppendLine(
               Lang.Get("smex:bf-info-moltenslag", _moltenSlag, _maxMoltenSlag)
             );
-          }
-          else if (
-            State == BlastFurnaceState.Firing
-            && _internalTemp >= _ironMeltingPoint
-          )
-          {
+          } else if (
+              State == BlastFurnaceState.Firing
+              && _internalTemp >= _ironMeltingPoint
+            ) {
             // Progress toward the Melting phase as a percentage (matches the
             // Bessemer converter's readout) rather than a raw seconds countdown.
             int pct = (int)
@@ -828,14 +750,13 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
             sb.AppendLine(Lang.Get("smex:bf-info-meltingin", pct));
           }
 
-          // The choke stalls a lit furnace, so its reason belongs here. It used to be printed only
-          // in the Idle branch below, where IsChoked is never set - so the player saw a furnace
-          // stop with no explanation at all.
+          // The choke stalls a lit furnace, so its reason belongs in this branch: IsChoked is
+          // never set by the time the Idle branch below runs, which would leave the player
+          // watching a stopped furnace with no explanation.
           if (IsChoked)
             sb.AppendLine(Lang.Get("smex:bf-info-exhaustfull"));
 
-          if (_extinguishSeconds > 0)
-          {
+          if (_extinguishSeconds > 0) {
             int maxExtinguish =
               (GetBehavior<BEBehaviorDoor>()?.Opened == true) ? 10 : 30;
             int remainingSeconds = (int)
@@ -844,17 +765,14 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure
               Lang.Get("smex:bf-info-extinguishingin", remainingSeconds)
             );
           }
-        }
-        else
-        {
+        } else {
           if (IsChoked)
             sb.AppendLine(Lang.Get("smex:bf-info-exhaustfull"));
           else if (GetBehavior<BEBehaviorDoor>()?.Opened == true)
             sb.AppendLine(Lang.Get("smex:bf-info-doorclosed"));
           else if (!_cachedIsFull)
             sb.AppendLine(Lang.Get("smex:bf-info-needsmix"));
-          else
-          {
+          else {
             CheckHearthBurning(
               CollectHearthPiles(),
               out bool anyBurning,

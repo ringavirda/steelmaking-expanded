@@ -18,8 +18,7 @@ namespace PipesAndPowerExpanded.BlockStructures.Engine.BlockEntities;
 [BlockEntityRegister]
 public class BlockEntityEngineMpGenerator
   : BlockEntityEngineSubmachine,
-    IRenderer
-{
+    IRenderer {
   private BEBehaviorEngineMPGenerator? _mp;
   private ICoreClientAPI? _capi;
 
@@ -33,10 +32,8 @@ public class BlockEntityEngineMpGenerator
   // Full power while an engine is attached and the MP load is within what it can drive; once the
   // load overstresses the engine it cuts out (demand 0) until machines are removed. Judged by the
   // network's resistance, not live speed, so a stalled engine recovers when load is shed.
-  public override float PowerDemand
-  {
-    get
-    {
+  public override float PowerDemand {
+    get {
       if (Engine is not { } engine)
         return 0f;
       float load = _mp?.Network?.NetworkResistance ?? 0f;
@@ -50,12 +47,10 @@ public class BlockEntityEngineMpGenerator
   // No pipe work - power leaves as MP torque via the behavior.
   protected override void DoWork(float power, float dt) { }
 
-  public override void Initialize(ICoreAPI api)
-  {
+  public override void Initialize(ICoreAPI api) {
     base.Initialize(api);
     _mp = GetBehavior<BEBehaviorEngineMPGenerator>();
-    if (api is ICoreClientAPI capi)
-    {
+    if (api is ICoreClientAPI capi) {
       _capi = capi;
       capi.Event.RegisterRenderer(
         this,
@@ -69,8 +64,7 @@ public class BlockEntityEngineMpGenerator
   /// Per render frame: pushes the axle's current render angle to the master engine so it can
   /// lock its cycle animation to the visible axle (see <see cref="BlockEntityEngine.DriveMpCycleFrame"/>).
   /// </summary>
-  public void OnRenderFrame(float deltaTime, EnumRenderStage stage)
-  {
+  public void OnRenderFrame(float deltaTime, EnumRenderStage stage) {
     if (_mp == null)
       return;
     bool turning = _mp.Network != null && Math.Abs(_mp.Network.Speed) > 0.001f;
@@ -83,12 +77,10 @@ public class BlockEntityEngineMpGenerator
   }
 
   /// <summary>Runs a quiet looping metal-grind while the axle is turning; stops it when it stalls.</summary>
-  private void UpdateGrindSound(bool turning)
-  {
+  private void UpdateGrindSound(bool turning) {
     if (_capi == null)
       return;
-    if (turning)
-    {
+    if (turning) {
       _grindSound ??= ExSounds.CreateLoop(
         _capi,
         Pos,
@@ -99,8 +91,7 @@ public class BlockEntityEngineMpGenerator
       );
       if (_grindSound is { IsPlaying: false })
         _grindSound.Start();
-    }
-    else if (_grindSound is { IsPlaying: true })
+    } else if (_grindSound is { IsPlaying: true })
       _grindSound.Stop();
   }
 
@@ -108,28 +99,24 @@ public class BlockEntityEngineMpGenerator
   /// Re-applies the axle orientation when the engine snapped this generator to its matching facing;
   /// the base re-resolves the engine while this re-seeds the mechanical axis.
   /// </summary>
-  public override void OnExchanged(Block block)
-  {
+  public override void OnExchanged(Block block) {
     base.OnExchanged(block);
     _mp?.OnOrientationChanged();
   }
 
-  public void Dispose()
-  {
+  public void Dispose() {
     _grindSound?.Stop();
     _grindSound?.Dispose();
     _grindSound = null;
     _capi?.Event.UnregisterRenderer(this, EnumRenderStage.Before);
   }
 
-  public override void OnBlockRemoved()
-  {
+  public override void OnBlockRemoved() {
     Dispose();
     base.OnBlockRemoved();
   }
 
-  public override void OnBlockUnloaded()
-  {
+  public override void OnBlockUnloaded() {
     Dispose();
     base.OnBlockUnloaded();
   }

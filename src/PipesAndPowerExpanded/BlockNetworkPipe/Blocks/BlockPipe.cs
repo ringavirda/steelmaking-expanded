@@ -9,8 +9,7 @@ namespace PipesAndPowerExpanded.BlockNetworkPipe.Blocks;
 /// orientation tables shared by every straight/bend/junction variant.
 /// </summary>
 [BlockRegister]
-public partial class BlockPipe : BlockNetworkNode
-{
+public partial class BlockPipe : BlockNetworkNode {
   public override string NetworkType => "pipe";
 
   /// <summary>
@@ -24,8 +23,7 @@ public partial class BlockPipe : BlockNetworkNode
   /// Iron 5, steel 10.
   /// </summary>
   public virtual float BurstPressure =>
-    Material switch
-    {
+    Material switch {
       "steel" => PpexValues.SteelPipeBurstPressure,
       _ => PpexValues.IronPipeBurstPressure,
     };
@@ -68,8 +66,7 @@ public partial class BlockPipe : BlockNetworkNode
     };
 
   protected override string GetFallbackOrientation(string? type) =>
-    type switch
-    {
+    type switch {
       "bend" => "nw",
       "tjunction" => "uns",
       "xjunction" => "nswe",

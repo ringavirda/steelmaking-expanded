@@ -18,8 +18,7 @@ namespace SteelmakingExpanded.BlockNetworkMolten.Blocks;
 /// solidified-metal drops, and spill sounds on break.
 /// </summary>
 [BlockRegister]
-public partial class BlockMoltenCanal : BlockNetworkNode
-{
+public partial class BlockMoltenCanal : BlockNetworkNode {
   public override string NetworkType => "molten";
 
   public override Dictionary<string, string[]> AllowedOrientations { get; } =
@@ -32,8 +31,7 @@ public partial class BlockMoltenCanal : BlockNetworkNode
     };
 
   protected override string GetFallbackOrientation(string? type) =>
-    type switch
-    {
+    type switch {
       "bend" => "nw",
       "tjunction" => "nes",
       "xjunction" => "nswe",
@@ -44,8 +42,7 @@ public partial class BlockMoltenCanal : BlockNetworkNode
   /// Disables wrench rotation (and the hint) while the cell holds liquid metal or has solidified -
   /// drain or chip it clear first.
   /// </summary>
-  protected override bool CanWrenchRotate(IWorldAccessor world, BlockPos pos)
-  {
+  protected override bool CanWrenchRotate(IWorldAccessor world, BlockPos pos) {
     if (
       world.BlockAccessor.GetBlockEntity(pos) is BlockEntityMoltenCanal be
       && (be.HasMoltenMetal || be.Solidified)
@@ -63,13 +60,11 @@ public partial class BlockMoltenCanal : BlockNetworkNode
     IBlockAccessor blockAccessor,
     BlockPos pos,
     ItemStack? stack = null
-  )
-  {
+  ) {
     if (
       pos != null
       && blockAccessor.GetBlockEntity(pos) is BlockEntityMoltenCanal be
-    )
-    {
+    ) {
       byte val = be.GlowLightLevel;
       if (val > 0)
         return [8, 7, val];
@@ -81,8 +76,7 @@ public partial class BlockMoltenCanal : BlockNetworkNode
     IWorldAccessor world,
     BlockPos pos,
     ItemStack? byItemStack
-  )
-  {
+  ) {
     base.OnBlockPlaced(world, pos, byItemStack);
     UpdateEndConnectors(world, pos);
   }
@@ -91,14 +85,12 @@ public partial class BlockMoltenCanal : BlockNetworkNode
     IWorldAccessor world,
     BlockPos pos,
     BlockPos neibpos
-  )
-  {
+  ) {
     base.OnNeighbourBlockChange(world, pos, neibpos);
     UpdateEndConnectors(world, pos);
   }
 
-  protected void UpdateEndConnectors(IWorldAccessor world, BlockPos pos)
-  {
+  protected void UpdateEndConnectors(IWorldAccessor world, BlockPos pos) {
     if (Orientation == null)
       return;
 
@@ -121,8 +113,7 @@ public partial class BlockMoltenCanal : BlockNetworkNode
     BlockPos pos,
     IPlayer byPlayer,
     float dropQuantityMultiplier = 1
-  )
-  {
+  ) {
     // Read BE state before base.OnBlockBroken → RemoveNode tears the network down.
     if (
       world.Side == EnumAppSide.Server
@@ -139,14 +130,12 @@ public partial class BlockMoltenCanal : BlockNetworkNode
     BlockPos pos,
     IPlayer? byPlayer,
     float dropQuantityMultiplier = 1f
-  )
-  {
+  ) {
     var drops = base.GetDrops(world, pos, byPlayer, dropQuantityMultiplier);
 
     // The network is already torn down here, so read the cached state from the BE (still alive,
     // holding the last broadcast values).
-    if (world.BlockAccessor.GetBlockEntity(pos) is BlockEntityMoltenCanal be)
-    {
+    if (world.BlockAccessor.GetBlockEntity(pos) is BlockEntityMoltenCanal be) {
       var solidifiedDrop = be.GetSolidifiedDrop(world);
       if (solidifiedDrop != null)
         drops = [.. drops, solidifiedDrop];
@@ -163,15 +152,12 @@ public partial class BlockMoltenCanal : BlockNetworkNode
     return drops;
   }
 
-  public override ItemStack OnPickBlock(IWorldAccessor world, BlockPos pos)
-  {
+  public override ItemStack OnPickBlock(IWorldAccessor world, BlockPos pos) {
     if (
-      world.BlockAccessor.GetBlockEntity(pos) is BlockEntityMoltenCanal
-      {
+      world.BlockAccessor.GetBlockEntity(pos) is BlockEntityMoltenCanal {
         Solidified: true
       }
-    )
-    {
+    ) {
       AssetLocation loc = CodeWithVariants(
         ["variant", "state", "orientation"],
         ["pass", "normal", "ns"]
@@ -202,8 +188,7 @@ public partial class BlockMoltenCanal : BlockNetworkNode
     IWorldAccessor world,
     IPlayer byPlayer,
     BlockSelection blockSel
-  )
-  {
+  ) {
     if (
       world.BlockAccessor.GetBlockEntity(blockSel.Position)
       is not BlockEntityMoltenCanal be
@@ -215,8 +200,7 @@ public partial class BlockMoltenCanal : BlockNetworkNode
 
     // A solidified canal is chipped clear with a chisel in hand + hammer in the off-hand (shared
     // chisel-out ritual). A plain click on a still-clogged cell falls through to base.
-    if (be.Solidified)
-    {
+    if (be.Solidified) {
       var outcome = MoltenChisel.TryChisel(
         world,
         byPlayer,
@@ -232,25 +216,21 @@ public partial class BlockMoltenCanal : BlockNetworkNode
     if (Type != "straight")
       return base.OnBlockInteractStart(world, byPlayer, blockSel);
 
-    if (!be.Sealed)
-    {
+    if (!be.Sealed) {
       if (!IsFireClay(held) || held!.StackSize < SmexValues.CanalSealClayCost)
         return base.OnBlockInteractStart(world, byPlayer, blockSel);
 
       // Only seal a fully drained section: this cell AND its connector-face neighbours must be
       // empty, so a seal never traps metal against itself.
-      if (!CanSeal(world, blockSel.Position, be))
-      {
+      if (!CanSeal(world, blockSel.Position, be)) {
         if (world.Side == EnumAppSide.Server)
           (byPlayer as IServerPlayer)?.SendIngameError("smex-canalnotempty");
         return false;
       }
 
-      if (world.Side == EnumAppSide.Server)
-      {
+      if (world.Side == EnumAppSide.Server) {
         be.SetSealed(true);
-        if (byPlayer.WorldData.CurrentGameMode != EnumGameMode.Creative)
-        {
+        if (byPlayer.WorldData.CurrentGameMode != EnumGameMode.Creative) {
           activeSlot!.TakeOut(SmexValues.CanalSealClayCost);
           activeSlot.MarkDirty();
         }
@@ -263,14 +243,11 @@ public partial class BlockMoltenCanal : BlockNetworkNode
     if (!MoltenChisel.IsTool(held, EnumTool.Chisel))
       return base.OnBlockInteractStart(world, byPlayer, blockSel);
 
-    if (world.Side == EnumAppSide.Server)
-    {
+    if (world.Side == EnumAppSide.Server) {
       be.SetSealed(false);
-      if (byPlayer.WorldData.CurrentGameMode != EnumGameMode.Creative)
-      {
+      if (byPlayer.WorldData.CurrentGameMode != EnumGameMode.Creative) {
         Item? clay = world.GetItem(FireClayCode);
-        if (clay != null)
-        {
+        if (clay != null) {
           var refund = new ItemStack(clay, SmexValues.CanalUnsealClayRefund);
           if (!byPlayer.InventoryManager.TryGiveItemstack(refund))
             world.SpawnItemEntity(
@@ -293,15 +270,13 @@ public partial class BlockMoltenCanal : BlockNetworkNode
     IWorldAccessor world,
     BlockPos pos,
     BlockEntityMoltenCanal be
-  )
-  {
+  ) {
     if (!be.IsCellEmpty)
       return false;
     if (Orientation == null)
       return true;
 
-    foreach (char c in Orientation)
-    {
+    foreach (char c in Orientation) {
       BlockPos nPos = pos.AddCopy(BlockFacing.FromFirstLetter(c));
       if (
         world.BlockAccessor.GetBlockEntity(nPos) is BlockEntityMoltenCanal nbe
@@ -338,8 +313,7 @@ public partial class BlockMoltenCanal : BlockNetworkNode
     IWorldAccessor world,
     BlockSelection selection,
     IPlayer forPlayer
-  )
-  {
+  ) {
     WorldInteraction[] baseHelp =
       base.GetPlacedBlockInteractionHelp(world, selection, forPlayer) ?? [];
 
@@ -387,8 +361,7 @@ public partial class BlockMoltenCanal : BlockNetworkNode
     return baseHelp;
   }
 
-  private static ItemStack[] ResolveFireClayStacks(IWorldAccessor world)
-  {
+  private static ItemStack[] ResolveFireClayStacks(IWorldAccessor world) {
     Item? clay = world.GetItem(FireClayCode);
     return clay != null
       ? [new ItemStack(clay, SmexValues.CanalSealClayCost)]
@@ -403,11 +376,9 @@ public partial class BlockMoltenCanal : BlockNetworkNode
   public int CountConnectedNeighborFaces(
     IBlockAccessor blockAccessor,
     BlockPos pos
-  )
-  {
+  ) {
     int count = 0;
-    foreach (var face in BlockFacing.HORIZONTALS)
-    {
+    foreach (var face in BlockFacing.HORIZONTALS) {
       BlockPos nPos = pos.AddCopy(face);
       if (
         blockAccessor.GetBlock(nPos) is BlockMoltenCanal nCanal
@@ -426,11 +397,9 @@ public partial class BlockMoltenCanal : BlockNetworkNode
     IBlockAccessor blockAccessor,
     BlockPos pos,
     string[] orientations
-  )
-  {
+  ) {
     var requiredFaces = BlockFacing
-      .HORIZONTALS.Where(face =>
-      {
+      .HORIZONTALS.Where(face => {
         BlockPos nPos = pos.AddCopy(face);
         return blockAccessor.GetBlock(nPos) is BlockMoltenCanal nCanal
           && nCanal.HasConnectorAt(face.Opposite);
@@ -438,8 +407,7 @@ public partial class BlockMoltenCanal : BlockNetworkNode
       .Select(f => f.Code[0])
       .ToList();
 
-    foreach (string orient in orientations)
-    {
+    foreach (string orient in orientations) {
       if (requiredFaces.Count == 1 && orient.StartsWith(requiredFaces[0]))
         return orient;
       else if (

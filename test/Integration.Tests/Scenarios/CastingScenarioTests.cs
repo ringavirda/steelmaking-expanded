@@ -11,13 +11,11 @@ namespace SteelmakingExpanded.Tests;
 /// parked barrel on a canal tap. These exercise the molten network + the draining fittings together,
 /// asserting the metal actually travels the run and ends up in the casting.
 /// </summary>
-public class CastingScenarioTests
-{
+public class CastingScenarioTests {
   #region Mold pedestal casting
 
   [Fact]
-  public void Molten_iron_flows_down_the_canal_and_casts_into_a_mold_pedestal()
-  {
+  public void Molten_iron_flows_down_the_canal_and_casts_into_a_mold_pedestal() {
     var scene = new Scene().Network("molten", s => new MoltenNetwork(s));
     var line = new CastingLine(
       scene,
@@ -44,8 +42,7 @@ public class CastingScenarioTests
   #region Barrel tapping
 
   [Fact]
-  public void A_canal_tap_drains_the_run_into_a_parked_barrel()
-  {
+  public void A_canal_tap_drains_the_run_into_a_parked_barrel() {
     var scene = new Scene().Network("molten", s => new MoltenNetwork(s));
     var line = new CastingLine(
       scene,
@@ -67,8 +64,7 @@ public class CastingScenarioTests
   }
 
   [Fact]
-  public void A_closed_tap_keeps_the_metal_in_the_run()
-  {
+  public void A_closed_tap_keeps_the_metal_in_the_run() {
     var scene = new Scene().Network("molten", s => new MoltenNetwork(s));
     var line = new CastingLine(
       scene,

@@ -15,12 +15,9 @@ namespace SteelmakingExpanded.Tests;
 /// exhaust line chokes the furnace. Models a furnace continuously spilling exhaust into a gas main and
 /// asserts the stack keeps the line from running away, where without it the main backs up.
 /// </summary>
-public class HotBlastScenarioTests
-{
-  private static BlockEntitySmokeStack Stack(TestWorld world, BlockPos pos)
-  {
-    var be = new BlockEntitySmokeStack
-    {
+public class HotBlastScenarioTests {
+  private static BlockEntitySmokeStack Stack(TestWorld world, BlockPos pos) {
+    var be = new BlockEntitySmokeStack {
       Pos = pos,
       Block = TestBlocks.Configure(
         new Block(),
@@ -56,14 +53,12 @@ public class HotBlastScenarioTests
   private const float FurnacePerTick = 38f;
 
   [Fact]
-  public void The_smoke_stack_vents_furnace_exhaust_so_the_main_does_not_choke()
-  {
+  public void The_smoke_stack_vents_furnace_exhaust_so_the_main_does_not_choke() {
     // A long sealed exhaust main fed by a furnace each tick, with a commissioned stack venting it.
     var (world, net) = PipeTestWorld.Run(6, capEnds: true);
     var stack = Stack(world, new BlockPos(0, 0, 0));
 
-    for (int i = 0; i < 12; i++)
-    {
+    for (int i = 0; i < 12; i++) {
       Furnace(world, net, FurnacePerTick);
       ReflectionHelpers.Invoke(stack, "OnProductionTick", 1f);
     }
@@ -80,8 +75,7 @@ public class HotBlastScenarioTests
   }
 
   [Fact]
-  public void Without_a_stack_the_exhaust_main_backs_up_and_chokes()
-  {
+  public void Without_a_stack_the_exhaust_main_backs_up_and_chokes() {
     var (world, net) = PipeTestWorld.Run(6, capEnds: true);
 
     for (int i = 0; i < 12; i++)
@@ -101,8 +95,7 @@ public class HotBlastScenarioTests
   #region Cowper stove regenerator cycle
 
   [Fact]
-  public void A_charged_cowper_stove_blows_cool_air_back_out_as_hot_blast()
-  {
+  public void A_charged_cowper_stove_blows_cool_air_back_out_as_hot_blast() {
     var rig = new CowperRig();
 
     // Charge: hot (1200 C) furnace exhaust soaks heat into the brick core. The transfer is gradual,
@@ -135,8 +128,7 @@ public class HotBlastScenarioTests
   }
 
   [Fact]
-  public void A_cold_cowper_stove_cannot_make_hot_blast()
-  {
+  public void A_cold_cowper_stove_cannot_make_hot_blast() {
     var rig = new CowperRig();
 
     // Never charged: discharging cool air through a cold core warms nothing.
@@ -154,8 +146,7 @@ public class HotBlastScenarioTests
   // that stranded air as "mixing" and latch shut, refusing to ever recharge. Every other cowper test
   // charges from a pristine, empty passthrough, so none of them crossed this discharge→recharge path.
   [Fact]
-  public void Recharging_after_a_discharge_is_not_blocked_by_air_left_in_the_passthrough()
-  {
+  public void Recharging_after_a_discharge_is_not_blocked_by_air_left_in_the_passthrough() {
     var rig = new CowperRig();
 
     // Push blast air through once - this leaves leftover air stranded in the passthrough.
@@ -178,8 +169,7 @@ public class HotBlastScenarioTests
   // The mix guard must still fire while air is GENUINELY flowing (both valves open): the stove can't
   // soak exhaust into the core while air streams through the passthrough, so it must not charge.
   [Fact]
-  public void Exhaust_with_air_actively_flowing_is_still_treated_as_mixing()
-  {
+  public void Exhaust_with_air_actively_flowing_is_still_treated_as_mixing() {
     var rig = new CowperRig();
     float before = rig.CoreTemperature;
 

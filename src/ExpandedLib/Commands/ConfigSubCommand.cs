@@ -16,12 +16,10 @@ namespace ExpandedLib.Commands;
 /// config is host-authoritative (the <c>/exmod</c> root requires <c>controlserver</c>).
 /// </summary>
 [SubCommandRegister(Side = EnumAppSide.Server)]
-public sealed class ConfigSubCommand : IExSubCommand
-{
+public sealed class ConfigSubCommand : IExSubCommand {
   public string ParentName => "exmod";
 
-  public void Register(ICoreAPI api, Mod mod, IChatCommand parent)
-  {
+  public void Register(ICoreAPI api, Mod mod, IChatCommand parent) {
     var parsers = api.ChatCommands.Parsers;
 
     parent
@@ -36,8 +34,7 @@ public sealed class ConfigSubCommand : IExSubCommand
       .EndSubCommand();
   }
 
-  private static TextCommandResult OnCommand(TextCommandCallingArgs args)
-  {
+  private static TextCommandResult OnCommand(TextCommandCallingArgs args) {
     if (args[0] is not string code)
       return TextCommandResult.Success(ListConfigs());
 
@@ -48,8 +45,7 @@ public sealed class ConfigSubCommand : IExSubCommand
       return TextCommandResult.Success(ListValues(config));
 
     // Read: print the current value.
-    if (args[2] is not string raw)
-    {
+    if (args[2] is not string raw) {
       if (!config.TryGet(name, out var canonical, out var value))
         return Err("exlib:command-config-novalue", name, config.ModId);
       return Ok("exlib:command-config-current", canonical, value);
@@ -57,8 +53,7 @@ public sealed class ConfigSubCommand : IExSubCommand
 
     // Write: parse, validate, set and persist (applied immediately).
     var result = config.Set(name, raw);
-    return result.Status switch
-    {
+    return result.Status switch {
       ExConfigEditStatus.Ok => Ok(
         "exlib:command-config-set",
         result.Name,
@@ -88,23 +83,20 @@ public sealed class ConfigSubCommand : IExSubCommand
   // before VTML parsing, so a bare '<' or '>' in the message (e.g. a "->"/"=>" arrow) breaks the tag
   // stream and the whole line renders blank. Keep both characters out of the command-result strings.
   private static TextCommandResult Ok(string key, params object?[] args) =>
-    new()
-    {
+    new() {
       Status = EnumCommandStatus.Success,
       StatusMessage = key,
       MessageParams = args,
     };
 
   private static TextCommandResult Err(string key, params object?[] args) =>
-    new()
-    {
+    new() {
       Status = EnumCommandStatus.Error,
       StatusMessage = key,
       MessageParams = args,
     };
 
-  private static string ListConfigs()
-  {
+  private static string ListConfigs() {
     if (ExConfigProfiles.Codes.Count == 0)
       return Lang.Get("exlib:command-config-none");
 
@@ -120,8 +112,7 @@ public sealed class ConfigSubCommand : IExSubCommand
       + string.Join("\n", lines);
   }
 
-  private static string ListValues(IExConfigAccess config)
-  {
+  private static string ListValues(IExConfigAccess config) {
     var lines = config.ValueNames.Select(n =>
       config.TryGet(n, out var canonical, out var value)
         ? $"  {canonical} = {value}"

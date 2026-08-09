@@ -7,23 +7,19 @@ namespace PipesAndPowerExpanded.Tests;
 
 /// <summary>Exposes the protected persistence hooks on <see cref="BlockEntityPipe"/> for a
 /// round-trip test (the save/reload path that lost pipe contents in past regressions).</summary>
-internal sealed class TestableBlockEntityPipe : BlockEntityPipe
-{
+internal sealed class TestableBlockEntityPipe : BlockEntityPipe {
   public void Write(ITreeAttribute tree, object? state) =>
     SerializeNetworkState(tree, state);
 
   public object? Read(ITreeAttribute tree) => DeserializeNetworkState(tree);
 }
 
-public class PipeSerializationTests
-{
+public class PipeSerializationTests {
   [Fact]
-  public void Network_state_survives_a_save_reload_round_trip()
-  {
+  public void Network_state_survives_a_save_reload_round_trip() {
     var be = new TestableBlockEntityPipe();
     var tree = new TreeAttribute();
-    var state = new PipeNetworkState
-    {
+    var state = new PipeNetworkState {
       Volume = 123f,
       MaxVolume = 300f,
       Temperature = 88f,
@@ -49,8 +45,7 @@ public class PipeSerializationTests
   }
 
   [Fact]
-  public void Empty_network_state_round_trips_to_null()
-  {
+  public void Empty_network_state_round_trips_to_null() {
     var be = new TestableBlockEntityPipe();
     var tree = new TreeAttribute();
     be.Write(tree, new PipeNetworkState { Volume = 0f });

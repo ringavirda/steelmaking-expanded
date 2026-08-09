@@ -8,8 +8,7 @@ namespace SteelmakingExpanded.Tests;
 /// that every canal cell, tap, pedestal and barrel reads. Temperature/melt-point classification needs
 /// a resolved collectible, so only the world-free arithmetic is pinned here.
 /// </summary>
-public class MoltenMetalTests
-{
+public class MoltenMetalTests {
   [Theory]
   [InlineData(20f, 0)] // cold
   [InlineData(499f, 0)] // just below the glow floor
@@ -20,8 +19,7 @@ public class MoltenMetalTests
   public void GlowLevel_scales_from_the_glow_floor_and_clamps(
     float temp,
     int expected
-  )
-  {
+  ) {
     Assert.Equal((byte)expected, MoltenMetal.GlowLevel(temp));
   }
 
@@ -33,27 +31,23 @@ public class MoltenMetalTests
   public void DisplayName_strips_ingot_prefix_and_capitalises(
     string code,
     string expected
-  )
-  {
+  ) {
     Assert.Equal(expected, MoltenMetal.DisplayName(code));
   }
 
   [Fact]
-  public void Thresholds_are_ordered_hardened_below_liquid()
-  {
+  public void Thresholds_are_ordered_hardened_below_liquid() {
     Assert.True(MoltenMetal.HardenedThreshold < MoltenMetal.LiquidThreshold);
   }
 
   [Fact]
-  public void FormatTemperature_reads_cold_below_room_temperature()
-  {
+  public void FormatTemperature_reads_cold_below_room_temperature() {
     // Below 21 C it prints the "cold" label (here the echoed lang key), not a number.
     Assert.Equal("smex:metalstate-cold", MoltenMetal.FormatTemperature(15f));
   }
 
   [Fact]
-  public void FormatTemperature_prints_the_rounded_value_when_warm()
-  {
+  public void FormatTemperature_prints_the_rounded_value_when_warm() {
     // ExMeasure.Temperature in the default metric system prints "650 <unit>".
     Assert.StartsWith("650 ", MoltenMetal.FormatTemperature(650f));
   }

@@ -8,11 +8,9 @@ using Vintagestory.API.MathTools;
 
 namespace PipesAndPowerExpanded.Tests;
 
-internal static class ModuleInit
-{
+internal static class ModuleInit {
   [ModuleInitializer]
-  internal static void Init()
-  {
+  internal static void Init() {
     VsAssemblyResolver.Register();
     TestLang.Init();
   }
@@ -23,8 +21,7 @@ internal static class ModuleInit
 /// requires the exact type), pipe runs registered with the graph, and loose <see cref="PipeNetwork"/>
 /// instances for pool/merge math that does not depend on a burst ceiling.
 /// </summary>
-public static class PipeTestWorld
-{
+public static class PipeTestWorld {
   /// <summary>Litres a single pipe holds at 1 atm - the value the production code reads from config.</summary>
   public const float LitresPerPipe = 30f;
 
@@ -37,8 +34,7 @@ public static class PipeTestWorld
     string material = "iron",
     int id = 1,
     string orientation = "ns"
-  )
-  {
+  ) {
     var pipe = TestBlocks.Configure(
       new BlockPipe(),
       $"ppex:pipe-straight-{material}-{orientation}",
@@ -61,8 +57,7 @@ public static class PipeTestWorld
     int length,
     string material = "iron",
     bool capEnds = false
-  )
-  {
+  ) {
     var world = new TestWorld();
     world.RegisterNetwork("pipe", sys => new PipeNetwork(sys));
 
@@ -70,8 +65,7 @@ public static class PipeTestWorld
     for (int z = 0; z < length; z++)
       world.Place(new BlockPos(0, 0, z), pipe);
 
-    if (capEnds)
-    {
+    if (capEnds) {
       var rock = TestBlocks.Configure(new Block(), "game:rock", 99);
       world.Place(new BlockPos(0, 0, -1), rock);
       world.Place(new BlockPos(0, 0, length), rock);
@@ -93,8 +87,7 @@ public static class PipeTestWorld
     BlockNetworkModSystem system,
     int nodeCount,
     int baseZ = 0
-  )
-  {
+  ) {
     var net = new PipeNetwork(system);
     for (int i = 0; i < nodeCount; i++)
       net.Nodes.Add(new BlockPos(0, 0, baseZ + i));

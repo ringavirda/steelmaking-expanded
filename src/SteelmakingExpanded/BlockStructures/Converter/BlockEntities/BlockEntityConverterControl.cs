@@ -27,8 +27,7 @@ namespace SteelmakingExpanded.BlockStructures.Converter.BlockEntities;
 /// resolving their structure-local offsets through <see cref="GetGlobalPos"/>.
 /// </summary>
 [BlockEntityRegister]
-public class BlockEntityConverterControl : BlockEntityMultiblockStructure
-{
+public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
   #region Structure-local peripheral offsets
   private static readonly (int x, int y, int z) TransmissionLocal = (0, -1, 0);
   private static readonly (int x, int y, int z) ConverterLocal = (0, 0, 2);
@@ -82,8 +81,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
 
   #region Lifecycle
 
-  public override void Initialize(ICoreAPI api)
-  {
+  public override void Initialize(ICoreAPI api) {
     base.Initialize(api);
     _animatable = GetBehavior<BEBehaviorAnimatable>();
 
@@ -91,8 +89,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
     // production tick (which can fire before the slower completion tick).
     UpdateStructureRotation();
 
-    if (api is ICoreClientAPI capi && _animatable != null)
-    {
+    if (api is ICoreClientAPI capi && _animatable != null) {
       Shape? shape = capi
         .Assets.TryGet(
           Block
@@ -118,22 +115,18 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
 
   #region Production tick (server only, started by base when StructureComplete)
 
-  protected override void OnProductionTick(float dt)
-  {
-    if (!StructureComplete || !IsConverterConstructed())
-    {
+  protected override void OnProductionTick(float dt) {
+    if (!StructureComplete || !IsConverterConstructed()) {
       SetStatus(Lang.Get("smex:bessemer-status-notbuilt"));
       return;
     }
 
-    if (!IsGasIntakeAligned())
-    {
+    if (!IsGasIntakeAligned()) {
       SetStatus(Lang.Get("smex:bessemer-status-misaligned"));
       return;
     }
 
-    if (!IsTransmissionAligned())
-    {
+    if (!IsTransmissionAligned()) {
       SetStatus(Lang.Get("smex:bessemer-status-transmission-misaligned"));
       return;
     }
@@ -141,8 +134,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
     UpdateSolidified();
     SyncContentCooldown();
 
-    switch (OpState)
-    {
+    switch (OpState) {
       case ConverterOpState.Filling:
         TickFilling(dt);
         break;
@@ -155,26 +147,22 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
     }
   }
 
-  private void TickNormal(float dt)
-  {
+  private void TickNormal(float dt) {
     // Idle while holding the charge; run the bessemer refining process if the
     // charge is molten iron and the gas intake is fed blast.
-    if (_content == null || _contentUnits <= 0)
-    {
+    if (_content == null || _contentUnits <= 0) {
       SetStatus(Lang.Get("smex:bessemer-status-empty"));
       return;
     }
 
-    if (_solidified)
-    {
+    if (_solidified) {
       SetStatus(SolidifiedStatus());
       return;
     }
 
     // Refining applies only to molten iron: steel just waits to be poured, anything else is
     // foreign. Either way stop here so no blast is drawn and no process particles are emitted.
-    if (!IsMoltenIron())
-    {
+    if (!IsMoltenIron()) {
       bool isSteel = _content.Collectible.Code.ToString() == SteelCode;
       SetStatus(
         Lang.Get(
@@ -188,8 +176,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
 
     // Refining: requires blast from the gas intake (consumes BessemerBlastPerSecond L/s).
     float consumed = TryConsumeBlast(BlastPerSecond * dt);
-    if (consumed <= 0f)
-    {
+    if (consumed <= 0f) {
       SetStatus(
         Lang.Get("smex:bessemer-status-refining-paused", FormatProgress())
       );
@@ -232,10 +219,8 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
     MarkDirty();
   }
 
-  private void TickFilling(float dt)
-  {
-    if (_solidified)
-    {
+  private void TickFilling(float dt) {
+    if (_solidified) {
       SetStatus(SolidifiedStatus());
       return;
     }
@@ -244,20 +229,17 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
 
     // Respect the tap's open/closed state: a closed tap's cell still receives metal from the
     // network, so check it here or the vessel would fill through a shut tap.
-    if (inputCell is BlockEntityMoltenCanalTap { IsPouring: false })
-    {
+    if (inputCell is BlockEntityMoltenCanalTap { IsPouring: false }) {
       SetStatus(Lang.Get("smex:bessemer-status-filling-tapclosed"));
       return;
     }
 
-    if (inputCell == null || !inputCell.HasMoltenMetal)
-    {
+    if (inputCell == null || !inputCell.HasMoltenMetal) {
       SetStatus(Lang.Get("smex:bessemer-status-filling-nometal"));
       return;
     }
 
-    if (_contentUnits >= CapacityUnits)
-    {
+    if (_contentUnits >= CapacityUnits) {
       SetStatus(Lang.Get("smex:bessemer-status-filling-full"));
       return;
     }
@@ -266,8 +248,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
     if (
       _content != null
       && _content.Collectible.Code.ToString() != inputCell.CellMetalType
-    )
-    {
+    ) {
       SetStatus(Lang.Get("smex:bessemer-status-filling-mismatch"));
       return;
     }
@@ -314,23 +295,19 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
     MarkDirty();
   }
 
-  private void TickPouring(float dt)
-  {
-    if (_content == null || _contentUnits <= 0)
-    {
+  private void TickPouring(float dt) {
+    if (_content == null || _contentUnits <= 0) {
       SetStatus(Lang.Get("smex:bessemer-status-pouring-empty"));
       return;
     }
 
-    if (_solidified)
-    {
+    if (_solidified) {
       SetStatus(SolidifiedStatus());
       return;
     }
 
     var outputCell = GetMoltenCell(OutputStartLocal);
-    if (outputCell == null)
-    {
+    if (outputCell == null) {
       SetStatus(Lang.Get("smex:bessemer-status-pouring-nocanal"));
       return;
     }
@@ -340,8 +317,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
       Math.Max(1, (int)(CapacityUnits * dt))
     );
     float accepted = outputCell.PushMetal(amount, _content, Api.World);
-    if (accepted <= 0f)
-    {
+    if (accepted <= 0f) {
       // Output canal full: keep bathing it in our hot content so it stays molten and keeps
       // feeding downstream instead of cooling to a plug. Mirrors the furnace tap's heat soak.
       outputCell.SoakHeat(
@@ -362,15 +338,12 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
       1500,
       0.6f
     );
-    if (_contentUnits <= 0)
-    {
+    if (_contentUnits <= 0) {
       _contentUnits = 0;
       _content = null;
       _processSeconds = 0f;
       SetStatus(Lang.Get("smex:bessemer-status-emptied"));
-    }
-    else
-    {
+    } else {
       SetStatus(
         Lang.Get("smex:bessemer-status-pouring", _contentUnits, CapacityUnits)
       );
@@ -378,8 +351,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
     MarkDirty();
   }
 
-  private void CompleteRefining()
-  {
+  private void CompleteRefining() {
     float temp = MoltenMetal.GetTemperature(Api.World, _content!);
     ItemStack? steelStack = MoltenMetal.CreateStack(
       Api.World,
@@ -405,14 +377,12 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
   // baseline to the current temperature (see MoltenMetal.SyncCooldownSpeed) so the new rate applies from
   // this tick forward even when the charge has been sitting idle (its timestamp would otherwise be stale,
   // and rewriting the rate alone would retro-apply it across that whole idle span).
-  private void SyncContentCooldown()
-  {
+  private void SyncContentCooldown() {
     if (_content != null)
       MoltenMetal.SyncCooldownSpeed(Api.World, _content, ContentCooldownSpeed);
   }
 
-  private void HoldTemperature(float dt)
-  {
+  private void HoldTemperature(float dt) {
     if (_content == null)
       return;
     float temp = MoltenMetal.GetTemperature(Api.World, _content);
@@ -420,12 +390,9 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
     MoltenMetal.SetTemperature(Api.World, _content, target);
   }
 
-  private void UpdateSolidified()
-  {
-    if (_content == null || _contentUnits <= 0)
-    {
-      if (_solidified)
-      {
+  private void UpdateSolidified() {
+    if (_content == null || _contentUnits <= 0) {
+      if (_solidified) {
         _solidified = false;
         SyncConverter();
       }
@@ -435,8 +402,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
     bool nowSolid =
       MoltenMetal.GetTemperature(Api.World, _content)
       < MoltenMetal.MeltingPointOf(Api.World, _content);
-    if (nowSolid != _solidified)
-    {
+    if (nowSolid != _solidified) {
       _solidified = nowSolid;
       if (nowSolid)
         ExSounds.Play(Api, Pos, ExSounds.Extinguish, 0.7f);
@@ -470,8 +436,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
     Api.World.BlockAccessor.GetBlockEntity(PeripheralPos(local))
     as BlockEntityMoltenCanal;
 
-  private float TryConsumeBlast(float amount)
-  {
+  private float TryConsumeBlast(float amount) {
     // The intake is a fixed connector, not a node - the blast network lives in the cell across
     // its connector face, not in the intake cell.
     BlockPos intakePos = PeripheralPos(GasIntakeLocal);
@@ -501,8 +466,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
   }
 
   /// <summary>True if the transmission's mechanical network is turning.</summary>
-  public bool HasPower()
-  {
+  public bool HasPower() {
     var be = Api.World.BlockAccessor.GetBlockEntity(
       PeripheralPos(TransmissionLocal)
     );
@@ -531,8 +495,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
   /// The gas intake must face the same way as the control (matching <c>side</c> variant) or its
   /// blast connector won't line up. The multiblock check accepts any orientation, so validate here.
   /// </summary>
-  public bool IsGasIntakeAligned()
-  {
+  public bool IsGasIntakeAligned() {
     Block intake = Api.World.BlockAccessor.GetBlock(
       PeripheralPos(GasIntakeLocal)
     );
@@ -546,8 +509,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
   /// The transmission must face the same way as the control (matching "side" variant) or its axle
   /// connector won't line up. Validated here like the gas intake.
   /// </summary>
-  public bool IsTransmissionAligned()
-  {
+  public bool IsTransmissionAligned() {
     Block trans = Api.World.BlockAccessor.GetBlock(
       PeripheralPos(TransmissionLocal)
     );
@@ -567,8 +529,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
     && _content.Collectible.Code.ToString() == IronCode
     && MoltenMetal.IsLiquid(Api.World, _content);
 
-  private string FormatProgress()
-  {
+  private string FormatProgress() {
     int pct = (int)(100f * _processSeconds / Math.Max(1f, ProcessDurationSec));
     return $"{GameMath.Clamp(pct, 0, 100)}%";
   }
@@ -582,31 +543,25 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
   /// operating mode: structure complete, vessel constructed, peripherals aligned,
   /// and mechanical power present. Returns false with a player-facing reason.
   /// </summary>
-  public bool CanOperate(out string error)
-  {
+  public bool CanOperate(out string error) {
     error = "";
-    if (!StructureComplete)
-    {
+    if (!StructureComplete) {
       error = Lang.Get("smex:bessemer-err-incomplete");
       return false;
     }
-    if (!IsConverterConstructed())
-    {
+    if (!IsConverterConstructed()) {
       error = Lang.Get("smex:bessemer-err-notbuilt");
       return false;
     }
-    if (!IsGasIntakeAligned())
-    {
+    if (!IsGasIntakeAligned()) {
       error = Lang.Get("smex:bessemer-err-intake-misaligned");
       return false;
     }
-    if (!IsTransmissionAligned())
-    {
+    if (!IsTransmissionAligned()) {
       error = Lang.Get("smex:bessemer-err-transmission-misaligned");
       return false;
     }
-    if (!HasPower())
-    {
+    if (!HasPower()) {
       error = Lang.Get("smex:bessemer-err-nopower");
       return false;
     }
@@ -622,8 +577,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
     IPlayer byPlayer,
     ConverterOpState newState,
     out string error
-  )
-  {
+  ) {
     if (!CanOperate(out error))
       return false;
 
@@ -631,17 +585,14 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
       return true;
 
     OpState = newState;
-    if (Api.Side == EnumAppSide.Server)
-    {
+    if (Api.Side == EnumAppSide.Server) {
       // Heavy door-style clunk as the vessel lever is set to fill / pour / hold,
       // layered over the grind of the heavy vessel rotating on its trunnions.
       ExSounds.Play(Api, Pos, ExSounds.CokeOvenDoorOpen, 0.9f);
       ExSounds.Play(Api, Pos.AddCopy(0, 0, 2), ExSounds.MetalGrinding, 0.7f);
       SyncConverter();
       MarkDirty(true);
-    }
-    else
-    {
+    } else {
       ApplyControlPose();
     }
     return true;
@@ -656,11 +607,9 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
   /// gears and rods from the player's hotbar. Returns false (with reason) if the
   /// converter already exists, the cell is blocked, or materials are missing.
   /// </summary>
-  public bool TrySpawnConverter(IPlayer byPlayer, out string error)
-  {
+  public bool TrySpawnConverter(IPlayer byPlayer, out string error) {
     error = "";
-    if (IsConverterPresent())
-    {
+    if (IsConverterPresent()) {
       error = Lang.Get("smex:bessemer-err-converter-present");
       return false;
     }
@@ -670,8 +619,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
 
     BlockPos pos = PeripheralPos(ConverterLocal);
     Block existing = Api.World.BlockAccessor.GetBlock(pos);
-    if (existing.Id != 0 && !existing.IsReplacableBy(converter))
-    {
+    if (existing.Id != 0 && !existing.IsReplacableBy(converter)) {
       error = Lang.Get("smex:bessemer-err-converter-blocked");
       return false;
     }
@@ -684,8 +632,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
       pos,
       fillerAngle
     );
-    if (!StructureFillers.CanPlace(Api.World, fillerCells))
-    {
+    if (!StructureFillers.CanPlace(Api.World, fillerCells)) {
       error = Lang.Get("smex:bessemer-err-converter-blocked");
       return false;
     }
@@ -694,8 +641,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
     bool isCreative =
       byPlayer.WorldData?.CurrentGameMode == EnumGameMode.Creative;
 
-    if (!isCreative && !HasSpawnMaterials(byPlayer))
-    {
+    if (!isCreative && !HasSpawnMaterials(byPlayer)) {
       error = Lang.Get(
         "smex:bessemer-err-materials",
         SmexValues.BessemerRequiredGears,
@@ -722,8 +668,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
     return true;
   }
 
-  private Block? GetConverterBlock()
-  {
+  private Block? GetConverterBlock() {
     string side = Block.Variant["side"];
     return Api.World.GetBlock(
       new AssetLocation("smex:converterbessemer-" + side)
@@ -747,8 +692,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
     && ExInventory.CountHotbar(byPlayer, IsSpawnRod)
       >= SmexValues.BessemerRequiredRods;
 
-  private void ConsumeSpawnMaterials(IPlayer byPlayer)
-  {
+  private void ConsumeSpawnMaterials(IPlayer byPlayer) {
     ExInventory.TakeHotbar(
       byPlayer,
       IsSpawnGear,
@@ -769,8 +713,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
   /// Called by the converter block when it is broken. Returns the solidified
   /// drops (bits/slag) to scatter, and clears the charge regardless.
   /// </summary>
-  public ItemStack? OnConverterBroken()
-  {
+  public ItemStack? OnConverterBroken() {
     ItemStack? drops = null;
     if (_solidified && _content != null && _contentUnits > 0)
       drops = BuildSolidifiedDrops();
@@ -784,8 +727,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
     return drops;
   }
 
-  private ItemStack? BuildSolidifiedDrops()
-  {
+  private ItemStack? BuildSolidifiedDrops() {
     // Breaking the vessel mangles part of the charge: drop a random few units less than chiselling
     // would recover.
     int randLoss = Random.Shared.Next(3) * 5;
@@ -838,8 +780,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
   /// (full amount, no break loss), and clears the charge. Returns <c>null</c> off-server or when the
   /// charge is not chiselable.
   /// </summary>
-  public ItemStack? ChiselOutContent()
-  {
+  public ItemStack? ChiselOutContent() {
     if (Api?.Side != EnumAppSide.Server || !CanChiselOut())
       return null;
 
@@ -857,8 +798,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
   //  - too large a residue to chisel  -> break the vessel to salvage it;
   //  - small, but still too hot        -> wait for it to harden, then chisel (it can't be chipped yet);
   //  - small and fully hardened        -> chisel it out from the upper hatch.
-  private string SolidifiedStatus()
-  {
+  private string SolidifiedStatus() {
     if (_contentUnits >= ChiselMaxFraction * CapacityUnits)
       return Lang.Get("smex:bessemer-status-solidified");
 
@@ -873,24 +813,21 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
 
   #region Animation
 
-  private void ApplyControlPose()
-  {
+  private void ApplyControlPose() {
     if (Api is not ICoreClientAPI || _animatable == null)
       return;
 
     _animatable.animUtil.StopAnimation("filling");
     _animatable.animUtil.StopAnimation("pouring");
 
-    string? code = OpState switch
-    {
+    string? code = OpState switch {
       ConverterOpState.Filling => "filling",
       ConverterOpState.Pouring => "pouring",
       _ => null,
     };
     if (code != null)
       _animatable.animUtil.StartAnimation(
-        new AnimationMetaData
-        {
+        new AnimationMetaData {
           Animation = code,
           Code = code,
           AnimationSpeed = 3.0f, // lever pull - quick
@@ -900,17 +837,14 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
       );
   }
 
-  private void SyncConverter()
-  {
+  private void SyncConverter() {
     GetConverter()?.UpdateMirror(_solidified, _contentUnits, OpState);
   }
 
   protected override void OnStructureCompleted() => SyncConverter();
 
-  protected override void OnStructureLost()
-  {
-    if (OpState != ConverterOpState.Normal)
-    {
+  protected override void OnStructureLost() {
+    if (OpState != ConverterOpState.Normal) {
       OpState = ConverterOpState.Normal;
       ApplyControlPose();
     }
@@ -920,8 +854,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
 
   #region Abstract impls
 
-  protected override void UpdateStructureRotation()
-  {
+  protected override void UpdateStructureRotation() {
     if (Block == null)
       return;
 
@@ -948,15 +881,12 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
   /// process, power, status) is shown on the converter vessel itself - see
   /// <see cref="AppendStructureState"/>, which the converter forwards to.
   /// </summary>
-  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
-  {
-    if (!StructureComplete)
-    {
+  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc) {
+    if (!StructureComplete) {
       dsc.AppendLine(Lang.Get("smex:bessemer-info-incomplete"));
       return;
     }
-    if (!IsConverterConstructed())
-    {
+    if (!IsConverterConstructed()) {
       dsc.AppendLine(Lang.Get("smex:bessemer-info-notbuilt"));
       return;
     }
@@ -977,32 +907,26 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
   /// converter vessel's <c>GetBlockInfo</c> so the player reads the state off the
   /// big block they are naturally looking at, rather than the small control.
   /// </summary>
-  public void AppendStructureState(IPlayer forPlayer, StringBuilder dsc)
-  {
-    if (!StructureComplete)
-    {
+  public void AppendStructureState(IPlayer forPlayer, StringBuilder dsc) {
+    if (!StructureComplete) {
       dsc.AppendLine(Lang.Get("smex:bessemer-info-incomplete"));
       return;
     }
-    if (!IsConverterConstructed())
-    {
+    if (!IsConverterConstructed()) {
       dsc.AppendLine(Lang.Get("smex:bessemer-info-notbuilt"));
       return;
     }
-    if (!IsGasIntakeAligned())
-    {
+    if (!IsGasIntakeAligned()) {
       dsc.AppendLine(Lang.Get("smex:bessemer-info-intake-misaligned"));
       return;
     }
-    if (!IsTransmissionAligned())
-    {
+    if (!IsTransmissionAligned()) {
       dsc.AppendLine(Lang.Get("smex:bessemer-info-transmission-misaligned"));
       return;
     }
 
     // Only the charge (amount/metal/temp) is unique info; empty/solidified are in the status line.
-    if (_content != null && _contentUnits > 0)
-    {
+    if (_content != null && _contentUnits > 0) {
       float temp = _content.Collectible.GetTemperature(Api.World, _content);
       string path = _content.Collectible.Code.Path;
       string metal = path.StartsWith("ingot-") ? path[6..] : path;
@@ -1020,8 +944,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
     dsc.AppendLine(Lang.Get("smex:bessemer-info-status", _status));
   }
 
-  private void SetStatus(string status)
-  {
+  private void SetStatus(string status) {
     if (_status == status)
       return;
     _status = status;
@@ -1033,8 +956,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
 
   #region Serialization
 
-  public override void ToTreeAttributes(ITreeAttribute tree)
-  {
+  public override void ToTreeAttributes(ITreeAttribute tree) {
     base.ToTreeAttributes(tree);
     tree.SetInt("opState", (int)OpState);
     tree.SetItemstack("content", _content);
@@ -1047,8 +969,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure
   public override void FromTreeAttributes(
     ITreeAttribute tree,
     IWorldAccessor worldForResolving
-  )
-  {
+  ) {
     base.FromTreeAttributes(tree, worldForResolving);
     var prevState = OpState;
     OpState = (ConverterOpState)tree.GetInt("opState");

@@ -16,8 +16,7 @@ namespace ExpandedLib.Blocks.Migrations;
 /// table can never resolve an item code, silently delete it as if it were a purge.
 /// </para>
 /// </summary>
-public interface IItemCodeMigration
-{
+public interface IItemCodeMigration {
   /// <summary>Short human-readable name, used only for log output.</summary>
   string Name { get; }
 

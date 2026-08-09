@@ -5,6 +5,57 @@ All notable changes to this mod are documented here. The format is based on
 [Semantic Versioning](https://semver.org/). For changes before this file existed,
 see the git history.
 
+## [0.7.1] - 2026-08-09
+
+### Added
+
+- **Footprint cells can host block-entity behaviours.** A mega-block's `fillerOffsets`
+  entry may now declare `behaviors: [{ code, face, properties }]`; the invisible filler
+  at that cell instantiates each behaviour on the principal's behalf and hands it the
+  connector face already rotated into the placed orientation. Mechanical-power discovery
+  is position-local, so a machine can only accept an axle at the cell the axle touches -
+  this is how a machine several cells wide couples to a shaft.
+- **`BEBehaviorMPFillerPort`** - a minimal mechanical-power node for exactly that: it
+  renders nothing, loads the network with a configurable resistance, and exposes the
+  network's speed and angle for the principal to drive its parts by. Couples on both ends
+  of its axis, so an axle can run straight through.
+- **`MPAnim`** - phase-lock helpers for a part that must turn in step with an axle rather
+  than merely at the same rate.
+- **Item code migrations.** `IItemCodeMigration` declares item-side renames alongside the
+  existing block-side `IBlockCodeMigration`.
+
+### Fixed
+
+- **Hiding content no longer crashes the client.** Disabling registered content cleared
+  its creative tabs to a null. The game walks every collectible and reads that array's
+  length without a null guard while building the interaction help for an attachable
+  entity, so the client crashed the moment a player looked at a boat, a raft or a mount.
+  The array is now emptied rather than nulled, which hides the content identically.
+- **Migrations no longer confuse an item with a block of the same code.** Every stack was
+  matched against one table keyed by code, so an item sharing a block's code could be
+  rewritten into that block, or deleted outright as an unresolvable purge. Stacks now
+  route by class through separate tables.
+- **A tick that ran long no longer detonates machinery.** Production and network ticks
+  forwarded the engine's delta verbatim, and the grace timers downstream accumulate
+  against a threshold with no per-step bound - so one overlong server tick could cross a
+  boiler's 30 s over-pressure grace in a single call. Both sites now cap the step.
+- **A structure's rotation is established when it loads,** not three ticks later. The
+  angle started unset and was only assigned by a slow monitor tick, and the unset value
+  read as "unrotated" - so a rotated machine briefly resolved every structure-local
+  offset to the wrong block.
+- **Orientation relaxation actually relaxes.** Single-letter orientation codes were passed
+  to a lookup that wants the full word and returns null for every letter, so the fallback
+  removed nothing; a network node with a connector against a wall then read as unsupported
+  and broke itself out of the world.
+- **An unreadable config file is backed up, not overwritten.** Loading ended in an
+  unconditional write, so any path that failed to reproduce a player's values replaced
+  their file with defaults - and a blank file deserialises to null rather than throwing,
+  so the most destructive case logged nothing. Unreadable files are copied to
+  `<name>.corrupt` first, and only the server writes, so a singleplayer session's client
+  and server no longer race over one file.
+- **Machine sound loops are typed as ambience** rather than as effects, so accessibility
+  mods can list and mute them.
+
 ## [0.7.0] - 2026-06-21
 
 ### Added

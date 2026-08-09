@@ -23,8 +23,7 @@ public partial class BlockManualFluidPump
   : Block,
     INetworkConnector,
     IFillerInteractionTarget,
-    IFillerHost
-{
+    IFillerHost {
   public string NetworkType => "pipe";
 
   /// <summary>Horizontal placement angle (north 0, west 90, south 180, east 270).</summary>
@@ -48,14 +47,12 @@ public partial class BlockManualFluidPump
     IPlayer byPlayer,
     BlockSelection blockSel,
     ref string failureCode
-  )
-  {
+  ) {
     if (!base.CanPlaceBlock(world, byPlayer, blockSel, ref failureCode))
       return false;
 
     var cells = StructureFillers.FootprintCells(this, blockSel.Position, Angle);
-    if (!StructureFillers.CanPlace(world, cells))
-    {
+    if (!StructureFillers.CanPlace(world, cells)) {
       failureCode = "notenoughspace";
       return false;
     }
@@ -66,8 +63,7 @@ public partial class BlockManualFluidPump
     IWorldAccessor world,
     BlockPos blockPos,
     ItemStack? byItemStack = null
-  )
-  {
+  ) {
     base.OnBlockPlaced(world, blockPos, byItemStack);
     StructureFillers.PlaceFillers(
       world,
@@ -81,8 +77,7 @@ public partial class BlockManualFluidPump
     BlockPos pos,
     IPlayer? byPlayer,
     float dropQuantityMultiplier = 1f
-  )
-  {
+  ) {
     StructureFillers.RemoveFillers(
       world,
       pos,
@@ -120,8 +115,7 @@ public partial class BlockManualFluidPump
     IWorldAccessor world,
     IPlayer byPlayer,
     BlockPos pumpPos
-  )
-  {
+  ) {
     if (byPlayer.InventoryManager?.ActiveHotbarSlot?.Empty != true)
       return null;
     if (
@@ -153,8 +147,7 @@ public partial class BlockManualFluidPump
     IWorldAccessor world,
     IPlayer byPlayer,
     BlockPos pumpPos
-  )
-  {
+  ) {
     // Keep cranking only while the hand stays empty; a held item ends the hold.
     if (byPlayer.InventoryManager?.ActiveHotbarSlot?.Empty != true)
       return false;
@@ -183,8 +176,7 @@ public partial class BlockManualFluidPump
     BlockPos clickedCell
   ) => HandleStop(world, principalSel.Position);
 
-  private static void HandleStop(IWorldAccessor world, BlockPos pumpPos)
-  {
+  private static void HandleStop(IWorldAccessor world, BlockPos pumpPos) {
     if (
       world.BlockAccessor.GetBlockEntity(pumpPos)
       is BlockEntityManualFluidPump be
@@ -209,14 +201,12 @@ public partial class BlockManualFluidPump
     IWorldAccessor world,
     BlockSelection selection,
     IPlayer forPlayer
-  )
-  {
+  ) {
     var help = new List<WorldInteraction>(
       base.GetPlacedBlockInteractionHelp(world, selection, forPlayer) ?? []
     );
     help.Add(
-      new WorldInteraction
-      {
+      new WorldInteraction {
         ActionLangCode = "ppex:blockhelp-manualfluidpump-crank",
         MouseButton = EnumMouseButton.Right,
         RequireFreeHand = true,

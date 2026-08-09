@@ -33,7 +33,7 @@ down.
 | Quantity | Unit | Notes |
 |---|---|---|
 | Metal mass | **units (u)** | Vanilla: 100 u = 1 ingot. |
-| Fluid/gas volume | **litres (L)** *(live)* | Pipe segment = 10 L *(live)*. Litres everywhere, never m^3. |
+| Fluid/gas volume | **litres (L)** *(live)* | Pipe segment = 30 L *(live)*. Litres everywhere, never m^3. |
 | Mechanical power | **MP** *(live)* | Vanilla MP network; constant-power generator model (Sec 5.3). |
 | Steam/water flow | **L/s** | Per-tick flow EMA-smoothed for the throughput readout *(live)*. |
 | Temperature | **degC** | One network-wide pipe temperature *(live)*; molten canals are per-cell. |
@@ -528,7 +528,7 @@ Crucible steel is **not** vanilla steel; it is a separate high-carbon tool alloy
 | Process | Machine | Input -> Output |
 |---|---|---|
 | Raise steam | **Cornish boiler** | water (pipe) + fuel -> **LP steam** + heat; shared tank, ~3-min heat-up *(live)* |
-| Steam -> power | **Watt engine** | LP steam (**fixed draw** ~20 L/s, no governor) -> engine power; **condensate** returned/spilled if unpiped *(live)* |
+| Steam -> power | **Watt engine** | LP steam (**fixed draw** 30 L/s, no governor) -> engine power; **condensate** returned/spilled if unpiped *(live)* |
 | Pump water | Fluid pump (sub-machine) | engine + intake -> **water @ 16.67 L/s** *(live)* |
 | Blow air | Air blower (sub-machine) | engine -> **compressed air @ 48 L/s** *(live)* |
 | Transmit power | Flywheel (sub-machine) | engine -> **MP network** (hammers/mills) |
@@ -1186,9 +1186,9 @@ scale. (u/s are nominal full-margin maxima, Sec 6; costs from the table above, i
 - **Coke per pig:** cold blast **~0.5 u/u**, hot blast **~0.25 u/u**, large furnace **~0.2 u/u**. The
   hot-blast payoff = **half the coke at 1.5x the rate** - the whole reason to build cowpers. Coke oven
   yields ~1 coke-u per coal-u (gasworks trades some coke for more gas).
-- **Water -> steam = 1 L : 1 L** in the sim (the boiler converts litre-for-litre; **pressure** is the
+- **Water -> steam = 1 L : 16 L** in the sim (the boiler converts litre-for-litre; **pressure** is the
   separate state, Sec 5.2). The engine **returns condensate**, so the **16.67 L/s pump** *(live)* covers
-  make-up + margin against the ~20 L/s *(live)* Watt draw - only spill/leak loss needs topping up.
+  make-up + margin against the 30 L/s *(live)* Watt draw - only spill/leak loss needs topping up.
 - **Line shape = 1 furnace : 3 converters : 1 ladle : 1 mill : 1 hammer.** The **large** furnace
   (135 u/s) scales to **~8-9 converters** + 1-2 mills - a deliberate community-scale steel works.
 

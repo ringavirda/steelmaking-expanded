@@ -13,13 +13,11 @@ namespace SteelmakingExpanded.BlockNetworkMolten;
 /// connectivity plus the per-tick driver that flows metal cell-to-cell (level-equalisation) and
 /// runs each cell's cooling. Because cells own their metal, merge/split need no redistribution.
 /// </summary>
-public class MoltenNetwork(BlockNetworkModSystem system) : BlockNetwork(system)
-{
+public class MoltenNetwork(BlockNetworkModSystem system) : BlockNetwork(system) {
   public override string NetworkType => "molten";
 
   /// <summary>Maps a molten metal item to its solid drop ("game:ingot-iron" → "game:metalbit-iron"); non-ingot items drop as themselves.</summary>
-  internal static AssetLocation SolidDropLocation(AssetLocation metalItemLoc)
-  {
+  internal static AssetLocation SolidDropLocation(AssetLocation metalItemLoc) {
     if (metalItemLoc.Path.StartsWith("ingot-"))
       return new AssetLocation(
         metalItemLoc.Domain,
@@ -31,12 +29,10 @@ public class MoltenNetwork(BlockNetworkModSystem system) : BlockNetwork(system)
   // Resolved once from the first loaded node's BE (a network never moves between worlds).
   private IWorldAccessor? _world;
 
-  private IWorldAccessor? GetWorld(IBlockAccessor blockAccessor)
-  {
+  private IWorldAccessor? GetWorld(IBlockAccessor blockAccessor) {
     if (_world != null)
       return _world;
-    foreach (var pos in Nodes)
-    {
+    foreach (var pos in Nodes) {
       if (
         blockAccessor.GetBlockEntity(pos) is BlockEntity be
         && be.Api?.World != null
@@ -46,8 +42,7 @@ public class MoltenNetwork(BlockNetworkModSystem system) : BlockNetwork(system)
     return null;
   }
 
-  private static int ComparePos(BlockPos a, BlockPos b)
-  {
+  private static int ComparePos(BlockPos a, BlockPos b) {
     int c = a.X.CompareTo(b.X);
     if (c != 0)
       return c;
@@ -68,11 +63,9 @@ public class MoltenNetwork(BlockNetworkModSystem system) : BlockNetwork(system)
   private Dictionary<BlockPos, int> GetDistanceFromStart(
     IBlockAccessor blockAccessor,
     List<BlockEntityMoltenCanal> cells
-  )
-  {
+  ) {
     var sig = ComputeTopologySignature(cells);
-    if (_cachedDistFromStart == null || sig != _cachedTopoSig)
-    {
+    if (_cachedDistFromStart == null || sig != _cachedTopoSig) {
       _cachedDistFromStart = BuildDistanceFromStart(blockAccessor, cells);
       _cachedTopoSig = sig;
     }
@@ -86,12 +79,10 @@ public class MoltenNetwork(BlockNetworkModSystem system) : BlockNetwork(system)
   /// </summary>
   private static (int, long, long) ComputeTopologySignature(
     List<BlockEntityMoltenCanal> cells
-  )
-  {
+  ) {
     long posHash = 0;
     long startHash = 0;
-    foreach (var c in cells)
-    {
+    foreach (var c in cells) {
       long h = unchecked(
         (long)((uint)c.Pos.GetHashCode() * 0x9E3779B97F4A7C15UL)
       );
@@ -110,26 +101,22 @@ public class MoltenNetwork(BlockNetworkModSystem system) : BlockNetwork(system)
   private Dictionary<BlockPos, int> BuildDistanceFromStart(
     IBlockAccessor blockAccessor,
     List<BlockEntityMoltenCanal> cells
-  )
-  {
+  ) {
     var dist = new Dictionary<BlockPos, int>(cells.Count);
     var queue = new Queue<BlockPos>();
     foreach (var c in cells)
-      if (c is BlockEntityMoltenCanalStart)
-      {
+      if (c is BlockEntityMoltenCanalStart) {
         dist[c.Pos] = 0;
         queue.Enqueue(c.Pos);
       }
 
-    while (queue.Count > 0)
-    {
+    while (queue.Count > 0) {
       BlockPos cur = queue.Dequeue();
       int next = dist[cur] + 1;
       if (blockAccessor.GetBlockEntity(cur)?.Block is not BlockNetworkNode node)
         continue;
 
-      foreach (var face in BlockFacing.HORIZONTALS)
-      {
+      foreach (var face in BlockFacing.HORIZONTALS) {
         if (!node.HasConnectorAt(face))
           continue;
         BlockPos npos = cur.AddCopy(face);
@@ -153,8 +140,7 @@ public class MoltenNetwork(BlockNetworkModSystem system) : BlockNetwork(system)
     BlockEntityMoltenCanal x,
     BlockEntityMoltenCanal y,
     Dictionary<BlockPos, int> dist
-  )
-  {
+  ) {
     int dx = dist.TryGetValue(x.Pos, out int vx) ? vx : int.MaxValue;
     int dy = dist.TryGetValue(y.Pos, out int vy) ? vy : int.MaxValue;
     int c = dy.CompareTo(dx); // descending distance: farthest processed first
@@ -166,8 +152,7 @@ public class MoltenNetwork(BlockNetworkModSystem system) : BlockNetwork(system)
     IBlockAccessor blockAccessor,
     float dt,
     BlockNetworkModSystem manager
-  )
-  {
+  ) {
     var world = GetWorld(blockAccessor);
     if (world == null)
       return;
@@ -187,13 +172,11 @@ public class MoltenNetwork(BlockNetworkModSystem system) : BlockNetwork(system)
       c.EnsureMetalStack(world);
 
     int maxFlow = SmexValues.MoltenFlowRate;
-    foreach (var a in cells)
-    {
+    foreach (var a in cells) {
       if (a.Sealed || a.Solidified || a.Block is not BlockNetworkNode aNode)
         continue;
 
-      foreach (var face in BlockFacing.HORIZONTALS)
-      {
+      foreach (var face in BlockFacing.HORIZONTALS) {
         if (!aNode.HasConnectorAt(face))
           continue;
         BlockPos npos = a.Pos.AddCopy(face);
@@ -223,8 +206,7 @@ public class MoltenNetwork(BlockNetworkModSystem system) : BlockNetwork(system)
     BlockEntityMoltenCanal bNode,
     int maxFlow,
     IWorldAccessor world
-  )
-  {
+  ) {
     var aCap = aNode.MaxUnitCapacity;
     var bCap = bNode.MaxUnitCapacity;
     if (aCap <= 0 || bCap <= 0)

@@ -10,8 +10,7 @@ namespace ExpandedLib.Helpers;
 /// covers the survival asset folder). Playing on the server replicates to nearby clients;
 /// the helpers do the side-checking where noted.
 /// </summary>
-public static class ExSounds
-{
+public static class ExSounds {
   // Molten / heat
   public static readonly AssetLocation Sizzle = new("game:sounds/sizzle");
   public static readonly AssetLocation MoltenMetal = new(
@@ -139,8 +138,7 @@ public static class ExSounds
     AssetLocation sound,
     float volume = 1f,
     float range = 24f
-  )
-  {
+  ) {
     if (api == null || api.Side != EnumAppSide.Server)
       return;
     api.World.PlaySoundAt(
@@ -167,8 +165,7 @@ public static class ExSounds
     long intervalMs,
     float volume = 1f,
     float range = 24f
-  )
-  {
+  ) {
     if (api == null || api.Side != EnumAppSide.Server)
       return;
     long now = api.World.ElapsedMilliseconds;
@@ -222,8 +219,7 @@ public static class ExSounds
     long intervalMs,
     float volume = 1f,
     float range = 16f
-  )
-  {
+  ) {
     long now = world.ElapsedMilliseconds;
     if (now - lastMs < intervalMs)
       return;
@@ -276,8 +272,7 @@ public static class ExSounds
     bool randomizePitch = true,
     float range = 32f,
     float volume = 1f
-  )
-  {
+  ) {
     if (world.Rand.NextDouble() >= chance)
       return;
     world.PlaySoundAt(
@@ -304,13 +299,11 @@ public static class ExSounds
     float volume = 1f,
     float range = 16f,
     float pitch = 1f
-  )
-  {
+  ) {
     if (api is not ICoreClientAPI capi)
       return null;
     return capi.World.LoadSound(
-      new SoundParams
-      {
+      new SoundParams {
         Location = sound,
         ShouldLoop = true,
         Position = new Vec3f(pos.X + 0.5f, pos.Y + 0.5f, pos.Z + 0.5f),

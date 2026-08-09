@@ -56,7 +56,7 @@ public static class ExRccSettings
 Register at startup, wiring the getter to your [config](Config-System) so players can tune it live:
 
 ```csharp
-ExRccSettings.RegisterBrokenDropsRatio("ppex", () => PpexValues.BoilerSalvageRatio);
+ExRccSettings.RegisterBrokenDropsRatio(Mod.Info.ModID, () => PpexValues.RccBrokenDropsRatio);
 ```
 
 Then in your block's `OnBlockBroken`, scatter `GetConstructionDrops(ratio, rand)` where

@@ -11,8 +11,7 @@ namespace ExpandedLib.Blocks.Networks;
 /// steam intake / water out). Such ports are valid connection targets for pipes but
 /// are not themselves added to the network graph.
 /// </summary>
-public interface INetworkConnector
-{
+public interface INetworkConnector {
   /// <summary>Network type this connector belongs to, e.g. "gas", "molten", "pipe".</summary>
   string NetworkType { get; }
 

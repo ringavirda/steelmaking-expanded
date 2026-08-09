@@ -11,8 +11,7 @@ namespace ExpandedLib.Registries.Recipes;
 /// only registers its catalogue and the generic <c>/exmod recipes &lt;code&gt; &lt;level&gt;</c> command
 /// (and exlib's load-time apply) drive it. Lives in exlib so any mod - not just ppex/smex - can plug in.
 /// </summary>
-public static class ExRecipeProfiles
-{
+public static class ExRecipeProfiles {
   private static readonly Dictionary<string, RecipeProfile> _profiles = new(
     StringComparer.OrdinalIgnoreCase
   );
@@ -32,8 +31,7 @@ public static class ExRecipeProfiles
   /// <summary>Runs the apply pipeline for every registered profile. exlib calls this from its
   /// <c>StartServerSide</c>/<c>StartClientSide</c> (after all mods registered in their <c>Start</c>),
   /// so the active level is applied to the live recipes on each world load.</summary>
-  public static void ApplyAll(ICoreAPI api)
-  {
+  public static void ApplyAll(ICoreAPI api) {
     foreach (var profile in _profiles.Values)
       Apply(api, profile);
   }
@@ -44,8 +42,7 @@ public static class ExRecipeProfiles
   /// anything changed (server only - the file is host-authoritative), then apply the selected level to
   /// the live grid/RCC recipes.
   /// </summary>
-  public static void Apply(ICoreAPI api, RecipeProfile profile)
-  {
+  public static void Apply(ICoreAPI api, RecipeProfile profile) {
     var live = profile.Catalogue();
 
     bool changed = ExRecipeCosts.Reconcile(live, profile.Defaults());

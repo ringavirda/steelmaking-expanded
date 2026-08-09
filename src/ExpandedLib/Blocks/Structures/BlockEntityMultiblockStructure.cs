@@ -20,8 +20,7 @@ namespace ExpandedLib.Blocks.Structures;
 /// Subclasses supply the orientation logic, production behavior, and status messages.
 /// </summary>
 public abstract class BlockEntityMultiblockStructure
-  : BlockEntityProductionMachine
-{
+  : BlockEntityProductionMachine {
   protected MultiblockStructure? _structure;
   protected MultiblockStructure? _highlightedStructure;
   protected int _currentAngle = -1;
@@ -40,12 +39,10 @@ public abstract class BlockEntityMultiblockStructure
   /// the monitor tick starts/stops it across completion transitions.</summary>
   protected override bool AutoStartProduction => StructureComplete;
 
-  public override void Initialize(ICoreAPI api)
-  {
+  public override void Initialize(ICoreAPI api) {
     // Base registers the production tick (only when already complete, via AutoStartProduction).
     base.Initialize(api);
-    if (api.Side == EnumAppSide.Server)
-    {
+    if (api.Side == EnumAppSide.Server) {
       // Establish the structure angle up front. _currentAngle is not persisted, and the only other
       // caller is the 3000 ms monitor - so a structure that loads already complete would take three
       // production ticks at angle -1, which ExOrientation silently reads as unrotated. Every
@@ -58,14 +55,12 @@ public abstract class BlockEntityMultiblockStructure
   }
 
   /// <summary>Starts both the completion monitor and the production tick.</summary>
-  protected void StartStructureTick()
-  {
+  protected void StartStructureTick() {
     StartMonitorTick();
     StartProductionTick();
   }
 
-  protected void StartMonitorTick()
-  {
+  protected void StartMonitorTick() {
     if (_completionTickId == 0 && Api.Side == EnumAppSide.Server)
       _completionTickId = RegisterGameTickListener(
         OnMonitorStructureTick,
@@ -74,18 +69,15 @@ public abstract class BlockEntityMultiblockStructure
   }
 
   /// <summary>Stops both ticks (used on block removal).</summary>
-  protected void StopStructureTick()
-  {
+  protected void StopStructureTick() {
     StopProductionTick();
-    if (_completionTickId != 0)
-    {
+    if (_completionTickId != 0) {
       UnregisterGameTickListener(_completionTickId);
       _completionTickId = 0;
     }
   }
 
-  private void OnMonitorStructureTick(float dt)
-  {
+  private void OnMonitorStructureTick(float dt) {
     UpdateStructureRotation();
     if (_structure == null)
       return;
@@ -95,13 +87,10 @@ public abstract class BlockEntityMultiblockStructure
       return;
 
     StructureComplete = nowComplete;
-    if (nowComplete)
-    {
+    if (nowComplete) {
       OnStructureCompleted();
       StartProductionTick();
-    }
-    else
-    {
+    } else {
       OnStructureLost();
       StopProductionTick();
     }
@@ -121,8 +110,7 @@ public abstract class BlockEntityMultiblockStructure
   /// projection. <paramref name="initAngleOffset"/> covers machines whose local frame faces
   /// opposite the stored angle (e.g. the bessemer control at <c>angle + 180</c>).
   /// </summary>
-  protected void SetStructureAngle(int angle, int initAngleOffset = 0)
-  {
+  protected void SetStructureAngle(int angle, int initAngleOffset = 0) {
     if (_structure != null && _currentAngle == angle)
       return;
 
@@ -132,8 +120,7 @@ public abstract class BlockEntityMultiblockStructure
     _structure?.InitForUse(angle + initAngleOffset);
     _currentAngle = angle;
 
-    if (Api is ICoreClientAPI capi && _highlightedStructure != null)
-    {
+    if (Api is ICoreClientAPI capi && _highlightedStructure != null) {
       _highlightedStructure.ClearHighlights(Api.World, capi.World.Player);
       _highlightedStructure = null;
     }
@@ -149,8 +136,7 @@ public abstract class BlockEntityMultiblockStructure
   /// or clears it once complete. <see cref="FromTreeAttributes"/> also auto-clears the projection
   /// the moment the structure completes.
   /// </summary>
-  public virtual void Interact(IPlayer byPlayer)
-  {
+  public virtual void Interact(IPlayer byPlayer) {
     UpdateStructureRotation();
     if (_structure == null)
       return;
@@ -161,8 +147,7 @@ public abstract class BlockEntityMultiblockStructure
     int missingCount = _structure.InCompleteBlockCount(
       Api.World,
       Pos,
-      (haveBlock, wantBlockCode) =>
-      {
+      (haveBlock, wantBlockCode) => {
         // Air-satisfied or auto-filled slots aren't player-gathered, so leave them out.
         if (IsAutoFilled(wantBlockCode))
           return;
@@ -173,16 +158,12 @@ public abstract class BlockEntityMultiblockStructure
     bool wasComplete = StructureComplete;
     StructureComplete = missingCount == 0;
 
-    if (Api.Side == EnumAppSide.Server)
-    {
-      if (StructureComplete && !wasComplete)
-      {
+    if (Api.Side == EnumAppSide.Server) {
+      if (StructureComplete && !wasComplete) {
         OnStructureCompleted();
         StartStructureTick();
         MarkDirty(true);
-      }
-      else if (!StructureComplete && wasComplete)
-      {
+      } else if (!StructureComplete && wasComplete) {
         OnStructureLost();
         StopProductionTick();
         MarkDirty(true);
@@ -192,10 +173,8 @@ public abstract class BlockEntityMultiblockStructure
         SendMissingBlocksReport(serverPlayer, missingByCode);
     }
 
-    if (Api is ICoreClientAPI clientApi)
-    {
-      if (missingCount > 0)
-      {
+    if (Api is ICoreClientAPI clientApi) {
+      if (missingCount > 0) {
         _highlightedStructure = _structure;
         clientApi.TriggerIngameError(
           this,
@@ -203,9 +182,7 @@ public abstract class BlockEntityMultiblockStructure
           GetIncompleteMessage(missingCount)
         );
         HighlightIncompleteSafe(_highlightedStructure, byPlayer);
-      }
-      else
-      {
+      } else {
         clientApi.TriggerIngameError(this, "complete", GetCompleteMessage());
         _highlightedStructure?.ClearHighlights(Api.World, byPlayer);
         _highlightedStructure = null;
@@ -222,8 +199,7 @@ public abstract class BlockEntityMultiblockStructure
   private void HighlightIncompleteSafe(
     MultiblockStructure structure,
     IPlayer player
-  )
-  {
+  ) {
     var offsets = structure.TransformedOffsets;
     if (offsets == null)
       return;
@@ -236,8 +212,7 @@ public abstract class BlockEntityMultiblockStructure
     var positions = new List<BlockPos>();
     var colors = new List<int>();
 
-    foreach (var offset in offsets)
-    {
+    foreach (var offset in offsets) {
       if (!codeByNumber.TryGetValue(offset.W, out AssetLocation? wanted))
         continue;
 
@@ -251,8 +226,7 @@ public abstract class BlockEntityMultiblockStructure
 
       positions.Add(new BlockPos(offset.X, offset.Y, offset.Z).Add(Pos));
 
-      if (actual.Id != 0)
-      {
+      if (actual.Id != 0) {
         // A wrong solid block occupies the slot - vanilla tints these red.
         colors.Add(ColorUtil.ColorFromRgba(215, 94, 94, 0x60));
         continue;
@@ -261,8 +235,7 @@ public abstract class BlockEntityMultiblockStructure
       // Empty slot: tint with the wanted block's color when it resolves, otherwise
       // fall back to a neutral blue instead of crashing on an empty SearchBlocks.
       Block[] matches = Api.World.SearchBlocks(wanted);
-      if (matches.Length == 0)
-      {
+      if (matches.Length == 0) {
         colors.Add(ColorUtil.ColorFromRgba(94, 94, 215, 0x60));
         continue;
       }
@@ -298,8 +271,7 @@ public abstract class BlockEntityMultiblockStructure
   private void SendMissingBlocksReport(
     IServerPlayer player,
     Dictionary<AssetLocation, int> missingByCode
-  )
-  {
+  ) {
     if (missingByCode.Count == 0)
       return;
 
@@ -311,8 +283,7 @@ public abstract class BlockEntityMultiblockStructure
       var entry in missingByCode
         .OrderByDescending(e => e.Value)
         .ThenBy(e => ResolveBlockName(e.Key))
-    )
-    {
+    ) {
       sb.Append('\n');
       sb.Append(
         Lang.Get(
@@ -334,11 +305,9 @@ public abstract class BlockEntityMultiblockStructure
   /// Resolves a structure block code - which may be a wildcard such as
   /// "smex:blastfurnacedoor*" - to a human-readable display name.
   /// </summary>
-  private string ResolveBlockName(AssetLocation wantBlockCode)
-  {
+  private string ResolveBlockName(AssetLocation wantBlockCode) {
     Block? block = Api.World.GetBlock(wantBlockCode);
-    if (block == null)
-    {
+    if (block == null) {
       Block[] matches = Api.World.SearchBlocks(wantBlockCode);
       if (matches.Length > 0)
         block = matches[0];
@@ -358,16 +327,14 @@ public abstract class BlockEntityMultiblockStructure
   /// <summary>Returns the ingame-error message shown when the structure is complete.</summary>
   protected abstract string GetCompleteMessage();
 
-  public override void OnBlockRemoved()
-  {
+  public override void OnBlockRemoved() {
     base.OnBlockRemoved();
     StopStructureTick();
     if (Api is ICoreClientAPI capi)
       _highlightedStructure?.ClearHighlights(Api.World, capi.World.Player);
   }
 
-  public override void ToTreeAttributes(ITreeAttribute tree)
-  {
+  public override void ToTreeAttributes(ITreeAttribute tree) {
     base.ToTreeAttributes(tree);
     tree.SetBool("structureComplete", StructureComplete);
   }
@@ -375,8 +342,7 @@ public abstract class BlockEntityMultiblockStructure
   public override void FromTreeAttributes(
     ITreeAttribute tree,
     IWorldAccessor worldForResolving
-  )
-  {
+  ) {
     base.FromTreeAttributes(tree, worldForResolving);
     bool wasComplete = StructureComplete;
     StructureComplete = tree.GetBool("structureComplete");
@@ -387,8 +353,7 @@ public abstract class BlockEntityMultiblockStructure
       && StructureComplete
       && Api is ICoreClientAPI capi
       && _highlightedStructure != null
-    )
-    {
+    ) {
       _highlightedStructure.ClearHighlights(Api.World, capi.World.Player);
       _highlightedStructure = null;
     }

@@ -13,8 +13,7 @@ namespace PipesAndPowerExpanded.Tests;
 /// block entity's behavior list so <c>GetBehavior&lt;BEBehaviorMPBase&gt;()</c> finds it - the wiring
 /// the game does at chunk load but the headless harness skips.
 /// </summary>
-internal static class MechPower
-{
+internal static class MechPower {
   /// <summary>A fake mechanical network turning at <paramref name="speed"/> with the given load.</summary>
   public static MechanicalNetwork Network(float speed, float resistance = 0f) =>
     new() { Speed = speed, NetworkResistance = resistance };
@@ -28,8 +27,7 @@ internal static class MechPower
     T behavior,
     MechanicalNetwork? network
   )
-    where T : BEBehaviorMPBase
-  {
+    where T : BEBehaviorMPBase {
     if (network != null)
       ReflectionHelpers.SetField(behavior, "network", network);
     var list = (IList)ReflectionHelpers.GetField(be, "Behaviors")!;

@@ -9,8 +9,7 @@ namespace ExpandedLib.Registries.Recipes;
 /// RCC construction uses <see cref="Stages"/>. The fields not relevant to the recipe's kind are left
 /// null.
 /// </summary>
-public class RecipeProfileCost
-{
+public class RecipeProfileCost {
   /// <summary>Grid recipes: ingredient code → quantity required.</summary>
   public Dictionary<string, int>? Ingredients { get; set; }
 

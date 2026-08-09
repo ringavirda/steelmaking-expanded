@@ -18,8 +18,7 @@ namespace PipesAndPowerExpanded.BlockStructures.Boiler;
 public abstract class BlockBoiler
   : Block,
     INetworkConnector,
-    IFillerInteractionTarget
-{
+    IFillerInteractionTarget {
   // The body extends along local +z; offset the angle 180° so HorizontalOrientable raises it
   // AWAY from the player. rotateYByType is offset to match, keeping visual/fillers/connectors aligned.
   private int Angle =>
@@ -89,8 +88,7 @@ public abstract class BlockBoiler
     IPlayer byPlayer,
     BlockSelection blockSel,
     ref string failureCode
-  )
-  {
+  ) {
     if (!base.CanPlaceBlock(world, byPlayer, blockSel, ref failureCode))
       return false;
 
@@ -100,8 +98,7 @@ public abstract class BlockBoiler
       blockSel.Position,
       Angle
     );
-    if (!StructureFillers.CanPlace(world, cells))
-    {
+    if (!StructureFillers.CanPlace(world, cells)) {
       failureCode = "notenoughspace";
       return false;
     }
@@ -112,8 +109,7 @@ public abstract class BlockBoiler
     IWorldAccessor world,
     BlockPos blockPos,
     ItemStack? byItemStack = null
-  )
-  {
+  ) {
     base.OnBlockPlaced(world, blockPos, byItemStack);
     StructureFillers.PlaceFillers(
       world,
@@ -127,16 +123,14 @@ public abstract class BlockBoiler
   /// Turns the steam-connector filler cell (<see cref="SteamPipeWorldPos"/>) into an upward "pipe"
   /// port, so a steam pipe placed above it connects straight into the boiler.
   /// </summary>
-  private void MarkSteamPort(IWorldAccessor world, BlockPos boilerPos)
-  {
+  private void MarkSteamPort(IWorldAccessor world, BlockPos boilerPos) {
     if (world.Side != EnumAppSide.Server)
       return;
     BlockPos portCell = SteamPipeWorldPos(boilerPos);
     if (
       world.BlockAccessor.GetBlockEntity(portCell)
       is BlockEntityStructureFiller be
-    )
-    {
+    ) {
       be.PortFace = "u";
       be.PortNetworkType = NetworkType; // "pipe"
       be.MarkDirty(true);
@@ -148,8 +142,7 @@ public abstract class BlockBoiler
     BlockPos pos,
     IPlayer? byPlayer,
     float dropQuantityMultiplier = 1f
-  )
-  {
+  ) {
     // Clear the reserved volume first so no invisible solid cells are left behind.
     StructureFillers.RemoveFillers(
       world,
@@ -160,18 +153,9 @@ public abstract class BlockBoiler
     base.OnBlockBroken(world, pos, byPlayer, dropQuantityMultiplier);
   }
 
-  // A broken boiler returns only its construction materials (scattered by the RightClickConstructable
-  // behaviour at brokenDropsRatio), never the boiler block itself - mirrors the bessemer converter. The
-  // JSON "drops": [] declares this, but it isn't reliably honoured for a variant block (the per-pressure
-  // variant can still be handed its own code as a fallback drop at registration), so enforce the empty
-  // drop list here. (The engines deliberately keep their craftable-frame self-drop and are unaffected -
-  // they don't derive from BlockBoiler.)
-  public override ItemStack[] GetDrops(
-    IWorldAccessor world,
-    BlockPos pos,
-    IPlayer? byPlayer,
-    float dropQuantityMultiplier = 1f
-  ) => [];
+  // A broken boiler returns its own crafted frame alongside the construction materials the
+  // RightClickConstructable behaviour scatters, the same way the engines do. The boiler is placed
+  // from a crafted item, so withholding that item made breaking one a net loss.
 
   #region Lid interactions
 
@@ -209,8 +193,7 @@ public abstract class BlockBoiler
     IPlayer byPlayer,
     BlockSelection sel,
     BlockPos clickedCell
-  )
-  {
+  ) {
     if (
       world.BlockAccessor.GetBlockEntity(sel.Position)
       is not BlockEntityBoiler be
@@ -230,24 +213,21 @@ public abstract class BlockBoiler
     ItemSlot? slot = byPlayer.InventoryManager?.ActiveHotbarSlot;
 
     // A water container while the lid is open → pour its entire contents in.
-    if (be.LidOpen && IsWaterContainer(slot?.Itemstack))
-    {
+    if (be.LidOpen && IsWaterContainer(slot?.Itemstack)) {
       if (world.Side == EnumAppSide.Server && slot != null)
         be.TryManualFill(byPlayer, slot);
       return true;
     }
 
     // An empty liquid container while the lid is open → bail water out into it.
-    if (be.LidOpen && IsEmptyLiquidContainer(slot?.Itemstack))
-    {
+    if (be.LidOpen && IsEmptyLiquidContainer(slot?.Itemstack)) {
       if (world.Side == EnumAppSide.Server && slot != null)
         be.TryManualDrain(byPlayer, slot);
       return true;
     }
 
     // Empty hands → begin the lid hold; the toggle happens in the step loop past the threshold.
-    if (slot?.Empty != false)
-    {
+    if (slot?.Empty != false) {
       be.LidToggled = false;
       return true;
     }
@@ -285,8 +265,7 @@ public abstract class BlockBoiler
     IPlayer byPlayer,
     BlockSelection sel,
     BlockPos clickedCell
-  )
-  {
+  ) {
     if (
       world.BlockAccessor.GetBlockEntity(sel.Position)
         is not BlockEntityBoiler be
@@ -301,8 +280,7 @@ public abstract class BlockBoiler
 
     // Toggle once past the threshold, then keep returning true until release so the engine
     // doesn't restart the interaction (which would toggle the lid repeatedly).
-    if (secondsUsed >= LidHoldSeconds && !be.LidToggled)
-    {
+    if (secondsUsed >= LidHoldSeconds && !be.LidToggled) {
       be.LidToggled = true;
       if (world.Side == EnumAppSide.Server)
         be.ToggleLid();
@@ -316,8 +294,7 @@ public abstract class BlockBoiler
     IWorldAccessor world,
     IPlayer byPlayer,
     BlockSelection blockSel
-  )
-  {
+  ) {
     if (!HandleInteractStop(world, byPlayer, blockSel))
       base.OnBlockInteractStop(secondsUsed, world, byPlayer, blockSel);
   }
@@ -328,8 +305,7 @@ public abstract class BlockBoiler
     IPlayer byPlayer,
     BlockSelection principalSel,
     BlockPos clickedCell
-  )
-  {
+  ) {
     if (!HandleInteractStop(world, byPlayer, principalSel))
       base.OnBlockInteractStop(secondsUsed, world, byPlayer, principalSel);
   }
@@ -338,8 +314,7 @@ public abstract class BlockBoiler
     IWorldAccessor world,
     IPlayer byPlayer,
     BlockSelection sel
-  )
-  {
+  ) {
     if (
       world.BlockAccessor.GetBlockEntity(sel.Position)
         is not BlockEntityBoiler be
@@ -351,8 +326,7 @@ public abstract class BlockBoiler
     return true;
   }
 
-  private static bool IsWaterContainer(ItemStack? stack)
-  {
+  private static bool IsWaterContainer(ItemStack? stack) {
     if (stack?.Collectible is not BlockLiquidContainerBase cont)
       return false;
     ItemStack? content = cont.GetContent(stack);
@@ -360,8 +334,7 @@ public abstract class BlockBoiler
   }
 
   /// <summary>An empty liquid container (e.g. an empty bucket) - the tool used to bail water out.</summary>
-  private static bool IsEmptyLiquidContainer(ItemStack? stack)
-  {
+  private static bool IsEmptyLiquidContainer(ItemStack? stack) {
     if (stack?.Collectible is not BlockLiquidContainerBase cont)
       return false;
     return cont.GetContent(stack) == null;
@@ -371,8 +344,7 @@ public abstract class BlockBoiler
     IWorldAccessor world,
     BlockSelection selection,
     IPlayer forPlayer
-  )
-  {
+  ) {
     var help = HandleInteractionHelp(
       world,
       selection,
@@ -403,8 +375,7 @@ public abstract class BlockBoiler
     BlockSelection selection,
     IPlayer forPlayer,
     BlockPos clickedCell
-  )
-  {
+  ) {
     var help = new List<WorldInteraction>(
       base.GetPlacedBlockInteractionHelp(world, selection, forPlayer) ?? []
     );
@@ -421,8 +392,7 @@ public abstract class BlockBoiler
 
     // Empty-handed right click toggles the lid.
     help.Add(
-      new WorldInteraction
-      {
+      new WorldInteraction {
         ActionLangCode = "ppex:blockhelp-boiler-lid",
         MouseButton = EnumMouseButton.Right,
         RequireFreeHand = true,
@@ -430,19 +400,16 @@ public abstract class BlockBoiler
     );
 
     // The manual water fill/drain only work while the lid is open, so only advertise them then.
-    if (be.LidOpen)
-    {
+    if (be.LidOpen) {
       help.Add(
-        new WorldInteraction
-        {
+        new WorldInteraction {
           ActionLangCode = "ppex:blockhelp-boiler-fill",
           MouseButton = EnumMouseButton.Right,
           Itemstacks = WaterContainerStacks(world),
         }
       );
       help.Add(
-        new WorldInteraction
-        {
+        new WorldInteraction {
           ActionLangCode = "ppex:blockhelp-boiler-drain",
           MouseButton = EnumMouseButton.Right,
           Itemstacks = EmptyContainerStacks(world),
@@ -456,8 +423,7 @@ public abstract class BlockBoiler
   /// <summary>Water-filled liquid containers shown on the manual-fill interaction hint, resolved once.</summary>
   private static ItemStack[]? _waterContainerStacks;
 
-  private static ItemStack[] WaterContainerStacks(IWorldAccessor world)
-  {
+  private static ItemStack[] WaterContainerStacks(IWorldAccessor world) {
     if (_waterContainerStacks != null)
       return _waterContainerStacks;
 
@@ -465,8 +431,7 @@ public abstract class BlockBoiler
       world.GetItem(new AssetLocation("game:waterportion"))
     );
     var list = new List<ItemStack>();
-    foreach (var block in world.Blocks)
-    {
+    foreach (var block in world.Blocks) {
       if (
         block?.Code == null
         || block is not BlockLiquidContainerBase cont
@@ -487,14 +452,12 @@ public abstract class BlockBoiler
   /// <summary>Empty liquid containers shown on the manual-drain interaction hint, resolved once.</summary>
   private static ItemStack[]? _emptyContainerStacks;
 
-  private static ItemStack[] EmptyContainerStacks(IWorldAccessor world)
-  {
+  private static ItemStack[] EmptyContainerStacks(IWorldAccessor world) {
     if (_emptyContainerStacks != null)
       return _emptyContainerStacks;
 
     var list = new List<ItemStack>();
-    foreach (var block in world.Blocks)
-    {
+    foreach (var block in world.Blocks) {
       if (
         block?.Code == null
         || block is not BlockLiquidContainerBase

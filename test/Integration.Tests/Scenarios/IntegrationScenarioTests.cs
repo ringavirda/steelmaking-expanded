@@ -13,11 +13,9 @@ namespace PipesAndPowerExpanded.Tests;
 /// the emergent cross-cell / cross-machine state. These exercise the wiring between components, not a
 /// single unit in isolation.
 /// </summary>
-public class IntegrationScenarioTests
-{
+public class IntegrationScenarioTests {
   [Fact]
-  public void Sealed_run_pressurises_and_broadcasts_to_every_pipe()
-  {
+  public void Sealed_run_pressurises_and_broadcasts_to_every_pipe() {
     // A five-cell west-east steam main, capped at both ends.
     var scene = new Scene().Network("pipe", s => new PipeNetwork(s));
     PpexScenes.PipeLegend(scene).Layer("#=====#");
@@ -48,8 +46,7 @@ public class IntegrationScenarioTests
   }
 
   [Fact]
-  public void Two_separate_runs_stay_isolated()
-  {
+  public void Two_separate_runs_stay_isolated() {
     // Two capped mains with a gap between them - two independent networks.
     var scene = new Scene().Network("pipe", s => new PipeNetwork(s));
     PpexScenes.PipeLegend(scene).Layer("#==#   #==#");
@@ -79,8 +76,7 @@ public class IntegrationScenarioTests
   }
 
   [Fact]
-  public void A_boiling_boiler_charges_an_attached_steam_main()
-  {
+  public void A_boiling_boiler_charges_an_attached_steam_main() {
     // Boiler + a sealed two-cell vertical steam riser on its outlet: the boiler should bleed steam
     // into the pipe network until their pressures equalise (the connected-vessel PushSteam path).
     var scene = new Scene().Network("pipe", s => new PipeNetwork(s));

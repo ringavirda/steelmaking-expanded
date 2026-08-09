@@ -12,15 +12,13 @@ namespace ExpandedLib.Testing.Doubles;
 public sealed class StubNetwork(
   BlockNetworkModSystem system,
   string networkType = "test"
-) : BlockNetwork(system)
-{
+) : BlockNetwork(system) {
   public override string NetworkType => networkType;
 
   /// <summary>Arbitrary marker used to verify state propagation across topology changes.</summary>
   public string? Tag { get; set; }
 
-  public override void OnMerge(BlockNetwork other, IBlockAccessor world)
-  {
+  public override void OnMerge(BlockNetwork other, IBlockAccessor world) {
     if (other is StubNetwork s && Tag == null)
       Tag = s.Tag;
   }
@@ -28,14 +26,12 @@ public sealed class StubNetwork(
   public override void OnSplitFragment(
     BlockNetwork original,
     IBlockAccessor world
-  )
-  {
+  ) {
     if (original is StubNetwork s)
       Tag = s.Tag;
   }
 
-  public override void InheritStateFrom(BlockNetwork source)
-  {
+  public override void InheritStateFrom(BlockNetwork source) {
     if (source is StubNetwork s)
       Tag = s.Tag;
   }

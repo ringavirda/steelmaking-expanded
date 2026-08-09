@@ -14,14 +14,12 @@ namespace SteelmakingExpanded.Tests;
 /// pass flows it across connectors and conserves the total. A fake "ingot" item stands in for the
 /// resolved game collectible so the temperature carrier works headlessly.
 /// </summary>
-public class MoltenFlowTests
-{
+public class MoltenFlowTests {
   private const string Metal = "game:ingot-iron";
 
   /// <summary>A configured ns molten-canal block: connectors come straight off the orientation
   /// string, so reflection-setting Type/Orientation (OnLoaded is skipped) is enough.</summary>
-  private static BlockMoltenCanal Canal()
-  {
+  private static BlockMoltenCanal Canal() {
     var block = TestBlocks.Configure(
       new BlockMoltenCanal(),
       "smex:moltencanal-straight-ns",
@@ -40,8 +38,7 @@ public class MoltenFlowTests
     TestWorld world,
     BlockEntityMoltenCanal a,
     BlockEntityMoltenCanal b
-  ) Run()
-  {
+  ) Run() {
     var world = new TestWorld();
     world.RegisterNetwork("molten", sys => new MoltenNetwork(sys));
 
@@ -49,13 +46,11 @@ public class MoltenFlowTests
     world.World.GetItem(Arg.Any<AssetLocation>()).Returns(item);
 
     var block = Canal();
-    var a = new BlockEntityMoltenCanal
-    {
+    var a = new BlockEntityMoltenCanal {
       Pos = new BlockPos(0, 0, 0),
       Block = block,
     };
-    var b = new BlockEntityMoltenCanal
-    {
+    var b = new BlockEntityMoltenCanal {
       Pos = new BlockPos(0, 0, 1),
       Block = block,
     };
@@ -73,15 +68,13 @@ public class MoltenFlowTests
     new(world.World.GetItem(new AssetLocation(Metal)), 1);
 
   [Fact]
-  public void Both_cells_join_one_network()
-  {
+  public void Both_cells_join_one_network() {
     var (world, a, b) = Run();
     Assert.Same(world.NetworkAt(a.Pos), world.NetworkAt(b.Pos));
   }
 
   [Fact]
-  public void PushMetal_fills_a_cell_up_to_its_capacity()
-  {
+  public void PushMetal_fills_a_cell_up_to_its_capacity() {
     var (world, a, _) = Run();
 
     int accepted = a.PushMetal(40, MetalStack(world), world.World);
@@ -93,8 +86,7 @@ public class MoltenFlowTests
   }
 
   [Fact]
-  public void PushMetal_clamps_to_the_cell_capacity()
-  {
+  public void PushMetal_clamps_to_the_cell_capacity() {
     var (world, a, _) = Run();
     // Capacity defaults to 50 units; a 200-unit push tops out there.
     int accepted = a.PushMetal(200, MetalStack(world), world.World);
@@ -103,8 +95,7 @@ public class MoltenFlowTests
   }
 
   [Fact]
-  public void DrainMetal_removes_and_empties_the_cell()
-  {
+  public void DrainMetal_removes_and_empties_the_cell() {
     var (world, a, _) = Run();
     a.PushMetal(30, MetalStack(world), world.World);
 
@@ -117,8 +108,7 @@ public class MoltenFlowTests
   }
 
   [Fact]
-  public void A_tick_flows_metal_across_the_connector_and_conserves_the_total()
-  {
+  public void A_tick_flows_metal_across_the_connector_and_conserves_the_total() {
     var (world, a, b) = Run();
     a.PushMetal(40, MetalStack(world), world.World);
     Assert.Equal(0, b.CellAmount);
@@ -133,8 +123,7 @@ public class MoltenFlowTests
   }
 
   [Fact]
-  public void A_levelling_tick_never_overshoots_the_midpoint()
-  {
+  public void A_levelling_tick_never_overshoots_the_midpoint() {
     var (world, a, b) = Run();
     a.PushMetal(40, MetalStack(world), world.World);
 
@@ -148,8 +137,7 @@ public class MoltenFlowTests
   }
 
   [Fact]
-  public void A_pair_settles_instead_of_sloshing_back_and_forth()
-  {
+  public void A_pair_settles_instead_of_sloshing_back_and_forth() {
     var (world, a, b) = Run();
     a.PushMetal(40, MetalStack(world), world.World);
 
@@ -162,8 +150,7 @@ public class MoltenFlowTests
   }
 
   [Fact]
-  public void Different_metals_do_not_mix_across_a_connector()
-  {
+  public void Different_metals_do_not_mix_across_a_connector() {
     var (world, a, b) = Run();
     a.PushMetal(40, MetalStack(world), world.World);
 

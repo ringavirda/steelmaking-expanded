@@ -13,14 +13,12 @@ namespace PipesAndPowerExpanded.Tests;
 /// (rated speed at rated load, more torque under heavier load, tapering to zero past a soft speed
 /// cap), and the generator cuts its power demand when the load overstresses the engine.
 /// </summary>
-public class MpGeneratorBehaviorTests
-{
+public class MpGeneratorBehaviorTests {
   private static (
     Scene scene,
     MpGeneratorPlant plant,
     BEBehaviorEngineMPGenerator mp
-  ) Rig(float availablePower)
-  {
+  ) Rig(float availablePower) {
     var scene = new Scene().Network("pipe", s => new PipeNetwork(s));
     var plant = new MpGeneratorPlant(scene, new BlockPos(0, 8, 0));
     scene.Build();
@@ -37,15 +35,13 @@ public class MpGeneratorBehaviorTests
   #region Torque curve
 
   [Fact]
-  public void Resistance_is_the_constant_rotor_drag()
-  {
+  public void Resistance_is_the_constant_rotor_drag() {
     var (_, _, mp) = Rig(0.5f);
     Assert.Equal(0.0005f, mp.GetResistance(), 5);
   }
 
   [Fact]
-  public void Torque_at_rated_speed_equals_the_engines_power_budget()
-  {
+  public void Torque_at_rated_speed_equals_the_engines_power_budget() {
     var (_, plant, mp) = Rig(0.5f);
     float budget = plant.Engine.MpPowerBudget;
     Assert.True(budget > 0f, "the engine should have a power budget");
@@ -61,8 +57,7 @@ public class MpGeneratorBehaviorTests
   }
 
   [Fact]
-  public void It_is_a_constant_power_source_more_torque_at_lower_speed()
-  {
+  public void It_is_a_constant_power_source_more_torque_at_lower_speed() {
     var (_, plant, mp) = Rig(0.5f);
     float budget = plant.Engine.MpPowerBudget;
     float rated = PpexValues.MpRatedSpeed;
@@ -77,8 +72,7 @@ public class MpGeneratorBehaviorTests
   }
 
   [Fact]
-  public void Torque_tapers_to_zero_past_the_soft_speed_cap()
-  {
+  public void Torque_tapers_to_zero_past_the_soft_speed_cap() {
     var (_, _, mp) = Rig(0.5f);
     float rated = PpexValues.MpRatedSpeed;
 
@@ -87,8 +81,7 @@ public class MpGeneratorBehaviorTests
   }
 
   [Fact]
-  public void Without_steam_the_generator_makes_no_torque()
-  {
+  public void Without_steam_the_generator_makes_no_torque() {
     var (_, _, mp) = Rig(0f); // no available power
     Assert.Equal(0f, mp.GetTorque(0, PpexValues.MpRatedSpeed, out _), 5);
   }
@@ -98,8 +91,7 @@ public class MpGeneratorBehaviorTests
   #region Orientation
 
   [Fact]
-  public void Orientation_seeds_the_axle_axis_from_the_side_variant()
-  {
+  public void Orientation_seeds_the_axle_axis_from_the_side_variant() {
     var (_, _, mp) = Rig(0.5f); // the plant's generator block is "east"
     mp.SetOrientations();
 
@@ -112,8 +104,7 @@ public class MpGeneratorBehaviorTests
   #region Load management (PowerDemand)
 
   [Fact]
-  public void Power_demand_is_full_under_a_normal_load()
-  {
+  public void Power_demand_is_full_under_a_normal_load() {
     var (_, plant, mp) = Rig(0.5f);
     MechPower.Attach(
       plant.Generator,
@@ -126,8 +117,7 @@ public class MpGeneratorBehaviorTests
   }
 
   [Fact]
-  public void Power_demand_cuts_out_when_the_load_overstresses_the_engine()
-  {
+  public void Power_demand_cuts_out_when_the_load_overstresses_the_engine() {
     var (_, plant, mp) = Rig(0.5f);
     float overload = 3f * plant.Engine.MpRatedLoad; // past the 2× rated overstress ceiling
     MechPower.Attach(

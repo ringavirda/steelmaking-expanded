@@ -25,8 +25,7 @@ namespace PipesAndPowerExpanded.BlockStructures.Boiler;
 /// completeness, projection and tick scheduling live in the multiblock base. Per-variant
 /// stats are supplied through the virtual hooks below.
 /// </summary>
-public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
-{
+public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure {
   private BEBehaviorAnimatable? _animatable;
   private ExRightClickConstructable? _rcc;
   private bool _animatorReady;
@@ -74,8 +73,7 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
   public bool IsOperational => IsConstructed && StructureComplete;
 
   /// <summary>Operating phase - the boiler runs like the blast furnace off a timer, not a temperature.</summary>
-  public enum BoilerState
-  {
+  public enum BoilerState {
     Idle,
     Heating,
     Boiling,
@@ -140,14 +138,12 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
 
   #region Lifecycle
 
-  public override void Initialize(ICoreAPI api)
-  {
+  public override void Initialize(ICoreAPI api) {
     base.Initialize(api);
     _animatable = GetBehavior<BEBehaviorAnimatable>();
     _rcc = GetBehavior<ExRightClickConstructable>();
 
-    if (api is ICoreClientAPI capi && _animatable != null)
-    {
+    if (api is ICoreClientAPI capi && _animatable != null) {
       if (_rcc != null)
         _rcc.OnShapeChanged += OnConstructShapeChanged;
 
@@ -165,8 +161,7 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
   /// (Re)loads the multiblock definition for the current orientation, using the same angle
   /// the fillers use (see <see cref="BlockBoiler.StructureAngle"/>).
   /// </summary>
-  protected override void UpdateStructureRotation()
-  {
+  protected override void UpdateStructureRotation() {
     if (BoilerBlock == null)
       return;
     SetStructureAngle(BoilerBlock.StructureAngle);
@@ -183,8 +178,7 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
   /// <summary>Per-variant animator cache key (also the shape selector); unique per block code + side.</summary>
   protected virtual string AnimCacheKey => Block.Code.Path;
 
-  public override void OnBlockRemoved()
-  {
+  public override void OnBlockRemoved() {
     if (_rcc != null)
       _rcc.OnShapeChanged -= OnConstructShapeChanged;
     DisposeClient();
@@ -192,18 +186,15 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
     base.OnBlockRemoved();
   }
 
-  public override void OnBlockUnloaded()
-  {
+  public override void OnBlockUnloaded() {
     if (_rcc != null)
       _rcc.OnShapeChanged -= OnConstructShapeChanged;
     DisposeClient();
     base.OnBlockUnloaded();
   }
 
-  private void DisposeClient()
-  {
-    if (_clientTickId != 0)
-    {
+  private void DisposeClient() {
+    if (_clientTickId != 0) {
       UnregisterGameTickListener(_clientTickId);
       _clientTickId = 0;
     }
@@ -211,8 +202,7 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
     _waterRenderer = null;
   }
 
-  private void OnConstructShapeChanged(CompositeShape cs)
-  {
+  private void OnConstructShapeChanged(CompositeShape cs) {
     RebuildAnimator(cs?.SelectiveElements);
     ApplyPose();
   }
@@ -221,8 +211,7 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
   /// (Re)builds the animator to render exactly the currently-built elements. A fresh shape
   /// is loaded each call (reusing one re-maps UVs into atlas space and stretches textures).
   /// </summary>
-  private void RebuildAnimator(string[]? selectiveElements)
-  {
+  private void RebuildAnimator(string[]? selectiveElements) {
     if (Api is not ICoreClientAPI capi || _animatable == null)
       return;
 
@@ -248,8 +237,7 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
 
     // Swap vanilla's renderer for one that lights the vessel from a body cell rather than
     // the firebox-adjacent master cell (see BoilerAnimatableRenderer).
-    if (_animatorReady && BoilerBlock != null)
-    {
+    if (_animatorReady && BoilerBlock != null) {
       var util = _animatable.animUtil;
       util.renderer?.Dispose();
       util.renderer = new BoilerAnimatableRenderer(
@@ -259,8 +247,7 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
         util.animator!,
         util.activeAnimationsByAnimCode,
         meshData
-      )
-      {
+      ) {
         LightPos = BoilerBlock.LightSampleWorldPos(Pos).ToVec3d(),
         // Seed visibility from whether a pose is already running. 1.22's AnimatableRenderer
         // ctor does this itself; the legacy (1.20/1.21) ctor leaves ShouldRender false and only
@@ -272,8 +259,7 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
     }
   }
 
-  private void ApplyPose()
-  {
+  private void ApplyPose() {
     if (Api is not ICoreClientAPI || _animatable == null || !_animatorReady)
       return;
 
@@ -281,12 +267,10 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
 
     // Animatable only draws while an animation runs. "idle" holds the built mesh at rest;
     // "lidopen" holds it with the lid open. Both drive the lid, so swap based on lid state.
-    if (LidOpen)
-    {
+    if (LidOpen) {
       util.StopAnimation("idle");
       util.StartAnimation(
-        new AnimationMetaData
-        {
+        new AnimationMetaData {
           Animation = "lidopen",
           Code = "lidopen",
           AnimationSpeed = 1f,
@@ -294,13 +278,10 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
           EaseOutSpeed = 6f,
         }.Init()
       );
-    }
-    else
-    {
+    } else {
       util.StopAnimation("lidopen");
       util.StartAnimation(
-        new AnimationMetaData
-        {
+        new AnimationMetaData {
           Animation = "idle",
           Code = "idle",
           AnimationSpeed = 1f,
@@ -324,8 +305,7 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
   /// <summary>Whether the boiler is currently choked (can't expel exhaust). Synced for the HUD line.</summary>
   private bool _choked;
 
-  protected override void OnProductionTick(float dt)
-  {
+  protected override void OnProductionTick(float dt) {
     if (!IsConstructed)
       return;
 
@@ -354,16 +334,14 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
     _choked = fireOn && draughtBlocked;
     if (
       _chokeTimer.Update(_choked, dt, PpexValues.BoilerChokeExtinguishSeconds)
-    )
-    {
+    ) {
       pile?.Extinguish();
       ExSounds.Play(Api, fuelPos, ExSounds.Extinguish, 0.7f);
       _choked = false;
     }
 
     PipeNetwork? waterNet = ConnectedNetwork<PipeNetwork>(BlockFacing.DOWN);
-    if (waterNet != null && _waterVolume < MaxWaterIntakeFill)
-    {
+    if (waterNet != null && _waterVolume < MaxWaterIntakeFill) {
       float feedPressure = waterNet.State?.Pressure ?? 0f;
       // Cap the draw at the intake rate so a piped supply trickles in (≤10 L/s) instead of
       // gulping the whole remaining headroom in a single tick.
@@ -384,12 +362,10 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
     bool enoughWater = _waterVolume >= MinBoilWater;
     float grace = PpexValues.BoilerShutdownDelaySeconds;
 
-    switch (_state)
-    {
+    switch (_state) {
       case BoilerState.Idle:
         CondenseInternal(dt);
-        if (burning && enoughWater)
-        {
+        if (burning && enoughWater) {
           _state = BoilerState.Heating;
           _heatingSeconds = 0f;
           _shutdownSeconds = 0f;
@@ -397,14 +373,11 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
         break;
 
       case BoilerState.Heating:
-        if (!burning || !enoughWater)
-        {
+        if (!burning || !enoughWater) {
           _shutdownSeconds += dt;
           if (_shutdownSeconds >= grace)
             ShutDown();
-        }
-        else
-        {
+        } else {
           _shutdownSeconds = 0f;
           _heatingSeconds += dt;
           if (_heatingSeconds >= PpexValues.BoilerHeatUpSeconds)
@@ -415,11 +388,9 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
       case BoilerState.Boiling:
         if (burning && enoughWater)
           _shutdownSeconds = 0f;
-        else
-        {
+        else {
           _shutdownSeconds += dt;
-          if (_shutdownSeconds >= grace)
-          {
+          if (_shutdownSeconds >= grace) {
             ShutDown();
             break;
           }
@@ -436,14 +407,11 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
 
     _burning = burning && _state != BoilerState.Idle;
 
-    if (LidOpen)
-    {
+    if (LidOpen) {
       VentExcessSteam(dt);
       _overpressure.Reset();
       _steamLeaking = false; // steam vents through the lid, not the outlet
-    }
-    else
-    {
+    } else {
       // PushSteam reports back when the outlet is open to air (no pipe) and steam is
       // jetting out instead of pressurising - that drives the leak particles.
       _steamLeaking = _state != BoilerState.Idle && PushSteam(ba, dt);
@@ -458,8 +426,7 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
           dt,
           PpexValues.BoilerOverpressureSeconds
         )
-      )
-      {
+      ) {
         Explode();
         return;
       }
@@ -478,8 +445,7 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
   }
 
   /// <summary>Converts water to steam for one tick (1 L water → <see cref="PpexValues.SteamExpansionFactor"/> L steam).</summary>
-  private void BoilStep(float dt)
-  {
+  private void BoilStep(float dt) {
     float waterUse = Math.Min(
       _waterVolume,
       SteamPerSecond * dt / PpexValues.SteamExpansionFactor
@@ -496,8 +462,7 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
   /// The boiler/pipe pressure is gauge (0 atm = atmospheric), so add the 1 atm atmosphere to get
   /// the absolute pressure - at 0 atm gauge the steam reads exactly the boiling point.
   /// </summary>
-  private float SteamTemperature()
-  {
+  private float SteamTemperature() {
     float absPressure = Math.Max(0f, InternalPressure) + 1f;
     return PpexValues.BoilingPoint
       * (float)Math.Pow(absPressure, PpexValues.SteamSaturationExponent);
@@ -509,8 +474,7 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
   /// <see cref="PpexValues.BoilerSteamLeakRate"/> and the method returns <c>true</c> to
   /// drive the leak particles.
   /// </summary>
-  private bool PushSteam(IBlockAccessor ba, float dt)
-  {
+  private bool PushSteam(IBlockAccessor ba, float dt) {
     // The steam connector is the port filler atop the body; the network it feeds sits in
     // the cell directly above it.
     var connectorPos = BoilerBlock?.SteamPipeWorldPos(Pos);
@@ -522,8 +486,7 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
       ba.GetBlock(pipePos) is BlockNetworkNode steamPipe
       && steamPipe.HasConnectorAt(BlockFacing.DOWN);
 
-    if (!pipeAttached)
-    {
+    if (!pipeAttached) {
       // Open neck - steam jets out instead of building pressure.
       float leaked = Math.Min(
         _steamVolume,
@@ -574,8 +537,7 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
   /// boiling keeps adding steam underneath; once idle it empties the trapped pocket completely
   /// (down to 0 atm), so an open lid fully drains a shut-down boiler.
   /// </summary>
-  private void VentExcessSteam(float dt)
-  {
+  private void VentExcessSteam(float dt) {
     float floor =
       _state == BoilerState.Idle ? 0f : Math.Max(0f, Capacity - _waterVolume);
     if (_steamVolume <= floor)
@@ -593,8 +555,7 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
   /// vessel is that full, the remaining steam is trapped and stops condensing - the player vents
   /// it through the lid. The leftover headspace above the water keeps the steam pocket finite.
   /// </summary>
-  private void CondenseInternal(float dt)
-  {
+  private void CondenseInternal(float dt) {
     if (_steamVolume <= 0f)
       return;
     // Condensing steam removes 16 L of steam but only frees ~1 L of headspace (the water it
@@ -616,8 +577,7 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
   }
 
   /// <summary>Shuts the boiler down: back to Idle, reset timers (leftover steam condenses in Idle).</summary>
-  private void ShutDown()
-  {
+  private void ShutDown() {
     _state = BoilerState.Idle;
     _heatingSeconds = 0f;
     _shutdownSeconds = 0f;
@@ -625,13 +585,11 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
   }
 
   /// <summary>Natural water evaporation (in-game time based; nothing charged for time the chunk was unloaded).</summary>
-  private void ApplyEvaporation()
-  {
+  private void ApplyEvaporation() {
     double nowDays = Api.World.Calendar?.TotalDays ?? -1;
     if (nowDays < 0)
       return;
-    if (_lastEvapDays >= 0 && _waterVolume > 0f)
-    {
+    if (_lastEvapDays >= 0 && _waterVolume > 0f) {
       float evap = (float)(
         PpexValues.EvaporationLitresPerDay * (nowDays - _lastEvapDays)
       );
@@ -641,15 +599,13 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
     _lastEvapDays = nowDays;
   }
 
-  private void Explode()
-  {
+  private void Explode() {
     BlockPos pos = Pos.Copy();
     var world = Api.World;
     // Centre the blast on the vessel body, not the master cell (at the firebox end).
     BlockPos center = BoilerBlock?.ExplosionCenterPos(pos) ?? pos;
 
-    if (BoilerBlock != null)
-    {
+    if (BoilerBlock != null) {
       // A burst skips the structure's normal break path, so pull a salvageable fraction of
       // the build materials straight from the RightClickConstructable behavior.
       foreach (
@@ -698,23 +654,21 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
     BlockPos center,
     float radius,
     float maxResistance
-  )
-  {
+  ) {
     var ba = world.BlockAccessor;
     int ri = (int)Math.Ceiling(radius);
     float r2 = radius * radius;
     for (int dx = -ri; dx <= ri; dx++)
-    for (int dy = -ri; dy <= ri; dy++)
-    for (int dz = -ri; dz <= ri; dz++)
-    {
-      if (dx * dx + dy * dy + dz * dz > r2)
-        continue;
-      BlockPos p = center.AddCopy(dx, dy, dz);
-      Block block = ba.GetBlock(p);
-      if (block.Id == 0 || block.Resistance >= maxResistance)
-        continue;
-      ba.BreakBlock(p, null, 0.25f);
-    }
+      for (int dy = -ri; dy <= ri; dy++)
+        for (int dz = -ri; dz <= ri; dz++) {
+          if (dx * dx + dy * dy + dz * dz > r2)
+            continue;
+          BlockPos p = center.AddCopy(dx, dy, dz);
+          Block block = ba.GetBlock(p);
+          if (block.Id == 0 || block.Resistance >= maxResistance)
+            continue;
+          ba.BreakBlock(p, null, 0.25f);
+        }
   }
 
   #endregion
@@ -722,8 +676,7 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
   #region Lid + manual fill
 
   /// <summary>Toggles the manual-access lid (sprint + RMB on the boiler).</summary>
-  public void ToggleLid()
-  {
+  public void ToggleLid() {
     LidOpen = !LidOpen;
 
     // Borrow the coke-oven door's metal hatch open/close sound for the lid.
@@ -741,8 +694,7 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
   /// capped by the boil-water ceiling. Both are metered in litres, so no conversion. The
   /// kickstart before the pump.
   /// </summary>
-  public bool TryManualFill(IPlayer byPlayer, ItemSlot slot)
-  {
+  public bool TryManualFill(IPlayer byPlayer, ItemSlot slot) {
     if (slot.Itemstack?.Collectible is not BlockLiquidContainerBase cont)
       return false;
 
@@ -781,8 +733,7 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
   /// boiler's operating floor is too deep for a bucket - so manual draining stops there. Metered
   /// in litres on both sides via the litre delta, so transfer-size rounding can't desync them.
   /// </summary>
-  public bool TryManualDrain(IPlayer byPlayer, ItemSlot slot)
-  {
+  public bool TryManualDrain(IPlayer byPlayer, ItemSlot slot) {
     if (slot.Itemstack?.Collectible is not BlockLiquidContainerBase cont)
       return false;
 
@@ -843,10 +794,8 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
   /// In-vessel water-surface footprint (0-16 pixel space, block-local), read from the
   /// block's <c>waterRendererBox</c> attribute. Falls back to a 3-deep box.
   /// </summary>
-  protected virtual Cuboidf[] WaterRendererBoxes
-  {
-    get
-    {
+  protected virtual Cuboidf[] WaterRendererBoxes {
+    get {
       var node = (Block as IBoilerGeometry)?.WaterRendererBox;
       if (node == null || !node.Exists)
         return [new Cuboidf(-16f, 0f, 0f, 16f, 16f, 48f)];
@@ -865,8 +814,7 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
     }
   }
 
-  private void InitWaterRenderer(ICoreClientAPI capi)
-  {
+  private void InitWaterRenderer(ICoreClientAPI capi) {
     // The box supplies the horizontal footprint + UV; surface height is driven in discrete
     // steps via SurfaceLevel (see OnClientTick).
     _waterRenderer = new BoilerWaterRenderer(
@@ -878,10 +826,8 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
     capi.Event.RegisterRenderer(_waterRenderer, EnumRenderStage.Opaque);
   }
 
-  private void OnClientTick(float dt)
-  {
-    if (_waterRenderer != null)
-    {
+  private void OnClientTick(float dt) {
+    if (_waterRenderer != null) {
       // Discrete surface height: hidden when dry, low (below the flues) while filling
       // toward the operating threshold, high (above the flues) once it can operate.
       _waterRenderer.SurfaceLevel =
@@ -917,8 +863,7 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
   }
 
   /// <summary>Warning steam erupting from the access-lid filler while in the danger zone.</summary>
-  private void SpawnDangerSteam()
-  {
+  private void SpawnDangerSteam() {
     if (Api is not ICoreClientAPI || BoilerBlock == null)
       return;
     EmitSteamPlume(BoilerBlock.LidWorldPos(Pos), 4);
@@ -926,8 +871,7 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
 
   /// <summary>Water surface temperature for the renderer glow, derived from the operating phase.</summary>
   private float DisplayWaterTemperature() =>
-    _state switch
-    {
+    _state switch {
       BoilerState.Boiling => PpexValues.BoilingPoint,
       BoilerState.Heating => 20f
         + (PpexValues.BoilingPoint - 20f) * HeatProgress,
@@ -935,25 +879,21 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
     };
 
   /// <summary>Steam billowing out of the open access lid (see <see cref="BlockBoiler.LidWorldPos"/>).</summary>
-  private void SpawnLidSteam()
-  {
+  private void SpawnLidSteam() {
     if (BoilerBlock != null)
       EmitSteamPlume(BoilerBlock.LidWorldPos(Pos).AddCopy(0, -1, 0), 6);
   }
 
   /// <summary>Steam jetting out of the outlet neck when no pipe is attached above it
   /// (see <see cref="BlockBoiler.SteamPipeWorldPos"/>).</summary>
-  private void SpawnOutletLeakSteam()
-  {
+  private void SpawnOutletLeakSteam() {
     if (BoilerBlock != null)
       EmitSteamPlume(BoilerBlock.SteamPipeWorldPos(Pos), 8);
   }
 
   /// <summary>Spawns a short-lived steam plume rising out of the top of <paramref name="cell"/>.</summary>
-  private void EmitSteamPlume(BlockPos cell, int count)
-  {
-    if (Api is ICoreClientAPI)
-    {
+  private void EmitSteamPlume(BlockPos cell, int count) {
+    if (Api is ICoreClientAPI) {
       ExParticles.SteamPlume(Api.World, cell, count);
       ExSounds.HissSound(Api.World, cell);
     }
@@ -963,8 +903,7 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
 
   #region Serialization
 
-  public override void ToTreeAttributes(ITreeAttribute tree)
-  {
+  public override void ToTreeAttributes(ITreeAttribute tree) {
     base.ToTreeAttributes(tree);
     tree.SetFloat("waterVolume", _waterVolume);
     tree.SetFloat("steamVolume", _steamVolume);
@@ -981,8 +920,7 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
   public override void FromTreeAttributes(
     ITreeAttribute tree,
     IWorldAccessor worldForResolving
-  )
-  {
+  ) {
     base.FromTreeAttributes(tree, worldForResolving);
     _waterVolume = tree.GetFloat("waterVolume");
     _steamVolume = tree.GetFloat("steamVolume");
@@ -1008,14 +946,12 @@ public abstract class BlockEntityBoiler : BlockEntityMultiblockStructure
   public override void GetBlockInfo(
     IPlayer forPlayer,
     System.Text.StringBuilder dsc
-  )
-  {
+  ) {
     base.GetBlockInfo(forPlayer, dsc);
     if (!IsConstructed)
       return;
 
-    if (!StructureComplete)
-    {
+    if (!StructureComplete) {
       UpdateStructureRotation();
       int missing = _structure?.InCompleteBlockCount(Api.World, Pos) ?? 0;
       dsc.AppendLine(Lang.Get("ppex:structure-incomplete-count", missing));

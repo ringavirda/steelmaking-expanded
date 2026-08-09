@@ -10,8 +10,7 @@ namespace PipesAndPowerExpanded.BlockStructures.Engine;
 /// a swoosh per up-stroke and a metal impact per down-stroke as the cycle frame crosses those
 /// thresholds (client-side, so each stroke matches the locally rendered animation).
 /// </summary>
-public static class PistonCycleSounds
-{
+public static class PistonCycleSounds {
   /// <summary>Cycle frame where the piston tops out (torch un-equip whoosh).</summary>
   public const int UpFrame = 45;
 
@@ -31,8 +30,7 @@ public static class PistonCycleSounds
     float currentFrame,
     int totalFrames,
     float volumeMul = 1f
-  )
-  {
+  ) {
     if (Crossed(lastFrame, currentFrame, totalFrames, UpFrame))
       ExSounds.PlayLocal(
         world,
@@ -77,8 +75,7 @@ public static class PistonCycleSounds
     float cur,
     int totalFrames,
     float threshold
-  )
-  {
+  ) {
     if (totalFrames <= 1)
       return false;
 

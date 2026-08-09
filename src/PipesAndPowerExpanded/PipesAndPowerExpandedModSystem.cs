@@ -17,12 +17,10 @@ namespace PipesAndPowerExpanded;
 /// chimney look-at info, auto-registers every <c>[BlockRegister]</c>/<c>[ItemRegister]</c>/etc.
 /// decorated class, adds the creative tab, and registers the unified "pipe" network type (gases + liquids).
 /// </summary>
-public class PipesAndPowerExpandedModSystem : ModSystem
-{
+public class PipesAndPowerExpandedModSystem : ModSystem {
   private Harmony? _harmony;
 
-  public override void Start(ICoreAPI api)
-  {
+  public override void Start(ICoreAPI api) {
     // Load gameplay tunables from ModConfig/ppex_values.json (writes defaults on first run).
     PpexValues.Load(api);
     // Drive the exlib RCC salvage ratio for our engines/boilers from the (live) config.
@@ -35,8 +33,7 @@ public class PipesAndPowerExpandedModSystem : ModSystem
     // Register this mod's recipe-cost profile so exlib's shared apply pass and the generic
     // /exmod recipes ppex <level> command can drive it (see ExRecipeProfiles).
     ExRecipeProfiles.Register(
-      new RecipeProfile
-      {
+      new RecipeProfile {
         Code = Mod.Info.ModID,
         Catalogue = () => PpexRecipeValues.Recipes,
         Defaults = PpexRecipeConfig.DefaultCatalogue,
@@ -48,8 +45,7 @@ public class PipesAndPowerExpandedModSystem : ModSystem
 
     // Patch the vanilla chimney's look-at info so a chimney venting one of our pipes
     // reports it (the gas draw itself runs in PipeNetwork's tick).
-    if (!Harmony.HasAnyPatches(Mod.Info.ModID))
-    {
+    if (!Harmony.HasAnyPatches(Mod.Info.ModID)) {
       _harmony = new Harmony(Mod.Info.ModID);
       _harmony.PatchAll(GetType().Assembly);
     }
@@ -64,23 +60,20 @@ public class PipesAndPowerExpandedModSystem : ModSystem
     netManager.RegisterNetworkType("pipe", () => new PipeNetwork(netManager));
   }
 
-  public override void Dispose()
-  {
+  public override void Dispose() {
     _harmony?.UnpatchAll(Mod.Info.ModID);
     _harmony = null;
     base.Dispose();
   }
 
-  public override void StartServerSide(ICoreServerAPI api)
-  {
+  public override void StartServerSide(ICoreServerAPI api) {
     // Server-side sub-commands. The recipe-cost level is applied centrally by exlib (ExRecipeProfiles);
     // /exmod recipes ppex <level> is the generic switch.
     CommandRegistry.RegisterAll(api, Mod, GetType().Assembly);
   }
 
   #region Creative category
-  public override void StartClientSide(ICoreClientAPI api)
-  {
+  public override void StartClientSide(ICoreClientAPI api) {
     ExCreativeTabs.EnsureTab(Mod.Info.ModID);
 
     // Register ppex's display preferences (the metric/imperial unit system) into the library's

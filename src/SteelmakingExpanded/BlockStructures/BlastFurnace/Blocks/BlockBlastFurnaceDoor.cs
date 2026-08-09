@@ -14,16 +14,14 @@ namespace SteelmakingExpanded.BlockStructures.BlastFurnace.Blocks;
 /// <see cref="BlockEntityBlastFurnace"/> for the show/hide structure outline.
 /// </summary>
 [BlockRegister]
-public partial class BlockBlastFurnaceDoor : BlockBeeHiveKilnDoor
-{
+public partial class BlockBlastFurnaceDoor : BlockBeeHiveKilnDoor {
   public override bool TryPlaceBlock(
     IWorldAccessor world,
     IPlayer byPlayer,
     ItemStack itemstack,
     BlockSelection blockSel,
     ref string failureCode
-  )
-  {
+  ) {
     BlockPos position = blockSel.Position;
     IBlockAccessor blockAccessor = world.BlockAccessor;
 
@@ -46,8 +44,7 @@ public partial class BlockBlastFurnaceDoor : BlockBeeHiveKilnDoor
     BlockSelection blockSel,
     BlockPos pos,
     IBlockAccessor ba
-  )
-  {
+  ) {
     ba.SetBlock(BlockId, pos);
     var beBlastFurnace = ba.GetBlockEntity<BlockEntityBlastFurnace>(pos);
     var beBehaviorDoor = beBlastFurnace.GetBehavior<BEBehaviorDoor>();
@@ -62,8 +59,7 @@ public partial class BlockBlastFurnaceDoor : BlockBeeHiveKilnDoor
     // Triggers the immediate rotation math in the BE so holograms work on tick 1
     beBlastFurnace.Init();
 
-    if (world.Side == EnumAppSide.Server)
-    {
+    if (world.Side == EnumAppSide.Server) {
       GetBehavior<BlockBehaviorDoor>().placeMultiblockParts(world, pos);
       beBlastFurnace.MarkDirty(true);
     }
@@ -88,13 +84,11 @@ public partial class BlockBlastFurnaceDoor : BlockBeeHiveKilnDoor
     BlockPos pos,
     IPlayer byPlayer,
     float dropQuantityMultiplier = 1f
-  )
-  {
+  ) {
     bool preventDefault = false;
     List<ItemStack> behaviorDrops = [];
 
-    foreach (BlockBehavior behavior in BlockBehaviors)
-    {
+    foreach (BlockBehavior behavior in BlockBehaviors) {
       EnumHandling handling = EnumHandling.PassThrough;
       ItemStack[]? drops = behavior.GetDrops(
         world,
@@ -119,15 +113,13 @@ public partial class BlockBlastFurnaceDoor : BlockBeeHiveKilnDoor
       return null;
 
     List<ItemStack> result = [];
-    foreach (BlockDropItemStack drop in Drops)
-    {
+    foreach (BlockDropItemStack drop in Drops) {
       ItemStack? stack = drop.ToRandomItemstackForPlayer(
         byPlayer,
         world,
         dropQuantityMultiplier
       );
-      if (stack != null)
-      {
+      if (stack != null) {
         result.Add(stack);
         if (drop.LastDrop)
           break;

@@ -9,8 +9,7 @@ namespace ExpandedLib.Registries.Config;
 /// <c>[ExConfigRegister(..., Manageable = true)]</c>; the generated accessor then registers its store
 /// with <see cref="ExConfigProfiles"/> at load.
 /// </summary>
-public interface IExConfigAccess
-{
+public interface IExConfigAccess {
   /// <summary>The owning mod id, e.g. <c>"smex"</c> - the code typed in <c>/exmod config smex ...</c>.</summary>
   string ModId { get; }
 
@@ -32,8 +31,7 @@ public interface IExConfigAccess
 }
 
 /// <summary>Outcome category of an <see cref="IExConfigAccess.Set"/> attempt.</summary>
-public enum ExConfigEditStatus
-{
+public enum ExConfigEditStatus {
   /// <summary>The value was parsed, validated, set and persisted.</summary>
   Ok,
 
@@ -48,8 +46,7 @@ public enum ExConfigEditStatus
 }
 
 /// <summary>The result of an attempted config edit, with enough detail for the command to report it.</summary>
-public sealed class ExConfigEditResult
-{
+public sealed class ExConfigEditResult {
   /// <summary>What happened.</summary>
   public required ExConfigEditStatus Status { get; init; }
 

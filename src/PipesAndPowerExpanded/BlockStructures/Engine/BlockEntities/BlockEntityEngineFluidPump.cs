@@ -17,8 +17,7 @@ namespace PipesAndPowerExpanded.BlockStructures.Engine.BlockEntities;
 /// engine's inlet steam. With no intake it still runs but moves nothing.
 /// </summary>
 [BlockEntityRegister]
-public class BlockEntityEngineFluidPump : BlockEntityEngineSubmachine
-{
+public class BlockEntityEngineFluidPump : BlockEntityEngineSubmachine {
   /// <summary>True while the pump has an active intake on its source line and is moving water;
   /// synced to clients to drive the water-drawing loop sound.</summary>
   private bool _drawingWater;
@@ -34,10 +33,8 @@ public class BlockEntityEngineFluidPump : BlockEntityEngineSubmachine
   /// </summary>
   public const float ThroughputScale = 3f;
 
-  protected override void DoWork(float power, float dt)
-  {
-    if (power <= 0f)
-    {
+  protected override void DoWork(float power, float dt) {
+    if (power <= 0f) {
       SetDrawing(false);
       return;
     }
@@ -64,8 +61,7 @@ public class BlockEntityEngineFluidPump : BlockEntityEngineSubmachine
   }
 
   /// <summary>Updates the synced water-drawing flag, syncing to clients only on change.</summary>
-  private void SetDrawing(bool drawing)
-  {
+  private void SetDrawing(bool drawing) {
     if (drawing == _drawingWater)
       return;
     _drawingWater = drawing;
@@ -73,13 +69,11 @@ public class BlockEntityEngineFluidPump : BlockEntityEngineSubmachine
   }
 
   /// <summary>The first fluid intake on <paramref name="net"/> that can currently draw water, or <c>null</c>.</summary>
-  private BlockEntityFluidIntake? FindIntake(PipeNetwork? net)
-  {
+  private BlockEntityFluidIntake? FindIntake(PipeNetwork? net) {
     if (net == null)
       return null;
     var ba = Api.World.BlockAccessor;
-    foreach (var p in net.Nodes)
-    {
+    foreach (var p in net.Nodes) {
       if (
         ba.GetBlockEntity(p) is BlockEntityFluidIntake intake
         && intake.CanIntake
@@ -99,13 +93,11 @@ public class BlockEntityEngineFluidPump : BlockEntityEngineSubmachine
   /// Runs a watering trickle loop while the pump is actually drawing water, on top of the
   /// shared piston-stroke sounds - the same loop the manual fluid pump uses.
   /// </summary>
-  protected override void OnClientStateTick(float dt)
-  {
+  protected override void OnClientStateTick(float dt) {
     if (Api is not ICoreClientAPI)
       return;
 
-    if (_drawingWater)
-    {
+    if (_drawingWater) {
       _waterSound ??= ExSounds.CreateLoop(
         Api,
         Pos,
@@ -115,20 +107,17 @@ public class BlockEntityEngineFluidPump : BlockEntityEngineSubmachine
       );
       if (_waterSound?.IsPlaying == false)
         _waterSound.Start();
-    }
-    else if (_waterSound?.IsPlaying == true)
+    } else if (_waterSound?.IsPlaying == true)
       _waterSound.Stop();
   }
 
-  private void DisposeSounds()
-  {
+  private void DisposeSounds() {
     _waterSound?.Stop();
     _waterSound?.Dispose();
     _waterSound = null;
   }
 
-  public override void ToTreeAttributes(ITreeAttribute tree)
-  {
+  public override void ToTreeAttributes(ITreeAttribute tree) {
     base.ToTreeAttributes(tree);
     tree.SetBool("drawingWater", _drawingWater);
   }
@@ -136,20 +125,17 @@ public class BlockEntityEngineFluidPump : BlockEntityEngineSubmachine
   public override void FromTreeAttributes(
     ITreeAttribute tree,
     IWorldAccessor worldForResolving
-  )
-  {
+  ) {
     base.FromTreeAttributes(tree, worldForResolving);
     _drawingWater = tree.GetBool("drawingWater");
   }
 
-  public override void OnBlockRemoved()
-  {
+  public override void OnBlockRemoved() {
     DisposeSounds();
     base.OnBlockRemoved();
   }
 
-  public override void OnBlockUnloaded()
-  {
+  public override void OnBlockUnloaded() {
     DisposeSounds();
     base.OnBlockUnloaded();
   }

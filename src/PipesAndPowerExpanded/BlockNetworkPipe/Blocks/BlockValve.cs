@@ -14,8 +14,7 @@ namespace PipesAndPowerExpanded.BlockNetworkPipe.Blocks;
 /// <see cref="BlockEntityValve.IsConnectionBroken"/>). Empty-hand right-click toggles it.
 /// </summary>
 [BlockRegister]
-public partial class BlockValve : BlockPipe
-{
+public partial class BlockValve : BlockPipe {
   // Cached once - consulted on every placement/neighbour recalc, so it must not allocate per read.
   public override Dictionary<string, string[]> AllowedOrientations { get; } =
     new() { { "valve", ["ns", "we", "ud", "sn", "ew", "du"] } };
@@ -26,13 +25,11 @@ public partial class BlockValve : BlockPipe
     IWorldAccessor world,
     IPlayer byPlayer,
     BlockSelection blockSel
-  )
-  {
+  ) {
     if (
       world.BlockAccessor.GetBlockEntity(blockSel.Position)
       is BlockEntityValve be
-    )
-    {
+    ) {
       // Don't toggle while holding an item/block.
       if (!byPlayer.Entity.RightHandItemSlot.Empty)
         return false;
@@ -57,13 +54,11 @@ public partial class BlockValve : BlockPipe
     IWorldAccessor world,
     BlockSelection selection,
     IPlayer forPlayer
-  )
-  {
+  ) {
     var baseHelp =
       base.GetPlacedBlockInteractionHelp(world, selection, forPlayer) ?? [];
 
-    var toggleHelp = new WorldInteraction
-    {
+    var toggleHelp = new WorldInteraction {
       ActionLangCode = "ppex:blockhelp-valve-toggle",
       MouseButton = EnumMouseButton.Right,
     };

@@ -12,8 +12,7 @@ namespace ExpandedLib.Helpers;
 /// how. Call after recipes have resolved - i.e. from a mod system's
 /// <c>StartServerSide</c>/<c>StartClientSide</c>, not <c>Start</c>.
 /// </summary>
-public static class ExContentGate
-{
+public static class ExContentGate {
   /// <summary>
   /// Hides every collectible matching <paramref name="match"/> from the creative inventory and the
   /// handbook by clearing its creative tabs and stacks - the handbook lists nothing for a collectible
@@ -24,14 +23,21 @@ public static class ExContentGate
   public static int HideFromCreativeAndHandbook(
     ICoreAPI api,
     System.Func<CollectibleObject, bool> match
-  )
-  {
+  ) {
     int hidden = 0;
-    foreach (var obj in AllCollectibles(api))
-    {
+    foreach (var obj in AllCollectibles(api)) {
       if (obj?.Code == null || !match(obj))
         continue;
-      obj.CreativeInventoryTabs = null;
+      // Empty, never null. The asset loader always leaves CreativeInventoryTabs as an array, and
+      // game code relies on that: AttachableInteractionHelp.GetOrCreateInteractionHelp reads
+      // .Length on it with no null guard while scanning every collectible, so a null here crashes
+      // the client the moment a player looks at any attachable entity (a boat, a raft, a mount).
+      // An empty array hides the collectible exactly as a null would - GetHandBookStacks tests
+      // Length, not nullity - without breaking that invariant.
+      obj.CreativeInventoryTabs = [];
+      // Left null on purpose: null is the loader's own default for a collectible that declares no
+      // creativeinventoryStacks, so it is a state game code already handles. An empty array here
+      // would instead read as "has stacks" to the same non-null test above.
       obj.CreativeInventoryStacks = null;
       hidden++;
     }

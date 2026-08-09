@@ -25,8 +25,7 @@ namespace ExpandedLib.Blocks.Migrations;
 /// and attributes.
 /// </para>
 /// </summary>
-public class BlockMigrationModSystem : ModSystem
-{
+public class BlockMigrationModSystem : ModSystem {
   /// <summary>One resolved action for a given legacy block code. A null
   /// <see cref="NewBlock"/> means "remove" (delete the block / drop the item stack); otherwise it is
   /// the replacement to swap in.</summary>
@@ -57,8 +56,7 @@ public class BlockMigrationModSystem : ModSystem
   public override bool ShouldLoad(EnumAppSide side) =>
     side == EnumAppSide.Server;
 
-  public override void StartServerSide(ICoreServerAPI api)
-  {
+  public override void StartServerSide(ICoreServerAPI api) {
     _sapi = api;
     // Spawn-area chunks are already loaded before this event is wired up, so sweep them once at
     // RunGame and handle every column that loads afterwards via the event.
@@ -70,10 +68,8 @@ public class BlockMigrationModSystem : ModSystem
   }
 
   /// <summary>Builds the remap table on first use; returns false if nothing to migrate.</summary>
-  private bool EnsureInitialized()
-  {
-    if (!_initialized)
-    {
+  private bool EnsureInitialized() {
+    if (!_initialized) {
       BuildRemapTable();
       _initialized = true;
     }
@@ -81,8 +77,7 @@ public class BlockMigrationModSystem : ModSystem
     return _remap.Count > 0 || _itemRemap.Count > 0;
   }
 
-  private void SweepLoadedChunks()
-  {
+  private void SweepLoadedChunks() {
     if (!EnsureInitialized())
       return;
 
@@ -92,8 +87,7 @@ public class BlockMigrationModSystem : ModSystem
     // Copy the keys: ReplaceBlock mutates chunks, so don't enumerate the live dictionary.
     foreach (
       long index2d in _sapi.WorldManager.AllLoadedMapchunks.Keys.ToArray()
-    )
-    {
+    ) {
       Vec2i coord = _sapi.WorldManager.MapChunkPosFromChunkIndex2D(index2d);
       int migrated = 0;
       for (int cy = 0; cy < chunksTall; cy++)
@@ -117,10 +111,8 @@ public class BlockMigrationModSystem : ModSystem
       );
   }
 
-  private void OnChunkColumnLoaded(Vec2i chunkCoord, IWorldChunk[] chunks)
-  {
-    if (!EnsureInitialized())
-    {
+  private void OnChunkColumnLoaded(Vec2i chunkCoord, IWorldChunk[] chunks) {
+    if (!EnsureInitialized()) {
       // Nothing in this world matches any migration - stop listening entirely.
       _sapi.Event.ChunkColumnLoaded -= OnChunkColumnLoaded;
       return;
@@ -135,8 +127,7 @@ public class BlockMigrationModSystem : ModSystem
   }
 
   /// <summary>Scans one chunk section and rewrites every block matched by a migration.</summary>
-  private int ScanChunk(int chunkX, int chunkY, int chunkZ, IWorldChunk? chunk)
-  {
+  private int ScanChunk(int chunkX, int chunkY, int chunkZ, IWorldChunk? chunk) {
     if (chunk == null)
       return 0;
     chunk.Unpack();
@@ -147,8 +138,7 @@ public class BlockMigrationModSystem : ModSystem
     IBlockAccessor ba = _sapi.World.BlockAccessor;
     int migrated = 0;
 
-    for (int i = 0; i < len; i++)
-    {
+    for (int i = 0; i < len; i++) {
       int id = data[i];
       if (id == 0)
         continue;
@@ -178,11 +168,9 @@ public class BlockMigrationModSystem : ModSystem
     // above may have mutated this dictionary.
     if (chunk.BlockEntities != null)
       foreach (BlockEntity be in chunk.BlockEntities.Values.ToArray())
-        if (be is IBlockEntityContainer { Inventory: { } inv })
-        {
+        if (be is IBlockEntityContainer { Inventory: { } inv }) {
           int n = RemapInventory(inv);
-          if (n > 0)
-          {
+          if (n > 0) {
             be.MarkDirty(true);
             migrated += n;
           }
@@ -196,19 +184,16 @@ public class BlockMigrationModSystem : ModSystem
   /// to the replacement block, preserving stack size and attributes (e.g. a filled mold's
   /// stored contents). Returns how many slots changed.
   /// </summary>
-  private int RemapInventory(IInventory inv)
-  {
+  private int RemapInventory(IInventory inv) {
     int changed = 0;
-    foreach (ItemSlot slot in inv)
-    {
+    foreach (ItemSlot slot in inv) {
       ItemStack? stack = slot.Itemstack;
       if (stack?.Collectible?.Code == null)
         continue;
 
       // Item stacks go through the item table only. Matching them against the block table would
       // rewrite an item into a same-named block, or delete it outright when no block resolves.
-      if (stack.Class == EnumItemClass.Item)
-      {
+      if (stack.Class == EnumItemClass.Item) {
         if (!_itemRemap.TryGetValue(stack.Collectible.Code, out Item? newItem))
           continue;
 
@@ -225,8 +210,7 @@ public class BlockMigrationModSystem : ModSystem
         continue;
 
       // A removal: drop the stack from the slot entirely.
-      if (entry.NewBlock == null)
-      {
+      if (entry.NewBlock == null) {
         slot.Itemstack = null;
         slot.MarkDirty();
         changed++;
@@ -244,16 +228,14 @@ public class BlockMigrationModSystem : ModSystem
   }
 
   /// <summary>Remaps any migrated blocks a joining player is carrying as item stacks.</summary>
-  private void OnPlayerJoin(IServerPlayer player)
-  {
+  private void OnPlayerJoin(IServerPlayer player) {
     if (!EnsureInitialized())
       return;
 
     int changed = 0;
     foreach (
       KeyValuePair<string, IInventory> kv in player.InventoryManager.Inventories
-    )
-    {
+    ) {
       // The creative inventory is a virtual search list whose Count getter NREs on join - skip it.
       if (
         kv.Value is not { } inv
@@ -262,12 +244,9 @@ public class BlockMigrationModSystem : ModSystem
         continue;
 
       // A single misbehaving (e.g. modded) inventory must not abort the join.
-      try
-      {
+      try {
         changed += RemapInventory(inv);
-      }
-      catch (Exception e)
-      {
+      } catch (Exception e) {
         _sapi.Logger.Warning(
           Tag + " Skipped inventory '{0}' for {1} during migration: {2}",
           kv.Key,
@@ -293,22 +272,18 @@ public class BlockMigrationModSystem : ModSystem
       chunkZ
     );
 
-  private void BuildRemapTable()
-  {
-    foreach (IBlockCodeMigration migration in Discover<IBlockCodeMigration>())
-    {
+  private void BuildRemapTable() {
+    foreach (IBlockCodeMigration migration in Discover<IBlockCodeMigration>()) {
       var beMigration = migration as IBlockEntityMigration;
       int count = 0;
-      foreach (var (oldCode, newCode) in migration.GetRemaps(_sapi))
-      {
+      foreach (var (oldCode, newCode) in migration.GetRemaps(_sapi)) {
         // GetBlock resolves missing-block placeholders too, so a null means this world has no
         // such legacy block - skip it.
         if (_sapi.World.GetBlock(oldCode) == null)
           continue;
 
         Block? newBlock = _sapi.World.GetBlock(newCode);
-        if (newBlock == null || newBlock.BlockId == 0)
-        {
+        if (newBlock == null || newBlock.BlockId == 0) {
           _sapi.Logger.Warning(
             Tag
               + " Migration '{0}': replacement block '{1}' is not registered; skipping.",
@@ -321,8 +296,7 @@ public class BlockMigrationModSystem : ModSystem
         if (
           _remap.TryGetValue(oldCode, out RemapEntry existing)
           && existing.NewBlock?.Code.Equals(newCode) != true
-        )
-        {
+        ) {
           _sapi.Logger.Warning(
             Tag
               + " Migration '{0}' remaps {1} but it is already mapped elsewhere; keeping the first mapping.",
@@ -350,11 +324,9 @@ public class BlockMigrationModSystem : ModSystem
     }
 
     // Item renames (IItemCodeMigration): a separate table, resolved against the item registry.
-    foreach (IItemCodeMigration migration in Discover<IItemCodeMigration>())
-    {
+    foreach (IItemCodeMigration migration in Discover<IItemCodeMigration>()) {
       int count = 0;
-      foreach (var (oldCode, newCode) in migration.GetRemaps(_sapi))
-      {
+      foreach (var (oldCode, newCode) in migration.GetRemaps(_sapi)) {
         if (oldCode == null || newCode == null)
           continue;
         // A world without the legacy item has nothing to migrate.
@@ -362,8 +334,7 @@ public class BlockMigrationModSystem : ModSystem
           continue;
 
         Item? newItem = _sapi.World.GetItem(newCode);
-        if (newItem == null || newItem.ItemId == 0)
-        {
+        if (newItem == null || newItem.ItemId == 0) {
           _sapi.Logger.Warning(
             Tag
               + " Item migration '{0}': replacement item '{1}' is not registered; skipping.",
@@ -376,8 +347,7 @@ public class BlockMigrationModSystem : ModSystem
         if (
           _itemRemap.TryGetValue(oldCode, out Item? existingItem)
           && existingItem?.Code.Equals(newCode) != true
-        )
-        {
+        ) {
           _sapi.Logger.Warning(
             Tag
               + " Item migration '{0}' remaps {1} but it is already mapped elsewhere; keeping the first mapping.",
@@ -393,23 +363,21 @@ public class BlockMigrationModSystem : ModSystem
 
       if (count > 0)
         _sapi.Logger.Notification(
-          Tag + " Item migration '{0}': {1} legacy item code(s) found to update.",
+          Tag
+            + " Item migration '{0}': {1} legacy item code(s) found to update.",
           migration.Name,
           count
         );
     }
 
     // Purges (IBlockRemoval): same matching, but the action is "delete" (null replacement).
-    foreach (IBlockRemoval removal in Discover<IBlockRemoval>())
-    {
+    foreach (IBlockRemoval removal in Discover<IBlockRemoval>()) {
       int count = 0;
-      foreach (AssetLocation code in removal.GetRemovals(_sapi))
-      {
+      foreach (AssetLocation code in removal.GetRemovals(_sapi)) {
         if (code == null || _sapi.World.GetBlock(code) == null)
           continue;
 
-        if (_remap.ContainsKey(code))
-        {
+        if (_remap.ContainsKey(code)) {
           _sapi.Logger.Warning(
             Tag
               + " Removal '{0}' targets {1} but it is already mapped elsewhere; keeping the existing mapping.",
@@ -437,32 +405,27 @@ public class BlockMigrationModSystem : ModSystem
   /// <c>SetBlock</c>; one that handles BE state captures the old entity's tree first and applies it
   /// to the new entity afterwards.
   /// </summary>
-  private void ReplaceBlock(IBlockAccessor ba, BlockPos pos, RemapEntry entry)
-  {
+  private void ReplaceBlock(IBlockAccessor ba, BlockPos pos, RemapEntry entry) {
     // A removal: delete the block (and its entity) outright.
-    if (entry.NewBlock == null)
-    {
+    if (entry.NewBlock == null) {
       ba.SetBlock(0, pos);
       return;
     }
 
-    if (entry.BlockEntityMigration == null)
-    {
+    if (entry.BlockEntityMigration == null) {
       ba.SetBlock(entry.NewBlock.BlockId, pos);
       return;
     }
 
     ITreeAttribute? oldState = null;
-    if (ba.GetBlockEntity(pos) is BlockEntity oldBe)
-    {
+    if (ba.GetBlockEntity(pos) is BlockEntity oldBe) {
       oldState = new TreeAttribute();
       oldBe.ToTreeAttributes(oldState);
     }
 
     ba.SetBlock(entry.NewBlock.BlockId, pos);
 
-    if (ba.GetBlockEntity(pos) is BlockEntity newBe)
-    {
+    if (ba.GetBlockEntity(pos) is BlockEntity newBe) {
       entry.BlockEntityMigration.MigrateBlockEntity(
         entry.OldCode,
         entry.NewCode!, // non-null for a migration entry (removals return above)
@@ -477,22 +440,16 @@ public class BlockMigrationModSystem : ModSystem
   // Scan every loaded assembly for parameterless implementations of T: this system lives in exlib,
   // but ppex/smex declare their own migrations and removals.
   private static IEnumerable<T> Discover<T>()
-    where T : class
-  {
-    foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
-    {
+    where T : class {
+    foreach (var asm in AppDomain.CurrentDomain.GetAssemblies()) {
       Type[] types;
-      try
-      {
+      try {
         types = asm.GetTypes();
-      }
-      catch (ReflectionTypeLoadException ex)
-      {
+      } catch (ReflectionTypeLoadException ex) {
         types = ex.Types.Where(t => t != null).ToArray()!;
       }
 
-      foreach (var t in types)
-      {
+      foreach (var t in types) {
         if (
           !typeof(T).IsAssignableFrom(t)
           || t is not { IsAbstract: false, IsInterface: false }

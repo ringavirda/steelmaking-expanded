@@ -11,8 +11,7 @@ namespace SteelmakingExpanded.BlockStructures.SmokeStack.Blocks;
 /// block JSON.
 /// </summary>
 [BlockRegister]
-public partial class BlockSmokeStackIntake : BlockPipePassthrough
-{
+public partial class BlockSmokeStackIntake : BlockPipePassthrough {
   public override Dictionary<string, string[]> AllowedOrientations { get; } =
     new() { { "intake", ["n", "s", "w", "e"] } };
 

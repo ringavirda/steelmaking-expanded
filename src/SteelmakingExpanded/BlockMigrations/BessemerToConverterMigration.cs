@@ -14,8 +14,7 @@ namespace SteelmakingExpanded.BlockMigrations;
 /// <c>n/s/w/e</c> orientation to the <c>horizontalorientation</c> side words
 /// (<c>bessemer-gasintake-n → converter-intake-north</c>).
 /// </summary>
-public class BessemerToConverterMigration : IBlockCodeMigration
-{
+public class BessemerToConverterMigration : IBlockCodeMigration {
   public string Name => "Bessemer machines renamed to converter";
 
   // The four horizontal-orientation sides shared by both code versions.
@@ -23,8 +22,7 @@ public class BessemerToConverterMigration : IBlockCodeMigration
 
   public IEnumerable<(AssetLocation oldCode, AssetLocation newCode)> GetRemaps(
     ICoreServerAPI api
-  )
-  {
+  ) {
     // Same-side machines: only the code base changed, the side variant is untouched.
     (string Old, string New)[] renames =
     [
@@ -33,11 +31,11 @@ public class BessemerToConverterMigration : IBlockCodeMigration
       ("bessemertransmission", "convertertransmission"),
     ];
     foreach (var (oldBase, newBase) in renames)
-    foreach (string side in Sides)
-      yield return (
-        new AssetLocation("smex", $"{oldBase}-{side}"),
-        new AssetLocation("smex", $"{newBase}-{side}")
-      );
+      foreach (string side in Sides)
+        yield return (
+          new AssetLocation("smex", $"{oldBase}-{side}"),
+          new AssetLocation("smex", $"{newBase}-{side}")
+        );
 
     // The gas intake became a converter variant and the short orientation became side words.
     (string Orient, string Side)[] intake =

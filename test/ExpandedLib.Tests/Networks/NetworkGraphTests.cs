@@ -11,10 +11,8 @@ namespace ExpandedLib.Tests;
 /// fracture on removal, and root rebuild - using a medium-less <see cref="StubNetwork"/> so only
 /// topology behaviour is under test.
 /// </summary>
-public class NetworkGraphTests
-{
-  private static TestWorld NewWorld()
-  {
+public class NetworkGraphTests {
+  private static TestWorld NewWorld() {
     var w = new TestWorld();
     w.RegisterNetwork("test", sys => new StubNetwork(sys));
     return w;
@@ -22,12 +20,10 @@ public class NetworkGraphTests
 
   /// <summary>Places a straight "ns" run along +Z at z=0..count-1 (one shared block instance,
   /// many cells - as the engine does) and registers every cell as a node.</summary>
-  private static BlockPos[] BuildLine(TestWorld w, int count)
-  {
+  private static BlockPos[] BuildLine(TestWorld w, int count) {
     var block = TestNetworkBlock.Create("test", "ns", id: 1);
     var positions = new BlockPos[count];
-    for (int z = 0; z < count; z++)
-    {
+    for (int z = 0; z < count; z++) {
       var pos = new BlockPos(0, 0, z);
       positions[z] = pos;
       w.Place(pos, block);
@@ -38,8 +34,7 @@ public class NetworkGraphTests
   }
 
   [Fact]
-  public void AddNode_isolated_creates_standalone_network()
-  {
+  public void AddNode_isolated_creates_standalone_network() {
     var w = NewWorld();
     var pos = new BlockPos(0, 0, 0);
     w.Place(pos, TestNetworkBlock.Create("test", "ns", 1));
@@ -52,8 +47,7 @@ public class NetworkGraphTests
   }
 
   [Fact]
-  public void AddNode_adjacent_same_type_merges_into_one_network()
-  {
+  public void AddNode_adjacent_same_type_merges_into_one_network() {
     var w = NewWorld();
     var positions = BuildLine(w, 3);
 
@@ -66,8 +60,7 @@ public class NetworkGraphTests
   }
 
   [Fact]
-  public void RemoveNode_middle_fractures_into_two_networks()
-  {
+  public void RemoveNode_middle_fractures_into_two_networks() {
     var w = NewWorld();
     var positions = BuildLine(w, 3);
 
@@ -84,8 +77,7 @@ public class NetworkGraphTests
   }
 
   [Fact]
-  public void RemoveNode_end_keeps_remainder_connected()
-  {
+  public void RemoveNode_end_keeps_remainder_connected() {
     var w = NewWorld();
     var positions = BuildLine(w, 3);
 
@@ -98,8 +90,7 @@ public class NetworkGraphTests
   }
 
   [Fact]
-  public void RebuildFromRoot_preserves_root_network_state()
-  {
+  public void RebuildFromRoot_preserves_root_network_state() {
     var w = NewWorld();
     var positions = BuildLine(w, 3);
     ((StubNetwork)w.NetworkAt(positions[0])!).Tag = "hot";

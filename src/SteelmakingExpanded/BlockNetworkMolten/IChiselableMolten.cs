@@ -9,8 +9,7 @@ namespace SteelmakingExpanded.BlockNetworkMolten;
 /// tool gating, the "not cool enough yet" feedback, the recovered drop, tool wear and sound - so each
 /// holder only supplies the content-specific state and the clear-and-recover step.
 /// </summary>
-public interface IChiselableMolten
-{
+public interface IChiselableMolten {
   /// <summary>
   /// Whether there is solidified content here at all. Gates whether a chisel + hammer click is
   /// <em>claimed</em> by the chisel-out (and possibly explained as "too hot") or falls through to the

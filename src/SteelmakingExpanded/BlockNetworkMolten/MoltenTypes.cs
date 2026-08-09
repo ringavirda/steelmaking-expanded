@@ -9,8 +9,7 @@ namespace SteelmakingExpanded.BlockNetworkMolten;
 /// Defines a horizontal fill footprint (x/z extents) for the molten-surface
 /// renderer.
 /// </summary>
-public struct FillQuadDef
-{
+public struct FillQuadDef {
   public float x1,
     z1,
     x2,
@@ -24,8 +23,7 @@ public struct FillQuadDef
 /// <see cref="MoltenRenderer"/>. One reader for the canal, tap, pedestal and barrel,
 /// which each carried their own copy of this parsing.
 /// </summary>
-public static class FillQuads
-{
+public static class FillQuads {
   /// <summary>
   /// Builds the renderer footprint boxes from an already-resolved <c>fillQuadsByLevel</c> node - e.g.
   /// a block's generated <c>FillQuadsByLevel</c> accessor - so the caller passes a typed value
@@ -37,8 +35,7 @@ public static class FillQuads
   /// site, so there are no <c>ReadStartY</c>/<c>ReadHeightLevels</c> helpers anymore.
   /// </para>
   /// </summary>
-  public static Cuboidf[] BoxesFrom(JsonObject? quadsNode, Cuboidf fallback)
-  {
+  public static Cuboidf[] BoxesFrom(JsonObject? quadsNode, Cuboidf fallback) {
     var quadDefs = quadsNode?.AsObject<FillQuadDef[]>();
     return quadDefs is { Length: > 0 }
       ? [.. quadDefs.Select(q => new Cuboidf(q.x1, 0f, q.z1, q.x2, 16f, q.z2))]

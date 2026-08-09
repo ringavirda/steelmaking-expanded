@@ -6,8 +6,7 @@ namespace ExpandedLib.Blocks.Networks;
 /// Base interface for all block entities that participate in a block network
 /// (gas pipes, molten canals, …).
 /// </summary>
-public interface INetworkNode
-{
+public interface INetworkNode {
   /// <summary>
   /// The first letter of each direction that has a network connector at this block
   /// (e.g. "ns" for north + south).  May be <c>null</c> while the block is loading.

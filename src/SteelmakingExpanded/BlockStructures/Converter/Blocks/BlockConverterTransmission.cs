@@ -11,11 +11,9 @@ namespace SteelmakingExpanded.BlockStructures.Converter.Blocks;
 /// in its natural (north) orientation; the connector follows the "side" variant.
 /// </summary>
 [BlockRegister]
-public partial class BlockConverterTransmission : Block, IMechanicalPowerBlock
-{
+public partial class BlockConverterTransmission : Block, IMechanicalPowerBlock {
   private BlockFacing ConnectorFace =>
-    Variant["side"] switch
-    {
+    Variant["side"] switch {
       "north" => BlockFacing.SOUTH,
       "east" => BlockFacing.WEST,
       "south" => BlockFacing.NORTH,
@@ -51,8 +49,7 @@ public partial class BlockConverterTransmission : Block, IMechanicalPowerBlock
     IWorldAccessor world,
     BlockPos pos,
     BlockPos neighbour
-  )
-  {
+  ) {
     base.OnNeighbourBlockChange(world, pos, neighbour);
   }
 }

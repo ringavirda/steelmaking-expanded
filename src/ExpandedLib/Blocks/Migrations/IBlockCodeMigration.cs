@@ -12,8 +12,7 @@ namespace ExpandedLib.Blocks.Migrations;
 /// load as "missing" placeholder blocks that keep their original code - in-world as
 /// chunks load.
 /// </summary>
-public interface IBlockCodeMigration
-{
+public interface IBlockCodeMigration {
   /// <summary>Short human-readable name, used only for log output.</summary>
   string Name { get; }
 

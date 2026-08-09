@@ -13,15 +13,13 @@ namespace ExpandedLib.Tests;
 /// Mirrors the player-reported blast-furnace door that went inert after its
 /// <c>BlockEntityBlastFurnace</c> was lost from the save.
 /// </summary>
-public class BlockEntityHealTests
-{
+public class BlockEntityHealTests {
   private const string TestBeClass = "healtest";
 
   #region Healing
 
   [Fact]
-  public void An_orphaned_block_with_no_block_entity_is_healed()
-  {
+  public void An_orphaned_block_with_no_block_entity_is_healed() {
     var world = new TestWorld();
     var pos = new BlockPos(10, 20, 30, 0);
 
@@ -41,8 +39,7 @@ public class BlockEntityHealTests
   }
 
   [Fact]
-  public void A_block_that_still_has_its_block_entity_is_left_untouched()
-  {
+  public void A_block_that_still_has_its_block_entity_is_left_untouched() {
     var world = new TestWorld();
     var pos = new BlockPos(1, 2, 3, 0);
 
@@ -58,8 +55,7 @@ public class BlockEntityHealTests
   }
 
   [Fact]
-  public void A_block_without_a_block_entity_class_is_ignored()
-  {
+  public void A_block_without_a_block_entity_class_is_ignored() {
     var world = new TestWorld();
     var pos = new BlockPos(4, 5, 6, 0);
 
@@ -76,15 +72,13 @@ public class BlockEntityHealTests
 
   #region Helpers
 
-  private static Block MakeBlockEntityBlock(string code, int id)
-  {
+  private static Block MakeBlockEntityBlock(string code, int id) {
     var block = TestBlocks.Configure(new Block(), code, id);
     block.EntityClass = TestBeClass;
     return block;
   }
 
-  private static BlockEntityHealModSystem Healer(TestWorld world)
-  {
+  private static BlockEntityHealModSystem Healer(TestWorld world) {
     var healer = new BlockEntityHealModSystem();
     // The system captures the server API in StartServerSide, which the headless harness never runs.
     ReflectionHelpers.SetField(healer, "_sapi", world.Api);
@@ -92,12 +86,10 @@ public class BlockEntityHealTests
   }
 
   /// <summary>Minimal block entity that records whether it was initialized after spawning.</summary>
-  private sealed class ProbeBlockEntity : BlockEntity
-  {
+  private sealed class ProbeBlockEntity : BlockEntity {
     public bool WasInitialized { get; private set; }
 
-    public override void Initialize(ICoreAPI api)
-    {
+    public override void Initialize(ICoreAPI api) {
       Api = api;
       WasInitialized = true;
     }

@@ -18,13 +18,11 @@ namespace PipesAndPowerExpanded.Tests;
 /// the machines + their pipe lines into one <see cref="Scene"/> and advances them together, asserting
 /// the emergent result rather than any single component.
 /// </summary>
-public class SteamPlantScenarioTests
-{
+public class SteamPlantScenarioTests {
   #region Water production (boiler→engine→pump→water)
 
   [Fact]
-  public void Steam_drives_the_pump_to_lift_water_into_the_output_main()
-  {
+  public void Steam_drives_the_pump_to_lift_water_into_the_output_main() {
     var scene = new Scene().Network("pipe", s => new PipeNetwork(s));
     var plant = new WaterPumpPlant(scene, new BlockPos(0, 8, 0));
     scene.Build();
@@ -43,8 +41,7 @@ public class SteamPlantScenarioTests
   }
 
   [Fact]
-  public void Without_steam_the_pump_stays_idle_and_no_water_moves()
-  {
+  public void Without_steam_the_pump_stays_idle_and_no_water_moves() {
     var scene = new Scene().Network("pipe", s => new PipeNetwork(s));
     var plant = new WaterPumpPlant(scene, new BlockPos(0, 8, 0));
     scene.Build();
@@ -57,8 +54,7 @@ public class SteamPlantScenarioTests
   }
 
   [Fact]
-  public void Below_the_engage_pressure_the_engine_will_not_drive_the_pump()
-  {
+  public void Below_the_engage_pressure_the_engine_will_not_drive_the_pump() {
     var scene = new Scene().Network("pipe", s => new PipeNetwork(s));
     var plant = new WaterPumpPlant(scene, new BlockPos(0, 8, 0));
     scene.Build();
@@ -75,8 +71,7 @@ public class SteamPlantScenarioTests
   #region MP production (boiler→engine→MP generator)
 
   [Fact]
-  public void Steam_in_band_makes_the_mp_generator_deliver_a_power_budget()
-  {
+  public void Steam_in_band_makes_the_mp_generator_deliver_a_power_budget() {
     var scene = new Scene().Network("pipe", s => new PipeNetwork(s));
     var plant = new MpGeneratorPlant(scene, new BlockPos(0, 8, 0));
     scene.Build();
@@ -91,8 +86,7 @@ public class SteamPlantScenarioTests
   }
 
   [Fact]
-  public void Without_steam_the_mp_generator_delivers_no_power()
-  {
+  public void Without_steam_the_mp_generator_delivers_no_power() {
     var scene = new Scene().Network("pipe", s => new PipeNetwork(s));
     var plant = new MpGeneratorPlant(scene, new BlockPos(0, 8, 0));
     scene.Build();
@@ -108,8 +102,7 @@ public class SteamPlantScenarioTests
   #region Blast production (boiler→engine→air blower→blast)
 
   [Fact]
-  public void Steam_drives_the_air_blower_to_pressurise_air_into_blast()
-  {
+  public void Steam_drives_the_air_blower_to_pressurise_air_into_blast() {
     var scene = new Scene().Network("pipe", s => new PipeNetwork(s));
     var plant = new AirBlowerPlant(scene, new BlockPos(0, 8, 0));
     scene.Build();
@@ -125,8 +118,7 @@ public class SteamPlantScenarioTests
   }
 
   [Fact]
-  public void The_air_blower_injects_its_published_rate_per_unit_of_engine_power()
-  {
+  public void The_air_blower_injects_its_published_rate_per_unit_of_engine_power() {
     var scene = new Scene().Network("pipe", s => new PipeNetwork(s));
     var plant = new AirBlowerPlant(scene, new BlockPos(0, 8, 0));
     scene.Build();
@@ -150,8 +142,7 @@ public class SteamPlantScenarioTests
   }
 
   [Fact]
-  public void Without_steam_the_air_blower_produces_no_blast()
-  {
+  public void Without_steam_the_air_blower_produces_no_blast() {
     var scene = new Scene().Network("pipe", s => new PipeNetwork(s));
     var plant = new AirBlowerPlant(scene, new BlockPos(0, 8, 0));
     scene.Build();
@@ -167,8 +158,7 @@ public class SteamPlantScenarioTests
   #region Real boiler driving an engine over a shared steam main
 
   [Fact]
-  public void A_fired_boiler_charges_the_main_and_runs_an_attached_engine_pump()
-  {
+  public void A_fired_boiler_charges_the_main_and_runs_an_attached_engine_pump() {
     // Boiler steam outlet and the engine's south inlet meet at one bend pipe (down→boiler,
     // north→engine), so the boiler's own steam - not an injected charge - drives the whole chain.
     var scene = new Scene().Network("pipe", s => new PipeNetwork(s));
@@ -225,16 +215,14 @@ public class SteamPlantScenarioTests
     BlockPos enginePos,
     out System.Func<float> output,
     out PondAccessor pond
-  )
-  {
+  ) {
     var engineBlock = TestBlocks.Configure(
       new BlockEngineWatt(),
       "ppex:enginewatt-north",
       60,
       ("side", "north")
     );
-    var engine = new BlockEntityEngineWatt
-    {
+    var engine = new BlockEntityEngineWatt {
       Pos = enginePos.Copy(),
       Block = engineBlock,
     };
@@ -248,8 +236,7 @@ public class SteamPlantScenarioTests
       61,
       ("side", "east")
     );
-    var pump = new BlockEntityEngineFluidPump
-    {
+    var pump = new BlockEntityEngineFluidPump {
       Pos = subPos.Copy(),
       Block = pumpBlock,
     };
@@ -264,8 +251,7 @@ public class SteamPlantScenarioTests
       ("orientation", "u")
     );
     ReflectionHelpers.SetProperty(intakeBlock, "Orientation", "u");
-    var intake = new BlockEntityFluidIntake
-    {
+    var intake = new BlockEntityFluidIntake {
       Pos = pondPos.Copy(),
       Block = intakeBlock,
     };
@@ -293,13 +279,11 @@ public class SteamPlantScenarioTests
   }
 
   /// <summary>Lets the combined test stock the pond after Build (when its network exists).</summary>
-  internal sealed class PondAccessor
-  {
+  internal sealed class PondAccessor {
     private readonly Scene _scene;
     private readonly BlockPos _pos;
 
-    public PondAccessor(Scene scene, BlockPos pos)
-    {
+    public PondAccessor(Scene scene, BlockPos pos) {
       _scene = scene;
       _pos = pos;
     }
@@ -315,8 +299,7 @@ public class SteamPlantScenarioTests
   #region Multi-layer manifold (exercises SceneDiagram.Stack)
 
   [Fact]
-  public void A_three_layer_riser_with_a_top_arm_is_one_network()
-  {
+  public void A_three_layer_riser_with_a_top_arm_is_one_network() {
     // An L-shaped 3D run spanning all axes: a two-cell vertical riser (Y) whose top elbow turns east
     // into a horizontal arm (X). Built bottom-to-top with SceneDiagram.Stack. 'I' is an up-down pipe,
     // 'L' a down+east elbow, '=' a west-east pipe, '#' a cap.

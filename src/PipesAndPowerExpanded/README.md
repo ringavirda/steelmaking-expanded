@@ -25,16 +25,21 @@ a hard dependency of [Steelmaking Expanded](../SteelmakingExpanded/README.md).
   - **MP Generator** - constant-power axle drive for vanilla machines,
   - **Fluid Pump** - moves water into a pressurised output line (boiler feed),
   - **Air Blower** (from Steelmaking Expanded) - makes Blast for the furnace.
+- **Pumps that need no engine** - the hand-cranked **Manual Fluid Pump** (2 L/s at
+  1 atm) and the axle-driven walking-beam **Mechanical Fluid Pump** (8 L/s at a fixed
+  1.5 atm, since the beam lifts the same column at any speed). Both are transfer
+  devices over a fluid intake, and both fill a boiler whose fire is out.
 
 In-game **handbook articles** (`Steam Power: …`) cover build costs, operating steps and
-failure modes; all gameplay numbers live in `ModConfig/ppex.json` (see `PpexValues.cs`).
+failure modes; all gameplay numbers live in `ModConfig/ppex_values.json` (see `PpexConfig.cs`),
+with recipe and construction costs in `ModConfig/ppex_recipes.json`.
 
 ## Code layout
 
 - `BlockNetworkPipe/` - the unified pipe network (`PipeNetwork`), pipe/valve/intake/
   condenser blocks and block entities.
-- `BlockStructures/` - boiler, engine and manual-pump mega-block machines (multiblock
-  structure + right-click construction + animation).
+- `BlockStructures/` - boiler, engine, manual-pump and mechanical-pump mega-block
+  machines (multiblock structure + right-click construction + animation).
 - `Commands/` - `.exmod` sub-commands (the metric/imperial `measure` unit toggle).
 - `Preferences/` - the per-player display-unit preference definition.
 - `Patches/` - Harmony patches into vanilla (chimney look-at info).

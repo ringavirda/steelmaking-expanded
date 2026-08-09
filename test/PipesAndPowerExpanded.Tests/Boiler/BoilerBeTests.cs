@@ -12,12 +12,9 @@ namespace PipesAndPowerExpanded.Tests;
 /// phase, lid, timers) must survive a save/reload round trip, and the manual lid toggle flips the
 /// vent state. The pressure/temperature formulas are pinned separately in <see cref="BoilerMathTests"/>.
 /// </summary>
-public class BoilerBeTests
-{
-  private static BlockEntityBoilerCornish Boiler(TestWorld? world = null)
-  {
-    var be = new BlockEntityBoilerCornish
-    {
+public class BoilerBeTests {
+  private static BlockEntityBoilerCornish Boiler(TestWorld? world = null) {
+    var be = new BlockEntityBoilerCornish {
       Pos = new BlockPos(0, 0, 0),
       // Base BlockEntity.ToTreeAttributes reads Block.Code, so a placed block is required.
       Block = TestBlocks.Configure(
@@ -31,8 +28,7 @@ public class BoilerBeTests
   }
 
   [Fact]
-  public void Operating_state_round_trips_through_the_tree()
-  {
+  public void Operating_state_round_trips_through_the_tree() {
     var src = Boiler();
     ReflectionHelpers.SetField(src, "_waterVolume", 300f);
     ReflectionHelpers.SetField(src, "_steamVolume", 200f);
@@ -78,14 +74,12 @@ public class BoilerBeTests
   }
 
   [Fact]
-  public void Lid_defaults_closed()
-  {
+  public void Lid_defaults_closed() {
     Assert.False(Boiler().LidOpen);
   }
 
   [Fact]
-  public void ToggleLid_flips_the_lid_state()
-  {
+  public void ToggleLid_flips_the_lid_state() {
     var world = new TestWorld();
     var be = Boiler(world);
 
@@ -97,8 +91,7 @@ public class BoilerBeTests
   }
 
   [Fact]
-  public void A_fresh_boiler_serializes_an_idle_closed_state()
-  {
+  public void A_fresh_boiler_serializes_an_idle_closed_state() {
     var be = Boiler();
     var tree = new TreeAttribute();
     be.ToTreeAttributes(tree);

@@ -10,8 +10,7 @@ namespace ExpandedLib.Testing.Doubles;
 /// <see cref="INetworkNode"/> directly (not via <c>BlockEntityNetworkNode</c>) to avoid the
 /// engine-bound <c>Initialize</c> path.
 /// </summary>
-public sealed class CapturingNode : BlockEntity, INetworkNode
-{
+public sealed class CapturingNode : BlockEntity, INetworkNode {
   /// <summary>The most recent state payload delivered by <see cref="OnNetworkUpdate"/>.</summary>
   public object? LastState { get; private set; }
 
@@ -31,8 +30,7 @@ public sealed class CapturingNode : BlockEntity, INetworkNode
   public void OnOpenConnectorsChanged(BlockFacing[] openFaces) =>
     LastOpenFaces = openFaces;
 
-  public void OnNetworkUpdate(object? state)
-  {
+  public void OnNetworkUpdate(object? state) {
     LastState = state;
     UpdateCount++;
   }

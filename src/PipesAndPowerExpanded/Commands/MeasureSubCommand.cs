@@ -22,12 +22,10 @@ namespace PipesAndPowerExpanded.Commands;
 /// </para>
 /// </summary>
 [SubCommandRegister(Side = EnumAppSide.Client)]
-public sealed class MeasureSubCommand : IExSubCommand
-{
+public sealed class MeasureSubCommand : IExSubCommand {
   public string ParentName => "exmod";
 
-  public void Register(ICoreAPI api, Mod mod, IChatCommand parent)
-  {
+  public void Register(ICoreAPI api, Mod mod, IChatCommand parent) {
     var capi = (ICoreClientAPI)api;
     var pref = ExPreferences.Find("measure") ?? new MeasurePreference();
     string domain = mod.Info.ModID;
@@ -45,8 +43,7 @@ public sealed class MeasureSubCommand : IExSubCommand
     string domain,
     IExPreference pref,
     TextCommandCallingArgs args
-  )
-  {
+  ) {
     string uid = api.World.Player.PlayerUID;
     string? word = (args[0] as string)?.ToLowerInvariant();
     string label = Lang.Get(domain + ":pref-" + pref.Key + "-label");

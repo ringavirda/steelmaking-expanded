@@ -12,8 +12,7 @@ namespace PipesAndPowerExpanded.BlockStructures.Engine.Blocks;
 [BlockRegister]
 public partial class BlockEngineFluidPump
   : BlockEngineSubmachine,
-    INetworkConnector
-{
+    INetworkConnector {
   public string NetworkType => "pipe";
 
   private BlockFacing LeftFace =>

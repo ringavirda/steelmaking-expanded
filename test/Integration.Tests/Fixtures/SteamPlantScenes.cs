@@ -18,8 +18,7 @@ namespace PipesAndPowerExpanded.Tests;
 /// work out). Shared helper to wire the engine + its sealed steam inlet; subclasses add the
 /// sub-machine and its lines.
 /// </summary>
-internal static class EnginePlant
-{
+internal static class EnginePlant {
   /// <summary>One oriented, network-joined pipe cell in the scene (steel holds the high-pressure lines).</summary>
   public static void Pipe(
     Scene scene,
@@ -27,8 +26,7 @@ internal static class EnginePlant
     string orientation,
     int id,
     string material = "iron"
-  )
-  {
+  ) {
     var block = PipeTestWorld.MakePipe(
       material: material,
       orientation: orientation,
@@ -55,8 +53,7 @@ internal static class EnginePlant
 /// (left) is a sealed water main. With steam at the engine's inlet the engine engages, the pump draws
 /// from the pond and lifts water into the main - the boiler→engine→pump→water chain.
 /// </summary>
-internal sealed class WaterPumpPlant
-{
+internal sealed class WaterPumpPlant {
   public readonly BlockEntityEngineWatt Engine;
   public readonly BlockEntityEngineFluidPump Pump;
   public readonly BlockEntityFluidIntake Intake;
@@ -66,8 +63,7 @@ internal sealed class WaterPumpPlant
   private readonly BlockPos _pond;
   private readonly BlockPos _output;
 
-  public WaterPumpPlant(Scene scene, BlockPos pos)
-  {
+  public WaterPumpPlant(Scene scene, BlockPos pos) {
     _scene = scene;
 
     var engineBlock = TestBlocks.Configure(
@@ -76,8 +72,7 @@ internal sealed class WaterPumpPlant
       30,
       ("side", "north")
     );
-    Engine = new BlockEntityEngineWatt
-    {
+    Engine = new BlockEntityEngineWatt {
       Pos = pos.Copy(),
       Block = engineBlock,
     };
@@ -98,8 +93,7 @@ internal sealed class WaterPumpPlant
       33,
       ("side", "east")
     );
-    Pump = new BlockEntityEngineFluidPump
-    {
+    Pump = new BlockEntityEngineFluidPump {
       Pos = subPos.Copy(),
       Block = pumpBlock,
     };
@@ -115,8 +109,7 @@ internal sealed class WaterPumpPlant
       ("orientation", "u")
     );
     ReflectionHelpers.SetProperty(intakeBlock, "Orientation", "u");
-    Intake = new BlockEntityFluidIntake
-    {
+    Intake = new BlockEntityFluidIntake {
       Pos = _pond.Copy(),
       Block = intakeBlock,
     };
@@ -140,8 +133,7 @@ internal sealed class WaterPumpPlant
   }
 
   /// <summary>Tops the engine's steam inlet back up to <paramref name="atm"/> (single 30 L pipe).</summary>
-  public WaterPumpPlant Steam(float atm)
-  {
+  public WaterPumpPlant Steam(float atm) {
     _scene
       .NetworkAt<PipeNetwork>(_inlet)!
       .TryProduceGas(
@@ -159,10 +151,8 @@ internal sealed class WaterPumpPlant
   /// a boiler continuously feeding the line - re-charging before each tick so the running engine has
   /// steam to draw (a sealed pipe's charge would otherwise deplete as the engine consumes it).
   /// </summary>
-  public WaterPumpPlant RunWithSteam(float atm, int seconds)
-  {
-    for (int i = 0; i < seconds; i++)
-    {
+  public WaterPumpPlant RunWithSteam(float atm, int seconds) {
+    for (int i = 0; i < seconds; i++) {
       Steam(atm);
       _scene.Step(1);
     }
@@ -170,8 +160,7 @@ internal sealed class WaterPumpPlant
   }
 
   /// <summary>Pre-fills the pond (source line) with standing water for the pump to lift.</summary>
-  public WaterPumpPlant FillPond(float litres)
-  {
+  public WaterPumpPlant FillPond(float litres) {
     _scene
       .NetworkAt<PipeNetwork>(_pond)!
       .TryProduceLiquid(litres, 12f, 1f, _scene.World.Accessor);
@@ -192,16 +181,14 @@ internal sealed class WaterPumpPlant
 /// (<see cref="BlockEntityEngine.MpPowerBudget"/>) - the boiler→engine→MP-generator chain that powers
 /// the converter / helve hammers.
 /// </summary>
-internal sealed class MpGeneratorPlant
-{
+internal sealed class MpGeneratorPlant {
   public readonly BlockEntityEngineCornish Engine;
   public readonly BlockEntityEngineMpGenerator Generator;
 
   private readonly Scene _scene;
   private readonly BlockPos _inlet;
 
-  public MpGeneratorPlant(Scene scene, BlockPos pos)
-  {
+  public MpGeneratorPlant(Scene scene, BlockPos pos) {
     _scene = scene;
 
     var engineBlock = TestBlocks.Configure(
@@ -210,8 +197,7 @@ internal sealed class MpGeneratorPlant
       40,
       ("side", "north")
     );
-    Engine = new BlockEntityEngineCornish
-    {
+    Engine = new BlockEntityEngineCornish {
       Pos = pos.Copy(),
       Block = engineBlock,
     };
@@ -237,16 +223,14 @@ internal sealed class MpGeneratorPlant
       43,
       ("side", "east")
     );
-    Generator = new BlockEntityEngineMpGenerator
-    {
+    Generator = new BlockEntityEngineMpGenerator {
       Pos = subPos.Copy(),
       Block = genBlock,
     };
     scene.Machine(subPos, genBlock, Generator);
   }
 
-  public MpGeneratorPlant Steam(float atm)
-  {
+  public MpGeneratorPlant Steam(float atm) {
     _scene
       .NetworkAt<PipeNetwork>(_inlet)!
       .TryProduceGas(
@@ -260,10 +244,8 @@ internal sealed class MpGeneratorPlant
   }
 
   /// <summary>Holds the inlet at <paramref name="atm"/> for <paramref name="seconds"/> ticks (boiler stand-in).</summary>
-  public MpGeneratorPlant RunWithSteam(float atm, int seconds)
-  {
-    for (int i = 0; i < seconds; i++)
-    {
+  public MpGeneratorPlant RunWithSteam(float atm, int seconds) {
+    for (int i = 0; i < seconds; i++) {
       Steam(atm);
       _scene.Step(1);
     }
@@ -282,8 +264,7 @@ internal sealed class MpGeneratorPlant
 /// the boiler→engine→blower→blast chain that feeds the cowper stoves, blast-furnace tuyeres and the
 /// Bessemer converter. The air blower lives in smex but bolts onto a ppex engine like any sub-machine.
 /// </summary>
-internal sealed class AirBlowerPlant
-{
+internal sealed class AirBlowerPlant {
   public readonly BlockEntityEngineCornish Engine;
   public readonly SmexAirBlowerBe Blower;
 
@@ -291,8 +272,7 @@ internal sealed class AirBlowerPlant
   private readonly BlockPos _inlet;
   private readonly BlockPos _blast;
 
-  public AirBlowerPlant(Scene scene, BlockPos pos)
-  {
+  public AirBlowerPlant(Scene scene, BlockPos pos) {
     _scene = scene;
 
     var engineBlock = TestBlocks.Configure(
@@ -301,8 +281,7 @@ internal sealed class AirBlowerPlant
       45,
       ("side", "north")
     );
-    Engine = new BlockEntityEngineCornish
-    {
+    Engine = new BlockEntityEngineCornish {
       Pos = pos.Copy(),
       Block = engineBlock,
     };
@@ -348,8 +327,7 @@ internal sealed class AirBlowerPlant
     scene.Block(_blast.AddCopy(leftFace), PpexScenes.Cap(50));
   }
 
-  public AirBlowerPlant Steam(float atm)
-  {
+  public AirBlowerPlant Steam(float atm) {
     _scene
       .NetworkAt<PipeNetwork>(_inlet)!
       .TryProduceGas(
@@ -363,10 +341,8 @@ internal sealed class AirBlowerPlant
   }
 
   /// <summary>Holds the inlet at <paramref name="atm"/> for <paramref name="seconds"/> ticks (boiler stand-in).</summary>
-  public AirBlowerPlant RunWithSteam(float atm, int seconds)
-  {
-    for (int i = 0; i < seconds; i++)
-    {
+  public AirBlowerPlant RunWithSteam(float atm, int seconds) {
+    for (int i = 0; i < seconds; i++) {
       Steam(atm);
       _scene.Step(1);
     }

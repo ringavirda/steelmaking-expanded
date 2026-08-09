@@ -7,8 +7,7 @@ using Xunit;
 namespace ExpandedLib.Tests;
 
 /// <summary>A concrete production machine for driving the base tick lifecycle in tests.</summary>
-internal sealed class TestProductionMachine : BlockEntityProductionMachine
-{
+internal sealed class TestProductionMachine : BlockEntityProductionMachine {
   public bool Operational = true;
   public int ProductionTicks;
   public int IdleTicks;
@@ -18,14 +17,12 @@ internal sealed class TestProductionMachine : BlockEntityProductionMachine
 
   protected override bool CanRunProduction => Operational;
 
-  protected override void OnProductionTick(float dt)
-  {
+  protected override void OnProductionTick(float dt) {
     ProductionTicks++;
     LastDt = dt;
   }
 
-  protected override void OnIdleProductionTick(float dt)
-  {
+  protected override void OnIdleProductionTick(float dt) {
     IdleTicks++;
     LastDt = dt;
   }
@@ -35,10 +32,8 @@ internal sealed class TestProductionMachine : BlockEntityProductionMachine
 }
 
 /// <summary>The shared production-tick template: it gates each tick on <c>CanRunProduction</c>.</summary>
-public class ProductionMachineTests
-{
-  private static (TestWorld world, TestProductionMachine machine) NewMachine()
-  {
+public class ProductionMachineTests {
+  private static (TestWorld world, TestProductionMachine machine) NewMachine() {
     var world = new TestWorld();
     var machine = new TestProductionMachine { Pos = new BlockPos(0, 0, 0) };
     world.Attach(machine);
@@ -49,8 +44,7 @@ public class ProductionMachineTests
   #region Tick gating
 
   [Fact]
-  public void Runs_production_each_tick_while_operational()
-  {
+  public void Runs_production_each_tick_while_operational() {
     var (world, machine) = NewMachine();
 
     world.FireBlockEntityTicks(times: 3);
@@ -60,8 +54,7 @@ public class ProductionMachineTests
   }
 
   [Fact]
-  public void Routes_to_idle_while_not_operational()
-  {
+  public void Routes_to_idle_while_not_operational() {
     var (world, machine) = NewMachine();
     machine.Operational = false;
 
@@ -72,8 +65,7 @@ public class ProductionMachineTests
   }
 
   [Fact]
-  public void Resumes_production_when_it_becomes_operational_again()
-  {
+  public void Resumes_production_when_it_becomes_operational_again() {
     var (world, machine) = NewMachine();
 
     machine.Operational = false;
@@ -95,8 +87,7 @@ public class ProductionMachineTests
   // pressure. The tick is capped at a small multiple of its own interval instead.
 
   [Fact]
-  public void Clamps_an_oversized_catch_up_dt_before_the_production_tick()
-  {
+  public void Clamps_an_oversized_catch_up_dt_before_the_production_tick() {
     var (world, machine) = NewMachine();
 
     world.FireBlockEntityTicks(dt: 60f);
@@ -109,8 +100,7 @@ public class ProductionMachineTests
   }
 
   [Fact]
-  public void Clamps_an_oversized_catch_up_dt_before_the_idle_tick()
-  {
+  public void Clamps_an_oversized_catch_up_dt_before_the_idle_tick() {
     var (world, machine) = NewMachine();
     machine.Operational = false;
 
@@ -125,8 +115,7 @@ public class ProductionMachineTests
 
   // Control: the clamp must not distort an ordinary tick, or every rate in every machine shifts.
   [Fact]
-  public void Passes_an_ordinary_dt_through_unchanged()
-  {
+  public void Passes_an_ordinary_dt_through_unchanged() {
     var (world, machine) = NewMachine();
 
     world.FireBlockEntityTicks(dt: 1f);

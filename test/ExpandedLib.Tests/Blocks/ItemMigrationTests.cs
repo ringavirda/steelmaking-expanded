@@ -12,23 +12,23 @@ namespace ExpandedLib.Tests;
 /// and an item and a block may legitimately carry the same code, so a single shared table would let
 /// one kind rewrite - or, when nothing resolves on the other side, silently delete - the other.
 /// </summary>
-public class ItemMigrationTests
-{
+public class ItemMigrationTests {
   #region Fixture
 
   private static readonly AssetLocation Shared = new("smex", "sharedcode");
 
-  private static (
-    BlockMigrationModSystem sys,
-    InventoryGeneric inv
-  ) Rig(TestWorld world, ItemStack stack, Item replacement)
-  {
+  private static (BlockMigrationModSystem sys, InventoryGeneric inv) Rig(
+    TestWorld world,
+    ItemStack stack,
+    Item replacement
+  ) {
     var sys = new BlockMigrationModSystem();
 
     // The table the sweep would have built from an IItemCodeMigration; the build itself needs a
     // server API, so seed it directly and exercise the routing.
-    var table = (Dictionary<AssetLocation, Item>)
-      ReflectionHelpers.GetField(sys, "_itemRemap")!;
+    var table =
+      (Dictionary<AssetLocation, Item>)
+        ReflectionHelpers.GetField(sys, "_itemRemap")!;
     table[Shared] = replacement;
 
     var inv = new InventoryGeneric(1, "test", "test", world.Api, null);
@@ -44,12 +44,10 @@ public class ItemMigrationTests
   #region Routing by stack class
 
   [Fact]
-  public void An_item_stack_is_rewritten_through_the_item_table()
-  {
+  public void An_item_stack_is_rewritten_through_the_item_table() {
     var world = new TestWorld();
     var old = new Item { Code = Shared, ItemId = 1 };
-    var replacement = new Item
-    {
+    var replacement = new Item {
       Code = new AssetLocation("game", "coke"),
       ItemId = 2,
     };
@@ -63,12 +61,10 @@ public class ItemMigrationTests
   }
 
   [Fact]
-  public void A_block_stack_is_left_alone_by_the_item_table()
-  {
+  public void A_block_stack_is_left_alone_by_the_item_table() {
     var world = new TestWorld();
     var block = TestBlocks.Configure(new Block(), Shared.ToString(), 40);
-    var replacement = new Item
-    {
+    var replacement = new Item {
       Code = new AssetLocation("game", "coke"),
       ItemId = 2,
     };
@@ -84,16 +80,13 @@ public class ItemMigrationTests
   }
 
   [Fact]
-  public void An_unmapped_item_stack_is_left_alone()
-  {
+  public void An_unmapped_item_stack_is_left_alone() {
     var world = new TestWorld();
-    var other = new Item
-    {
+    var other = new Item {
       Code = new AssetLocation("smex", "unrelated"),
       ItemId = 9,
     };
-    var replacement = new Item
-    {
+    var replacement = new Item {
       Code = new AssetLocation("game", "coke"),
       ItemId = 2,
     };

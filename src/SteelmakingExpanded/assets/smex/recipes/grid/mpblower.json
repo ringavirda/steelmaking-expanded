@@ -1,0 +1,29 @@
+[
+  {
+    "name": "Twin-Tub Blower Frame",
+    "ingredientPattern": "PPP,BHB,PPP",
+    "ingredients": {
+      "P": {
+        "type": "item",
+        "code": "game:plank-*",
+        "quantity": 1
+      },
+      "B": {
+        "type": "block",
+        "code": "game:supportbeam-*",
+        "quantity": 2
+      },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      }
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "smex:mpblower-north"
+    }
+  }
+]

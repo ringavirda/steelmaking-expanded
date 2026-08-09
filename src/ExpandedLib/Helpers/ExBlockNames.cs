@@ -17,8 +17,7 @@ namespace ExpandedLib.Helpers;
 /// trailing "(…)" group when it already has one.
 /// </para>
 /// </summary>
-public static class ExBlockNames
-{
+public static class ExBlockNames {
   /// <summary>
   /// Decorates <paramref name="baseName"/> with the recognised variant values of
   /// <paramref name="block"/>. Metal materials and rocks resolve through the
@@ -26,8 +25,7 @@ public static class ExBlockNames
   /// through <c>{domain}:brickname-*</c> keys shipped by the block's own mod.
   /// Blocks without any of these variants are returned unchanged.
   /// </summary>
-  public static string Decorate(Block block, string baseName)
-  {
+  public static string Decorate(Block block, string baseName) {
     string name = baseName;
 
     string? material = block.Variant["material"];
@@ -58,8 +56,7 @@ public static class ExBlockNames
   /// "Piping (Straight)"), the qualifier is merged into that group
   /// ("Piping (Straight, Steel)") so brackets never stack.
   /// </summary>
-  private static string AppendQualifier(string name, string qualifier)
-  {
+  private static string AppendQualifier(string name, string qualifier) {
     if (name.EndsWith(')') && name.Contains('('))
       return name[..^1] + Lang.Get("exlib:blockname-listsep") + qualifier + ")";
     return Lang.Get("exlib:blockname-suffixed", name, qualifier);

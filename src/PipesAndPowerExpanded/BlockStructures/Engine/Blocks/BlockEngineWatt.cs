@@ -8,8 +8,7 @@ namespace PipesAndPowerExpanded.BlockStructures.Engine.Blocks;
 /// iron or steel. All behavior lives in <see cref="BlockEngine"/>.
 /// </summary>
 [BlockRegister]
-public partial class BlockEngineWatt : BlockEngine, IFillerHost, IEngineGeometry
-{
+public partial class BlockEngineWatt : BlockEngine, IFillerHost, IEngineGeometry {
   protected override RepairItem[] RepairItems =>
     [
       new(["metalplate-iron", "metalplate-steel"], 4, "iron/steel plate"),

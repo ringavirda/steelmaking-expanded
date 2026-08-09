@@ -14,8 +14,7 @@ namespace ExpandedLib.Registries.Preferences;
 /// class with its parameterless constructor, so a preference should hold no constructor state.
 /// </para>
 /// </summary>
-public interface IExPreference
-{
+public interface IExPreference {
   /// <summary>Stable key for this preference, used as the config key, the <c>.exmod</c>
   /// sub-command name and the lang-key stem (<c>command-{Key}-desc</c>,
   /// <c>pref-{Key}-label</c>, <c>pref-{Key}-{value}</c>). Lower-case, no spaces.</summary>

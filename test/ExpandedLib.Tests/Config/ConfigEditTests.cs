@@ -10,8 +10,7 @@ namespace ExpandedLib.Tests;
 
 /// <summary>A config POCO spanning every editable value type plus a non-editable complex one, so the
 /// store's value-listing and parse/format paths are all exercised.</summary>
-internal sealed class EditableConfig : IExVersionedConfig
-{
+internal sealed class EditableConfig : IExVersionedConfig {
   public string? ConfigVersion { get; set; }
   public int Count { get; set; } = 10;
   public long Big { get; set; } = 1000;
@@ -37,15 +36,13 @@ internal sealed class EditableConfig : IExVersionedConfig
 /// validating / setting new ones - plus the legacy-file rename that carries a player's tuning over a
 /// config rename.
 /// </summary>
-public class ConfigEditTests
-{
+public class ConfigEditTests {
   private static ExConfigRegister<EditableConfig> Store() =>
     new("editable.json", "fakemod");
 
   #region Value listing
   [Fact]
-  public void ValueNames_lists_only_simple_read_write_values()
-  {
+  public void ValueNames_lists_only_simple_read_write_values() {
     IExConfigAccess store = Store();
 
     Assert.Equal(
@@ -57,8 +54,7 @@ public class ConfigEditTests
 
   #region Reading values
   [Fact]
-  public void TryGet_is_case_insensitive_and_returns_canonical_name()
-  {
+  public void TryGet_is_case_insensitive_and_returns_canonical_name() {
     IExConfigAccess store = Store();
 
     bool found = store.TryGet("rate", out string name, out string value);
@@ -69,8 +65,7 @@ public class ConfigEditTests
   }
 
   [Fact]
-  public void TryGet_formats_bool_as_lowercase_word()
-  {
+  public void TryGet_formats_bool_as_lowercase_word() {
     IExConfigAccess store = Store();
 
     store.TryGet("Enabled", out _, out string value);
@@ -79,8 +74,7 @@ public class ConfigEditTests
   }
 
   [Fact]
-  public void TryGet_returns_false_for_unknown_or_non_editable_value()
-  {
+  public void TryGet_returns_false_for_unknown_or_non_editable_value() {
     IExConfigAccess store = Store();
 
     Assert.False(store.TryGet("nope", out _, out _));
@@ -92,8 +86,7 @@ public class ConfigEditTests
 
   #region Setting values
   [Fact]
-  public void Set_parses_and_applies_each_value_type()
-  {
+  public void Set_parses_and_applies_each_value_type() {
     var store = Store();
 
     Assert.Equal(ExConfigEditStatus.Ok, store.Set("count", "42").Status);
@@ -108,8 +101,7 @@ public class ConfigEditTests
   }
 
   [Fact]
-  public void Set_reports_old_and_new_value_and_canonical_name()
-  {
+  public void Set_reports_old_and_new_value_and_canonical_name() {
     var store = Store();
 
     var result = store.Set("RATE", "9");
@@ -127,8 +119,7 @@ public class ConfigEditTests
   [InlineData("false", false)]
   [InlineData("0", false)]
   [InlineData("no", false)]
-  public void Set_accepts_lenient_boolean_words(string raw, bool expected)
-  {
+  public void Set_accepts_lenient_boolean_words(string raw, bool expected) {
     var store = Store();
 
     Assert.Equal(ExConfigEditStatus.Ok, store.Set("enabled", raw).Status);
@@ -136,8 +127,7 @@ public class ConfigEditTests
   }
 
   [Fact]
-  public void Set_rejects_unparseable_input_without_changing_the_value()
-  {
+  public void Set_rejects_unparseable_input_without_changing_the_value() {
     var store = Store();
 
     var result = store.Set("count", "lots");
@@ -147,8 +137,7 @@ public class ConfigEditTests
   }
 
   [Fact]
-  public void Set_rejects_negative_number_as_out_of_range()
-  {
+  public void Set_rejects_negative_number_as_out_of_range() {
     var store = Store();
 
     var result = store.Set("rate", "-1");
@@ -160,8 +149,7 @@ public class ConfigEditTests
   [Theory]
   [InlineData("1.5")] // above the max
   [InlineData("-0.1")] // below the min
-  public void Set_rejects_a_value_outside_its_declared_range(string raw)
-  {
+  public void Set_rejects_a_value_outside_its_declared_range(string raw) {
     var store = Store();
 
     var result = store.Set("ratio", raw);
@@ -175,16 +163,14 @@ public class ConfigEditTests
   [InlineData("0")]
   [InlineData("1")]
   [InlineData("0.75")]
-  public void Set_accepts_a_value_within_its_declared_range(string raw)
-  {
+  public void Set_accepts_a_value_within_its_declared_range(string raw) {
     var store = Store();
 
     Assert.Equal(ExConfigEditStatus.Ok, store.Set("ratio", raw).Status);
   }
 
   [Fact]
-  public void Set_reports_the_non_negative_baseline_range_for_an_unbounded_value()
-  {
+  public void Set_reports_the_non_negative_baseline_range_for_an_unbounded_value() {
     var store = Store();
 
     var result = store.Set("rate", "-1");
@@ -193,8 +179,7 @@ public class ConfigEditTests
   }
 
   [Fact]
-  public void Set_returns_unknown_for_a_missing_value()
-  {
+  public void Set_returns_unknown_for_a_missing_value() {
     var store = Store();
 
     Assert.Equal(
@@ -206,11 +191,9 @@ public class ConfigEditTests
 
   #region Load-time sanitization
   [Fact]
-  public void Load_resets_out_of_range_and_invalid_values_to_defaults()
-  {
+  public void Load_resets_out_of_range_and_invalid_values_to_defaults() {
     using var dir = new TempModConfig();
-    var bad = new EditableConfig
-    {
+    var bad = new EditableConfig {
       Ratio = 5f, // out of [0, 1]
       Count = -1, // negative (baseline guard)
       Rate = float.NaN, // not finite
@@ -225,8 +208,7 @@ public class ConfigEditTests
   }
 
   [Fact]
-  public void Load_keeps_in_range_values()
-  {
+  public void Load_keeps_in_range_values() {
     using var dir = new TempModConfig();
     var good = new EditableConfig { Ratio = 0.9f, Count = 7 };
 
@@ -240,13 +222,11 @@ public class ConfigEditTests
 
   #region Legacy file rename
   [Fact]
-  public void Load_renames_a_present_legacy_file_to_the_current_name()
-  {
+  public void Load_renames_a_present_legacy_file_to_the_current_name() {
     using var dir = new TempModConfig();
     File.WriteAllText(dir.Path("old.json"), "{}");
 
-    var store = new ExConfigRegister<EditableConfig>("new.json", "fakemod")
-    {
+    var store = new ExConfigRegister<EditableConfig>("new.json", "fakemod") {
       LegacyFileNames = ["old.json"],
     };
     store.Load(FakeApi());
@@ -256,14 +236,12 @@ public class ConfigEditTests
   }
 
   [Fact]
-  public void Load_leaves_legacy_file_alone_when_current_file_exists()
-  {
+  public void Load_leaves_legacy_file_alone_when_current_file_exists() {
     using var dir = new TempModConfig();
     File.WriteAllText(dir.Path("old.json"), "{}");
     File.WriteAllText(dir.Path("new.json"), "{}");
 
-    var store = new ExConfigRegister<EditableConfig>("new.json", "fakemod")
-    {
+    var store = new ExConfigRegister<EditableConfig>("new.json", "fakemod") {
       LegacyFileNames = ["old.json"],
     };
     store.Load(FakeApi());
@@ -272,8 +250,7 @@ public class ConfigEditTests
   }
 
   [Fact]
-  public void Load_with_no_legacy_names_is_a_noop()
-  {
+  public void Load_with_no_legacy_names_is_a_noop() {
     using var dir = new TempModConfig();
 
     var store = new ExConfigRegister<EditableConfig>("new.json", "fakemod");
@@ -290,8 +267,7 @@ public class ConfigEditTests
   // "reverts on its own" and then sticks after a second edit.
 
   [Fact]
-  public void Load_backs_up_a_file_that_cannot_be_parsed()
-  {
+  public void Load_backs_up_a_file_that_cannot_be_parsed() {
     using var dir = new TempModConfig();
     File.WriteAllText(dir.Path("new.json"), "{ this is not json");
 
@@ -312,8 +288,7 @@ public class ConfigEditTests
   }
 
   [Fact]
-  public void Load_backs_up_a_present_but_blank_file()
-  {
+  public void Load_backs_up_a_present_but_blank_file() {
     using var dir = new TempModConfig();
     // Whitespace deserializes to null rather than throwing, so this never reached the error path.
     File.WriteAllText(dir.Path("new.json"), "   \n  ");
@@ -325,8 +300,7 @@ public class ConfigEditTests
 
   // Control: a first run has no file at all, which is normal and must not produce a backup.
   [Fact]
-  public void Load_does_not_back_up_when_no_file_exists_yet()
-  {
+  public void Load_does_not_back_up_when_no_file_exists_yet() {
     using var dir = new TempModConfig();
 
     new ExConfigRegister<EditableConfig>("new.json", "fakemod").Load(FakeApi());
@@ -335,8 +309,7 @@ public class ConfigEditTests
   }
 
   [Fact]
-  public void Load_does_not_write_the_shared_file_from_the_client()
-  {
+  public void Load_does_not_write_the_shared_file_from_the_client() {
     using var dir = new TempModConfig();
     var api = FakeApiLoading(null);
     api.Side.Returns(EnumAppSide.Client);
@@ -349,16 +322,14 @@ public class ConfigEditTests
   }
 
   [Fact]
-  public void Load_still_writes_the_file_from_the_server()
-  {
+  public void Load_still_writes_the_file_from_the_server() {
     using var dir = new TempModConfig();
     var api = FakeApiLoading(null);
     api.Side.Returns(EnumAppSide.Server);
 
     new ExConfigRegister<EditableConfig>("new.json", "fakemod").Load(api);
 
-    api.Received()
-      .StoreModConfig(Arg.Any<EditableConfig>(), Arg.Any<string>());
+    api.Received().StoreModConfig(Arg.Any<EditableConfig>(), Arg.Any<string>());
   }
 
   #endregion
@@ -369,8 +340,7 @@ public class ConfigEditTests
 
   /// <summary>As <see cref="FakeApi"/>, but <c>LoadModConfig</c> returns <paramref name="loaded"/> - so a
   /// test can feed a tampered-with config into <see cref="ExConfigRegister{TConfig}.Load"/>.</summary>
-  private static ICoreAPI FakeApiLoading(EditableConfig? loaded)
-  {
+  private static ICoreAPI FakeApiLoading(EditableConfig? loaded) {
     var api = Substitute.For<ICoreAPI>();
     api.Logger.Returns(Substitute.For<ILogger>());
     api.LoadModConfig<EditableConfig>(Arg.Any<string>()).Returns(loaded);
@@ -388,15 +358,13 @@ public class ConfigEditTests
 
   /// <summary>Points <see cref="GamePaths.ModConfig"/> at a throwaway temp folder for a test and
   /// removes it afterwards, so the rename runs against a real - but disposable - directory.</summary>
-  private sealed class TempModConfig : System.IDisposable
-  {
+  private sealed class TempModConfig : System.IDisposable {
     private readonly string _root = System.IO.Path.Combine(
       System.IO.Path.GetTempPath(),
       "exlib_cfgtest_" + System.Guid.NewGuid().ToString("N")
     );
 
-    public TempModConfig()
-    {
+    public TempModConfig() {
       GamePaths.DataPath = _root;
       Directory.CreateDirectory(GamePaths.ModConfig);
     }
@@ -404,14 +372,10 @@ public class ConfigEditTests
     public string Path(string file) =>
       System.IO.Path.Combine(GamePaths.ModConfig, file);
 
-    public void Dispose()
-    {
-      try
-      {
+    public void Dispose() {
+      try {
         Directory.Delete(_root, recursive: true);
-      }
-      catch
-      { /* best-effort cleanup */
+      } catch { /* best-effort cleanup */
       }
     }
   }

@@ -12,8 +12,7 @@ namespace SteelmakingExpanded.BlockNetworkMolten.Blocks;
 /// directly from a smelted crucible held by the player.
 /// </summary>
 [BlockRegister]
-public partial class BlockMoltenCanalStart : BlockMoltenCanal
-{
+public partial class BlockMoltenCanalStart : BlockMoltenCanal {
   // Smelted crucibles cached once on load, used only for the pour interaction help.
   private ItemStack[] _smeltedCrucibles = [];
 
@@ -21,19 +20,16 @@ public partial class BlockMoltenCanalStart : BlockMoltenCanal
     new() { { "start", ["n", "s", "w", "e"] } };
 
   protected override string GetFallbackOrientation(string? type) =>
-    type switch
-    {
+    type switch {
       "start" => "s",
       _ => "s",
     };
 
-  public override void OnLoaded(ICoreAPI api)
-  {
+  public override void OnLoaded(ICoreAPI api) {
     base.OnLoaded(api);
 
     var crucibles = new List<ItemStack>();
-    foreach (var block in api.World.Blocks)
-    {
+    foreach (var block in api.World.Blocks) {
       if (
         block.Code != null
         && block.Code.Path.StartsWith("crucible-")
@@ -52,8 +48,7 @@ public partial class BlockMoltenCanalStart : BlockMoltenCanal
     IWorldAccessor world,
     IPlayer byPlayer,
     BlockSelection blockSel
-  )
-  {
+  ) {
     if (
       world.BlockAccessor.GetBlockEntity(blockSel.Position)
       is BlockEntityMoltenCanal { Solidified: true }
@@ -68,14 +63,12 @@ public partial class BlockMoltenCanalStart : BlockMoltenCanal
     out float rotX,
     out float rotY,
     out float rotZ
-  )
-  {
+  ) {
     rotX = 0;
     rotY = 0;
     rotZ = 0;
 
-    switch (orientation)
-    {
+    switch (orientation) {
       case "n":
         rotY = 180;
         break;
@@ -98,8 +91,7 @@ public partial class BlockMoltenCanalStart : BlockMoltenCanal
     IWorldAccessor world,
     BlockSelection selection,
     IPlayer forPlayer
-  )
-  {
+  ) {
     var baseHelp =
       base.GetPlacedBlockInteractionHelp(world, selection, forPlayer) ?? [];
 

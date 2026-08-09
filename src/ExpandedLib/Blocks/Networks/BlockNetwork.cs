@@ -11,8 +11,7 @@ namespace ExpandedLib.Blocks.Networks;
 /// operations (producers, consumers, merge/split/tick). The <see cref="BlockNetworkModSystem"/>
 /// only does graph-level work (BFS add/remove/rebuild); everything else lives here.
 /// </summary>
-public abstract class BlockNetwork(BlockNetworkModSystem system)
-{
+public abstract class BlockNetwork(BlockNetworkModSystem system) {
   /// <summary>Stable identity for this network instance.</summary>
   public Guid Id { get; } = Guid.NewGuid();
 
@@ -38,8 +37,7 @@ public abstract class BlockNetwork(BlockNetworkModSystem system)
   /// <see cref="BlockEntityNetworkNode"/> during world load to restore persisted state before the
   /// first tick. Override to cast to the concrete state type.
   /// </summary>
-  public virtual void RestoreState(object? state)
-  {
+  public virtual void RestoreState(object? state) {
     State = state;
   }
 
@@ -51,12 +49,10 @@ public abstract class BlockNetwork(BlockNetworkModSystem system)
   /// Sends the current typed state to every <see cref="INetworkNode"/> block
   /// entity in this network so clients can update their display.
   /// </summary>
-  public void BroadcastUpdate(IBlockAccessor blockAccessor)
-  {
+  public void BroadcastUpdate(IBlockAccessor blockAccessor) {
     OnBeforeBroadcast(blockAccessor);
     object? payload = GetStatePayload();
-    foreach (var pos in Nodes)
-    {
+    foreach (var pos in Nodes) {
       if (blockAccessor.GetBlockEntity(pos) is INetworkNode receiver)
         receiver.OnNetworkUpdate(payload);
     }

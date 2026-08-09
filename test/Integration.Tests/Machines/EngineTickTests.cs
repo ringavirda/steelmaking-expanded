@@ -14,10 +14,8 @@ namespace PipesAndPowerExpanded.Tests;
 /// the engine engages only inside its pressure band with a demanding sub-machine, draws steam, makes
 /// power, wears toward a burst above the band, and recovers on repair.
 /// </summary>
-public class EngineTickTests
-{
-  private static (Scene scene, EngineFixture eng) NewEngine()
-  {
+public class EngineTickTests {
+  private static (Scene scene, EngineFixture eng) NewEngine() {
     var scene = new Scene().Network("pipe", s => new PipeNetwork(s));
     var eng = new EngineFixture(scene, new BlockPos(0, 8, 0));
     scene.Build();
@@ -25,8 +23,7 @@ public class EngineTickTests
   }
 
   [Fact]
-  public void Idle_below_the_engage_pressure()
-  {
+  public void Idle_below_the_engage_pressure() {
     var (scene, eng) = NewEngine();
     eng.SetInletPressure(1f); // Watt engages at 2 atm
     scene.Step();
@@ -36,8 +33,7 @@ public class EngineTickTests
   }
 
   [Fact]
-  public void Engages_and_makes_power_in_band()
-  {
+  public void Engages_and_makes_power_in_band() {
     var (scene, eng) = NewEngine();
     eng.SetInletPressure(3f); // inside the 2-4 atm band
     float before = eng.InletVolume;
@@ -56,8 +52,7 @@ public class EngineTickTests
   }
 
   [Fact]
-  public void Bursts_after_sustained_over_pressure_then_stops()
-  {
+  public void Bursts_after_sustained_over_pressure_then_stops() {
     var (scene, eng) = NewEngine();
 
     // Pre-load the over-pressure timer to just under the break threshold, then run one tick above
@@ -82,8 +77,7 @@ public class EngineTickTests
   }
 
   [Fact]
-  public void A_broken_engine_stays_inert_until_repaired()
-  {
+  public void A_broken_engine_stays_inert_until_repaired() {
     var (scene, eng) = NewEngine();
     ReflectionHelpers.SetField(eng.Engine, "<IsBroken>k__BackingField", true);
 
@@ -104,8 +98,7 @@ public class EngineTickTests
   // engine test either reflection-flips IsBroken or runs a single break - none crosses break→repair→
   // over-pressure-again to prove the cycle resets.
   [Fact]
-  public void Repairing_resets_the_over_pressure_timer_so_a_single_tick_does_not_re_break()
-  {
+  public void Repairing_resets_the_over_pressure_timer_so_a_single_tick_does_not_re_break() {
     var (scene, eng) = NewEngine();
 
     // Break it: prime the timer to just under the threshold so one over-pressure tick trips it.
@@ -118,7 +111,10 @@ public class EngineTickTests
     ReflectionHelpers.SetField(eng.Engine, "_overPressure", primed);
     eng.SetInletPressure(4.5f); // above the 4 atm break pressure
     scene.Step();
-    Assert.True(eng.Engine.IsBroken, "precondition: sustained over-pressure broke it");
+    Assert.True(
+      eng.Engine.IsBroken,
+      "precondition: sustained over-pressure broke it"
+    );
 
     // Repair, then run ONE more over-pressure tick. If repair left the accumulator dirty this single
     // tick would re-break instantly; a clean reset means it must take the full grace again.
@@ -137,8 +133,7 @@ public class EngineTickTests
   }
 
   [Fact]
-  public void Power_state_round_trips_through_the_tree()
-  {
+  public void Power_state_round_trips_through_the_tree() {
     var (scene, eng) = NewEngine();
     ReflectionHelpers.SetField(eng.Engine, "_running", true);
     ReflectionHelpers.SetField(
@@ -151,8 +146,7 @@ public class EngineTickTests
     var tree = new TreeAttribute();
     eng.Engine.ToTreeAttributes(tree);
 
-    var restored = new BlockEntityEngineWatt
-    {
+    var restored = new BlockEntityEngineWatt {
       Pos = eng.Engine.Pos.Copy(),
       Block = eng.Block,
     };

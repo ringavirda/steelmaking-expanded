@@ -13,8 +13,7 @@ namespace ExpandedLib.Registries.Config;
 /// </para>
 /// </summary>
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
-public sealed class ExConfigRangeAttribute : Attribute
-{
+public sealed class ExConfigRangeAttribute : Attribute {
   /// <summary>Smallest accepted value (inclusive).</summary>
   public double Min { get; }
 
@@ -26,8 +25,7 @@ public sealed class ExConfigRangeAttribute : Attribute
     : this(min, double.PositiveInfinity) { }
 
   /// <summary>Bounds the value to the inclusive range <c>[min, max]</c> (e.g. a fraction to <c>[0, 1]</c>).</summary>
-  public ExConfigRangeAttribute(double min, double max)
-  {
+  public ExConfigRangeAttribute(double min, double max) {
     Min = min;
     Max = max;
   }

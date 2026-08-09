@@ -14,8 +14,7 @@ namespace ExpandedLib.Blocks.Structures;
 /// concrete subclasses (e.g. the engine/boiler bases) cast <c>this</c> to <c>IFillerHost</c>.
 /// </para>
 /// </summary>
-public interface IFillerHost
-{
+public interface IFillerHost {
   /// <summary>The block's <c>fillerOffsets</c> JSON node (the generated accessor), or null if none.</summary>
   JsonObject? FillerOffsets { get; }
 }

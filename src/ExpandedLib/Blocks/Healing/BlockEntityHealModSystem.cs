@@ -35,8 +35,7 @@ namespace ExpandedLib.Blocks.Healing;
 /// automatically.
 /// </para>
 /// </summary>
-public class BlockEntityHealModSystem : ModSystem
-{
+public class BlockEntityHealModSystem : ModSystem {
   private ICoreServerAPI _sapi = null!;
 
   /// <summary>Log prefix, e.g. "[exlib]" - the owning mod's id.</summary>
@@ -51,8 +50,7 @@ public class BlockEntityHealModSystem : ModSystem
   public override bool ShouldLoad(EnumAppSide side) =>
     side == EnumAppSide.Server;
 
-  public override void StartServerSide(ICoreServerAPI api)
-  {
+  public override void StartServerSide(ICoreServerAPI api) {
     _sapi = api;
     // Spawn-area chunks are already loaded before this event is wired up, so sweep them once at
     // RunGame and handle every column that loads afterwards via the event.
@@ -61,18 +59,15 @@ public class BlockEntityHealModSystem : ModSystem
   }
 
   /// <summary>Builds the healable block-id set on first use; returns false if this world has none.</summary>
-  private bool EnsureInitialized()
-  {
-    if (!_initialized)
-    {
+  private bool EnsureInitialized() {
+    if (!_initialized) {
       BuildHealableSet();
       _initialized = true;
     }
     return _healableBlockIds.Count > 0;
   }
 
-  private void BuildHealableSet()
-  {
+  private void BuildHealableSet() {
     // Every block-entity type this mod family owns - i.e. registered through the attribute system.
     HashSet<Type> ourBeTypes = CollectRegisteredBlockEntityTypes();
     if (ourBeTypes.Count == 0)
@@ -82,13 +77,11 @@ public class BlockEntityHealModSystem : ModSystem
     // instantiated to read its concrete type; this is cheap and one-off).
     Dictionary<string, bool> resolvedByCode = [];
 
-    foreach (Block block in _sapi.World.Blocks)
-    {
+    foreach (Block block in _sapi.World.Blocks) {
       if (block?.EntityClass == null || block.BlockId == 0)
         continue;
 
-      if (!resolvedByCode.TryGetValue(block.EntityClass, out bool isOurs))
-      {
+      if (!resolvedByCode.TryGetValue(block.EntityClass, out bool isOurs)) {
         isOurs = IsOurBlockEntity(block.EntityClass, ourBeTypes);
         resolvedByCode[block.EntityClass] = isOurs;
       }
@@ -106,15 +99,11 @@ public class BlockEntityHealModSystem : ModSystem
   }
 
   /// <summary>True if <paramref name="entityClass"/> resolves to one of our registered BE types.</summary>
-  private bool IsOurBlockEntity(string entityClass, HashSet<Type> ourBeTypes)
-  {
-    try
-    {
+  private bool IsOurBlockEntity(string entityClass, HashSet<Type> ourBeTypes) {
+    try {
       BlockEntity? be = _sapi.ClassRegistry.CreateBlockEntity(entityClass);
       return be != null && ourBeTypes.Contains(be.GetType());
-    }
-    catch
-    {
+    } catch {
       // Unknown/foreign class code: not ours, leave it alone.
       return false;
     }
@@ -125,21 +114,19 @@ public class BlockEntityHealModSystem : ModSystem
   /// <see cref="BlockEntityRegisterAttribute"/>. This system lives in exlib, but smex/ppex declare
   /// their own block entities, so we look across all assemblies (not just our own).
   /// </summary>
-  private static HashSet<Type> CollectRegisteredBlockEntityTypes()
-  {
+  private static HashSet<Type> CollectRegisteredBlockEntityTypes() {
     HashSet<Type> types = [];
     foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
-    foreach (Type t in ReflectionScan.GetCandidateTypes(asm))
-      if (
-        typeof(BlockEntity).IsAssignableFrom(t)
-        && t.GetCustomAttribute<BlockEntityRegisterAttribute>() != null
-      )
-        types.Add(t);
+      foreach (Type t in ReflectionScan.GetCandidateTypes(asm))
+        if (
+          typeof(BlockEntity).IsAssignableFrom(t)
+          && t.GetCustomAttribute<BlockEntityRegisterAttribute>() != null
+        )
+          types.Add(t);
     return types;
   }
 
-  private void SweepLoadedChunks()
-  {
+  private void SweepLoadedChunks() {
     int total = HealLoadedChunks();
     if (total > 0)
       _sapi.Logger.Notification(
@@ -154,8 +141,7 @@ public class BlockEntityHealModSystem : ModSystem
   /// many were healed. Used by the startup sweep and the <c>/exmod heal</c> admin command (which lets
   /// an op fix orphans in already-loaded chunks without a world reload).
   /// </summary>
-  public int HealLoadedChunks()
-  {
+  public int HealLoadedChunks() {
     if (!EnsureInitialized())
       return 0;
 
@@ -164,8 +150,7 @@ public class BlockEntityHealModSystem : ModSystem
 
     foreach (
       long index2d in _sapi.WorldManager.AllLoadedMapchunks.Keys.ToArray()
-    )
-    {
+    ) {
       Vec2i coord = _sapi.WorldManager.MapChunkPosFromChunkIndex2D(index2d);
       for (int cy = 0; cy < chunksTall; cy++)
         total += ScanChunk(
@@ -179,11 +164,9 @@ public class BlockEntityHealModSystem : ModSystem
     return total;
   }
 
-  private void OnChunkColumnLoaded(Vec2i chunkCoord, IWorldChunk[] chunks)
-  {
+  private void OnChunkColumnLoaded(Vec2i chunkCoord, IWorldChunk[] chunks) {
     // No watched block types in this world: nothing can orphan, so stop listening entirely.
-    if (!EnsureInitialized())
-    {
+    if (!EnsureInitialized()) {
       _sapi.Event.ChunkColumnLoaded -= OnChunkColumnLoaded;
       return;
     }
@@ -203,8 +186,7 @@ public class BlockEntityHealModSystem : ModSystem
   }
 
   /// <summary>Scans one chunk section and recreates any watched block's missing block entity.</summary>
-  private int ScanChunk(int chunkX, int chunkY, int chunkZ, IWorldChunk? chunk)
-  {
+  private int ScanChunk(int chunkX, int chunkY, int chunkZ, IWorldChunk? chunk) {
     if (chunk == null)
       return 0;
     chunk.Unpack();
@@ -215,8 +197,7 @@ public class BlockEntityHealModSystem : ModSystem
     IBlockAccessor ba = _sapi.World.BlockAccessor;
     int healed = 0;
 
-    for (int i = 0; i < len; i++)
-    {
+    for (int i = 0; i < len; i++) {
       int id = data[i];
       if (id == 0 || !_healableBlockIds.Contains(id))
         continue;
@@ -243,8 +224,7 @@ public class BlockEntityHealModSystem : ModSystem
   /// data is unrecoverable - which the BE reconstructs on its own ticks (a multiblock anchor, for
   /// example, re-detects its structure on its next monitor tick).
   /// </summary>
-  public bool HealOrphanAt(IBlockAccessor ba, BlockPos pos)
-  {
+  public bool HealOrphanAt(IBlockAccessor ba, BlockPos pos) {
     string? entityClass = ba.GetBlock(pos)?.EntityClass;
     if (entityClass == null)
       return false;
@@ -253,15 +233,12 @@ public class BlockEntityHealModSystem : ModSystem
     if (ba.GetBlockEntity(pos) != null)
       return false;
 
-    try
-    {
+    try {
       // Creates the BE and runs CreateBehaviors + Initialize for it.
       ba.SpawnBlockEntity(entityClass, pos);
       ba.GetBlockEntity(pos)?.MarkDirty(true);
       return true;
-    }
-    catch (Exception e)
-    {
+    } catch (Exception e) {
       _sapi.Logger.Warning(
         Tag + " Failed to recreate block entity '{0}' at {1}: {2}",
         entityClass,

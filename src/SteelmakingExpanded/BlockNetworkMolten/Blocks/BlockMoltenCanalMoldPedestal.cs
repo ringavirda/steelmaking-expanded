@@ -16,8 +16,7 @@ namespace SteelmakingExpanded.BlockNetworkMolten.Blocks;
 /// Ctrl + right-click toggles pouring.
 /// </summary>
 [BlockRegister]
-public partial class BlockMoltenCanalMoldPedestal : BlockMoltenCanalTap
-{
+public partial class BlockMoltenCanalMoldPedestal : BlockMoltenCanalTap {
   public override Dictionary<string, string[]> AllowedOrientations { get; } =
     new() { { "moldpedestal", ["n", "s", "w", "e"] } };
 
@@ -28,8 +27,7 @@ public partial class BlockMoltenCanalMoldPedestal : BlockMoltenCanalTap
     BlockPos pos,
     IPlayer byPlayer,
     float dropQuantityMultiplier = 1f
-  )
-  {
+  ) {
     // The placed mold (and any cast metal) lives on the BE, not as a separate
     // block, so drop it before the pedestal is removed or it is silently lost.
     if (
@@ -39,21 +37,18 @@ public partial class BlockMoltenCanalMoldPedestal : BlockMoltenCanalTap
         is BlockEntityMoltenCanalMoldPedestal be
       && be.IsMold
       && be.MoldStack != null
-    )
-    {
+    ) {
       world.SpawnItemEntity(be.RemoveMold(), pos.ToVec3d().Add(0.5, 0.5, 0.5));
     }
 
     base.OnBlockBroken(world, pos, byPlayer, dropQuantityMultiplier);
   }
 
-  public override void OnLoaded(ICoreAPI api)
-  {
+  public override void OnLoaded(ICoreAPI api) {
     base.OnLoaded(api);
 
     var moldList = new List<ItemStack>();
-    foreach (var block in api.World.Blocks)
-    {
+    foreach (var block in api.World.Blocks) {
       if (MoldKinds.FitsPedestal(block))
         moldList.Add(new ItemStack(block));
     }
@@ -64,8 +59,7 @@ public partial class BlockMoltenCanalMoldPedestal : BlockMoltenCanalTap
     IWorldAccessor world,
     IPlayer byPlayer,
     BlockSelection blockSel
-  )
-  {
+  ) {
     if (
       world.BlockAccessor.GetBlockEntity(blockSel.Position)
       is not BlockEntityMoltenCanalMoldPedestal be
@@ -85,20 +79,17 @@ public partial class BlockMoltenCanalMoldPedestal : BlockMoltenCanalTap
     if (world.Side == EnumAppSide.Client)
       return true;
 
-    if (opposite)
-    {
+    if (opposite) {
       be.TryTogglePouring();
       return true;
     }
 
-    if (!be.IsMold)
-    {
+    if (!be.IsMold) {
       var heldSlot = byPlayer.InventoryManager.ActiveHotbarSlot;
       if (heldSlot?.Itemstack?.Block is not BlockToolMold)
         return false;
 
-      if (!MoldKinds.FitsPedestal(heldSlot.Itemstack.Block))
-      {
+      if (!MoldKinds.FitsPedestal(heldSlot.Itemstack.Block)) {
         (byPlayer as IServerPlayer)?.SendIngameError("smex-moldtoolarge");
         return false;
       }
@@ -106,9 +97,7 @@ public partial class BlockMoltenCanalMoldPedestal : BlockMoltenCanalTap
       be.AddMold(heldSlot.Itemstack);
       heldSlot.TakeOut(1);
       heldSlot.MarkDirty();
-    }
-    else
-    {
+    } else {
       // A mold full of still-liquid metal may only be taken into an empty
       // hand - anywhere else in the inventory it instantly spills.
       bool liquidMold = MoltenMoldSpill.IsLiquidContent(
@@ -145,14 +134,12 @@ public partial class BlockMoltenCanalMoldPedestal : BlockMoltenCanalTap
     IWorldAccessor world,
     BlockSelection selection,
     IPlayer forPlayer
-  )
-  {
+  ) {
     bool isMold =
       world.BlockAccessor.GetBlockEntity(selection.Position)
       is BlockEntityMoltenCanalMoldPedestal { IsMold: true };
 
-    var toggle = new WorldInteraction
-    {
+    var toggle = new WorldInteraction {
       ActionLangCode = "smex:blockhelp-canal-togglepour",
       MouseButton = EnumMouseButton.Right,
       HotKeyCode = "sprint",
@@ -161,8 +148,7 @@ public partial class BlockMoltenCanalMoldPedestal : BlockMoltenCanalTap
     var result = new List<WorldInteraction>();
     if (!isMold)
       result.Add(
-        new WorldInteraction
-        {
+        new WorldInteraction {
           ActionLangCode = "smex:blockhelp-pedestal-placemold",
           MouseButton = EnumMouseButton.Right,
           HotKeyCode = "sneak",
@@ -171,8 +157,7 @@ public partial class BlockMoltenCanalMoldPedestal : BlockMoltenCanalTap
       );
     else
       result.Add(
-        new WorldInteraction
-        {
+        new WorldInteraction {
           ActionLangCode = "smex:blockhelp-pedestal-removemold",
           MouseButton = EnumMouseButton.Right,
           HotKeyCode = "sneak",

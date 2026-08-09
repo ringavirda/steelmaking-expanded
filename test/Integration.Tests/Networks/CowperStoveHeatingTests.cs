@@ -15,12 +15,9 @@ namespace SteelmakingExpanded.Tests;
 /// it lives in the integration suite: a sealed exhaust run on the stove's south face heats the core
 /// and is drained; an unfed stove sits cold.
 /// </summary>
-public class CowperStoveHeatingTests
-{
-  private static BlockEntityCowperStove Stove(TestWorld world, BlockPos pos)
-  {
-    var be = new BlockEntityCowperStove
-    {
+public class CowperStoveHeatingTests {
+  private static BlockEntityCowperStove Stove(TestWorld world, BlockPos pos) {
+    var be = new BlockEntityCowperStove {
       Pos = pos,
       Block = TestBlocks.Configure(
         new Block(),
@@ -74,8 +71,7 @@ public class CowperStoveHeatingTests
   }
 
   /// <summary>A sealed 2-cell exhaust run butted against the stove's south face at <paramref name="pos"/>.</summary>
-  private static PipeNetwork ExhaustRunSouthOf(TestWorld world, BlockPos pos)
-  {
+  private static PipeNetwork ExhaustRunSouthOf(TestWorld world, BlockPos pos) {
     var pipe = PipeTestWorld.MakePipe(orientation: "ns");
     var south1 = pos.AddCopy(BlockFacing.SOUTH); // adjacent, connector faces back north
     var south2 = south1.AddCopy(BlockFacing.SOUTH);
@@ -92,8 +88,7 @@ public class CowperStoveHeatingTests
   }
 
   [Fact]
-  public void Hot_exhaust_charges_the_core_and_is_drawn_off()
-  {
+  public void Hot_exhaust_charges_the_core_and_is_drawn_off() {
     var world = new TestWorld();
     world.RegisterNetwork("pipe", sys => new PipeNetwork(sys));
     var pos = new BlockPos(0, 4, 0);
@@ -120,8 +115,7 @@ public class CowperStoveHeatingTests
   }
 
   [Fact]
-  public void An_unfed_stove_stays_cold()
-  {
+  public void An_unfed_stove_stays_cold() {
     var world = new TestWorld();
     world.RegisterNetwork("pipe", sys => new PipeNetwork(sys));
     var pos = new BlockPos(0, 4, 0);

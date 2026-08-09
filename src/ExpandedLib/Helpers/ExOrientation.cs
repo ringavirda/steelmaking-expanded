@@ -10,16 +10,14 @@ namespace ExpandedLib.Helpers;
 /// methods share one convention: north 0°, west 90°, south 180°, east 270°, with
 /// <c>(x,z) → 90:(z,-x) · 180:(-x,-z) · 270:(-z,x)</c>.
 /// </summary>
-public static class ExOrientation
-{
+public static class ExOrientation {
   /// <summary>
   /// Maps a horizontal "side" variant to its rotation angle (north 0, west 90, south 180,
   /// east 270). Accepts both the full names used by <c>side</c> variants and the
   /// single-letter codes used by <c>orientation</c> variants ("n"/"w"/"s"/"e").
   /// </summary>
   public static int AngleFromSide(string? side) =>
-    side switch
-    {
+    side switch {
       "east" or "e" => 270,
       "south" or "s" => 180,
       "west" or "w" => 90,
@@ -31,13 +29,11 @@ public static class ExOrientation
     RotateOffset(off.X, off.Y, off.Z, angle);
 
   /// <summary>Rotates a structure-local offset by <paramref name="angle"/> (Y is untouched).</summary>
-  public static Vec3i RotateOffset(int x, int y, int z, int angle)
-  {
+  public static Vec3i RotateOffset(int x, int y, int z, int angle) {
     // Normalise first so callers can pass any multiple/offset (e.g. Angle + 180 → 450)
     // without it slipping past the 90/180/270 cases into the unrotated default.
     angle = ((angle % 360) + 360) % 360;
-    var (dx, dz) = angle switch
-    {
+    var (dx, dz) = angle switch {
       90 => (z, -x),
       180 => (-x, -z),
       270 => (-z, x),
@@ -57,8 +53,7 @@ public static class ExOrientation
     int localY,
     int localZ,
     int angle
-  )
-  {
+  ) {
     Vec3i r = RotateOffset(localX, localY, localZ, angle);
     return origin.AddCopy(r.X, r.Y, r.Z);
   }
@@ -67,8 +62,7 @@ public static class ExOrientation
   /// Reads a structure-local <c>{ x, y, z }</c> offset from an already-resolved JSON node (e.g. a
   /// block's generated offset accessor), falling back to <paramref name="fallback"/> when absent.
   /// </summary>
-  public static Vec3i ReadOffset(JsonObject? node, Vec3i fallback)
-  {
+  public static Vec3i ReadOffset(JsonObject? node, Vec3i fallback) {
     if (node == null || !node.Exists)
       return fallback;
     return new Vec3i(
@@ -82,8 +76,7 @@ public static class ExOrientation
   /// The fractional (double) counterpart of <see cref="ReadOffset"/>, for continuous points
   /// (particle anchors). Falls back to <paramref name="fallback"/> when the node is absent.
   /// </summary>
-  public static Vec3d ReadOffsetD(JsonObject? node, Vec3d fallback)
-  {
+  public static Vec3d ReadOffsetD(JsonObject? node, Vec3d fallback) {
     if (node == null || !node.Exists)
       return fallback;
     return new Vec3d(
@@ -103,8 +96,7 @@ public static class ExOrientation
     JsonObject? node,
     Vec3i fallback,
     int angle
-  )
-  {
+  ) {
     Vec3i off = ReadOffset(node, fallback);
     Vec3i r = RotateOffset(off, angle);
     return origin.AddCopy(r.X, r.Y, r.Z);
@@ -115,8 +107,7 @@ public static class ExOrientation
   /// <paramref name="angle"/>° (Y axis). JSON boxes are authored north-facing and don't auto-rotate
   /// with the "side" variant, so port blocks rotate them to match. Unchanged for angle 0.
   /// </summary>
-  public static Cuboidf[] RotateBoxes(Cuboidf[] boxes, int angle)
-  {
+  public static Cuboidf[] RotateBoxes(Cuboidf[] boxes, int angle) {
     angle = ((angle % 360) + 360) % 360;
     if (angle == 0 || boxes.Length == 0)
       return boxes;
@@ -132,8 +123,7 @@ public static class ExOrientation
   /// <see cref="RotateOffset(Vec3i, int)"/>). Vertical faces (up/down) are returned
   /// unchanged. Used to map north-orientation connector faces onto the placed orientation.
   /// </summary>
-  public static BlockFacing RotateFacing(BlockFacing baseFace, int angle)
-  {
+  public static BlockFacing RotateFacing(BlockFacing baseFace, int angle) {
     if (baseFace.IsVertical)
       return baseFace;
     Vec3i n = baseFace.Normali;
@@ -151,13 +141,11 @@ public static class ExOrientation
     ref float z,
     int angle,
     float center = 0.5f
-  )
-  {
+  ) {
     angle = ((angle % 360) + 360) % 360;
     float dx = x - center;
     float dz = z - center;
-    var (ndx, ndz) = angle switch
-    {
+    var (ndx, ndz) = angle switch {
       90 => (dz, -dx),
       180 => (-dx, -dz),
       270 => (-dz, dx),

@@ -21,8 +21,7 @@ namespace SteelmakingExpanded.BlockStructures.CowperStove.BlockEntities;
 /// boosts the blast furnace.
 /// </summary>
 [BlockEntityRegister]
-public class BlockEntityCowperStove : BlockEntityMultiblockStructure
-{
+public class BlockEntityCowperStove : BlockEntityMultiblockStructure {
   private BlockFacing _connectorFace = BlockFacing.SOUTH;
   private float _internalTemperature = 20f;
   private string _lastStatus = Lang.Get("smex:cowperstove-status-idle");
@@ -38,8 +37,7 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure
   private float _maxTemperature;
   private float _intakeVolume;
 
-  public override void Initialize(ICoreAPI api)
-  {
+  public override void Initialize(ICoreAPI api) {
     base.Initialize(api);
 
     CacheTunables();
@@ -53,8 +51,7 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure
 
   // Pulls the gameplay tunables off the live config. Re-run each production tick (not just at load)
   // so a `/exmod config smex ...` change applies immediately, not only after the chunk reloads.
-  private void CacheTunables()
-  {
+  private void CacheTunables() {
     _factorAnthracite = SmexValues.CowperHeatingSpeedAnthracite;
     _factorOtherCoal = SmexValues.CowperHeatingSpeedOtherCoal;
     _factorDefault = SmexValues.CowperHeatingSpeedDefault;
@@ -66,8 +63,7 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure
 
   #region Abstract implementations
 
-  protected override void UpdateStructureRotation()
-  {
+  protected override void UpdateStructureRotation() {
     if (Block == null)
       return;
 
@@ -88,8 +84,7 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure
 
   #region Production tick
 
-  protected override void OnProductionTick(float dt)
-  {
+  protected override void OnProductionTick(float dt) {
     if (!StructureComplete)
       return;
 
@@ -103,8 +98,7 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure
     var consumedExhaustVol = 0f;
     float inputExhaustTemp = 20f;
     bool isReceivingExhaust = false;
-    if (ConnectedNetwork<PipeNetwork>(_connectorFace) is { } exhaustNet)
-    {
+    if (ConnectedNetwork<PipeNetwork>(_connectorFace) is { } exhaustNet) {
       inputExhaustTemp = exhaustNet.State?.Temperature ?? 20f;
       consumedExhaustVol = exhaustNet.TryConsumeGas(
         _intakeVolume,
@@ -117,18 +111,15 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure
     bool hasOtherCoal = false;
 
     Block blockBelow = Api.World.BlockAccessor.GetBlock(Pos.DownCopy());
-    if (blockBelow.Code?.Path.StartsWith("coalpile") == true)
-    {
+    if (blockBelow.Code?.Path.StartsWith("coalpile") == true) {
       if (
         Api.World.BlockAccessor.GetBlockEntity(Pos.DownCopy())
           is BlockEntityItemPile pile
         && pile.inventory != null
         && !pile.inventory[0].Empty
-      )
-      {
+      ) {
         string? path = pile.inventory[0]?.Itemstack?.Collectible?.Code?.Path;
-        if (path != null)
-        {
+        if (path != null) {
           if (path.Contains("anthracite"))
             isAnthracite = true;
           else
@@ -149,8 +140,7 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure
     // Raw gas actually sitting in the passthrough's run. airVol below rounds this UP to a full intake
     // for discharge throughput, so keep the raw figure for the "is air genuinely flowing" test.
     float passthroughVol = passthrough?.Volume ?? 0f;
-    if (passthroughVol > 0)
-    {
+    if (passthroughVol > 0) {
       airTemp = passthrough!.Temperature;
       inGasType = passthrough.Medium;
       airVol = passthroughVol <= _intakeVolume ? _intakeVolume : passthroughVol;
@@ -158,8 +148,7 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure
 
     string newStatus = Lang.Get("smex:cowperstove-status-idle");
 
-    if (isReceivingExhaust && passthroughVol > PpexValues.LitresPerPipe)
-    {
+    if (isReceivingExhaust && passthroughVol > PpexValues.LitresPerPipe) {
       // Air and exhaust both present. Closing the air valve cuts its supply but leaves the gas
       // already in the passthrough stranded there - and a pressurised run holds well over one pipe's
       // worth - which used to latch the stove in "mixing" forever and refuse to charge. Vent that
@@ -167,13 +156,10 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure
       // stove charges next tick; only a still-open valve keeps refilling it and stays flagged.
       newStatus = Lang.Get("smex:cowperstove-status-exhaustmix");
       passthrough?.TryConsume(passthroughVol);
-    }
-    else if (isReceivingExhaust)
-    {
+    } else if (isReceivingExhaust) {
       newStatus = Lang.Get("smex:cowperstove-status-heatingup");
       float tempDiff = inputExhaustTemp - _internalTemperature;
-      if (tempDiff > 0)
-      {
+      if (tempDiff > 0) {
         float factor = isAnthracite
           ? _factorAnthracite
           : (hasOtherCoal ? _factorOtherCoal : _factorDefault);
@@ -207,13 +193,10 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure
           System.Math.Max(20f, inputExhaustTemp * 0.4f),
           "Exhaust"
         );
-    }
-    else if (airVol > 0)
-    {
+    } else if (airVol > 0) {
       newStatus = Lang.Get("smex:cowperstove-status-heating", inGasType);
       float tempDiff = _internalTemperature - airTemp;
-      if (tempDiff > 0)
-      {
+      if (tempDiff > 0) {
         airTemp = _internalTemperature;
         _internalTemperature -= tempDiff * _coolingSpeedAir * dt;
       }
@@ -222,8 +205,7 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure
       if (
         Api.World.BlockAccessor.GetBlockEntity(hotAirOutletPos)
         is IPipeNode hotOutlet
-      )
-      {
+      ) {
         float inputPressure = passthrough?.Pressure ?? 1f;
         var accepted = hotOutlet.TryProduce(
           airVol,
@@ -236,8 +218,7 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure
       }
     }
 
-    if (_lastStatus != newStatus)
-    {
+    if (_lastStatus != newStatus) {
       _lastStatus = newStatus;
       MarkDirty(true);
     }
@@ -245,8 +226,7 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure
     UpdateHeatsinks();
   }
 
-  private void SpawnHeatingParticles()
-  {
+  private void SpawnHeatingParticles() {
     // Spawn the heat column over the central interior column (structure-local
     // (0, *, 1) - the heatsink stack), rotated the same way GetGlobalPos resolves
     // it. Mirrors InitForUse(_currentAngle) applied to (x:0, z:1).
@@ -275,16 +255,13 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure
     );
   }
 
-  private void UpdateHeatsinks()
-  {
-    for (int y = 0; y <= 3; y++)
-    {
+  private void UpdateHeatsinks() {
+    for (int y = 0; y <= 3; y++) {
       BlockPos hsPos = GetGlobalPos(0, y, 1);
       if (
         Api.World.BlockAccessor.GetBlockEntity(hsPos) is BlockEntityHeatSink hs
         && System.Math.Abs(hs.Temperature - _internalTemperature) > 1f
-      )
-      {
+      ) {
         hs.Temperature = _internalTemperature;
         hs.MarkDirty(true);
       }
@@ -295,10 +272,8 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure
 
   #region HUD
 
-  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
-  {
-    if (!StructureComplete)
-    {
+  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc) {
+    if (!StructureComplete) {
       dsc.AppendLine(Lang.Get("smex:structure-incomplete"));
       return;
     }
@@ -309,8 +284,7 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure
 
   #region Serialization
 
-  public override void ToTreeAttributes(ITreeAttribute tree)
-  {
+  public override void ToTreeAttributes(ITreeAttribute tree) {
     base.ToTreeAttributes(tree);
     tree.SetFloat("internalTemperature", _internalTemperature);
     tree.SetString("lastStatus", _lastStatus);
@@ -319,8 +293,7 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure
   public override void FromTreeAttributes(
     ITreeAttribute tree,
     IWorldAccessor worldForResolving
-  )
-  {
+  ) {
     base.FromTreeAttributes(tree, worldForResolving);
     _internalTemperature = tree.GetFloat("internalTemperature");
     _lastStatus = tree.GetString(

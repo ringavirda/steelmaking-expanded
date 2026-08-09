@@ -12,15 +12,12 @@ namespace SteelmakingExpanded.Tests;
 /// sealed/solidified latches that sever the network. This covers the save/reload round trip, the
 /// connectivity rules, and the derived state - the parts that do not need a resolved game item.
 /// </summary>
-public class MoltenCanalBeTests
-{
+public class MoltenCanalBeTests {
   // A non-null world is required: BlockEntity.FromTreeAttributes dereferences it to resolve blocks.
   private static readonly TestWorld ResolveWorld = new();
 
-  private static BlockEntityMoltenCanal Canal(TestWorld? world = null)
-  {
-    var be = new BlockEntityMoltenCanal
-    {
+  private static BlockEntityMoltenCanal Canal(TestWorld? world = null) {
+    var be = new BlockEntityMoltenCanal {
       Pos = new BlockPos(0, 0, 0),
       Block = TestBlocks.Configure(
         new Block(),
@@ -41,8 +38,7 @@ public class MoltenCanalBeTests
     float temp,
     bool solidified = false,
     bool sealed_ = false
-  )
-  {
+  ) {
     var be = Canal();
     var tree = new TreeAttribute();
     tree.SetInt("cellAmount", amount);
@@ -55,8 +51,7 @@ public class MoltenCanalBeTests
   }
 
   [Fact]
-  public void Cell_state_round_trips_through_the_tree()
-  {
+  public void Cell_state_round_trips_through_the_tree() {
     var src = Canal();
     var srcTree = new TreeAttribute();
     srcTree.SetInt("cellAmount", 42);
@@ -79,8 +74,7 @@ public class MoltenCanalBeTests
   }
 
   [Fact]
-  public void An_empty_cell_is_never_solidified_on_load()
-  {
+  public void An_empty_cell_is_never_solidified_on_load() {
     // Scrubs a phantom solidified+empty combination from an old save.
     var be = CanalWith(
       amount: 0,
@@ -94,8 +88,7 @@ public class MoltenCanalBeTests
   }
 
   [Fact]
-  public void Sealed_or_solidified_cells_sever_the_network()
-  {
+  public void Sealed_or_solidified_cells_sever_the_network() {
     Assert.True(
       CanalWith(10, "game:ingot-iron", 1400f, sealed_: true)
         .IsConnectionBroken()
@@ -108,8 +101,7 @@ public class MoltenCanalBeTests
   }
 
   [Fact]
-  public void HasMoltenMetal_requires_liquid_metal_present()
-  {
+  public void HasMoltenMetal_requires_liquid_metal_present() {
     Assert.True(CanalWith(10, "game:ingot-iron", 1400f).HasMoltenMetal);
     Assert.False(CanalWith(0, "", 0f).HasMoltenMetal);
     Assert.False(
@@ -118,8 +110,7 @@ public class MoltenCanalBeTests
   }
 
   [Fact]
-  public void WouldSpillOnRemoval_only_for_unsolidified_liquid()
-  {
+  public void WouldSpillOnRemoval_only_for_unsolidified_liquid() {
     Assert.True(CanalWith(10, "game:ingot-iron", 1400f).WouldSpillOnRemoval());
     Assert.False(
       CanalWith(10, "game:ingot-iron", 400f, solidified: true)
@@ -136,15 +127,13 @@ public class MoltenCanalBeTests
     int amount,
     float temp,
     int expected
-  )
-  {
+  ) {
     var be = CanalWith(amount, amount > 0 ? "game:ingot-iron" : "", temp);
     Assert.Equal((byte)expected, be.GlowLightLevel);
   }
 
   [Fact]
-  public void SetSealed_toggles_the_seal()
-  {
+  public void SetSealed_toggles_the_seal() {
     var world = new TestWorld();
     var be = Canal(world);
     Assert.False(be.Sealed);

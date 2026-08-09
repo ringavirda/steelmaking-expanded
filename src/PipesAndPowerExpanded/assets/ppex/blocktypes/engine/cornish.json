@@ -9,7 +9,6 @@
     "hit": "game:block/anvil",
     "walk": "game:walk/stone"
   },
-  "requiredMiningTier": 3,
   "resistance": 45.0,
   "maxstacksize": 1,
   "behaviors": [

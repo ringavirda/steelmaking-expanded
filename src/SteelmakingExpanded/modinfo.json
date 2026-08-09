@@ -3,12 +3,14 @@
   "type": "Code",
   "modid": "smex",
   "name": "Steelmaking Expanded",
-  "authors": ["fallenstar"],
+  "authors": [
+    "fallenstar"
+  ],
   "description": "Industrial iron and steel production using blast furnace and Bessemer process!",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "dependencies": {
     "game": "1.22.0",
-    "exlib": "0.7.0",
-    "ppex": "0.6.5"
+    "exlib": "0.7.1",
+    "ppex": "0.6.6"
   }
 }

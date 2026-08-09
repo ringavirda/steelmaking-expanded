@@ -13,7 +13,6 @@
   },
   "resistance": 3.0,
   "maxstacksize": 64,
-  "requiredMiningTier": 2,
   "mineTool": "pickaxe",
   "sounds": {
     "place": "game:block/stone",

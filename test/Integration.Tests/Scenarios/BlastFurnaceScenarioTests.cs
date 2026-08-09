@@ -12,13 +12,11 @@ namespace SteelmakingExpanded.Tests;
 /// renders blast mix into molten iron, and taps it into a canal - and loses the melt if the blast is
 /// cut. Exercises the gated firing/melting tick with its real peripherals via <see cref="BlastFurnaceRig"/>.
 /// </summary>
-public class BlastFurnaceScenarioTests
-{
+public class BlastFurnaceScenarioTests {
   #region Heat + phase progression
 
   [Fact]
-  public void Hot_blast_drives_the_furnace_past_irons_melting_point()
-  {
+  public void Hot_blast_drives_the_furnace_past_irons_melting_point() {
     // A lit, firing furnace at its natural ceiling (1420 C, below iron's 1482 C melt point).
     var rig = new BlastFurnaceRig()
       .FeedBlast(950f)
@@ -34,8 +32,7 @@ public class BlastFurnaceScenarioTests
   }
 
   [Fact]
-  public void Sustained_heat_above_the_melt_point_transitions_to_melting()
-  {
+  public void Sustained_heat_above_the_melt_point_transitions_to_melting() {
     var rig = new BlastFurnaceRig()
       .FeedBlast()
       .SetState(BlastFurnaceState.Firing)
@@ -52,8 +49,7 @@ public class BlastFurnaceScenarioTests
   #region Melting → tapping
 
   [Fact]
-  public void Melting_renders_blast_mix_into_molten_iron()
-  {
+  public void Melting_renders_blast_mix_into_molten_iron() {
     var rig = new BlastFurnaceRig()
       .FeedBlast()
       .SetState(BlastFurnaceState.Melting)
@@ -66,8 +62,7 @@ public class BlastFurnaceScenarioTests
   }
 
   [Fact]
-  public void A_melting_furnace_taps_molten_iron_into_the_canal()
-  {
+  public void A_melting_furnace_taps_molten_iron_into_the_canal() {
     var rig = new BlastFurnaceRig()
       .FeedBlast()
       .WithIronTapAndCanal()
@@ -92,8 +87,7 @@ public class BlastFurnaceScenarioTests
   #region Losing the blast
 
   [Fact]
-  public void Cutting_the_blast_lets_the_melt_fall_back_to_firing()
-  {
+  public void Cutting_the_blast_lets_the_melt_fall_back_to_firing() {
     // Melting just below the melt point with the blast cut: it can only reach the natural ceiling
     // (1420 C), so it cools out of Melting and reverts to Firing once it's been cold long enough.
     var rig = new BlastFurnaceRig()
@@ -124,8 +118,7 @@ public class BlastFurnaceScenarioTests
       .FeedBlast();
 
   [Fact]
-  public void A_blocked_flue_does_not_count_toward_extinguishing()
-  {
+  public void A_blocked_flue_does_not_count_toward_extinguishing() {
     var rig = ChokedRig();
 
     rig.Tick(60); // twice the old 30 s extinguish threshold
@@ -139,8 +132,7 @@ public class BlastFurnaceScenarioTests
   }
 
   [Fact]
-  public void A_blocked_flue_halts_the_melt()
-  {
+  public void A_blocked_flue_halts_the_melt() {
     var rig = ChokedRig();
     rig.Tick(1); // one tick to populate the cached hearth count
     int mixBefore = rig.MixCount;
@@ -156,8 +148,7 @@ public class BlastFurnaceScenarioTests
   // two assertions above are about the blockage and not about the rig never working in the first
   // place.
   [Fact]
-  public void An_open_flue_keeps_the_furnace_consuming_its_charge()
-  {
+  public void An_open_flue_keeps_the_furnace_consuming_its_charge() {
     var rig = new BlastFurnaceRig()
       .SetState(BlastFurnaceState.Melting)
       .SetTemp(SmexValues.BfIronMeltingPoint + 20f)
@@ -182,11 +173,9 @@ public class BlastFurnaceScenarioTests
   // after a relog, because the furnace cached its tunables once at load. The production tick now
   // re-reads them, so an admin change applies on the next tick without a reload.
   [Fact]
-  public void A_live_config_change_to_the_melt_delay_applies_without_a_reload()
-  {
+  public void A_live_config_change_to_the_melt_delay_applies_without_a_reload() {
     float original = SmexValues.BfMeltStartDelay;
-    try
-    {
+    try {
       var rig = new BlastFurnaceRig()
         .FeedBlast()
         .SetState(BlastFurnaceState.Firing);
@@ -200,9 +189,7 @@ public class BlastFurnaceScenarioTests
         (float)ReflectionHelpers.GetField(rig.Furnace, "_meltStartDelay")!,
         3
       );
-    }
-    finally
-    {
+    } finally {
       SmexValues.Edit(c => c.BfMeltStartDelay = original);
     }
   }

@@ -17,12 +17,9 @@ namespace SteelmakingExpanded.Tests;
 /// ppex (the <see cref="PipeNetwork"/>), so it lives in the integration suite. Covers the IPipeNode
 /// reads with and without a network, the structure-gated draw, and the serialization round trip.
 /// </summary>
-public class SmokeStackTests
-{
-  private static BlockEntitySmokeStack Stack(TestWorld world, BlockPos pos)
-  {
-    var be = new BlockEntitySmokeStack
-    {
+public class SmokeStackTests {
+  private static BlockEntitySmokeStack Stack(TestWorld world, BlockPos pos) {
+    var be = new BlockEntitySmokeStack {
       Pos = pos,
       Block = TestBlocks.Configure(
         new Block(),
@@ -39,8 +36,7 @@ public class SmokeStackTests
   private static void Commission(
     BlockEntitySmokeStack be,
     BlockNetworkModSystem system
-  )
-  {
+  ) {
     ReflectionHelpers.SetField(be, "_system", system);
     ReflectionHelpers.SetProperty(be, "StructureComplete", true);
   }
@@ -51,8 +47,7 @@ public class SmokeStackTests
   #region IPipeNode reads
 
   [Fact]
-  public void Without_a_network_the_node_reports_inert_defaults()
-  {
+  public void Without_a_network_the_node_reports_inert_defaults() {
     var world = new TestWorld();
     var be = Stack(world, new BlockPos(0, 0, 0));
 
@@ -71,8 +66,7 @@ public class SmokeStackTests
     string orientation,
     string face,
     bool expected
-  )
-  {
+  ) {
     var world = new TestWorld();
     var be = Stack(world, new BlockPos(0, 0, 0));
     be.Orientation = orientation;
@@ -85,8 +79,7 @@ public class SmokeStackTests
   #region Structure-gated draw
 
   [Fact]
-  public void A_complete_stack_draws_exhaust_off_the_network()
-  {
+  public void A_complete_stack_draws_exhaust_off_the_network() {
     // A sealed pipe run charged with exhaust; the stack shares the run's first cell.
     var (world, net) = PipeTestWorld.Run(4, capEnds: true);
     net.TryProduceGas(
@@ -108,8 +101,7 @@ public class SmokeStackTests
   }
 
   [Fact]
-  public void An_incomplete_stack_draws_nothing()
-  {
+  public void An_incomplete_stack_draws_nothing() {
     var (world, net) = PipeTestWorld.Run(4, capEnds: true);
     net.TryProduceGas(
       200f,
@@ -130,8 +122,7 @@ public class SmokeStackTests
   }
 
   [Fact]
-  public void Draw_is_capped_at_what_the_network_holds()
-  {
+  public void Draw_is_capped_at_what_the_network_holds() {
     var (world, net) = PipeTestWorld.Run(4, capEnds: true);
     // Less than one intake's worth in the run.
     net.TryProduceGas(
@@ -155,8 +146,7 @@ public class SmokeStackTests
   #region Serialization
 
   [Fact]
-  public void Node_state_round_trips_through_the_tree()
-  {
+  public void Node_state_round_trips_through_the_tree() {
     var world = new TestWorld();
     var src = Stack(world, new BlockPos(0, 0, 0));
     src.Orientation = "north";

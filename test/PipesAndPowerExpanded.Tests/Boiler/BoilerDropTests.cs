@@ -7,17 +7,15 @@ using Xunit;
 namespace PipesAndPowerExpanded.Tests;
 
 /// <summary>
-/// A boiler is built in place (RightClickConstructable), not placed from a frame item, so breaking it
-/// must return only its construction materials - never the boiler block itself. The JSON "drops": []
-/// isn't reliably honoured for a variant block, so the block overrides GetDrops to guarantee an empty
-/// list; this pins that the override strips even a registry-populated self-drop. (Engines keep their
-/// craftable-frame self-drop and don't derive from BlockBoiler.)
+/// A boiler is placed from a crafted frame item, so breaking it returns that item alongside the
+/// construction materials the RightClickConstructable behaviour scatters - the same deal the engines
+/// get. Withholding the frame made taking a boiler down to move it a net loss. This pins that the
+/// block adds no suppression of its own; a burst boiler is a different path and still keeps its
+/// penalty (see BoilerExplosionDropRatio).
 /// </summary>
-public class BoilerDropTests
-{
+public class BoilerDropTests {
   [Fact]
-  public void A_boiler_never_drops_itself_even_if_registered_with_a_self_drop()
-  {
+  public void A_boiler_returns_its_crafted_frame_when_broken() {
     var block = TestBlocks.Configure(
       new BlockBoilerCornish(),
       "ppex:boilercornish-north",
@@ -28,6 +26,6 @@ public class BoilerDropTests
 
     ItemStack[] drops = block.GetDrops(null!, new BlockPos(0, 0, 0), null);
 
-    Assert.Empty(drops);
+    Assert.Contains(drops, d => d.Collectible == block);
   }
 }

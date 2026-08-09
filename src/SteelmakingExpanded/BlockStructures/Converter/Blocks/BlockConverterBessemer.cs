@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using ExpandedLib.Blocks.Structures;
 using ExpandedLib.Helpers;
 using ExpandedLib.Registries.Entities;
@@ -24,8 +25,7 @@ namespace SteelmakingExpanded.BlockStructures.Converter.Blocks;
 public partial class BlockConverterBessemer
   : Block,
     IFillerHost,
-    IFillerInteractionTarget
-{
+    IFillerInteractionTarget {
   // RMB construction and its build prompts are routed to the
   // RightClickConstructable block-entity behaviour by the "BlockEntityInteract"
   // block behaviour declared in the block JSON.
@@ -38,8 +38,7 @@ public partial class BlockConverterBessemer
     BlockPos pos,
     IPlayer? byPlayer,
     float dropQuantityMultiplier = 1f
-  )
-  {
+  ) {
     ItemStack? solidifiedDrops = null;
     if (
       world.BlockAccessor.GetBlockEntity(pos) is BlockEntityConverterBessemer be
@@ -62,12 +61,9 @@ public partial class BlockConverterBessemer
     // exception escapes to the client and crashes the game. Guard it so a
     // legacy/corrupt construction state degrades to "no construction drops"
     // and the block is still removed.
-    try
-    {
+    try {
       base.OnBlockBroken(world, pos, byPlayer, dropQuantityMultiplier);
-    }
-    catch (Exception e)
-    {
+    } catch (Exception e) {
       world.Logger.Warning(
         "[smex] Bessemer converter at {0} could not drop its construction "
           + "materials (likely built before the recipe fix); removing it "
@@ -83,19 +79,38 @@ public partial class BlockConverterBessemer
       world.SpawnItemEntity(solidifiedDrops, pos.ToVec3d().Add(0.5, 0.5, 0.5));
   }
 
-  // The vessel is control-spawned, never placed from an item, so it must NOT drop itself when broken:
-  // the construction materials come from the RightClickConstructable behaviour and the solidified
-  // charge is spawned by OnBlockBroken above. The JSON "drops": [] declares this, but it is not always
-  // honoured for a variant block (the per-side variant can still be handed its own code as a fallback
-  // drop at registration), which leaves the vessel dropping itself alongside the materials. Enforce the
-  // empty drop list here so the suppression can't be bypassed. (Block behaviours can still contribute
-  // their own drops via base.GetDrops; the converter has none, so an empty list is correct.)
+  // The vessel is spawned by the control block, never placed from an item, so there is no vessel item
+  // to hand back: dropping itself would mint a block the player could not have crafted. What it does
+  // return is the placement cost the control block took from the player's hotbar - the large gear and
+  // the rods - on top of the construction materials the RightClickConstructable behaviour scatters and
+  // the solidified charge OnBlockBroken spawns. The JSON "drops": [] suppresses the self-drop, but it
+  // is not always honoured for a variant block (the per-side variant can still be handed its own code
+  // as a fallback drop at registration), so the override is what actually enforces it.
+  //
+  // The gear and rods come back in iron: either tier is accepted at placement and which one was
+  // consumed is not recorded, so the refund is the cheaper of the two.
   public override ItemStack[] GetDrops(
     IWorldAccessor world,
     BlockPos pos,
     IPlayer? byPlayer,
     float dropQuantityMultiplier = 1f
-  ) => [];
+  ) {
+    var drops = new List<ItemStack>(2);
+
+    if (
+      world.GetItem(new AssetLocation("ppex:largegear-iron")) is { } gear
+      && SmexValues.BessemerRequiredGears > 0
+    )
+      drops.Add(new ItemStack(gear, SmexValues.BessemerRequiredGears));
+
+    if (
+      world.GetItem(new AssetLocation("game:rod-iron")) is { } rod
+      && SmexValues.BessemerRequiredRods > 0
+    )
+      drops.Add(new ItemStack(rod, SmexValues.BessemerRequiredRods));
+
+    return [.. drops];
+  }
 
   #region Chisel-out interaction (IFillerInteractionTarget)
 
@@ -106,8 +121,7 @@ public partial class BlockConverterBessemer
     IPlayer byPlayer,
     BlockSelection principalSel,
     BlockPos clickedCell
-  )
-  {
+  ) {
     if (
       IsChiselCell(principalSel.Position, clickedCell)
       && TryChiselOut(world, byPlayer, principalSel.Position)
@@ -137,8 +151,7 @@ public partial class BlockConverterBessemer
     BlockSelection principalSel,
     IPlayer forPlayer,
     BlockPos clickedCell
-  )
-  {
+  ) {
     WorldInteraction[] baseHelp =
       GetPlacedBlockInteractionHelp(world, principalSel, forPlayer) ?? [];
 
@@ -158,8 +171,7 @@ public partial class BlockConverterBessemer
     return baseHelp;
   }
 
-  private bool IsChiselCell(BlockPos principalPos, BlockPos clickedCell)
-  {
+  private bool IsChiselCell(BlockPos principalPos, BlockPos clickedCell) {
     BlockPos chiselCell = ExOrientation.WorldPosFromAttr(
       principalPos,
       ChiselOffset,
@@ -176,8 +188,7 @@ public partial class BlockConverterBessemer
     IWorldAccessor world,
     IPlayer byPlayer,
     BlockPos principalPos
-  )
-  {
+  ) {
     if (
       world.BlockAccessor.GetBlockEntity(principalPos)
       is not BlockEntityConverterBessemer be

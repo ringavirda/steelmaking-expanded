@@ -16,12 +16,10 @@ namespace SteelmakingExpanded.Commands;
 /// already-placed molds stop casting immediately. Server-side, since the config is host-authoritative.
 /// </summary>
 [SubCommandRegister(Side = EnumAppSide.Server)]
-public sealed class MoldsSubCommand : IExSubCommand
-{
+public sealed class MoldsSubCommand : IExSubCommand {
   public string ParentName => "exmod";
 
-  public void Register(ICoreAPI api, Mod mod, IChatCommand parent)
-  {
+  public void Register(ICoreAPI api, Mod mod, IChatCommand parent) {
     string domain = mod.Info.ModID;
     var parsers = api.ChatCommands.Parsers;
 
@@ -39,16 +37,14 @@ public sealed class MoldsSubCommand : IExSubCommand
   private static TextCommandResult OnCommand(
     string domain,
     TextCommandCallingArgs args
-  )
-  {
+  ) {
     string type = ((string)args[0]).ToLowerInvariant();
     string? state = (args[1] as string)?.ToLowerInvariant();
 
     string[] keys = type == "all" ? MoldGating.Keys.ToArray() : [type];
 
     // No state argument: report the current availability of the requested mold(s).
-    if (state == null)
-    {
+    if (state == null) {
       var report = new StringBuilder();
       foreach (var key in keys)
         report.AppendLine(StatusLine(domain, key, MoldGating.IsEnabled(key)));
@@ -57,8 +53,7 @@ public sealed class MoldsSubCommand : IExSubCommand
 
     bool enable = state == "on";
     var result = new StringBuilder();
-    foreach (var key in keys)
-    {
+    foreach (var key in keys) {
       MoldGating.SetEnabled(key, enable);
       result.AppendLine(
         Lang.Get(

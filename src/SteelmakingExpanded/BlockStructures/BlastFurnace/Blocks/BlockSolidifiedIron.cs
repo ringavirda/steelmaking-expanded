@@ -10,22 +10,18 @@ namespace SteelmakingExpanded.BlockStructures.BlastFurnace.Blocks;
 /// bits scaled to its stored count.
 /// </summary>
 [BlockRegister]
-public partial class BlockSolidifiedIron : Block
-{
+public partial class BlockSolidifiedIron : Block {
   public override ItemStack[] GetDrops(
     IWorldAccessor worldMap,
     BlockPos pos,
     IPlayer byPlayer,
     float dropQuantityMultiplier = 1f
-  )
-  {
+  ) {
     if (
       worldMap.BlockAccessor.GetBlockEntity(pos) is BlockEntitySolidifiedIron be
-    )
-    {
+    ) {
       Item? bit = worldMap.GetItem(new AssetLocation("game", "metalbit-iron"));
-      if (bit != null && be.IronCount > 0)
-      {
+      if (bit != null && be.IronCount > 0) {
         return [new ItemStack(bit, be.IronCount)];
       }
     }

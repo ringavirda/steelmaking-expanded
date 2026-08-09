@@ -6,8 +6,7 @@ using Vintagestory.API.Server;
 
 namespace SteelmakingExpanded.BlockMigrations;
 
-public class PpexMigration : IBlockCodeMigration
-{
+public class PpexMigration : IBlockCodeMigration {
   private readonly record struct Entry(
     string CodeBase,
     string[] Variants,
@@ -29,16 +28,15 @@ public class PpexMigration : IBlockCodeMigration
 
   public IEnumerable<(AssetLocation oldCode, AssetLocation newCode)> GetRemaps(
     ICoreServerAPI api
-  )
-  {
+  ) {
     foreach (
       var (codeBase, variations, oldOrientations, newOrientations) in Entries
     )
-    foreach (string variant in variations)
-    foreach (var (i, oldOrient) in oldOrientations.Index())
-      yield return (
-        new AssetLocation("smex", $"{codeBase}-{variant}-{oldOrient}"),
-        new AssetLocation("smex", $"{codeBase}-{variant}-{newOrientations[i]}")
-      );
+      foreach (string variant in variations)
+        foreach (var (i, oldOrient) in oldOrientations.Index())
+          yield return (
+            new AssetLocation("smex", $"{codeBase}-{variant}-{oldOrient}"),
+            new AssetLocation("smex", $"{codeBase}-{variant}-{newOrientations[i]}")
+          );
   }
 }

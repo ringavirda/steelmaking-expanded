@@ -12,8 +12,7 @@ namespace ExpandedLib.Registries.Commands;
 /// <paramref name="mod"/> inside <see cref="Register"/>.
 /// </para>
 /// </summary>
-public interface IExCommand
-{
+public interface IExCommand {
   /// <summary>
   /// Builds and registers this command. Called once per applicable side by
   /// <see cref="CommandRegistry.RegisterAll"/>. For client-only commands

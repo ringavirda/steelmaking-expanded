@@ -11,8 +11,7 @@ namespace SteelmakingExpanded.BlockNetworkMolten.Blocks;
 /// backpack, a chest, a mold rack - the liquid metal spills out, emptying the
 /// mold. Hardened/cooling castings are unaffected.
 /// </summary>
-public static class MoltenMoldSpill
-{
+public static class MoltenMoldSpill {
   /// <summary>Spill notification code, resolved client-side from "game:ingameerror-{code}".</summary>
   public const string ErrorCode = "smex-moltenspill";
 
@@ -24,8 +23,7 @@ public static class MoltenMoldSpill
     ItemSlot? slot,
     IWorldAccessor world,
     IServerPlayer? notify
-  )
-  {
+  ) {
     if (slot?.Itemstack is not { } stack || stack.Block is not BlockToolMold)
       return false;
 
@@ -72,8 +70,7 @@ public static class MoltenMoldSpill
     IPlayer byPlayer,
     ItemStack? contents,
     int units
-  )
-  {
+  ) {
     if (!IsLiquidContent(world, contents, units))
       return false;
     if (byPlayer.InventoryManager?.ActiveHotbarSlot?.Empty == true)
@@ -93,11 +90,9 @@ public static class MoltenMoldSpill
     ItemStack stack,
     bool liquid,
     Vec3d dropPos
-  )
-  {
+  ) {
     var active = byPlayer.InventoryManager?.ActiveHotbarSlot;
-    if (liquid && active?.Empty == true)
-    {
+    if (liquid && active?.Empty == true) {
       active.Itemstack = stack;
       active.MarkDirty();
       return;

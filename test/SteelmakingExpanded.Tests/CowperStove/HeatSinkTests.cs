@@ -12,13 +12,10 @@ namespace SteelmakingExpanded.Tests;
 /// in by the stove and persists it. The incandescent re-light is a client render concern; this pins
 /// the value semantics and the save/reload round trip.
 /// </summary>
-public class HeatSinkTests
-{
-  private static BlockEntityHeatSink Sink()
-  {
+public class HeatSinkTests {
+  private static BlockEntityHeatSink Sink() {
     var world = new TestWorld();
-    var be = new BlockEntityHeatSink
-    {
+    var be = new BlockEntityHeatSink {
       Pos = new BlockPos(0, 0, 0),
       Block = TestBlocks.Configure(new Block(), "smex:heatsink", 80),
     };
@@ -27,22 +24,19 @@ public class HeatSinkTests
   }
 
   [Fact]
-  public void Temperature_defaults_to_room_temperature()
-  {
+  public void Temperature_defaults_to_room_temperature() {
     Assert.Equal(20f, Sink().Temperature);
   }
 
   [Fact]
-  public void Temperature_can_be_pushed_and_read_back()
-  {
+  public void Temperature_can_be_pushed_and_read_back() {
     var be = Sink();
     be.Temperature = 850f;
     Assert.Equal(850f, be.Temperature);
   }
 
   [Fact]
-  public void Temperature_round_trips_through_the_tree()
-  {
+  public void Temperature_round_trips_through_the_tree() {
     var src = Sink();
     src.Temperature = 720f;
 

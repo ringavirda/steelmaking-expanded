@@ -15,8 +15,7 @@ namespace PipesAndPowerExpanded.BlockNetworkPipe.Blocks;
 /// <see cref="BlockEntityPressureValve.GatePressureStep"/>), bounded by the valve's material rating.
 /// </summary>
 [BlockRegister]
-public partial class BlockPressureValve : BlockValve
-{
+public partial class BlockPressureValve : BlockValve {
   public override Dictionary<string, string[]> AllowedOrientations { get; } =
     new() { { "pressurevalve", ["ns", "we", "ud", "sn", "ew", "du"] } };
 
@@ -28,8 +27,7 @@ public partial class BlockPressureValve : BlockValve
     IWorldAccessor world,
     IPlayer byPlayer,
     BlockSelection blockSel
-  )
-  {
+  ) {
     if (
       world.BlockAccessor.GetBlockEntity(blockSel.Position)
       is not BlockEntityPressureValve be
@@ -63,15 +61,13 @@ public partial class BlockPressureValve : BlockValve
     base.GetPlacedBlockInteractionHelp(world, selection, forPlayer)
       .Where(x => x.ActionLangCode != "ppex:blockhelp-valve-toggle")
       .Append(
-        new WorldInteraction
-        {
+        new WorldInteraction {
           ActionLangCode = "ppex:blockhelp-pressurevalve-increase",
           MouseButton = EnumMouseButton.Right,
         }
       )
       .Append(
-        new WorldInteraction
-        {
+        new WorldInteraction {
           ActionLangCode = "ppex:blockhelp-pressurevalve-decrease",
           MouseButton = EnumMouseButton.Right,
           HotKeyCode = "sneak",

@@ -41,13 +41,11 @@ public class BoilerAnimatableRenderer(
     meshdata,
     renderStage
   ),
-    IRenderer
-{
+    IRenderer {
   /// <summary>World cell the mesh is lit from (defaults to the render origin).</summary>
   public Vec3d LightPos = pos;
 
-  public new void OnRenderFrame(float dt, EnumRenderStage stage)
-  {
+  public new void OnRenderFrame(float dt, EnumRenderStage stage) {
     if (
       !ShouldRender
       || (
@@ -72,12 +70,9 @@ public class BoilerAnimatableRenderer(
       (float)(pos.Y - player.CameraPos.Y),
       (float)(pos.Z - player.CameraPos.Z)
     );
-    if (CustomTransform != null)
-    {
+    if (CustomTransform != null) {
       Mat4f.Multiply(ModelMat, ModelMat, CustomTransform);
-    }
-    else
-    {
+    } else {
       Mat4f.Translate(ModelMat, ModelMat, 0.5f, 0f, 0.5f);
       Mat4f.Scale(ModelMat, ModelMat, ScaleX, ScaleY, ScaleZ);
       Mat4f.RotateY(
@@ -118,8 +113,7 @@ public class BoilerAnimatableRenderer(
     if (!oit)
       render.GlToggleBlend(blend: true);
 
-    if (!shadow)
-    {
+    if (!shadow) {
       engineShader.Uniform("extraGlow", 0);
       engineShader.Uniform("rgbaAmbientIn", render.AmbientColor);
       engineShader.Uniform("rgbaFogIn", render.FogColor);
@@ -133,14 +127,11 @@ public class BoilerAnimatableRenderer(
       engineShader.Uniform("windWaveIntensity", 0f);
       engineShader.Uniform("glitchEffectStrength", 0f);
       engineShader.Uniform("frostAlpha", 0f);
-      if (!StabilityAffected)
-      {
+      if (!StabilityAffected) {
         engineShader.Uniform("globalWarpIntensity", 0f);
         engineShader.Uniform("glitchWaviness", 0f);
       }
-    }
-    else
-    {
+    } else {
       engineShader.UniformMatrix(
         "modelViewMatrix",
         Mat4f.Mul(new float[16], render.CurrentModelviewMatrix, ModelMat)

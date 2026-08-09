@@ -14,8 +14,7 @@ namespace PipesAndPowerExpanded;
 /// (stored in <see cref="PpexConfig.RecipeLevel"/>) and applied on the next world reload.
 /// </summary>
 [ExConfigRegister("ppex_recipes.json", "ppex")]
-public class PpexRecipeConfig : IExVersionedConfig
-{
+public class PpexRecipeConfig : IExVersionedConfig {
   public string? ConfigVersion { get; set; }
 
   private Dictionary<string, RecipeCostEntry>? _recipes;
@@ -23,8 +22,7 @@ public class PpexRecipeConfig : IExVersionedConfig
   /// <summary>Never null: a missing or null <c>Recipes</c> in the file falls back to the code
   /// defaults (a wrong edit can't blank the catalogue). Missing/broken individual entries are
   /// repaired against <see cref="DefaultCatalogue"/> at load by <see cref="ExRecipeCosts.Reconcile"/>.</summary>
-  public Dictionary<string, RecipeCostEntry> Recipes
-  {
+  public Dictionary<string, RecipeCostEntry> Recipes {
     get => _recipes ??= Defaults();
     set => _recipes = value;
   }
@@ -42,8 +40,7 @@ public class PpexRecipeConfig : IExVersionedConfig
   // Grid recipe with a pinned cheap output count (the pipe straight/bend/junction families craft double
   // in the cheap profile). Authored output: straight 2, bend/t/x-junction 1 - so cheap doubles to 4/2/2/2.
   private static RecipeCostEntry GridOut(string match, int cheapOutput) =>
-    new()
-    {
+    new() {
       Type = "grid",
       Match = match,
       Profiles = new() { ["cheap"] = new() { Quantity = cheapOutput } },
@@ -53,8 +50,7 @@ public class PpexRecipeConfig : IExVersionedConfig
   // style). Profiles are auto-filled at load: the normal baseline is read from the live recipe and the
   // cheap profile is scaled (half cost), both editable in the file. Only the cheap pipe output is pinned.
   private static Dictionary<string, RecipeCostEntry> Defaults() =>
-    new()
-    {
+    new() {
       // RCC constructions (the heavy multiblock build costs).
       ["boilercornish-rcc"] = Rcc("ppex:boilercornish-*"),
       ["boilerlancashire-rcc"] = Rcc("ppex:boilerlancashire-*"),

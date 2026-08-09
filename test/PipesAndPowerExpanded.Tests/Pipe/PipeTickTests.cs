@@ -6,11 +6,9 @@ namespace PipesAndPowerExpanded.Tests;
 
 /// <summary>Time-driven behaviour: throughput/pressure refresh, idle clearing, evaporation,
 /// open-end leak loss, and over-pressure burst - all via <see cref="TestWorld.Tick"/>.</summary>
-public class PipeTickTests
-{
+public class PipeTickTests {
   [Fact]
-  public void Tick_refreshes_pressure_and_flow_rate()
-  {
+  public void Tick_refreshes_pressure_and_flow_rate() {
     var (w, net) = PipeTestWorld.Run(3, "iron", capEnds: true);
     net.TryProduceGas(45f, 120f, "Steam", w.Accessor);
 
@@ -24,8 +22,7 @@ public class PipeTickTests
   }
 
   [Fact]
-  public void Drained_run_clears_only_after_idle_delay()
-  {
+  public void Drained_run_clears_only_after_idle_delay() {
     var (w, net) = PipeTestWorld.Run(3, "iron", capEnds: true);
     net.TryProduceGas(45f, 120f, "Air", w.Accessor);
     net.TryConsumeGas(45f, w.Accessor); // volume now 0, but just had flow
@@ -36,8 +33,7 @@ public class PipeTickTests
   }
 
   [Fact]
-  public void Water_run_evaporates_with_the_calendar()
-  {
+  public void Water_run_evaporates_with_the_calendar() {
     var (w, net) = PipeTestWorld.Run(3, "iron", capEnds: true);
     net.TryProduceLiquid(1000f, 20f, 1f, w.Accessor); // full = 90 L
 
@@ -49,8 +45,7 @@ public class PipeTickTests
   }
 
   [Fact]
-  public void Open_ended_run_leaks_gas_each_tick()
-  {
+  public void Open_ended_run_leaks_gas_each_tick() {
     var (w, net) = PipeTestWorld.Run(3, "iron", capEnds: false); // open air ends
     net.TryProduceGas(450f, 200f, "Steam", w.Accessor, maxOutputPressure: 10f);
 
@@ -64,8 +59,7 @@ public class PipeTickTests
   }
 
   [Fact]
-  public void Sealed_overpressured_run_bursts_after_the_grace_period()
-  {
+  public void Sealed_overpressured_run_bursts_after_the_grace_period() {
     var (w, net) = PipeTestWorld.Run(3, "iron", capEnds: true);
     net.TryProduceGas(1000f, 200f, "Steam", w.Accessor, maxOutputPressure: 10f);
     Assert.Equal(450f, net.State!.Volume, 3); // sitting at the 5-atm burst pressure

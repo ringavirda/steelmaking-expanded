@@ -18,8 +18,7 @@ namespace ExpandedLib.Renderers;
 /// <see cref="SelectMeshIndex"/> picks the single one to draw, so a multi-level cavity can show the
 /// cross-section at the current fill height rather than the union of every level.</para>
 /// </summary>
-public abstract class SurfaceRenderer : IRenderer
-{
+public abstract class SurfaceRenderer : IRenderer {
   protected readonly ICoreClientAPI Api;
   protected readonly BlockPos Pos;
   protected readonly float RotationY;
@@ -44,14 +43,12 @@ public abstract class SurfaceRenderer : IRenderer
     Cuboidf[] footprintBoxes,
     float rotationY,
     bool combine
-  )
-  {
+  ) {
     Pos = pos;
     Api = api;
     RotationY = rotationY;
 
-    if (combine)
-    {
+    if (combine) {
       MeshData merged = new(
         4 * footprintBoxes.Length,
         6 * footprintBoxes.Length
@@ -60,9 +57,7 @@ public abstract class SurfaceRenderer : IRenderer
         merged.AddMeshData(BuildQuad(box));
 
       MeshRefs = [api.Render.UploadMesh(merged)];
-    }
-    else
-    {
+    } else {
       MeshRefs = new MeshRef[footprintBoxes.Length];
       for (int i = 0; i < footprintBoxes.Length; i++)
         MeshRefs[i] = api.Render.UploadMesh(BuildQuad(footprintBoxes[i]));
@@ -74,8 +69,7 @@ public abstract class SurfaceRenderer : IRenderer
   /// scales the unit quad onto the box and lays it flat. (Matrixf post-multiplies, so the rightmost
   /// call applies first: Scale → RotateX → Translate.)
   /// </summary>
-  private static MeshData BuildQuad(Cuboidf box)
-  {
+  private static MeshData BuildQuad(Cuboidf box) {
     MeshData quad = QuadMeshUtil.GetQuad();
     quad.Rgba = new byte[16];
     quad.Rgba.Fill(byte.MaxValue);
@@ -106,8 +100,7 @@ public abstract class SurfaceRenderer : IRenderer
     return quad;
   }
 
-  public void OnRenderFrame(float deltaTime, EnumRenderStage stage)
-  {
+  public void OnRenderFrame(float deltaTime, EnumRenderStage stage) {
     if (!ShouldRender || MeshRefs.Length == 0)
       return;
 
@@ -139,8 +132,7 @@ public abstract class SurfaceRenderer : IRenderer
     ConfigureShader(shader, render);
 
     // Subclass binds its texture; bail on failure so we never draw with a stale/no texture.
-    if (!BindSurfaceTexture(render))
-    {
+    if (!BindSurfaceTexture(render)) {
       shader.Stop();
       if (UseBlend)
         render.GlToggleBlend(false);
@@ -196,8 +188,7 @@ public abstract class SurfaceRenderer : IRenderer
   /// <summary>Whether to wrap the draw in alpha blending (translucent surfaces like water).</summary>
   protected virtual bool UseBlend => false;
 
-  public virtual void Dispose()
-  {
+  public virtual void Dispose() {
     Api.Event.UnregisterRenderer(this, EnumRenderStage.Opaque);
     foreach (MeshRef meshRef in MeshRefs)
       meshRef?.Dispose();

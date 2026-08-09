@@ -18,8 +18,7 @@ namespace ExpandedLib.Blocks.Networks;
 public abstract class BlockNetworkNode
   : Block,
     IWrenchOrientable,
-    INetworkConnector
-{
+    INetworkConnector {
   /// <summary>Populated from the block's variant map; specifies the shape family (e.g. "straight", "bend").</summary>
   public string? Type { get; protected set; }
 
@@ -34,8 +33,7 @@ public abstract class BlockNetworkNode
   /// </summary>
   public BlockNetworkModSystem? NetworkSystem { get; protected set; }
 
-  public override void OnLoaded(ICoreAPI api)
-  {
+  public override void OnLoaded(ICoreAPI api) {
     base.OnLoaded(api);
     // Pre-compute rotated collision/selection boxes for all orientation variants.
     PrecomputeRotatedBoxes();
@@ -71,10 +69,8 @@ public abstract class BlockNetworkNode
     ItemStack itemstack,
     BlockSelection blockSel,
     ref string failureCode
-  )
-  {
-    if (!world.BlockAccessor.GetBlock(blockSel.Position).IsReplacableBy(this))
-    {
+  ) {
+    if (!world.BlockAccessor.GetBlock(blockSel.Position).IsReplacableBy(this)) {
       failureCode = "notreplaceable";
       return false;
     }
@@ -87,8 +83,7 @@ public abstract class BlockNetworkNode
       Type,
       null
     );
-    if (safeChoices.Length == 0)
-    {
+    if (safeChoices.Length == 0) {
       // Shown to the player as Lang.Get("placefailure-" + code), so this must be
       // a plain code with a matching "game:placefailure-…" lang entry, not text.
       failureCode = "exlib-noorientation";
@@ -103,8 +98,7 @@ public abstract class BlockNetworkNode
 
     // Clicking a top/bottom face gives no horizontal hint, so fall back to the player's look
     // direction - the connector points the way they look, like wall placement.
-    if (preferredChoices.Length == 0)
-    {
+    if (preferredChoices.Length == 0) {
       char lookChar = SuggestedHVOrientation(byPlayer, blockSel)[
         0
       ].Opposite.Code[0];
@@ -119,8 +113,7 @@ public abstract class BlockNetworkNode
     AssetLocation newCode = CodeWithVariant("orientation", finalChoices[0]);
     Block? block = world.GetBlock(newCode);
 
-    if (block != null)
-    {
+    if (block != null) {
       block.DoPlaceBlock(world, byPlayer, blockSel, itemstack);
       return true;
     }
@@ -147,24 +140,19 @@ public abstract class BlockNetworkNode
     IWorldAccessor world,
     BlockPos blockPos,
     ItemStack? byItemStack = null
-  )
-  {
+  ) {
     base.OnBlockPlaced(world, blockPos, byItemStack);
 
-    if (_tempOrientationsStore.TryRemove(blockPos, out string[]? finalChoices))
-    {
+    if (_tempOrientationsStore.TryRemove(blockPos, out string[]? finalChoices)) {
       if (
         world.BlockAccessor.GetBlockEntity(blockPos)
         is BlockEntityNetworkNode beNet
-      )
-      {
+      ) {
         beNet.Orientation = Orientation;
         beNet.PossibleOrientations = finalChoices;
         beNet.MarkDirty(true);
       }
-    }
-    else
-    {
+    } else {
       RecalculateAndSyncOrientations(world, blockPos);
     }
 
@@ -184,16 +172,14 @@ public abstract class BlockNetworkNode
     BlockPos pos,
     string type,
     string? currentOrientation
-  )
-  {
+  ) {
     if (!AllowedOrientations.TryGetValue(type, out string[]? validOrientations))
       return [];
 
     List<char> requiredChars = [];
     List<char> forbiddenChars = [];
 
-    foreach (var face in BlockFacing.ALLFACES)
-    {
+    foreach (var face in BlockFacing.ALLFACES) {
       BlockPos neighborPos = pos.AddCopy(face);
       Block neighborBlock = blockAccessor.GetBlock(neighborPos);
 
@@ -204,25 +190,22 @@ public abstract class BlockNetworkNode
           neighborBlock,
           NetworkType
         ) && neighborBlock is INetworkConnector neighborNet
-      )
-      {
+      ) {
         if (
           neighborNet.HasConnectorAt(blockAccessor, neighborPos, face.Opposite)
         )
           requiredChars.Add(face.Code[0]);
         else
           forbiddenChars.Add(face.Code[0]);
-      }
-      else if (
-        currentOrientation != null
-        && neighborBlock.CanAttachBlockAt(
-          blockAccessor,
-          this,
-          neighborPos,
-          face.Opposite
-        )
-      )
-      {
+      } else if (
+          currentOrientation != null
+          && neighborBlock.CanAttachBlockAt(
+            blockAccessor,
+            this,
+            neighborPos,
+            face.Opposite
+          )
+        ) {
         if (currentOrientation.Contains(face.Code[0]))
           requiredChars.Add(face.Code[0]);
       }
@@ -250,10 +233,8 @@ public abstract class BlockNetworkNode
       choices.Length == 0
       && requiredChars.Count > 0
       && currentOrientation != null
-    )
-    {
-      requiredChars.RemoveAll(c =>
-      {
+    ) {
+      requiredChars.RemoveAll(c => {
         // Orientation letters ("n", "u", ...), not face codes: BlockFacing.FromCode wants the full
         // word ("north") and returns null for every letter, which made this whole relaxation a no-op
         // and left the caller to break the block instead.
@@ -295,8 +276,7 @@ public abstract class BlockNetworkNode
     IWorldAccessor world,
     BlockPos pos,
     BlockPos neighbour
-  )
-  {
+  ) {
     if (Orientation == null)
       return;
 
@@ -304,15 +284,13 @@ public abstract class BlockNetworkNode
 
     // Break the block if it has no network neighbours and no solid surface to rest on.
     bool hasSolidSurface = false;
-    foreach (var f in BlockFacing.ALLFACES)
-    {
+    foreach (var f in BlockFacing.ALLFACES) {
       BlockPos nPos = pos.AddCopy(f);
       if (
         world
           .BlockAccessor.GetBlock(nPos)
           .CanAttachBlockAt(world.BlockAccessor, this, nPos, f.Opposite)
-      )
-      {
+      ) {
         hasSolidSurface = true;
         break;
       }
@@ -336,8 +314,7 @@ public abstract class BlockNetworkNode
     BlockPos pos,
     IPlayer byPlayer,
     float dropQuantityMultiplier = 1
-  )
-  {
+  ) {
     world
       .Api.ModLoader.GetModSystem<BlockNetworkModSystem>()
       .RemoveNode(world.BlockAccessor, pos);
@@ -352,8 +329,7 @@ public abstract class BlockNetworkNode
   /// stored on the block entity.  Re-registers the node in the network graph with
   /// the new orientation's connector set.
   /// </summary>
-  public void Rotate(EntityAgent byEntity, BlockSelection blockSel, int dir)
-  {
+  public void Rotate(EntityAgent byEntity, BlockSelection blockSel, int dir) {
     if (Type == null || Orientation == null)
       return;
 
@@ -379,8 +355,7 @@ public abstract class BlockNetworkNode
     AssetLocation nextCode = CodeWithVariant("orientation", choices[nextIndex]);
     Block? nextBlock = world.GetBlock(nextCode);
 
-    if (nextBlock != null && nextBlock.BlockId != BlockId)
-    {
+    if (nextBlock != null && nextBlock.BlockId != BlockId) {
       var netManager =
         world.Api.ModLoader.GetModSystem<BlockNetworkModSystem>();
 
@@ -406,8 +381,7 @@ public abstract class BlockNetworkNode
   /// Thin-profile pipes keep the placement-time restriction (the narrowed cycle stored on the BE,
   /// falling back to a topology recompute for multiblock BEs that never store it).
   /// </summary>
-  protected string[] GetWrenchOrientations(IWorldAccessor world, BlockPos pos)
-  {
+  protected string[] GetWrenchOrientations(IWorldAccessor world, BlockPos pos) {
     if (Type == null)
       return [];
 
@@ -452,8 +426,7 @@ public abstract class BlockNetworkNode
     IWorldAccessor world,
     BlockSelection selection,
     IPlayer forPlayer
-  )
-  {
+  ) {
     WorldInteraction[] baseHelp =
       base.GetPlacedBlockInteractionHelp(world, selection, forPlayer) ?? [];
 
@@ -462,8 +435,7 @@ public abstract class BlockNetworkNode
 
     return baseHelp
       .Append(
-        new WorldInteraction
-        {
+        new WorldInteraction {
           ActionLangCode = "exlib:blockhelp-rotate",
           MouseButton = EnumMouseButton.Right,
           Itemstacks = ExItems.WrenchStacks(world),
@@ -481,16 +453,13 @@ public abstract class BlockNetworkNode
   /// Pre-computes rotated collision and selection box arrays for every
   /// (type, orientation) combination so runtime lookups are O(1) dictionary reads.
   /// </summary>
-  protected virtual void PrecomputeRotatedBoxes()
-  {
+  protected virtual void PrecomputeRotatedBoxes() {
     if (CollisionBoxes == null || CollisionBoxes.Length == 0)
       return;
     Vec3d pivot = new(0.5, 0.5, 0.5);
 
-    foreach (var kvp in AllowedOrientations)
-    {
-      foreach (string orient in kvp.Value)
-      {
+    foreach (var kvp in AllowedOrientations) {
+      foreach (string orient in kvp.Value) {
         GetRotations(orient, out float rotX, out float rotY, out float rotZ);
         string cacheKey = $"{kvp.Key}-{orient}";
 
@@ -546,14 +515,12 @@ public abstract class BlockNetworkNode
     out float rotX,
     out float rotY,
     out float rotZ
-  )
-  {
+  ) {
     rotX = 0;
     rotY = 0;
     rotZ = 0;
 
-    switch (orientation)
-    {
+    switch (orientation) {
       // Base states (zero rotation)
       case "n":
       case "ns":
@@ -668,8 +635,7 @@ public abstract class BlockNetworkNode
     BlockPos pos,
     IPlayer? byPlayer,
     float dropQuantityMultiplier = 1f
-  )
-  {
+  ) {
     string fallback = GetFallbackOrientation(Type);
     AssetLocation loc = CodeWithVariant("orientation", fallback);
     return [new ItemStack(worldMap.GetBlock(loc) ?? this)];
@@ -724,8 +690,7 @@ public abstract class BlockNetworkNode
     Orientation != null && Orientation.Contains(face.Code[0]);
 
   /// <summary>Returns all block faces that have a network connector, or <c>null</c> if unorientated.</summary>
-  public virtual BlockFacing[]? GetConnectorFaces()
-  {
+  public virtual BlockFacing[]? GetConnectorFaces() {
     if (Orientation == null)
       return null;
 
@@ -751,8 +716,7 @@ public abstract class BlockNetworkNode
   public virtual void RecalculateAndSyncOrientations(
     IWorldAccessor world,
     BlockPos pos
-  )
-  {
+  ) {
     if (
       world.BlockAccessor.GetBlock(pos) is not BlockNetworkNode netBlock
       || netBlock.Type == null
@@ -771,8 +735,7 @@ public abstract class BlockNetworkNode
       netBlock.Orientation
     );
 
-    if (finalChoices.Length == 0)
-    {
+    if (finalChoices.Length == 0) {
       world.BlockAccessor.BreakBlock(pos, null);
       return;
     }
@@ -784,15 +747,13 @@ public abstract class BlockNetworkNode
     if (
       netBlock.Orientation != null
       && !finalChoices.Contains(netBlock.Orientation)
-    )
-    {
+    ) {
       AssetLocation newCode = netBlock.CodeWithVariant(
         "orientation",
         finalChoices[0]
       );
       Block? nextBlock = world.GetBlock(newCode);
-      if (nextBlock != null && nextBlock.BlockId != netBlock.BlockId)
-      {
+      if (nextBlock != null && nextBlock.BlockId != netBlock.BlockId) {
         world.BlockAccessor.ExchangeBlock(nextBlock.BlockId, pos);
         world.BlockAccessor.MarkBlockDirty(pos);
       }

@@ -3,8 +3,7 @@ using System.Collections.Generic;
 
 namespace ExpandedLib.Generators.Json;
 
-internal enum JKind
-{
+internal enum JKind {
   Object,
   Array,
   String,
@@ -19,8 +18,7 @@ internal enum JKind
 /// kinds; it never round-trips. <see cref="Raw"/> holds the verbatim source text for a value so two
 /// values can be compared exactly without re-serialising.
 /// </summary>
-internal sealed class JVal
-{
+internal sealed class JVal {
   public JKind Kind;
   public Dictionary<string, JVal>? Obj;
   public List<JVal>? Arr;
@@ -31,10 +29,8 @@ internal sealed class JVal
   /// <summary>Verbatim source slice for any value (used for exact cross-file equality).</summary>
   public string Raw = string.Empty;
 
-  public bool TryGet(string key, out JVal val)
-  {
-    if (Kind == JKind.Object && Obj != null && Obj.TryGetValue(key, out var v))
-    {
+  public bool TryGet(string key, out JVal val) {
+    if (Kind == JKind.Object && Obj != null && Obj.TryGetValue(key, out var v)) {
       val = v;
       return true;
     }
@@ -50,30 +46,23 @@ internal sealed class JVal
 /// fragile for project-reference analyzers). Returns null on malformed input rather than throwing, so
 /// one bad asset file can't break the whole build.
 /// </summary>
-internal static class MiniJson
-{
-  public static JVal? Parse(string text)
-  {
-    try
-    {
+internal static class MiniJson {
+  public static JVal? Parse(string text) {
+    try {
       int i = 0;
       var v = ParseValue(text, ref i);
       SkipTrivia(text, ref i);
       return v;
-    }
-    catch
-    {
+    } catch {
       return null;
     }
   }
 
-  private static JVal ParseValue(string s, ref int i)
-  {
+  private static JVal ParseValue(string s, ref int i) {
     SkipTrivia(s, ref i);
     int start = i;
     char c = s[i];
-    switch (c)
-    {
+    switch (c) {
       case '{':
         return Finish(ParseObject(s, ref i), s, start, i);
       case '[':
@@ -86,24 +75,20 @@ internal static class MiniJson
     }
   }
 
-  private static JVal Finish(JVal v, string s, int start, int end)
-  {
+  private static JVal Finish(JVal v, string s, int start, int end) {
     v.Raw = s.Substring(start, end - start).Trim();
     return v;
   }
 
-  private static JVal ParseObject(string s, ref int i)
-  {
+  private static JVal ParseObject(string s, ref int i) {
     var obj = new Dictionary<string, JVal>(StringComparer.Ordinal);
     i++; // consume {
     SkipTrivia(s, ref i);
-    if (s[i] == '}')
-    {
+    if (s[i] == '}') {
       i++;
       return new JVal { Kind = JKind.Object, Obj = obj };
     }
-    while (true)
-    {
+    while (true) {
       SkipTrivia(s, ref i);
       string key = ParseString(s, ref i);
       SkipTrivia(s, ref i);
@@ -111,11 +96,9 @@ internal static class MiniJson
       obj[key] = ParseValue(s, ref i);
       SkipTrivia(s, ref i);
       char c = s[i++];
-      if (c == ',')
-      {
+      if (c == ',') {
         SkipTrivia(s, ref i);
-        if (s[i] == '}')
-        {
+        if (s[i] == '}') {
           i++;
           break;
         }
@@ -127,26 +110,21 @@ internal static class MiniJson
     return new JVal { Kind = JKind.Object, Obj = obj };
   }
 
-  private static JVal ParseArray(string s, ref int i)
-  {
+  private static JVal ParseArray(string s, ref int i) {
     var arr = new List<JVal>();
     i++; // consume [
     SkipTrivia(s, ref i);
-    if (s[i] == ']')
-    {
+    if (s[i] == ']') {
       i++;
       return new JVal { Kind = JKind.Array, Arr = arr };
     }
-    while (true)
-    {
+    while (true) {
       arr.Add(ParseValue(s, ref i));
       SkipTrivia(s, ref i);
       char c = s[i++];
-      if (c == ',')
-      {
+      if (c == ',') {
         SkipTrivia(s, ref i);
-        if (s[i] == ']')
-        {
+        if (s[i] == ']') {
           i++;
           break;
         }
@@ -158,21 +136,17 @@ internal static class MiniJson
     return new JVal { Kind = JKind.Array, Arr = arr };
   }
 
-  private static string ParseString(string s, ref int i)
-  {
+  private static string ParseString(string s, ref int i) {
     var sb = new System.Text.StringBuilder();
     i++; // consume opening quote
-    while (true)
-    {
+    while (true) {
       char c = s[i++];
       if (c == '"')
         break;
-      if (c == '\\')
-      {
+      if (c == '\\') {
         char e = s[i++];
         sb.Append(
-          e switch
-          {
+          e switch {
             'n' => '\n',
             't' => '\t',
             'r' => '\r',
@@ -194,14 +168,12 @@ internal static class MiniJson
     return sb.ToString();
   }
 
-  private static JVal ParseLiteral(string s, ref int i)
-  {
+  private static JVal ParseLiteral(string s, ref int i) {
     int start = i;
     while (i < s.Length && ",}] \t\r\n/".IndexOf(s[i]) < 0)
       i++;
     string tok = s.Substring(start, i - start);
-    return tok switch
-    {
+    return tok switch {
       "true" or "false" => new JVal { Kind = JKind.Bool },
       "null" => new JVal { Kind = JKind.Null },
       _ => new JVal { Kind = JKind.Number },
@@ -209,30 +181,21 @@ internal static class MiniJson
   }
 
   /// <summary>Skips whitespace and both comment styles.</summary>
-  private static void SkipTrivia(string s, ref int i)
-  {
-    while (i < s.Length)
-    {
+  private static void SkipTrivia(string s, ref int i) {
+    while (i < s.Length) {
       char c = s[i];
-      if (c is ' ' or '\t' or '\r' or '\n')
-      {
+      if (c is ' ' or '\t' or '\r' or '\n') {
         i++;
-      }
-      else if (c == '/' && i + 1 < s.Length && s[i + 1] == '/')
-      {
+      } else if (c == '/' && i + 1 < s.Length && s[i + 1] == '/') {
         i += 2;
         while (i < s.Length && s[i] != '\n')
           i++;
-      }
-      else if (c == '/' && i + 1 < s.Length && s[i + 1] == '*')
-      {
+      } else if (c == '/' && i + 1 < s.Length && s[i + 1] == '*') {
         i += 2;
         while (i + 1 < s.Length && !(s[i] == '*' && s[i + 1] == '/'))
           i++;
         i += 2;
-      }
-      else
-      {
+      } else {
         break;
       }
     }

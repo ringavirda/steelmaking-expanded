@@ -20,8 +20,7 @@ namespace ExpandedLib.Registries.Recipes;
 /// constructions started after a world reload, not ones already in progress.
 /// </para>
 /// </summary>
-public static class ExRecipeCosts
-{
+public static class ExRecipeCosts {
   /// <summary>The profile whose numbers mirror the recipes as authored; auto-filled from the live
   /// recipe so a mod ships only its alternate profile(s).</summary>
   public const string ProfileNormal = "normal";
@@ -36,11 +35,9 @@ public static class ExRecipeCosts
   public static bool EnsureNormalExtracted(
     ICoreAPI api,
     IDictionary<string, RecipeCostEntry> catalogue
-  )
-  {
+  ) {
     bool changed = false;
-    foreach (var entry in catalogue.Values)
-    {
+    foreach (var entry in catalogue.Values) {
       if (
         string.IsNullOrEmpty(entry.Match)
         || (
@@ -53,8 +50,7 @@ public static class ExRecipeCosts
       var normal = IsRcc(entry)
         ? ReadRcc(api, new AssetLocation(entry.Match))
         : ReadGrid(api, new AssetLocation(entry.Match));
-      if (normal.HasContent)
-      {
+      if (normal.HasContent) {
         entry.Profiles[ProfileNormal] = normal;
         changed = true;
       }
@@ -72,11 +68,9 @@ public static class ExRecipeCosts
     IDictionary<string, RecipeCostEntry> catalogue,
     string profile,
     double factor
-  )
-  {
+  ) {
     bool changed = false;
-    foreach (var entry in catalogue.Values)
-    {
+    foreach (var entry in catalogue.Values) {
       if (!entry.Profiles.TryGetValue(ProfileNormal, out var normal))
         continue;
 
@@ -121,47 +115,38 @@ public static class ExRecipeCosts
   public static bool Reconcile(
     IDictionary<string, RecipeCostEntry> live,
     IReadOnlyDictionary<string, RecipeCostEntry> defaults
-  )
-  {
+  ) {
     bool changed = false;
 
-    foreach (var (key, def) in defaults)
-    {
-      if (!live.TryGetValue(key, out var cur) || cur == null)
-      {
+    foreach (var (key, def) in defaults) {
+      if (!live.TryGetValue(key, out var cur) || cur == null) {
         live[key] = def; // a fresh defaults instance, safe to adopt wholesale
         changed = true;
         continue;
       }
 
-      if (cur.Type != def.Type)
-      {
+      if (cur.Type != def.Type) {
         cur.Type = def.Type;
         changed = true;
       }
-      if (cur.Match != def.Match)
-      {
+      if (cur.Match != def.Match) {
         cur.Match = def.Match;
         changed = true;
       }
       cur.Profiles ??= new();
 
-      foreach (var (name, defProfile) in def.Profiles)
-      {
+      foreach (var (name, defProfile) in def.Profiles) {
         if (!defProfile.HasContent)
           continue;
 
         if (
           !cur.Profiles.TryGetValue(name, out var curProfile)
           || curProfile == null
-        )
-        {
+        ) {
           // A whole pinned default profile the player deleted.
           cur.Profiles[name] = defProfile;
           changed = true;
-        }
-        else if (defProfile.Quantity.HasValue && !curProfile.Quantity.HasValue)
-        {
+        } else if (defProfile.Quantity.HasValue && !curProfile.Quantity.HasValue) {
           // Just the pinned output quantity (e.g. cheap pipes' doubled output).
           curProfile.Quantity = defProfile.Quantity;
           changed = true;
@@ -170,8 +155,7 @@ public static class ExRecipeCosts
     }
 
     // Clamp every quantity (in default and player-added entries alike) to a safe minimum.
-    foreach (var entry in live.Values)
-    {
+    foreach (var entry in live.Values) {
       if (entry?.Profiles == null)
         continue;
       foreach (var profile in entry.Profiles.Values)
@@ -181,26 +165,22 @@ public static class ExRecipeCosts
     return changed;
   }
 
-  private static bool ClampProfile(RecipeProfileCost profile)
-  {
+  private static bool ClampProfile(RecipeProfileCost profile) {
     bool changed = false;
     if (profile.Ingredients != null)
       foreach (var k in profile.Ingredients.Keys.ToList())
-        if (profile.Ingredients[k] < 1)
-        {
+        if (profile.Ingredients[k] < 1) {
           profile.Ingredients[k] = 1;
           changed = true;
         }
     if (profile.Stages != null)
       foreach (var stage in profile.Stages.Values)
-      foreach (var k in stage.Keys.ToList())
-        if (stage[k] < 1)
-        {
-          stage[k] = 1;
-          changed = true;
-        }
-    if (profile.Quantity is < 1)
-    {
+        foreach (var k in stage.Keys.ToList())
+          if (stage[k] < 1) {
+            stage[k] = 1;
+            changed = true;
+          }
+    if (profile.Quantity is < 1) {
       profile.Quantity = 1;
       changed = true;
     }
@@ -213,10 +193,8 @@ public static class ExRecipeCosts
     ICoreAPI api,
     IDictionary<string, RecipeCostEntry> catalogue,
     string profile
-  )
-  {
-    foreach (var entry in catalogue.Values)
-    {
+  ) {
+    foreach (var entry in catalogue.Values) {
       if (
         string.IsNullOrEmpty(entry.Match)
         || !entry.Profiles.TryGetValue(profile, out var costs)
@@ -248,12 +226,10 @@ public static class ExRecipeCosts
       r.Output?.Code is { } c && WildcardUtil.Match(outputWildcard, c)
     );
 
-  private static RecipeProfileCost ReadGrid(ICoreAPI api, AssetLocation output)
-  {
+  private static RecipeProfileCost ReadGrid(ICoreAPI api, AssetLocation output) {
     var map = new Dictionary<string, int>();
 
-    foreach (var recipe in GridRecipesFor(api, output))
-    {
+    foreach (var recipe in GridRecipesFor(api, output)) {
       if (recipe.Ingredients != null)
         foreach (var ing in recipe.Ingredients.Values)
           if (ing?.Code != null && !ing.IsTool)
@@ -273,16 +249,13 @@ public static class ExRecipeCosts
     AssetLocation output,
     IReadOnlyDictionary<string, int>? ingredients,
     int? quantity
-  )
-  {
+  ) {
     bool hasIngredients = ingredients is { Count: > 0 };
     if (!hasIngredients && quantity is not > 0)
       return;
 
-    foreach (var recipe in GridRecipesFor(api, output))
-    {
-      if (hasIngredients)
-      {
+    foreach (var recipe in GridRecipesFor(api, output)) {
+      if (hasIngredients) {
         SetGridIngredients(recipe.ResolvedIngredients, ingredients!);
         if (recipe.Ingredients != null)
           SetGridIngredients(recipe.Ingredients.Values, ingredients!);
@@ -294,8 +267,7 @@ public static class ExRecipeCosts
 
   /// <summary>Sets a grid recipe's crafted output count - both <c>Quantity</c> and the resolved stack's
   /// <c>StackSize</c> (the latter is what ends up in the output slot).</summary>
-  private static void SetGridOutput(GridRecipe recipe, int qty)
-  {
+  private static void SetGridOutput(GridRecipe recipe, int qty) {
     if (recipe.Output == null)
       return;
     recipe.Output.Quantity = qty;
@@ -306,18 +278,15 @@ public static class ExRecipeCosts
   private static void SetGridIngredients(
     IEnumerable<CraftingRecipeIngredient?>? ingredients,
     IReadOnlyDictionary<string, int> costs
-  )
-  {
+  ) {
     if (ingredients == null)
       return;
 
-    foreach (var ing in ingredients)
-    {
+    foreach (var ing in ingredients) {
       if (
         ing?.Code != null
         && costs.TryGetValue(ing.Code.ToString(), out int q)
-      )
-      {
+      ) {
         ing.Quantity = q;
         ing.ResolvedItemStack?.StackSize = q;
       }
@@ -346,21 +315,18 @@ public static class ExRecipeCosts
   private static RecipeProfileCost ReadRcc(
     ICoreAPI api,
     AssetLocation blockCode
-  )
-  {
+  ) {
     var stages = new Dictionary<string, Dictionary<string, int>>();
     var block = RccBlocksFor(api, blockCode).FirstOrDefault();
     if (block == null)
       return new RecipeProfileCost { Stages = stages };
 
     var jstages = RccStages(block)!;
-    for (int i = 0; i < jstages.Count; i++)
-    {
+    for (int i = 0; i < jstages.Count; i++) {
       if (jstages[i]["requireStacks"] is not JArray reqs)
         continue;
       var map = new Dictionary<string, int>();
-      foreach (var req in reqs)
-      {
+      foreach (var req in reqs) {
         string? name =
           req["name"]?.Value<string>() ?? req["code"]?.Value<string>();
         var qty = req["quantity"];
@@ -377,18 +343,15 @@ public static class ExRecipeCosts
     ICoreAPI api,
     AssetLocation blockCode,
     IReadOnlyDictionary<string, Dictionary<string, int>>? stages
-  )
-  {
+  ) {
     if (stages is not { Count: > 0 })
       return;
 
     // Each variant block carries its own properties JSON, so rewrite them all. Each per-stage
     // ingredient is set directly from its own catalogue entry - no redistribution.
-    foreach (var block in RccBlocksFor(api, blockCode))
-    {
+    foreach (var block in RccBlocksFor(api, blockCode)) {
       var jstages = RccStages(block)!;
-      foreach (var (stageKey, names) in stages)
-      {
+      foreach (var (stageKey, names) in stages) {
         if (
           !int.TryParse(stageKey, out int i)
           || i < 0
@@ -397,8 +360,7 @@ public static class ExRecipeCosts
         )
           continue;
 
-        foreach (var req in reqs)
-        {
+        foreach (var req in reqs) {
           string? name =
             req["name"]?.Value<string>() ?? req["code"]?.Value<string>();
           if (

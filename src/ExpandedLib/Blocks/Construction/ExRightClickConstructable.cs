@@ -18,8 +18,7 @@ using Vintagestory.GameContent;
 
 [BlockEntityBehaviorRegister("ExRightClickConstructable", PrefixModId = false)]
 public class ExRightClickConstructable(BlockEntity blockentity)
-  : BEBehaviorRightClickConstructable(blockentity)
-{
+  : BEBehaviorRightClickConstructable(blockentity) {
   /// <summary>
   /// The materials this block would scatter at <paramref name="ratio"/> (0..1) of the consumed stacks,
   /// across EVERY completed stage. Vanilla <c>rcc.GetDrops</c> loops <c>i &lt; CurrentCompletedStage</c>,
@@ -28,16 +27,12 @@ public class ExRightClickConstructable(BlockEntity blockentity)
   /// built structure refunded far less than its <c>brokenDropsRatio</c>. Advancing the counter by one
   /// across the call (it's a public field) makes the loop reach the final stage, then we restore it.
   /// </summary>
-  public ItemStack[] GetConstructionDrops(float ratio, Random rand)
-  {
+  public ItemStack[] GetConstructionDrops(float ratio, Random rand) {
     int built = rcc.CurrentCompletedStage;
     rcc.CurrentCompletedStage = built + 1;
-    try
-    {
+    try {
       return rcc.GetDrops(ratio, rand);
-    }
-    finally
-    {
+    } finally {
       rcc.CurrentCompletedStage = built;
     }
   }
@@ -52,8 +47,7 @@ public class ExRightClickConstructable(BlockEntity blockentity)
   /// structure refunds all completed stages at the configured salvage fraction. Null-safe on the breaker
   /// (an explosion-broken structure still drops its salvage), unlike the vanilla override.
   /// </summary>
-  public override void OnBlockBroken(IPlayer? byPlayer = null)
-  {
+  public override void OnBlockBroken(IPlayer? byPlayer = null) {
     if (byPlayer?.WorldData.CurrentGameMode == EnumGameMode.Creative)
       return;
     foreach (

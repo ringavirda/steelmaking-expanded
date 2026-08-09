@@ -8,8 +8,7 @@ namespace ExpandedLib.Helpers;
 /// <c>ObjectCache</c>, which lives exactly as long as the game session/world - a plain
 /// static cache would hand out stacks of a previous world's items after rejoining.
 /// </summary>
-public static class ExItems
-{
+public static class ExItems {
   private const string WrenchCacheKey = "exlib:wrenchStacks";
 
   /// <summary>
@@ -17,8 +16,7 @@ public static class ExItems
   /// test the engine repair applies to the held tool), for "rotate"/"repair"
   /// interaction-help icons.
   /// </summary>
-  public static ItemStack[] WrenchStacks(IWorldAccessor world)
-  {
+  public static ItemStack[] WrenchStacks(IWorldAccessor world) {
     if (
       world.Api.ObjectCache.TryGetValue(WrenchCacheKey, out object? cached)
       && cached is ItemStack[] stacks

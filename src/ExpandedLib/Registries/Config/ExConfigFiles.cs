@@ -12,8 +12,7 @@ namespace ExpandedLib.Registries.Config;
 /// store, so renaming a config in a new release carries a player's existing file over instead of
 /// silently regenerating defaults.
 /// </summary>
-public static class ExConfigFiles
-{
+public static class ExConfigFiles {
   /// <summary>
   /// If <paramref name="fileName"/> does not yet exist under <c>ModConfig</c> but one of
   /// <paramref name="legacyFileNames"/> does, renames that legacy file to the current name (first match
@@ -25,20 +24,17 @@ public static class ExConfigFiles
     string modId,
     string fileName,
     IReadOnlyList<string> legacyFileNames
-  )
-  {
+  ) {
     if (legacyFileNames == null || legacyFileNames.Count == 0)
       return;
 
-    try
-    {
+    try {
       string dir = GamePaths.ModConfig;
       string target = Path.Combine(dir, fileName);
       if (File.Exists(target))
         return; // new file already present - leave any legacy file untouched.
 
-      foreach (var legacy in legacyFileNames)
-      {
+      foreach (var legacy in legacyFileNames) {
         if (string.IsNullOrWhiteSpace(legacy))
           continue;
         string source = Path.Combine(dir, legacy);
@@ -54,9 +50,7 @@ public static class ExConfigFiles
         );
         return;
       }
-    }
-    catch (Exception e)
-    {
+    } catch (Exception e) {
       api.Logger.Warning(
         "[{0}] Could not migrate a legacy config file to '{1}'. {2}",
         modId,
@@ -72,16 +66,12 @@ public static class ExConfigFiles
   /// it is indistinguishable from "no file yet" and the player's file is replaced by defaults with
   /// nothing at all written to the log.
   /// </summary>
-  public static bool IsPresentButBlank(string fileName)
-  {
-    try
-    {
+  public static bool IsPresentButBlank(string fileName) {
+    try {
       string path = Path.Combine(GamePaths.ModConfig, fileName);
       return File.Exists(path)
         && string.IsNullOrWhiteSpace(File.ReadAllText(path));
-    }
-    catch
-    {
+    } catch {
       return false; // unreadable for another reason; the caller's own error path covers it.
     }
   }
@@ -91,10 +81,8 @@ public static class ExConfigFiles
   /// overwrites it with defaults, so a hand-edited file is never lost without trace. Best effort:
   /// any IO failure is logged and swallowed, since failing startup over a backup would be worse.
   /// </summary>
-  public static void BackupCorrupt(ICoreAPI api, string modId, string fileName)
-  {
-    try
-    {
+  public static void BackupCorrupt(ICoreAPI api, string modId, string fileName) {
+    try {
       string path = Path.Combine(GamePaths.ModConfig, fileName);
       if (!File.Exists(path))
         return;
@@ -108,9 +96,7 @@ public static class ExConfigFiles
         fileName,
         Path.GetFileName(backup)
       );
-    }
-    catch (Exception e)
-    {
+    } catch (Exception e) {
       api.Logger.Warning(
         "[{0}] Could not back up the unreadable config '{1}'. {2}",
         modId,

@@ -7,8 +7,7 @@ namespace PipesAndPowerExpanded.BlockStructures.Boiler.BlockEntities;
 /// lives in <see cref="BlockEntityBoiler"/>; this only supplies the variant stats.
 /// </summary>
 [BlockEntityRegister]
-public class BlockEntityBoilerLancashire : BlockEntityBoiler
-{
+public class BlockEntityBoilerLancashire : BlockEntityBoiler {
   protected override float Capacity => PpexValues.BoilerCapacity;
   protected override float MinBoilWater => PpexValues.BoilerMinBoilWater;
   protected override float MaxBoilWater => PpexValues.BoilerMaxBoilWater;

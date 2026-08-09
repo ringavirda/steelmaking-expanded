@@ -5,11 +5,9 @@ using Xunit;
 namespace PipesAndPowerExpanded.Tests;
 
 /// <summary>Gas production/consumption, overflow ceilings, and the leak clamp.</summary>
-public class GasPoolTests
-{
+public class GasPoolTests {
   [Fact]
-  public void Produce_sets_volume_pressure_and_medium()
-  {
+  public void Produce_sets_volume_pressure_and_medium() {
     var w = new TestWorld();
     var net = PipeTestWorld.LooseNet(w.Networks, 3); // MaxVolume 90
 
@@ -23,8 +21,7 @@ public class GasPoolTests
   }
 
   [Fact]
-  public void Produce_overflows_up_to_max_output_pressure()
-  {
+  public void Produce_overflows_up_to_max_output_pressure() {
     var w = new TestWorld();
     var net = PipeTestWorld.LooseNet(w.Networks, 3); // MaxVolume 90, no burst ceiling
 
@@ -35,8 +32,7 @@ public class GasPoolTests
   }
 
   [Fact]
-  public void Produce_is_capped_by_weakest_pipe_burst_pressure()
-  {
+  public void Produce_is_capped_by_weakest_pipe_burst_pressure() {
     // Real iron pipes (burst 5 atm) cap the run below the producer's 10-atm choke.
     var (w, net) = PipeTestWorld.Run(3, "iron", capEnds: true); // MaxVolume 90
 
@@ -47,8 +43,7 @@ public class GasPoolTests
   }
 
   [Fact]
-  public void Leaking_run_clamps_to_one_atm_unless_bypassed()
-  {
+  public void Leaking_run_clamps_to_one_atm_unless_bypassed() {
     var (w, net) = PipeTestWorld.Run(3, "iron", capEnds: true);
     net.TryProduceGas(10f, 120f, "Air", w.Accessor); // create the pool
     net.State!.OpeningsCount = 1; // mark as leaking
@@ -68,8 +63,7 @@ public class GasPoolTests
   }
 
   [Fact]
-  public void Consume_returns_min_of_request_and_available()
-  {
+  public void Consume_returns_min_of_request_and_available() {
     var w = new TestWorld();
     var net = PipeTestWorld.LooseNet(w.Networks, 3);
     net.TryProduceGas(45f, 120f, "Air", w.Accessor);
@@ -80,8 +74,7 @@ public class GasPoolTests
   }
 
   [Fact]
-  public void Water_run_rejects_gas_production()
-  {
+  public void Water_run_rejects_gas_production() {
     var w = new TestWorld();
     var net = PipeTestWorld.LooseNet(w.Networks, 3);
     net.TryProduceLiquid(30f, 20f, 1f, w.Accessor);

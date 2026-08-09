@@ -13,8 +13,7 @@ namespace SteelmakingExpanded.BlockStructures.Engine.Blocks;
 [BlockRegister]
 public partial class BlockEngineAirBlower
   : BlockEngineSubmachine,
-    INetworkConnector
-{
+    INetworkConnector {
   public string NetworkType => "pipe";
 
   private BlockFacing LeftFace =>

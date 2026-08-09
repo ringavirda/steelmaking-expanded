@@ -12,8 +12,7 @@ namespace ExpandedLib.Blocks.Migrations;
 /// applies the removals through the same chunk-and-inventory sweep it uses for
 /// <see cref="IBlockCodeMigration"/>, as chunks load and players join.
 /// </summary>
-public interface IBlockRemoval
-{
+public interface IBlockRemoval {
   /// <summary>Short human-readable name, used only for log output.</summary>
   string Name { get; }
 

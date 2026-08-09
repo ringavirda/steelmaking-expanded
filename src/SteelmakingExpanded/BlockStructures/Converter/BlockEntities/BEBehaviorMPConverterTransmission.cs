@@ -15,16 +15,13 @@ namespace SteelmakingExpanded.BlockStructures.Converter.BlockEntities;
 /// </summary>
 [BlockEntityBehaviorRegister]
 public class BEBehaviorMPConverterTransmission(BlockEntity blockentity)
-  : BEBehaviorMPBase(blockentity)
-{
+  : BEBehaviorMPBase(blockentity) {
   private MeshData? _baseMesh;
 
   public override float GetResistance() => 0.25f;
 
-  public override void SetOrientations()
-  {
-    OutFacingForNetworkDiscovery = Block.Variant["side"] switch
-    {
+  public override void SetOrientations() {
+    OutFacingForNetworkDiscovery = Block.Variant["side"] switch {
       "north" => BlockFacing.SOUTH,
       "east" => BlockFacing.WEST,
       "south" => BlockFacing.NORTH,
@@ -42,10 +39,8 @@ public class BEBehaviorMPConverterTransmission(BlockEntity blockentity)
       OutFacingForNetworkDiscovery.Axis == EnumAxis.X ? [-1, 0, 0] : [0, 0, -1];
   }
 
-  protected override CompositeShape GetShape()
-  {
-    return new CompositeShape
-    {
+  protected override CompositeShape GetShape() {
+    return new CompositeShape {
       Base = Block.Shape.Base.Clone(),
       SelectiveElements = ["Axle*"],
       rotateY = Block.Shape.rotateY,
@@ -56,16 +51,13 @@ public class BEBehaviorMPConverterTransmission(BlockEntity blockentity)
   public override bool OnTesselation(
     ITerrainMeshPool mesher,
     ITesselatorAPI tesselator
-  )
-  {
-    if (_baseMesh == null)
-    {
+  ) {
+    if (_baseMesh == null) {
       AssetLocation shapeLoc = Block
         .Shape.Base.WithPathPrefixOnce("shapes/")
         .WithPathAppendixOnce(".json");
       Shape? shape = Api.Assets.TryGet(shapeLoc)?.ToObject<Shape>();
-      if (shape != null)
-      {
+      if (shape != null) {
         Shape baseShape = shape.Clone();
         baseShape.Elements = baseShape
           .Elements.Where(e => !e.Name?.StartsWith("Axle") ?? true)

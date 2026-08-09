@@ -14,10 +14,8 @@ namespace PipesAndPowerExpanded.Tests;
 /// props - out of reach for the headless harness - so these pin the reject branches that protect the
 /// water bookkeeping.
 /// </summary>
-public class BoilerManualWaterTests
-{
-  private static BlockEntityBoilerCornish Boiler(float water)
-  {
+public class BoilerManualWaterTests {
+  private static BlockEntityBoilerCornish Boiler(float water) {
     var be = new BlockEntityBoilerCornish();
     ReflectionHelpers.SetField(be, "_waterVolume", water);
     return be;
@@ -30,8 +28,7 @@ public class BoilerManualWaterTests
     (float)ReflectionHelpers.GetField(be, "_waterVolume")!;
 
   [Fact]
-  public void Filling_rejects_a_held_item_that_is_not_a_liquid_container()
-  {
+  public void Filling_rejects_a_held_item_that_is_not_a_liquid_container() {
     var be = Boiler(water: 100f);
     Assert.False(
       be.TryManualFill(Substitute.For<IPlayer>(), HeldItem("game:rock-granite"))
@@ -40,16 +37,14 @@ public class BoilerManualWaterTests
   }
 
   [Fact]
-  public void Filling_rejects_an_empty_hand()
-  {
+  public void Filling_rejects_an_empty_hand() {
     var be = Boiler(water: 100f);
     Assert.False(be.TryManualFill(Substitute.For<IPlayer>(), new DummySlot()));
     Assert.Equal(100f, WaterOf(be), 3);
   }
 
   [Fact]
-  public void Draining_rejects_a_held_item_that_is_not_a_liquid_container()
-  {
+  public void Draining_rejects_a_held_item_that_is_not_a_liquid_container() {
     var be = Boiler(water: 400f);
     Assert.False(
       be.TryManualDrain(

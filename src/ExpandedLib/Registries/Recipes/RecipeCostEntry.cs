@@ -9,8 +9,7 @@ namespace ExpandedLib.Registries.Recipes;
 /// first run (see <see cref="ExRecipeCosts.EnsureNormalExtracted"/>); a mod ships only what an alternate
 /// profile pins, and the rest is scale-filled. Players can edit any number afterwards.
 /// </summary>
-public class RecipeCostEntry
-{
+public class RecipeCostEntry {
   /// <summary>How to locate and edit the recipe: <c>"grid"</c> (a crafting recipe, matched by output
   /// code) or <c>"rcc"</c> (a right-click-construction block, matched by block code).</summary>
   public string Type { get; set; } = "grid";

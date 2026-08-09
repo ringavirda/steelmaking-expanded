@@ -12,14 +12,20 @@
         "type": "item",
         "code": "game:metalplate-*",
         "name": "metal",
-        "allowedVariants": ["iron", "steel"],
+        "allowedVariants": [
+          "iron",
+          "steel"
+        ],
         "quantity": 1
       },
       "N": {
         "type": "item",
         "code": "game:metalnailsandstrips-*",
         "name": "metal",
-        "allowedVariants": ["iron", "steel"],
+        "allowedVariants": [
+          "iron",
+          "steel"
+        ],
         "quantity": 2
       },
       "H": {
@@ -48,7 +54,10 @@
         "type": "item",
         "code": "game:metalplate-*",
         "name": "metal",
-        "allowedVariants": ["iron", "steel"],
+        "allowedVariants": [
+          "iron",
+          "steel"
+        ],
         "quantity": 1
       },
       "H": {
@@ -60,7 +69,10 @@
         "type": "item",
         "code": "game:metalnailsandstrips-*",
         "name": "metal",
-        "allowedVariants": ["iron", "steel"],
+        "allowedVariants": [
+          "iron",
+          "steel"
+        ],
         "quantity": 2
       }
     },
@@ -79,7 +91,10 @@
         "type": "item",
         "code": "game:metalplate-*",
         "name": "metal",
-        "allowedVariants": ["iron", "steel"],
+        "allowedVariants": [
+          "iron",
+          "steel"
+        ],
         "quantity": 1
       },
       "B": {
@@ -96,7 +111,10 @@
         "type": "item",
         "code": "game:metalnailsandstrips-*",
         "name": "metal",
-        "allowedVariants": ["iron", "steel"],
+        "allowedVariants": [
+          "iron",
+          "steel"
+        ],
         "quantity": 2
       },
       "H": {
@@ -194,14 +212,20 @@
         "type": "item",
         "code": "game:metalplate-*",
         "name": "metal",
-        "allowedVariants": ["iron", "steel"],
+        "allowedVariants": [
+          "iron",
+          "steel"
+        ],
         "quantity": 1
       },
       "R": {
         "type": "item",
         "code": "game:rod-*",
         "name": "metal",
-        "allowedVariants": ["iron", "steel"],
+        "allowedVariants": [
+          "iron",
+          "steel"
+        ],
         "quantity": 2
       },
       "G": {
@@ -235,7 +259,10 @@
         "type": "item",
         "code": "game:metalplate-*",
         "name": "metal",
-        "allowedVariants": ["iron", "steel"],
+        "allowedVariants": [
+          "iron",
+          "steel"
+        ],
         "quantity": 1
       },
       "G": {
@@ -257,7 +284,10 @@
         "type": "item",
         "code": "game:rod-*",
         "name": "metal",
-        "allowedVariants": ["iron", "steel"],
+        "allowedVariants": [
+          "iron",
+          "steel"
+        ],
         "quantity": 2
       }
     },
@@ -276,7 +306,10 @@
         "type": "item",
         "code": "game:metalplate-*",
         "name": "metal",
-        "allowedVariants": ["iron", "steel"],
+        "allowedVariants": [
+          "iron",
+          "steel"
+        ],
         "quantity": 1
       },
       "G": {
@@ -293,7 +326,10 @@
         "type": "item",
         "code": "game:rod-*",
         "name": "metal",
-        "allowedVariants": ["iron", "steel"],
+        "allowedVariants": [
+          "iron",
+          "steel"
+        ],
         "quantity": 2
       },
       "B": {
@@ -322,14 +358,20 @@
         "type": "item",
         "code": "game:metalplate-*",
         "name": "metal",
-        "allowedVariants": ["iron", "steel"],
+        "allowedVariants": [
+          "iron",
+          "steel"
+        ],
         "quantity": 2
       },
       "R": {
         "type": "item",
         "code": "game:rod-*",
         "name": "metal",
-        "allowedVariants": ["iron", "steel"],
+        "allowedVariants": [
+          "iron",
+          "steel"
+        ],
         "quantity": 2
       },
       "G": {
@@ -405,14 +447,20 @@
         "type": "item",
         "code": "game:metalplate-*",
         "name": "metal",
-        "allowedVariants": ["iron", "steel"],
+        "allowedVariants": [
+          "iron",
+          "steel"
+        ],
         "quantity": 1
       },
       "R": {
         "type": "item",
         "code": "game:rod-*",
         "name": "metal",
-        "allowedVariants": ["iron", "steel"],
+        "allowedVariants": [
+          "iron",
+          "steel"
+        ],
         "quantity": 2
       },
       "G": {
@@ -446,7 +494,10 @@
         "type": "item",
         "code": "game:metalplate-*",
         "name": "metal",
-        "allowedVariants": ["iron", "steel"],
+        "allowedVariants": [
+          "iron",
+          "steel"
+        ],
         "quantity": 1
       },
       "G": {
@@ -468,7 +519,10 @@
         "type": "item",
         "code": "game:rod-*",
         "name": "metal",
-        "allowedVariants": ["iron", "steel"],
+        "allowedVariants": [
+          "iron",
+          "steel"
+        ],
         "quantity": 2
       }
     },
@@ -487,7 +541,10 @@
         "type": "item",
         "code": "game:metalplate-*",
         "name": "metal",
-        "allowedVariants": ["iron", "steel"],
+        "allowedVariants": [
+          "iron",
+          "steel"
+        ],
         "quantity": 1
       },
       "G": {
@@ -504,7 +561,10 @@
         "type": "item",
         "code": "game:rod-*",
         "name": "metal",
-        "allowedVariants": ["iron", "steel"],
+        "allowedVariants": [
+          "iron",
+          "steel"
+        ],
         "quantity": 2
       },
       "B": {
@@ -533,14 +593,20 @@
         "type": "item",
         "code": "game:metalplate-*",
         "name": "metal",
-        "allowedVariants": ["iron", "steel"],
+        "allowedVariants": [
+          "iron",
+          "steel"
+        ],
         "quantity": 2
       },
       "R": {
         "type": "item",
         "code": "game:rod-*",
         "name": "metal",
-        "allowedVariants": ["iron", "steel"],
+        "allowedVariants": [
+          "iron",
+          "steel"
+        ],
         "quantity": 2
       },
       "G": {
@@ -564,6 +630,33 @@
     "output": {
       "type": "block",
       "code": "ppex:enginempgenerator-north"
+    }
+  },
+  {
+    "name": "Mechanical Fluid Pump Frame",
+    "ingredientPattern": "BPB,PHP,BPB",
+    "ingredients": {
+      "P": {
+        "type": "item",
+        "code": "game:plank-*",
+        "quantity": 1
+      },
+      "B": {
+        "type": "block",
+        "code": "game:supportbeam-*",
+        "quantity": 1
+      },
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true
+      }
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "ppex:mpfluidpump-north"
     }
   }
 ]

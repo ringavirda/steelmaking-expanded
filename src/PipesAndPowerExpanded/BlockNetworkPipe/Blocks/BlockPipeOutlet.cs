@@ -10,8 +10,7 @@ namespace PipesAndPowerExpanded.BlockNetworkPipe.Blocks;
 /// face (e.g. a furnace or cowper-stove port), used to inject or extract gas there.
 /// </summary>
 [BlockRegister]
-public partial class BlockPipeOutlet : BlockPipe
-{
+public partial class BlockPipeOutlet : BlockPipe {
   /// <summary>Outlets never burst - a machine-port connector is a fixed fitting, not a length
   /// of run that should fail under pressure, so it's exempt from over-pressure failure.</summary>
   public override float BurstPressure => float.MaxValue;

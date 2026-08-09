@@ -17,8 +17,7 @@ namespace PipesAndPowerExpanded.BlockNetworkPipe.BlockEntities;
 /// state is shown by holding the shape's <c>open</c> animation pose.
 /// </summary>
 [BlockEntityRegister]
-public class BlockEntityValve : BlockEntityPipe
-{
+public class BlockEntityValve : BlockEntityPipe {
   private bool _open;
 
   private BEBehaviorAnimatable? _animatable;
@@ -33,13 +32,11 @@ public class BlockEntityValve : BlockEntityPipe
 
   #region Lifecycle
 
-  public override void Initialize(ICoreAPI api)
-  {
+  public override void Initialize(ICoreAPI api) {
     base.Initialize(api);
     _animatable = GetBehavior<BEBehaviorAnimatable>();
 
-    if (api is ICoreClientAPI capi && _animatable != null)
-    {
+    if (api is ICoreClientAPI capi && _animatable != null) {
       InitAnimator(capi);
       ApplyValvePose();
     }
@@ -47,8 +44,7 @@ public class BlockEntityValve : BlockEntityPipe
       Pressure = 0f;
   }
 
-  private void InitAnimator(ICoreClientAPI capi)
-  {
+  private void InitAnimator(ICoreClientAPI capi) {
     Shape? shape = capi
       .Assets.TryGet(
         Block
@@ -91,8 +87,7 @@ public class BlockEntityValve : BlockEntityPipe
     float rotXDeg,
     float rotYDeg,
     float rotZDeg
-  )
-  {
+  ) {
     float[] rotation = Mat4f.Create();
     Mat4f.RotateXYZ(
       rotation,
@@ -114,12 +109,10 @@ public class BlockEntityValve : BlockEntityPipe
   /// <see cref="Initialize"/> never re-runs and the animator stays bound to the original
   /// orientation. Re-bind the animator to the new block's rotation and restore the pose.
   /// </summary>
-  public override void OnExchanged(Block block)
-  {
+  public override void OnExchanged(Block block) {
     base.OnExchanged(block);
 
-    if (Api is ICoreClientAPI capi && _animatable != null)
-    {
+    if (Api is ICoreClientAPI capi && _animatable != null) {
       // Only re-init on a real orientation change. A network re-walk can re-exchange to an
       // equivalent variant (ns<->sn); re-initing each time would reset the "open" pose.
       if (
@@ -137,8 +130,7 @@ public class BlockEntityValve : BlockEntityPipe
   /// <summary>Server-side toggle of the valve's open state. Re-walks the network so the
   /// change in connectivity (open rejoins the two sides, closed severs them) takes effect
   /// immediately.</summary>
-  public void ToggleOpen()
-  {
+  public void ToggleOpen() {
     _open = !_open;
     MarkDirty(true);
 
@@ -148,13 +140,11 @@ public class BlockEntityValve : BlockEntityPipe
       Api?.Side == EnumAppSide.Server
       && NetworkSystem != null
       && Api.World?.BlockAccessor is { } ba
-    )
-    {
+    ) {
       NetworkSystem.RemoveNode(ba, Pos);
       NetworkSystem.AddNode(ba, Pos, NetworkType);
     }
-    if (!_open)
-    {
+    if (!_open) {
       Pressure = 0f;
       DiscardNetworkPool();
     }
@@ -165,21 +155,18 @@ public class BlockEntityValve : BlockEntityPipe
   /// pressurised state it cached while open would otherwise serialise and be restored into the
   /// isolated cell on reload, bursting it. Clearing keeps closed-valve saves empty.
   /// </summary>
-  private void DiscardNetworkPool()
-  {
+  private void DiscardNetworkPool() {
     _savedNetworkState = null;
     _networkState = null;
   }
 
-  private void ApplyValvePose()
-  {
+  private void ApplyValvePose() {
     if (Api is not ICoreClientAPI || _animatable == null || !_animatorReady)
       return;
 
     if (_open)
       _animatable.animUtil.StartAnimation(
-        new AnimationMetaData
-        {
+        new AnimationMetaData {
           Animation = "open",
           Code = "open",
           AnimationSpeed = 2.5f,
@@ -195,8 +182,7 @@ public class BlockEntityValve : BlockEntityPipe
 
   #region HUD
 
-  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
-  {
+  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc) {
     dsc.AppendLine(
       Lang.Get(
         "ppex:valve-state",
@@ -211,8 +197,7 @@ public class BlockEntityValve : BlockEntityPipe
 
   #region Serialization
 
-  public override void ToTreeAttributes(ITreeAttribute tree)
-  {
+  public override void ToTreeAttributes(ITreeAttribute tree) {
     base.ToTreeAttributes(tree);
     tree.SetBool("valveOpen", _open);
   }
@@ -220,8 +205,7 @@ public class BlockEntityValve : BlockEntityPipe
   public override void FromTreeAttributes(
     ITreeAttribute tree,
     IWorldAccessor worldForResolving
-  )
-  {
+  ) {
     base.FromTreeAttributes(tree, worldForResolving);
     bool prev = _open;
     _open = tree.GetBool("valveOpen");

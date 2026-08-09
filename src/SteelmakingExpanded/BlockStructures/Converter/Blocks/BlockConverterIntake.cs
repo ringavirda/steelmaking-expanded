@@ -14,8 +14,7 @@ namespace SteelmakingExpanded.BlockStructures.Converter.Blocks;
 /// orientable so it can be aligned with the control block.
 /// </summary>
 [BlockRegister]
-public partial class BlockConverterIntake : Block, INetworkConnector
-{
+public partial class BlockConverterIntake : Block, INetworkConnector {
   public string NetworkType => "pipe";
 
   /// <summary>

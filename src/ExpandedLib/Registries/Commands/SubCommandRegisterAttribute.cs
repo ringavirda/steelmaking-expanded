@@ -16,8 +16,7 @@ namespace ExpandedLib.Registries.Commands;
 /// </para>
 /// </summary>
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-public sealed class SubCommandRegisterAttribute : Attribute
-{
+public sealed class SubCommandRegisterAttribute : Attribute {
   /// <summary>
   /// The side(s) this sub-command registers on. <see cref="EnumAppSide.Universal"/> (default)
   /// registers on both client and server.

@@ -15,8 +15,7 @@ namespace PipesAndPowerExpanded.Tests;
 /// a boiler fixture. These hold the mod knowledge (which glyph is which oriented pipe, how a boiler is
 /// stood up) so the scenario tests read as layouts + assertions.
 /// </summary>
-internal static class PpexScenes
-{
+internal static class PpexScenes {
   /// <summary>A cap block that seals a pipe end so a run can pressurise instead of leaking.</summary>
   public static Block Cap(int id = 99) =>
     TestBlocks.Configure(new Block(), "game:rock", id);
@@ -30,8 +29,7 @@ internal static class PpexScenes
   /// <c>=</c> west-east pipe, <c>|</c> north-south pipe, <c>I</c> vertical (up-down) pipe,
   /// <c>#</c> a sealing cap. Each glyph shares one oriented block instance, as the game does.
   /// </summary>
-  public static SceneDiagram PipeLegend(Scene scene)
-  {
+  public static SceneDiagram PipeLegend(Scene scene) {
     var we = Pipe("we", 1);
     var ns = Pipe("ns", 2);
     var ud = Pipe("ud", 3);
@@ -53,8 +51,7 @@ internal static class PpexScenes
 /// counterpart of <see cref="BoilerRig"/> (which owns its own world). It registers the real production
 /// tick (so <see cref="Scene.Step"/> drives it) and exposes the operating state for setup/assertions.
 /// </summary>
-internal sealed class BoilerFixture
-{
+internal sealed class BoilerFixture {
   public readonly BlockEntityBoilerCornish Be;
   public readonly BlockBoilerCornish Block;
 
@@ -63,8 +60,7 @@ internal sealed class BoilerFixture
     BlockPos pos,
     int blockId = 10,
     int coalId = 11
-  )
-  {
+  ) {
     Block = TestBlocks.Configure(
       new BlockBoilerCornish(),
       "ppex:boiler-cornish-north",
@@ -87,8 +83,7 @@ internal sealed class BoilerFixture
     );
   }
 
-  public BoilerFixture Prime(BoilerState state, float water, float steam)
-  {
+  public BoilerFixture Prime(BoilerState state, float water, float steam) {
     ReflectionHelpers.SetField(Be, "_state", state);
     ReflectionHelpers.SetField(Be, "_waterVolume", water);
     ReflectionHelpers.SetField(Be, "_steamVolume", steam);

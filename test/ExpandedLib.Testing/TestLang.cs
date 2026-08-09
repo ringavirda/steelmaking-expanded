@@ -14,13 +14,11 @@ namespace ExpandedLib.Testing;
 /// payload of a formatted string, not the localized unit label.
 /// </para>
 /// </summary>
-public static class TestLang
-{
+public static class TestLang {
   private static bool _ready;
 
   /// <summary>Idempotently registers an echo-the-key translation service for the "en" locale.</summary>
-  public static void Init()
-  {
+  public static void Init() {
     if (_ready)
       return;
     _ready = true;

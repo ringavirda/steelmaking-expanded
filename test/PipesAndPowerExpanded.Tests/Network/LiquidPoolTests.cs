@@ -4,11 +4,9 @@ using Xunit;
 namespace PipesAndPowerExpanded.Tests;
 
 /// <summary>Water production/consumption and how feed pressure relates to fill level.</summary>
-public class LiquidPoolTests
-{
+public class LiquidPoolTests {
   [Fact]
-  public void Produce_caps_at_max_volume_and_realises_feed_pressure()
-  {
+  public void Produce_caps_at_max_volume_and_realises_feed_pressure() {
     var w = new TestWorld();
     var net = PipeTestWorld.LooseNet(w.Networks, 3); // MaxVolume 90
 
@@ -20,8 +18,7 @@ public class LiquidPoolTests
   }
 
   [Fact]
-  public void Pressure_tracks_fill_ratio_below_brim_full()
-  {
+  public void Pressure_tracks_fill_ratio_below_brim_full() {
     var w = new TestWorld();
     var net = PipeTestWorld.LooseNet(w.Networks, 3);
 
@@ -32,8 +29,7 @@ public class LiquidPoolTests
   }
 
   [Fact]
-  public void Consume_drops_pressure_back_to_fill_ratio()
-  {
+  public void Consume_drops_pressure_back_to_fill_ratio() {
     var w = new TestWorld();
     var net = PipeTestWorld.LooseNet(w.Networks, 3);
     net.TryProduceLiquid(1000f, 20f, setPressure: 3f, w.Accessor); // full, 3 atm
@@ -46,8 +42,7 @@ public class LiquidPoolTests
   }
 
   [Fact]
-  public void Gas_run_rejects_water_production()
-  {
+  public void Gas_run_rejects_water_production() {
     var w = new TestWorld();
     var net = PipeTestWorld.LooseNet(w.Networks, 3);
     net.TryProduceGas(30f, 120f, "Air", w.Accessor);

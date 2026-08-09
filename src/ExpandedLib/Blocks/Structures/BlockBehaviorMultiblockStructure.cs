@@ -17,13 +17,11 @@ namespace ExpandedLib.Blocks.Structures;
 /// </para>
 /// </summary>
 [BlockBehaviorRegister("MultiblockStructure", PrefixModId = false)]
-public class BlockBehaviorMultiblockStructure : BlockBehavior
-{
+public class BlockBehaviorMultiblockStructure : BlockBehavior {
   public BlockBehaviorMultiblockStructure(Block block)
     : base(block) { }
 
-  private static bool IsProjectionGesture(IPlayer byPlayer)
-  {
+  private static bool IsProjectionGesture(IPlayer byPlayer) {
     var controls = byPlayer?.Entity?.Controls;
     return controls != null && controls.CtrlKey && controls.ShiftKey;
   }
@@ -42,13 +40,11 @@ public class BlockBehaviorMultiblockStructure : BlockBehavior
     IPlayer byPlayer,
     BlockSelection blockSel,
     ref EnumHandling handling
-  )
-  {
+  ) {
     if (
       IsProjectionGesture(byPlayer)
       && GetIncompleteStructure(world, blockSel.Position) is { } be
-    )
-    {
+    ) {
       be.Interact(byPlayer);
       (byPlayer as IClientPlayer)?.TriggerFpAnimation(
         EnumHandInteract.HeldItemInteract
@@ -66,8 +62,7 @@ public class BlockBehaviorMultiblockStructure : BlockBehavior
     BlockSelection selection,
     IPlayer forPlayer,
     ref EnumHandling handling
-  )
-  {
+  ) {
     if (GetIncompleteStructure(world, selection.Position) == null)
       return [];
 

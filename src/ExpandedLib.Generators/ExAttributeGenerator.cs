@@ -32,15 +32,13 @@ namespace ExpandedLib.Generators;
 /// comment, so generation never breaks a class.
 /// </summary>
 [Generator(LanguageNames.CSharp)]
-public sealed class ExAttributeGenerator : IIncrementalGenerator
-{
+public sealed class ExAttributeGenerator : IIncrementalGenerator {
   private const string BlockAttr =
     "ExpandedLib.Registries.Entities.BlockRegisterAttribute";
   private const string ItemAttr =
     "ExpandedLib.Registries.Entities.ItemRegisterAttribute";
 
-  public void Initialize(IncrementalGeneratorInitializationContext context)
-  {
+  public void Initialize(IncrementalGeneratorInitializationContext context) {
     var blocks = context
       .SyntaxProvider.ForAttributeWithMetadataName(
         BlockAttr,
@@ -60,8 +58,7 @@ public sealed class ExAttributeGenerator : IIncrementalGenerator
       .Collect();
 
     var jsons = context
-      .AdditionalTextsProvider.Where(static t =>
-      {
+      .AdditionalTextsProvider.Where(static t => {
         string p = t.Path.Replace('\\', '/');
         return (p.Contains("/blocktypes/") || p.Contains("/itemtypes/"))
           && p.EndsWith(".json", StringComparison.OrdinalIgnoreCase);
@@ -73,8 +70,7 @@ public sealed class ExAttributeGenerator : IIncrementalGenerator
     var combined = blocks.Combine(items).Combine(jsons);
     context.RegisterSourceOutput(
       combined,
-      static (spc, data) =>
-      {
+      static (spc, data) => {
         var ((blockClasses, itemClasses), jsonModels) = data;
         EmitAll(
           spc,
@@ -86,8 +82,7 @@ public sealed class ExAttributeGenerator : IIncrementalGenerator
   }
 
   #region Model extraction
-  private static ClassModel? GetClass(GeneratorAttributeSyntaxContext ctx)
-  {
+  private static ClassModel? GetClass(GeneratorAttributeSyntaxContext ctx) {
     if (ctx.TargetSymbol is not INamedTypeSymbol type)
       return null;
 
@@ -122,8 +117,7 @@ public sealed class ExAttributeGenerator : IIncrementalGenerator
     );
   }
 
-  private static JsonModel? GetJson(AdditionalText text, CancellationToken ct)
-  {
+  private static JsonModel? GetJson(AdditionalText text, CancellationToken ct) {
     string? content = text.GetText(ct)?.ToString();
     if (content is null)
       return null;
@@ -162,8 +156,7 @@ public sealed class ExAttributeGenerator : IIncrementalGenerator
     );
   }
 
-  private static string LastSegment(string s)
-  {
+  private static string LastSegment(string s) {
     int dot = s.LastIndexOf('.');
     return dot >= 0 ? s.Substring(dot + 1) : s;
   }
@@ -174,8 +167,7 @@ public sealed class ExAttributeGenerator : IIncrementalGenerator
     SourceProductionContext spc,
     IEnumerable<ClassModel> classes,
     ImmutableArray<JsonModel> jsons
-  )
-  {
+  ) {
     // Phase 1: plan each class's members (key -> member source line, no indent / no `new`).
     var plans = new Dictionary<
       string,
@@ -186,15 +178,13 @@ public sealed class ExAttributeGenerator : IIncrementalGenerator
 
     // Phase 2: emit, inheriting an ancestor's identical member (skip) or hiding a differing one
     // (`new`) so a [BlockRegister] subclass never produces a CS0108 hiding warning.
-    foreach (var entry in plans.Values)
-    {
+    foreach (var entry in plans.Values) {
       var (cls, members) = entry;
       if (members.Count == 0)
         continue;
 
       var body = new StringBuilder();
-      foreach (var kv in members)
-      {
+      foreach (var kv in members) {
         string? ancestorLine = NearestAncestorMember(cls, kv.Key, plans);
         if (ancestorLine == kv.Value)
           continue; // inherited unchanged
@@ -215,8 +205,7 @@ public sealed class ExAttributeGenerator : IIncrementalGenerator
       sb.AppendLine("#nullable enable");
       sb.AppendLine("using Vintagestory.API.Datastructures;");
       sb.AppendLine();
-      if (cls.Namespace is not null)
-      {
+      if (cls.Namespace is not null) {
         sb.AppendLine($"namespace {cls.Namespace};");
         sb.AppendLine();
       }
@@ -241,8 +230,7 @@ public sealed class ExAttributeGenerator : IIncrementalGenerator
       string,
       (ClassModel Cls, Dictionary<string, string> Members)
     > plans
-  )
-  {
+  ) {
     foreach (string baseName in cls.BaseTypeNames.AsSpan())
       if (
         plans.TryGetValue(baseName, out var anc)
@@ -255,8 +243,7 @@ public sealed class ExAttributeGenerator : IIncrementalGenerator
   private static Dictionary<string, string> PlanMembers(
     ClassModel cls,
     ImmutableArray<JsonModel> jsons
-  )
-  {
+  ) {
     var result = new Dictionary<string, string>(StringComparer.Ordinal);
     var matching = jsons
       .Where(j => j.ClassLastSegment == cls.BaseKey)
@@ -269,10 +256,8 @@ public sealed class ExAttributeGenerator : IIncrementalGenerator
       StringComparer.Ordinal
     );
     var byTypeKeys = new HashSet<string>(StringComparer.Ordinal);
-    foreach (var j in matching)
-    {
-      foreach (var e in j.PlainAttrs.AsSpan())
-      {
+    foreach (var j in matching) {
+      foreach (var e in j.PlainAttrs.AsSpan()) {
         if (!plainByKey.TryGetValue(e.Key, out var list))
           plainByKey[e.Key] = list = [];
         list.Add(e);
@@ -290,8 +275,7 @@ public sealed class ExAttributeGenerator : IIncrementalGenerator
       StringComparer.Ordinal
     );
 
-    foreach (string key in allKeys)
-    {
+    foreach (string key in allKeys) {
       string prop = Pascal(key);
       if (existing.Contains(prop))
         continue; // collides with a real (source) member on the class or a base type.
@@ -303,8 +287,7 @@ public sealed class ExAttributeGenerator : IIncrementalGenerator
       bool isComplex = kind is JKind.Object or JKind.Array;
 
       bool constant = false;
-      if (presentInAll && !inByType && !isComplex)
-      {
+      if (presentInAll && !inByType && !isComplex) {
         string first = occ![0].Raw;
         constant = occ.All(e => e.Raw == first);
       }
@@ -318,8 +301,7 @@ public sealed class ExAttributeGenerator : IIncrementalGenerator
   }
 
   private static string ConstMember(string prop, AttrEntry e) =>
-    e.Kind switch
-    {
+    e.Kind switch {
       JKind.Bool => $"public const bool {prop} = {e.Raw};",
       JKind.String =>
         $"public const string {prop} = {Literal(e.Str ?? string.Empty)};",
@@ -330,8 +312,7 @@ public sealed class ExAttributeGenerator : IIncrementalGenerator
     };
 
   private static string InstanceMember(string prop, string key, JKind kind) =>
-    kind switch
-    {
+    kind switch {
       JKind.Bool =>
         $"public bool {prop} => Attributes?[\"{key}\"].AsBool(false) ?? false;",
       JKind.String =>

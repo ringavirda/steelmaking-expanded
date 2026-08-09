@@ -19,8 +19,7 @@ namespace ExpandedLib.Testing;
 /// most readable through <see cref="SceneDiagram"/>.
 /// </para>
 /// </summary>
-public sealed class Scene
-{
+public sealed class Scene {
   /// <summary>The underlying in-memory world (store, graph manager, fake API).</summary>
   public TestWorld World { get; } = new();
 
@@ -32,15 +31,13 @@ public sealed class Scene
   public Scene Network(
     string type,
     System.Func<BlockNetworkModSystem, BlockNetwork> factory
-  )
-  {
+  ) {
     World.RegisterNetwork(type, factory);
     return this;
   }
 
   /// <summary>Places a plain block (no entity, not a network node) - terrain, caps, machine housings.</summary>
-  public Scene Block(BlockPos pos, Block block)
-  {
+  public Scene Block(BlockPos pos, Block block) {
     World.Place(pos, block);
     return this;
   }
@@ -54,8 +51,7 @@ public sealed class Scene
     Block block,
     BlockEntity be,
     string networkType
-  )
-  {
+  ) {
     World.Place(pos, block, be);
     World.Attach(be);
     _pendingNodes.Add((pos, networkType));
@@ -67,8 +63,7 @@ public sealed class Scene
   /// engine) and runs its real <see cref="BlockEntity.Initialize"/> so it schedules its production
   /// tick. Fixtures force any construction/structure state before calling this.
   /// </summary>
-  public Scene Machine(BlockPos pos, Block block, BlockEntity be)
-  {
+  public Scene Machine(BlockPos pos, Block block, BlockEntity be) {
     World.Place(pos, block, be);
     World.Initialize(be);
     return this;
@@ -79,8 +74,7 @@ public sealed class Scene
   /// with a plain block - terrain, a water pond, or a solid shell around a multi-cell structure.
   /// Spans all three axes, so a 3D setup's scaffolding is one call rather than a triple loop in the test.
   /// </summary>
-  public Scene Fill(BlockPos a, BlockPos b, Block block)
-  {
+  public Scene Fill(BlockPos a, BlockPos b, Block block) {
     int x0 = Math.Min(a.X, b.X),
       x1 = Math.Max(a.X, b.X);
     int y0 = Math.Min(a.Y, b.Y),
@@ -88,15 +82,14 @@ public sealed class Scene
     int z0 = Math.Min(a.Z, b.Z),
       z1 = Math.Max(a.Z, b.Z);
     for (int x = x0; x <= x1; x++)
-    for (int y = y0; y <= y1; y++)
-    for (int z = z0; z <= z1; z++)
-      World.Place(new BlockPos(x, y, z), block);
+      for (int y = y0; y <= y1; y++)
+        for (int z = z0; z <= z1; z++)
+          World.Place(new BlockPos(x, y, z), block);
     return this;
   }
 
   /// <summary>Adds every queued node to the graph (merging adjacent runs). Call once after placement.</summary>
-  public Scene Build()
-  {
+  public Scene Build() {
     foreach (var (pos, type) in _pendingNodes)
       World.AddNode(pos, type);
     _built = true;
@@ -108,12 +101,10 @@ public sealed class Scene
   /// block-entity production ticks first (machines consume/produce on their networks), then ticks all
   /// networks (flow, leak, burst, broadcast) - the same order the live server uses.
   /// </summary>
-  public void Step(int seconds = 1)
-  {
+  public void Step(int seconds = 1) {
     if (!_built)
       Build();
-    for (int i = 0; i < seconds; i++)
-    {
+    for (int i = 0; i < seconds; i++) {
       World.FireBlockEntityTicks();
       World.Tick(1);
     }

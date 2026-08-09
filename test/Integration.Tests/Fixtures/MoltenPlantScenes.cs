@@ -17,8 +17,7 @@ namespace SteelmakingExpanded.Tests;
 /// ends in a mold pedestal casting into a tool mold and/or a canal tap draining into a parked barrel.
 /// The molten network flows the metal; the fittings drain it each server tick.
 /// </summary>
-internal sealed class CastingLine
-{
+internal sealed class CastingLine {
   private const string Iron = "game:ingot-iron";
 
   public readonly BlockEntityMoltenCanal Head;
@@ -38,39 +37,30 @@ internal sealed class CastingLine
     BlockPos origin,
     int length,
     bool endsInPedestal
-  )
-  {
+  ) {
     _scene = scene;
     scene.World.RegisterItem(Iron, 1500f);
 
     _cells = new BlockEntityMoltenCanal[length];
-    for (int i = 0; i < length; i++)
-    {
+    for (int i = 0; i < length; i++) {
       BlockPos pos = origin.AddCopy(0, 0, i);
       bool last = i == length - 1;
       var block = CanalBlock(scene, i + 1);
 
-      if (last && endsInPedestal)
-      {
-        Pedestal = new BlockEntityMoltenCanalMoldPedestal
-        {
+      if (last && endsInPedestal) {
+        Pedestal = new BlockEntityMoltenCanalMoldPedestal {
           Pos = pos.Copy(),
           Block = block,
         };
         scene.Node(pos, block, Pedestal, "molten");
         _cells[i] = Pedestal;
-      }
-      else if (last)
-      {
+      } else if (last) {
         Tap = new BlockEntityMoltenCanalTap { Pos = pos.Copy(), Block = block };
         scene.Node(pos, block, Tap, "molten");
         Tap.TryTogglePouring(); // default is closed (severs); open it so the run reaches it
         _cells[i] = Tap;
-      }
-      else
-      {
-        _cells[i] = new BlockEntityMoltenCanal
-        {
+      } else {
+        _cells[i] = new BlockEntityMoltenCanal {
           Pos = pos.Copy(),
           Block = block,
         };
@@ -80,8 +70,7 @@ internal sealed class CastingLine
     Head = _cells[0];
   }
 
-  private static BlockMoltenCanal CanalBlock(Scene scene, int id)
-  {
+  private static BlockMoltenCanal CanalBlock(Scene scene, int id) {
     var item = new Item { Code = new AssetLocation("game:ingot-iron") };
     scene.World.World.GetItem(Arg.Any<AssetLocation>()).Returns(item);
 
@@ -98,16 +87,14 @@ internal sealed class CastingLine
   }
 
   /// <summary>Pours <paramref name="units"/> of hot molten iron into the head cell (the furnace tap).</summary>
-  public CastingLine PourIn(int units, float temp = 1700f)
-  {
+  public CastingLine PourIn(int units, float temp = 1700f) {
     var metal = MoltenMetal.CreateStack(_scene.World.World, Iron, temp)!;
     Head.PushMetal(units, metal, _scene.World.World);
     return this;
   }
 
   /// <summary>Casts a parked barrel onto the tap at the given drain speed (units/tick).</summary>
-  public CastingLine ParkBarrel(float drainSpeed)
-  {
+  public CastingLine ParkBarrel(float drainSpeed) {
     Tap!.IsBarrel = true;
     // The tap reads its drain speed live from the block's "drainSpeed" attribute, so prime it there.
     Tap.Block.Attributes = new JsonObject(
@@ -117,8 +104,7 @@ internal sealed class CastingLine
   }
 
   /// <summary>Sets an empty tool mold on the pedestal.</summary>
-  public CastingLine SetMold()
-  {
+  public CastingLine SetMold() {
     Pedestal!.IsMold = true;
     return this;
   }
@@ -128,10 +114,8 @@ internal sealed class CastingLine
   /// drains its cell into the mold/barrel. Fittings are attached (not Initialized) so their drain tick
   /// is driven here rather than by the scene's listener pump - keeping the order explicit.
   /// </summary>
-  public CastingLine Run(int ticks)
-  {
-    for (int i = 0; i < ticks; i++)
-    {
+  public CastingLine Run(int ticks) {
+    for (int i = 0; i < ticks; i++) {
       _scene.Step(1); // molten network flow + cooling
       if (Pedestal != null)
         ReflectionHelpers.Invoke(Pedestal, "OnServerTick", 1f);
@@ -142,10 +126,8 @@ internal sealed class CastingLine
   }
 
   /// <summary>Total liquid metal still standing in the canal cells (excludes what's cast into the mold/barrel).</summary>
-  public int TotalInRun
-  {
-    get
-    {
+  public int TotalInRun {
+    get {
       int t = 0;
       foreach (var c in _cells)
         t += c.CellAmount;

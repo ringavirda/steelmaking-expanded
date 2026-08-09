@@ -12,8 +12,7 @@ namespace PipesAndPowerExpanded.BlockStructures.Boiler;
 /// boiler drives the level in discrete steps (hidden/low/high), so the flat quad always lands at
 /// a sensible height inside the vessel rather than slicing through the geometry.
 /// </summary>
-public class BoilerWaterRenderer : SurfaceRenderer
-{
+public class BoilerWaterRenderer : SurfaceRenderer {
   private readonly int _textureId;
 
   /// <summary>
@@ -37,8 +36,7 @@ public class BoilerWaterRenderer : SurfaceRenderer
     Cuboidf[] footprintBoxes,
     float rotationY
   )
-    : base(pos, api, footprintBoxes, rotationY, combine: true)
-  {
+    : base(pos, api, footprintBoxes, rotationY, combine: true) {
     _textureId = api.Render.GetOrLoadTexture(
       new AssetLocation("game:textures/block/liquid/water.png")
     );
@@ -53,8 +51,7 @@ public class BoilerWaterRenderer : SurfaceRenderer
   protected override void ConfigureShader(
     IStandardShaderProgram shader,
     IRenderAPI render
-  )
-  {
+  ) {
     // Translucent blue tint - see-through like vanilla barrel water; what shows through is the
     // vessel interior, not the world below.
     shader.RgbaTint = new Vec4f(0.55f, 0.7f, 0.95f, 0.7f);
@@ -66,8 +63,7 @@ public class BoilerWaterRenderer : SurfaceRenderer
     shader.ExtraGlow = glow;
   }
 
-  protected override bool BindSurfaceTexture(IRenderAPI render)
-  {
+  protected override bool BindSurfaceTexture(IRenderAPI render) {
     render.BindTexture2d(_textureId);
     return true;
   }

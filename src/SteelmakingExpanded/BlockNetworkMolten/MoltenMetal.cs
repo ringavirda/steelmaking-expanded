@@ -9,8 +9,7 @@ namespace SteelmakingExpanded.BlockNetworkMolten;
 /// <summary>
 /// Coarse thermal state of a metal stack relative to its melting point.
 /// </summary>
-public enum MoltenState
-{
+public enum MoltenState {
   /// <summary>Above 80% of the melting point - flows freely.</summary>
   Liquid,
 
@@ -27,8 +26,7 @@ public enum MoltenState
 /// the incandescent block-light scale, and player-facing metal/state formatting. Shared by every
 /// canal cell, tap, pedestal, barrel and the bessemer charge.
 /// </summary>
-public static class MoltenMetal
-{
+public static class MoltenMetal {
   /// <summary>Fraction of the melting point above which metal counts as liquid.</summary>
   public const float LiquidThreshold = 0.8f;
 
@@ -49,8 +47,7 @@ public static class MoltenMetal
     string itemCode,
     float temperature,
     float? cooldownSpeed = null
-  )
-  {
+  ) {
     Item? item =
       itemCode.Length > 0 ? world.GetItem(new AssetLocation(itemCode)) : null;
     if (item == null)
@@ -86,8 +83,7 @@ public static class MoltenMetal
     IWorldAccessor world,
     ItemStack stack,
     float? cooldownSpeed = null
-  )
-  {
+  ) {
     SetTemperature(world, stack, GetTemperature(world, stack));
     SetCooldownSpeed(stack, cooldownSpeed ?? SmexValues.MoltenCooldownSpeed);
   }
@@ -114,8 +110,7 @@ public static class MoltenMetal
     stack.Collectible.GetMeltingPoint(world, null, new DummySlot(stack));
 
   /// <summary>Classifies the stack against its melting point (liquid / cooling / hardened).</summary>
-  public static MoltenState StateOf(IWorldAccessor world, ItemStack stack)
-  {
+  public static MoltenState StateOf(IWorldAccessor world, ItemStack stack) {
     float temp = GetTemperature(world, stack);
     float meltPoint = MeltingPointOf(world, stack);
     if (temp > LiquidThreshold * meltPoint)
@@ -146,8 +141,7 @@ public static class MoltenMetal
   /// Human-readable metal name from an item code:
   /// "game:ingot-iron" → "Iron", "smex:slag" → "Slag".
   /// </summary>
-  public static string DisplayName(string metalItemCode)
-  {
+  public static string DisplayName(string metalItemCode) {
     if (metalItemCode.Length == 0)
       return Lang.Get("smex:metal-unknown");
     string path = new AssetLocation(metalItemCode).Path;

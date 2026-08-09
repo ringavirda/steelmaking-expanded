@@ -15,14 +15,11 @@ namespace SteelmakingExpanded.Tests;
 /// network, gas blast, molten in/out cells), which is out of scope to fully fake; this pins the
 /// operational state that survives a reload and the charge-clearing on break.
 /// </summary>
-public class ConverterControlBeTests
-{
+public class ConverterControlBeTests {
   private static readonly TestWorld ResolveWorld = new();
 
-  private static BlockEntityConverterControl Control(TestWorld? world = null)
-  {
-    var be = new BlockEntityConverterControl
-    {
+  private static BlockEntityConverterControl Control(TestWorld? world = null) {
+    var be = new BlockEntityConverterControl {
       Pos = new BlockPos(0, 8, 0),
       Block = TestBlocks.Configure(
         new Block(),
@@ -35,21 +32,18 @@ public class ConverterControlBeTests
     return be;
   }
 
-  private static ItemStack IronCharge(TestWorld world)
-  {
+  private static ItemStack IronCharge(TestWorld world) {
     var item = new Item { Code = new AssetLocation("game:ingot-iron") };
     return new ItemStack(item, 1);
   }
 
   [Fact]
-  public void OpState_defaults_to_normal()
-  {
+  public void OpState_defaults_to_normal() {
     Assert.Equal(ConverterOpState.Normal, Control().OpState);
   }
 
   [Fact]
-  public void Operational_state_round_trips_through_the_tree()
-  {
+  public void Operational_state_round_trips_through_the_tree() {
     var src = Control();
     ReflectionHelpers.SetProperty(src, "OpState", ConverterOpState.Filling);
     ReflectionHelpers.SetField(src, "_contentUnits", 30);
@@ -73,8 +67,7 @@ public class ConverterControlBeTests
   }
 
   [Fact]
-  public void Breaking_a_solidified_converter_returns_drops_and_clears_the_charge()
-  {
+  public void Breaking_a_solidified_converter_returns_drops_and_clears_the_charge() {
     var world = new TestWorld();
     // The solidified-bits drop resolves the bit item; any non-null item yields a stack.
     world
@@ -95,8 +88,7 @@ public class ConverterControlBeTests
   }
 
   [Fact]
-  public void Breaking_a_liquid_converter_clears_the_charge_without_drops()
-  {
+  public void Breaking_a_liquid_converter_clears_the_charge_without_drops() {
     var world = new TestWorld();
     var be = Control(world);
     ReflectionHelpers.SetField(be, "_content", IronCharge(world));

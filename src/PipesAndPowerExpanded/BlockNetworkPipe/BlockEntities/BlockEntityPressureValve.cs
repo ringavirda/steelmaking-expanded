@@ -20,8 +20,7 @@ namespace PipesAndPowerExpanded.BlockNetworkPipe.BlockEntities;
 /// particles. The gate defaults to 1 atm, dialled in steps up to the valve's material rating.
 /// </summary>
 [BlockEntityRegister]
-public class BlockEntityPressureValve : BlockEntityPipe
-{
+public class BlockEntityPressureValve : BlockEntityPipe {
   /// <summary>Lowest gate pressure the valve can be dialled to (atm, gauge).</summary>
   public const float MinGatePressure = 0f;
 
@@ -39,8 +38,7 @@ public class BlockEntityPressureValve : BlockEntityPipe
   public float MaxGatePressure =>
     Block is BlockPressureValve v ? v.BurstPressure : 0f;
 
-  public override void Initialize(ICoreAPI api)
-  {
+  public override void Initialize(ICoreAPI api) {
     base.Initialize(api);
     // Clamp against the (possibly reconfigured) material rating on load.
     _gatePressure = GameMath.Clamp(
@@ -57,8 +55,7 @@ public class BlockEntityPressureValve : BlockEntityPipe
   /// [<see cref="MinGatePressure"/>, <see cref="MaxGatePressure"/>]. Returns whether the
   /// value actually changed. Server-side; persists and syncs on change.
   /// </summary>
-  public bool AdjustGatePressure(bool increase)
-  {
+  public bool AdjustGatePressure(bool increase) {
     float delta = increase ? GatePressureStep : -GatePressureStep;
     float next = GameMath.Clamp(
       _gatePressure + delta,
@@ -72,8 +69,7 @@ public class BlockEntityPressureValve : BlockEntityPipe
     return true;
   }
 
-  private void OnTick(float dt)
-  {
+  private void OnTick(float dt) {
     if (
       Block is not BlockPressureValve valve
       || string.IsNullOrEmpty(valve.Orientation)
@@ -112,8 +108,7 @@ public class BlockEntityPressureValve : BlockEntityPipe
     PipeNetwork? inNet,
     PipeNetwork? outNet,
     BlockFacing outFace
-  )
-  {
+  ) {
     var inState = inNet?.State;
     if (inState == null || inState.IsLiquid || inState.MaxVolume <= 0f)
       return 0f;
@@ -132,16 +127,14 @@ public class BlockEntityPressureValve : BlockEntityPipe
     string gasType = inState.MediumType;
     float inPressure = inState.Volume / inState.MaxVolume;
 
-    if (outNet != null)
-    {
+    if (outNet != null) {
       // Branch on the network, not State - a never-charged run has a null State (created
       // lazily on first production) and would be mistaken for an open end.
       bool leaking = outNet.State?.IsLeaking ?? false;
 
       // A leaking output can't hold pressure, so feed it only the trickle its open ends shed
       // and let that flow straight through (bypassLeakCap lifts the 1-atm cap for exactly that).
-      if (leaking)
-      {
+      if (leaking) {
         float vent = outNet.ProduceGasMeasured(
           Math.Min(excess, PpexValues.GasLeakRate),
           temp,
@@ -196,8 +189,7 @@ public class BlockEntityPressureValve : BlockEntityPipe
       Math.Min(excess, PpexValues.GasLeakRate),
       ba
     );
-    if (vented > 0f)
-    {
+    if (vented > 0f) {
       ExParticles.GasVent(Api.World, Pos, outFace, gasType);
       // Same airy swoosh a normal pipe's open end makes when it leaks gas.
       ExSounds.PlayAt(
@@ -220,8 +212,7 @@ public class BlockEntityPressureValve : BlockEntityPipe
     PipeNetwork? inNet,
     PipeNetwork? outNet,
     BlockFacing outFace
-  )
-  {
+  ) {
     var inState = inNet?.State;
     if (
       inState == null
@@ -239,8 +230,7 @@ public class BlockEntityPressureValve : BlockEntityPipe
     if (outNet?.State is { } os && !os.IsLiquid && os.MediumType.Length > 0)
       return 0f;
 
-    if (outNet != null)
-    {
+    if (outNet != null) {
       float free =
         outNet.Nodes.Count * PpexValues.LitresPerPipe
         - (outNet.State?.Volume ?? 0f);
@@ -257,26 +247,22 @@ public class BlockEntityPressureValve : BlockEntityPipe
       Math.Min(inState.Volume, PpexValues.LiquidLeakRate),
       ba
     );
-    if (spilled > 0f)
-    {
+    if (spilled > 0f) {
       ExParticles.WaterJet(Api.World, Pos, outFace);
       ExSounds.SplashSound(Api.World, Pos);
     }
     return spilled;
   }
 
-  public override void OnBlockRemoved()
-  {
+  public override void OnBlockRemoved() {
     base.OnBlockRemoved();
-    if (_tickId != 0)
-    {
+    if (_tickId != 0) {
       UnregisterGameTickListener(_tickId);
       _tickId = 0;
     }
   }
 
-  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
-  {
+  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc) {
     dsc.AppendLine(
       Lang.Get(
         "ppex:gaspressurevalve-info-rating",
@@ -292,8 +278,7 @@ public class BlockEntityPressureValve : BlockEntityPipe
       );
   }
 
-  public override void ToTreeAttributes(ITreeAttribute tree)
-  {
+  public override void ToTreeAttributes(ITreeAttribute tree) {
     base.ToTreeAttributes(tree);
     tree.SetFloat("gatePressure", _gatePressure);
   }
@@ -301,8 +286,7 @@ public class BlockEntityPressureValve : BlockEntityPipe
   public override void FromTreeAttributes(
     ITreeAttribute tree,
     IWorldAccessor worldForResolving
-  )
-  {
+  ) {
     base.FromTreeAttributes(tree, worldForResolving);
     // Pre-existing valves saved before the gate was configurable default to 1 atm.
     _gatePressure = tree.GetFloat("gatePressure", 1f);

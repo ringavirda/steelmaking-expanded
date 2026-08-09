@@ -14,10 +14,8 @@ namespace SteelmakingExpanded.Patches;
 /// (consuming) it. Per-pile state lives in a side table keyed by the vanilla
 /// block entity, so other mods that touch the coal pile can coexist.
 /// </summary>
-public static class BlastmixPiles
-{
-  private sealed class PileState
-  {
+public static class BlastmixPiles {
+  private sealed class PileState {
     public int BurnTimer;
     public bool Managed;
   }
@@ -37,8 +35,7 @@ public static class BlastmixPiles
   ) => _states.GetOrCreateValue(pile).Managed = managed;
 
   /// <summary>Replaces a burnt-out blast-mix pile with a solidified-slag block carrying the same count.</summary>
-  public static void ConvertToSlag(BlockEntityCoalPile pile)
-  {
+  public static void ConvertToSlag(BlockEntityCoalPile pile) {
     if (pile.inventory == null || pile.inventory.Count == 0)
       return;
     if (pile.inventory[0].Empty)
@@ -55,15 +52,13 @@ public static class BlastmixPiles
     if (
       pile.Api.World.BlockAccessor.GetBlockEntity(pile.Pos)
       is BlockEntitySlag beSlag
-    )
-    {
+    ) {
       beSlag.SlagCount = amount;
       beSlag.MarkDirty(true);
     }
   }
 
-  internal static void OnCheckBurn(BlockEntityCoalPile pile)
-  {
+  internal static void OnCheckBurn(BlockEntityCoalPile pile) {
     var state = _states.GetOrCreateValue(pile);
     if (state.Managed)
       return;
@@ -74,8 +69,7 @@ public static class BlastmixPiles
       && pile.inventory.Count > 0
       && !pile.inventory[0].Empty
       && pile.inventory[0].Itemstack?.Collectible.Code.Path == "blastmix"
-    )
-    {
+    ) {
       state.BurnTimer++;
       if (state.BurnTimer >= SmexValues.BlastmixBurnTime)
         ConvertToSlag(pile);
@@ -102,15 +96,13 @@ public static class BlastmixPiles
 /// of the burn timer.
 /// </summary>
 [HarmonyPatch(typeof(BlockEntityCoalPile))]
-public static class CoalPileBlastmixPatches
-{
+public static class CoalPileBlastmixPatches {
   [HarmonyPostfix]
   [HarmonyPatch(nameof(BlockEntityCoalPile.Initialize))]
   public static void InitializePostfix(
     BlockEntityCoalPile __instance,
     ICoreAPI api
-  )
-  {
+  ) {
     if (api.Side == EnumAppSide.Server)
       __instance.RegisterGameTickListener(
         _ => BlastmixPiles.OnCheckBurn(__instance),

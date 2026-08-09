@@ -10,22 +10,19 @@ namespace SteelmakingExpanded.Tests;
 /// tree - the same trees the vanilla tool mold and the mod's barrel persist, so a parked item
 /// restores seamlessly. Molds additionally get the vanilla-compatible shattered/meshAngle keys.
 /// </summary>
-public class MoltenContentsTests
-{
+public class MoltenContentsTests {
   private static ITreeAttribute? BeData(ItemStack stack) =>
     stack.Attributes["blockEntityAttributes"] as ITreeAttribute;
 
   [Fact]
-  public void Write_is_a_noop_when_there_is_no_content()
-  {
+  public void Write_is_a_noop_when_there_is_no_content() {
     var stack = new ItemStack();
     MoltenContents.Write(stack, MoltenContents.BarrelUnitsKey, null, 5);
     Assert.Null(BeData(stack)); // nothing carried, tree stays clean
   }
 
   [Fact]
-  public void Write_is_a_noop_when_units_are_non_positive()
-  {
+  public void Write_is_a_noop_when_units_are_non_positive() {
     var stack = new ItemStack();
     MoltenContents.Write(
       stack,
@@ -37,8 +34,7 @@ public class MoltenContentsTests
   }
 
   [Fact]
-  public void Write_stores_content_and_units_under_the_given_key()
-  {
+  public void Write_stores_content_and_units_under_the_given_key() {
     var stack = new ItemStack();
     MoltenContents.Write(
       stack,
@@ -54,8 +50,7 @@ public class MoltenContentsTests
   }
 
   [Fact]
-  public void Write_adds_vanilla_mold_compat_keys_for_the_mold_key_only()
-  {
+  public void Write_adds_vanilla_mold_compat_keys_for_the_mold_key_only() {
     var mold = new ItemStack();
     MoltenContents.Write(mold, MoltenContents.MoldUnitsKey, new ItemStack(), 3);
     var moldTree = BeData(mold)!;
@@ -74,8 +69,7 @@ public class MoltenContentsTests
   }
 
   [Fact]
-  public void Read_returns_nothing_for_a_bare_stack()
-  {
+  public void Read_returns_nothing_for_a_bare_stack() {
     var (content, units) = MoltenContents.Read(
       new ItemStack(),
       MoltenContents.MoldUnitsKey,
@@ -86,8 +80,7 @@ public class MoltenContentsTests
   }
 
   [Fact]
-  public void Read_recovers_unit_count_without_contents()
-  {
+  public void Read_recovers_unit_count_without_contents() {
     var stack = new ItemStack();
     var beData = new TreeAttribute();
     beData.SetInt(MoltenContents.MoldUnitsKey, 7);

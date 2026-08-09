@@ -16,8 +16,7 @@ namespace ExpandedLib.Blocks.Structures;
 /// world cell. Principals that don't implement it keep the undifferentiated forwarding.
 /// </para>
 /// </summary>
-public interface IFillerInteractionTarget
-{
+public interface IFillerInteractionTarget {
   bool OnFillerInteractStart(
     IWorldAccessor world,
     IPlayer byPlayer,

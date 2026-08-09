@@ -25,8 +25,7 @@ namespace PipesAndPowerExpanded.BlockStructures.Engine;
 /// uses the <c>idlemp</c>/<c>cyclemp</c> animations, a blower/pump (or nothing) uses
 /// <c>idle</c>/<c>cyclepump</c>. Per-variant stats are supplied through the virtual hooks below.
 /// </summary>
-public abstract class BlockEntityEngine : BlockEntityProductionMachine
-{
+public abstract class BlockEntityEngine : BlockEntityProductionMachine {
   private BEBehaviorAnimatable? _animatable;
   private ExRightClickConstructable? _rcc;
   private bool _animatorReady;
@@ -101,8 +100,7 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
     _overPressure.Remaining(PpexValues.EngineOverPressureSeconds);
 
   /// <summary>Clears the broken state (called by the block's wrench repair).</summary>
-  public void Repair()
-  {
+  public void Repair() {
     if (!IsBroken)
       return;
     IsBroken = false;
@@ -111,16 +109,14 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
   }
 
   /// <summary>Bursts the engine: it stops and stays inert until repaired.</summary>
-  private void Break()
-  {
+  private void Break() {
     IsBroken = true;
     AvailablePower = 0f;
     _running = false;
     // Clear the timer so the broken engine stops venting the warning plume (the client vent is
     // gated on this > 0, and the broken tick returns early without resetting it otherwise).
     _overPressure.Reset();
-    if (Api is { Side: EnumAppSide.Server })
-    {
+    if (Api is { Side: EnumAppSide.Server }) {
       // A burst erupts in steam plus a muffled explosion (server particles replicate to clients).
       ExParticles.SteamPlume(Api.World, Pos, 120);
       // …topped by a sooty smoke blast out the cylinder top, where spent steam normally vents.
@@ -218,14 +214,12 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
 
   #region Lifecycle
 
-  public override void Initialize(ICoreAPI api)
-  {
+  public override void Initialize(ICoreAPI api) {
     base.Initialize(api);
     _animatable = GetBehavior<BEBehaviorAnimatable>();
     _rcc = GetBehavior<ExRightClickConstructable>();
 
-    if (api is ICoreClientAPI && _animatable != null)
-    {
+    if (api is ICoreClientAPI && _animatable != null) {
       if (_rcc != null)
         _rcc.OnShapeChanged += OnConstructShapeChanged;
 
@@ -243,19 +237,16 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
 
   #region Power
 
-  protected override void OnProductionTick(float dt)
-  {
+  protected override void OnProductionTick(float dt) {
     if (EngineBlock == null)
       return;
 
     var ba = Api.World.BlockAccessor;
 
     // A broken engine is inert until repaired.
-    if (IsBroken)
-    {
+    if (IsBroken) {
       AvailablePower = 0f;
-      if (_running)
-      {
+      if (_running) {
         _running = false;
         MarkDirty(true);
       }
@@ -277,8 +268,7 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
         dt,
         PpexValues.EngineOverPressureSeconds
       )
-    )
-    {
+    ) {
       Break();
       return;
     }
@@ -291,8 +281,7 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
     bool engaged = pressure >= EngagePressure && demand > 0f;
     float power = 0f;
 
-    if (engaged && inlet != null)
-    {
+    if (engaged && inlet != null) {
       float want = RunSteamRate * demand * dt;
       float used = inlet.TryConsumeGas(want, ba);
       float frac = want > 0f ? used / want : 0f;
@@ -308,8 +297,7 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
     bool run = power > 0.001f;
 
     float newSpeed = run ? 0.5f + power : 1f;
-    if (run != _running || Math.Abs(newSpeed - AnimationSpeed) > 0.05f)
-    {
+    if (run != _running || Math.Abs(newSpeed - AnimationSpeed) > 0.05f) {
       AnimationSpeed = newSpeed;
       _running = run;
       MarkDirty(true); // sync running + speed to clients for the cycle animation
@@ -320,8 +308,7 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
   /// Sends condensed water out the outlet. A connected pipe network with room takes it (at no
   /// pressure - only the pump pressurises water); otherwise it spills with a splash particle.
   /// </summary>
-  private void OutputCondensate(float amount, IBlockAccessor ba)
-  {
+  private void OutputCondensate(float amount, IBlockAccessor ba) {
     var outNet = ConnectedNetwork<PipeNetwork>(EngineBlock!.WaterOutletFace);
     bool piped = outNet?.TryProduceLiquid(amount, 90f, 0f, ba) == true;
     if (!piped)
@@ -329,10 +316,8 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
   }
 
   /// <summary>Water jets out of the outlet (and an occasional splash) when the condensate has nowhere to go.</summary>
-  private void SpawnWaterSpill()
-  {
-    if (Api is { Side: EnumAppSide.Server })
-    {
+  private void SpawnWaterSpill() {
+    if (Api is { Side: EnumAppSide.Server }) {
       ExParticles.WaterJet(Api.World, Pos, EngineBlock!.WaterOutletFace);
       ExSounds.SplashSound(Api.World, Pos);
     }
@@ -345,8 +330,7 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
 
   // Re-pose when the sub-machine attached at (0,0,2) changes type (mpgenerator
   // vs blower/pump), which switches the engine between its mp and pump animations.
-  private void OnSubmachineWatch(float dt)
-  {
+  private void OnSubmachineWatch(float dt) {
     bool mp = IsMpGenerator();
     if (mp == _lastMp)
       return;
@@ -355,8 +339,7 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
   }
 
   /// <summary>Shared teardown for removal and unload (the two paths are identical).</summary>
-  private void Cleanup()
-  {
+  private void Cleanup() {
     if (_rcc != null)
       _rcc.OnShapeChanged -= OnConstructShapeChanged;
     if (_submachineWatchId != 0)
@@ -367,20 +350,17 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
     DisposeGearHum();
   }
 
-  public override void OnBlockRemoved()
-  {
+  public override void OnBlockRemoved() {
     Cleanup();
     base.OnBlockRemoved();
   }
 
-  public override void OnBlockUnloaded()
-  {
+  public override void OnBlockUnloaded() {
     Cleanup();
     base.OnBlockUnloaded();
   }
 
-  public override void ToTreeAttributes(ITreeAttribute tree)
-  {
+  public override void ToTreeAttributes(ITreeAttribute tree) {
     base.ToTreeAttributes(tree);
     tree.SetBool("running", _running);
     tree.SetFloat("animSpeed", AnimationSpeed);
@@ -393,8 +373,7 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
   public override void FromTreeAttributes(
     ITreeAttribute tree,
     IWorldAccessor worldForResolving
-  )
-  {
+  ) {
     base.FromTreeAttributes(tree, worldForResolving);
     bool wasRunning = _running;
     bool wasBroken = IsBroken;
@@ -405,11 +384,9 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
     InletPressure = tree.GetFloat("inletPressure");
     IsBroken = tree.GetBool("broken");
     _overPressure.FromTree(tree, "overPressure");
-    if (Api is ICoreClientAPI && _animatorReady)
-    {
+    if (Api is ICoreClientAPI && _animatorReady) {
       // Breaking/repairing swaps the rendered mesh (piston subtree on/off).
-      if (wasBroken != IsBroken)
-      {
+      if (wasBroken != IsBroken) {
         RebuildAnimator(_rcc?.shape?.SelectiveElements);
         ApplyPose();
       }
@@ -426,14 +403,12 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
   public override void GetBlockInfo(
     IPlayer forPlayer,
     System.Text.StringBuilder dsc
-  )
-  {
+  ) {
     base.GetBlockInfo(forPlayer, dsc);
     if (!IsConstructed)
       return;
 
-    if (IsBroken)
-    {
+    if (IsBroken) {
       dsc.AppendLine(Lang.Get("ppex:engine-info-broken"));
       return;
     }
@@ -453,14 +428,12 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
       );
   }
 
-  private void OnConstructShapeChanged(CompositeShape cs)
-  {
+  private void OnConstructShapeChanged(CompositeShape cs) {
     RebuildAnimator(cs?.SelectiveElements);
     ApplyPose();
   }
 
-  private void RebuildAnimator(string[]? selectiveElements)
-  {
+  private void RebuildAnimator(string[]? selectiveElements) {
     if (Api is not ICoreClientAPI || _animatable == null)
       return;
 
@@ -500,8 +473,7 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
   /// Selective-element list rendering the whole engine except the
   /// <see cref="BrokenHiddenElements"/> subtree, built by walking the shape. Cached.
   /// </summary>
-  private string[]? GetBrokenSelectiveElements()
-  {
+  private string[]? GetBrokenSelectiveElements() {
     if (_brokenSelectiveElements != null)
       return _brokenSelectiveElements;
     if (Api is not ICoreClientAPI capi || Block.Shape?.Base == null)
@@ -531,12 +503,10 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
     ShapeElement el,
     string path,
     List<string> outList
-  )
-  {
+  ) {
     if (BrokenHiddenElements.Any(broken => broken == el.Name))
       return;
-    if (!BrokenHiddenElements.Any(broken => SubtreeContains(el, broken)))
-    {
+    if (!BrokenHiddenElements.Any(broken => SubtreeContains(el, broken))) {
       outList.Add(path + "/*");
       return;
     }
@@ -546,8 +516,7 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
           CollectVisible(c, path + "/" + c.Name, outList);
   }
 
-  private static bool SubtreeContains(ShapeElement el, string name)
-  {
+  private static bool SubtreeContains(ShapeElement el, string name) {
     if (el.Name == name)
       return true;
     if (el.Children != null)
@@ -565,8 +534,7 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
   /// True when the sub-machine attached at the engine's sub-machine cell is an
   /// MP generator (which uses the alternate <c>idlemp</c>/<c>cyclemp</c> animations).
   /// </summary>
-  private bool IsMpGenerator()
-  {
+  private bool IsMpGenerator() {
     if (EngineBlock == null)
       return false;
     BlockPos cell = EngineBlock.SubmachinePos(Pos);
@@ -578,8 +546,7 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
   public void RefreshPose() => ApplyPose();
 
   /// <summary>Sets whether the engine is actively running (drives the cycle animation).</summary>
-  public void SetRunning(bool running)
-  {
+  public void SetRunning(bool running) {
     if (_running == running)
       return;
     _running = running;
@@ -593,8 +560,7 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
   /// axle turns. Every other sub-machine is driven by the engine's synced
   /// <see cref="IsRunning"/>/<see cref="AnimationSpeed"/>.
   /// </summary>
-  private (bool running, float speed) CyclePose()
-  {
+  private (bool running, float speed) CyclePose() {
     if (IsMpGenerator())
       return (_mpTurning, 1f);
     return (_running, AnimationSpeed);
@@ -608,14 +574,12 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
   /// angle (0..2π, the axle's render angle), <paramref name="turning"/> whether the network moves.
   /// We accumulate the signed delta so the cycle follows the axle's direction - see the body.
   /// </summary>
-  public void DriveMpCycleFrame(bool turning, float angleRad)
-  {
+  public void DriveMpCycleFrame(bool turning, float angleRad) {
     if (Api is not ICoreClientAPI || _animatable == null || !_animatorReady)
       return;
 
     // Switch idlemp <-> cyclemp only on a state flip (ApplyPose reads _mpTurning).
-    if (turning != _mpTurning)
-    {
+    if (turning != _mpTurning) {
       _mpTurning = turning;
       ApplyPose();
       // Reset the baseline so the first frame after (re)start doesn't jump by a stale delta.
@@ -642,8 +606,7 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
     st.CurrentFrame = _mpCycleFrame;
   }
 
-  private void ApplyPose()
-  {
+  private void ApplyPose() {
     if (Api is not ICoreClientAPI || _animatable == null || !_animatorReady)
       return;
 
@@ -660,8 +623,7 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
       : (mp ? "idlemp" : "idlepump");
 
     util.StartAnimation(
-      new AnimationMetaData
-      {
+      new AnimationMetaData {
         Animation = code,
         Code = code,
         AnimationSpeed = run ? speed : 1f,
@@ -680,18 +642,15 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
   /// Progress (0..1) through the engine's currently-running cycle animation, read by the
   /// attached sub-machine to phase-lock its own cycle. 0 when not animating client-side.
   /// </summary>
-  public float CycleAnimProgress
-  {
-    get
-    {
+  public float CycleAnimProgress {
+    get {
       var (frame, total) = ReadCycleFrame();
       return total > 1 ? frame / (total - 1) : 0f;
     }
   }
 
   /// <summary>Current frame + total frames of the engine's running cycle animation (client-side).</summary>
-  private (float frame, int total) ReadCycleFrame()
-  {
+  private (float frame, int total) ReadCycleFrame() {
     if (
       Api is not ICoreClientAPI
       || _animatable?.animUtil?.animator is not { } animator
@@ -708,26 +667,20 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
   /// Fast client tick: fires per-stroke piston sounds as the cycle crosses its up/down keyframes,
   /// and vents cylinder steam while running above break pressure.
   /// </summary>
-  private void OnEngineClientTick(float dt)
-  {
+  private void OnEngineClientTick(float dt) {
     // The MP cycle frame is driven by the generator's axle (see DriveMpCycleFrame); here we
     // only read the run-state for the gear hum and per-stroke sounds.
     var (running, _) = CyclePose();
 
-    if (!running)
-    {
+    if (!running) {
       _lastCycleFrame = -1f;
       StopGearHum();
-    }
-    else
-    {
+    } else {
       StartGearHum();
 
       var (frame, total) = ReadCycleFrame();
-      if (total > 1)
-      {
-        if (_lastCycleFrame >= 0f)
-        {
+      if (total > 1) {
+        if (_lastCycleFrame >= 0f) {
           PistonCycleSounds.Fire(
             Api.World,
             Pos,
@@ -759,16 +712,14 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
     if (
       _overPressure.IsCounting
       && Api.World.ElapsedMilliseconds - _overSteamMs >= 200
-    )
-    {
+    ) {
       _overSteamMs = Api.World.ElapsedMilliseconds;
       ExParticles.SteamPuff(Api.World, EngineBlock!.CylinderVentPos(Pos), 3);
     }
   }
 
   /// <summary>Lazily creates and starts the constant low gear hum at the gear housing.</summary>
-  private void StartGearHum()
-  {
+  private void StartGearHum() {
     _gearSound ??= ExSounds.CreateLoop(
       Api,
       EngineBlock?.GearHousingPos(Pos) ?? Pos,
@@ -786,15 +737,13 @@ public abstract class BlockEntityEngine : BlockEntityProductionMachine
   }
 
   /// <summary>Stops the gear hum (kept allocated so it can resume when the engine restarts).</summary>
-  private void StopGearHum()
-  {
+  private void StopGearHum() {
     if (_gearSound is { IsPlaying: true })
       _gearSound.Stop();
   }
 
   /// <summary>Stops and releases the gear hum on block removal/unload.</summary>
-  private void DisposeGearHum()
-  {
+  private void DisposeGearHum() {
     _gearSound?.Stop();
     _gearSound?.Dispose();
     _gearSound = null;

@@ -1,8 +1,7 @@
 namespace SteelmakingExpanded.BlockStructures.BlastFurnace;
 
 /// <summary>Operating state of the blast furnace.</summary>
-public enum BlastFurnaceState
-{
+public enum BlastFurnaceState {
   /// <summary>Not lit.</summary>
   Idle,
 

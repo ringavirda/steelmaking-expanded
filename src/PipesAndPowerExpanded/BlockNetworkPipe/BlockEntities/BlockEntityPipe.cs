@@ -17,10 +17,8 @@ namespace PipesAndPowerExpanded.BlockNetworkPipe.BlockEntities;
 /// owning <see cref="PipeNetwork"/> - the BE holds no network state and never broadcasts directly.
 /// </summary>
 [BlockEntityRegister]
-public class BlockEntityPipe : BlockEntityNetworkNode, IPipeNode
-{
-  public sealed override string NetworkType
-  {
+public class BlockEntityPipe : BlockEntityNetworkNode, IPipeNode {
+  public sealed override string NetworkType {
     get => "pipe";
     set { }
   }
@@ -69,8 +67,7 @@ public class BlockEntityPipe : BlockEntityNetworkNode, IPipeNode
     string gasType = "Air",
     float maxOutputPressure = 1.0f,
     bool bypassLeakCap = false
-  )
-  {
+  ) {
     if (NetworkSystem?.GetNetworkAt(Pos) is not PipeNetwork gasNet)
       return false;
     return gasNet.TryProduceGas(
@@ -95,8 +92,7 @@ public class BlockEntityPipe : BlockEntityNetworkNode, IPipeNode
 
   private long _ambientTickId;
 
-  public override void Initialize(ICoreAPI api)
-  {
+  public override void Initialize(ICoreAPI api) {
     base.Initialize(api);
     // Client ambience for pressurised gas (lava-like bubble) or water (creek-like trickle).
     if (api.Side == EnumAppSide.Client)
@@ -107,8 +103,7 @@ public class BlockEntityPipe : BlockEntityNetworkNode, IPipeNode
   /// Sparse per-pipe ambience: each pipe has a small chance to sound each second at short range,
   /// so a whole network murmurs faintly instead of roaring.
   /// </summary>
-  private void OnAmbientTick(float dt)
-  {
+  private void OnAmbientTick(float dt) {
     var world = Api.World;
     if (!IsLiquid && Pressure > 1f)
       ExSounds.PlayChance(
@@ -130,15 +125,13 @@ public class BlockEntityPipe : BlockEntityNetworkNode, IPipeNode
       );
   }
 
-  public override void OnBlockRemoved()
-  {
+  public override void OnBlockRemoved() {
     if (_ambientTickId != 0)
       UnregisterGameTickListener(_ambientTickId);
     base.OnBlockRemoved();
   }
 
-  public override void OnBlockUnloaded()
-  {
+  public override void OnBlockUnloaded() {
     if (_ambientTickId != 0)
       UnregisterGameTickListener(_ambientTickId);
     base.OnBlockUnloaded();
@@ -152,8 +145,7 @@ public class BlockEntityPipe : BlockEntityNetworkNode, IPipeNode
   /// Wisps gas out of each open-ended connector while the pool bleeds; <paramref name="intensity"/>
   /// (0..1) scales density with the leak rate. Called from the server network tick so it broadcasts.
   /// </summary>
-  public void SpawnGasLeak(BlockFacing[] openFaces, float intensity)
-  {
+  public void SpawnGasLeak(BlockFacing[] openFaces, float intensity) {
     if (openFaces.Length == 0)
       return;
 
@@ -168,8 +160,7 @@ public class BlockEntityPipe : BlockEntityNetworkNode, IPipeNode
   /// Sprays water out of each open-ended connector while the pool leaks (density scaled by
   /// <paramref name="intensity"/> 0..1). Called from the server network tick so it broadcasts.
   /// </summary>
-  public void SpawnLiquidLeak(BlockFacing[] openFaces, float intensity = 1f)
-  {
+  public void SpawnLiquidLeak(BlockFacing[] openFaces, float intensity = 1f) {
     if (openFaces.Length == 0)
       return;
 
@@ -183,8 +174,7 @@ public class BlockEntityPipe : BlockEntityNetworkNode, IPipeNode
 
   #region Network updates
 
-  public override void OnNetworkUpdate(object? state)
-  {
+  public override void OnNetworkUpdate(object? state) {
     base.OnNetworkUpdate(state);
 
     float newTemp = 20f;
@@ -195,8 +185,7 @@ public class BlockEntityPipe : BlockEntityNetworkNode, IPipeNode
     float newPressure = 0;
     float newMaxVol = 0;
 
-    if (state is PipeNetworkState netState)
-    {
+    if (state is PipeNetworkState netState) {
       newTemp = netState.Temperature;
       newVol = netState.Volume;
       newMedium = netState.MediumType;
@@ -217,8 +206,7 @@ public class BlockEntityPipe : BlockEntityNetworkNode, IPipeNode
       || _openingsCount != newOpenings
       || Math.Abs(_lastSyncFlow - newFlow) > 0.05f
       || Math.Abs(_lastSyncPressure - newPressure) > 0.02f
-    )
-    {
+    ) {
       _clientVolume = newVol;
       _clientMaxVolume = newMaxVol;
       _openingsCount = newOpenings;
@@ -239,13 +227,11 @@ public class BlockEntityPipe : BlockEntityNetworkNode, IPipeNode
   protected override bool IsNetworkStateMeaningful(object? state) =>
     state is PipeNetworkState s && (s.Volume > 0f || s.FlowRate > 0f);
 
-  protected override object? DeserializeNetworkState(ITreeAttribute tree)
-  {
+  protected override object? DeserializeNetworkState(ITreeAttribute tree) {
     float vol = tree.GetFloat("vol");
     if (vol <= 0f)
       return null;
-    return new PipeNetworkState
-    {
+    return new PipeNetworkState {
       Volume = vol,
       MaxVolume = tree.GetFloat("max"),
       Temperature = tree.GetFloat("temp", 20f),
@@ -260,10 +246,8 @@ public class BlockEntityPipe : BlockEntityNetworkNode, IPipeNode
   protected override void SerializeNetworkState(
     ITreeAttribute tree,
     object? state
-  )
-  {
-    if (state is PipeNetworkState s)
-    {
+  ) {
+    if (state is PipeNetworkState s) {
       tree.SetFloat("vol", s.Volume);
       tree.SetFloat("max", s.MaxVolume);
       tree.SetFloat("temp", s.Temperature);
@@ -279,8 +263,7 @@ public class BlockEntityPipe : BlockEntityNetworkNode, IPipeNode
 
   #region Serialization
 
-  public override void ToTreeAttributes(ITreeAttribute tree)
-  {
+  public override void ToTreeAttributes(ITreeAttribute tree) {
     base.ToTreeAttributes(tree);
     // Ensure the synced display fields are present even when _savedNetworkState is null
     // (empty network), so the client display/glow always has a value.
@@ -292,8 +275,7 @@ public class BlockEntityPipe : BlockEntityNetworkNode, IPipeNode
   public override void FromTreeAttributes(
     ITreeAttribute tree,
     IWorldAccessor worldForResolving
-  )
-  {
+  ) {
     base.FromTreeAttributes(tree, worldForResolving); // calls DeserializeNetworkState → _savedNetworkState
 
     // Populate client display fields from the same tree keys for rendering.
@@ -310,15 +292,11 @@ public class BlockEntityPipe : BlockEntityNetworkNode, IPipeNode
 
   #region HUD
 
-  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
-  {
-    foreach (var behavior in Behaviors)
-    {
-      try
-      {
+  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc) {
+    foreach (var behavior in Behaviors) {
+      try {
         behavior.GetBlockInfo(forPlayer, dsc);
-      }
-      catch { }
+      } catch { }
     }
 
     if (_openingsCount > 0)
@@ -326,8 +304,7 @@ public class BlockEntityPipe : BlockEntityNetworkNode, IPipeNode
 
     // Show throughput (L/s) rather than fill level: a line pushed and drained at once carries
     // plenty yet sits near 0 L stored, which would otherwise read "empty".
-    if (IsLiquid)
-    {
+    if (IsLiquid) {
       dsc.AppendLine(
         Lang.Get(
           "ppex:pipe-info-flow",
@@ -339,9 +316,7 @@ public class BlockEntityPipe : BlockEntityNetworkNode, IPipeNode
       dsc.AppendLine(
         Lang.Get("ppex:pipe-info-pressure", ExMeasure.Pressure(Pressure))
       );
-    }
-    else if (_clientMaxVolume > 0 && Medium.Length > 0)
-    {
+    } else if (_clientMaxVolume > 0 && Medium.Length > 0) {
       dsc.AppendLine(
         Lang.Get(
           "ppex:pipe-info-flow",
@@ -362,8 +337,7 @@ public class BlockEntityPipe : BlockEntityNetworkNode, IPipeNode
         && Pressure >= bp.BurstPressure - 0.001f
       )
         dsc.AppendLine(Lang.Get("ppex:pipe-info-overpressure"));
-    }
-    else
+    } else
       dsc.AppendLine(Lang.Get("ppex:pipe-info-empty"));
   }
 

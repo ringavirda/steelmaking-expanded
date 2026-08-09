@@ -16,11 +16,9 @@ namespace SteelmakingExpanded.Molds;
 /// yielding its casting immediately (the tool-mold patches consult <see cref="IsToolMoldDisabled"/>).
 /// </para>
 /// </summary>
-public static class MoldGating
-{
+public static class MoldGating {
   /// <summary>The user-facing toggle keys, mapped to the block's <c>tooltype</c> variant.</summary>
-  private static readonly Dictionary<string, string> KeyToToolType = new()
-  {
+  private static readonly Dictionary<string, string> KeyToToolType = new() {
     ["plate"] = "plate",
     ["ingot"] = "doubleingot",
     ["rod"] = "quadrod",
@@ -31,8 +29,7 @@ public static class MoldGating
 
   /// <summary>Whether the mold identified by <paramref name="key"/> (plate/ingot/rod) is enabled.</summary>
   public static bool IsEnabled(string key) =>
-    key switch
-    {
+    key switch {
       "plate" => SmexValues.EnablePlateMold,
       "ingot" => SmexValues.EnableIngotMold,
       "rod" => SmexValues.EnableRodMold,
@@ -41,10 +38,8 @@ public static class MoldGating
 
   /// <summary>Sets the enabled flag for <paramref name="key"/> and persists the config.</summary>
   public static void SetEnabled(string key, bool enabled) =>
-    SmexValues.Edit(c =>
-    {
-      switch (key)
-      {
+    SmexValues.Edit(c => {
+      switch (key) {
         case "plate":
           c.EnablePlateMold = enabled;
           break;
@@ -61,8 +56,7 @@ public static class MoldGating
   /// Whether <paramref name="code"/> is one of this mod's tool molds whose type is currently
   /// disabled. Matches both the raw and fired variants by their trailing <c>tooltype</c>.
   /// </summary>
-  public static bool IsToolMoldDisabled(AssetLocation? code)
-  {
+  public static bool IsToolMoldDisabled(AssetLocation? code) {
     if (code is not { Domain: "smex" } || !code.Path.StartsWith("toolmold"))
       return false;
 
@@ -81,10 +75,8 @@ public static class MoldGating
   /// from creative + the handbook. Idempotent and safe to run on either side; call once per side
   /// after recipes have loaded.
   /// </summary>
-  public static void ApplyDisables(ICoreAPI api)
-  {
-    foreach (var (key, toolType) in KeyToToolType)
-    {
+  public static void ApplyDisables(ICoreAPI api) {
+    foreach (var (key, toolType) in KeyToToolType) {
       if (IsEnabled(key))
         continue;
 

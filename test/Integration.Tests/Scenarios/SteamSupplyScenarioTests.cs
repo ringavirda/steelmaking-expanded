@@ -12,13 +12,11 @@ namespace PipesAndPowerExpanded.Tests;
 /// other plant scenarios these lay the real machines + pipe lines into one <see cref="Scene"/> and
 /// advance them together.
 /// </summary>
-public class SteamSupplyScenarioTests
-{
+public class SteamSupplyScenarioTests {
   #region Pressure-valve regulation (boiler main → relief valve → engine in band)
 
   [Fact]
-  public void A_relief_valve_bleeds_an_over_pressured_main_so_the_engine_runs_in_band()
-  {
+  public void A_relief_valve_bleeds_an_over_pressured_main_so_the_engine_runs_in_band() {
     var scene = new Scene().Network("pipe", s => new PipeNetwork(s));
     var plant = new RegulatedEnginePlant(
       scene,
@@ -47,8 +45,7 @@ public class SteamSupplyScenarioTests
   }
 
   [Fact]
-  public void With_the_gate_above_the_charge_the_valve_never_opens()
-  {
+  public void With_the_gate_above_the_charge_the_valve_never_opens() {
     var scene = new Scene().Network("pipe", s => new PipeNetwork(s));
     // Gate raised to the steel rating: 5 atm of charge is below it, so nothing is relieved.
     var plant = new RegulatedEnginePlant(
@@ -69,8 +66,7 @@ public class SteamSupplyScenarioTests
   #region Manual pump (engine-free water start)
 
   [Fact]
-  public void Cranking_the_manual_pump_lifts_pond_water_into_the_output_main()
-  {
+  public void Cranking_the_manual_pump_lifts_pond_water_into_the_output_main() {
     var scene = new Scene().Network("pipe", s => new PipeNetwork(s));
     var plant = new ManualPumpPlant(scene, new BlockPos(0, 8, 0));
     scene.Build();
@@ -86,8 +82,7 @@ public class SteamSupplyScenarioTests
   }
 
   [Fact]
-  public void An_uncranked_pump_moves_no_water()
-  {
+  public void An_uncranked_pump_moves_no_water() {
     var scene = new Scene().Network("pipe", s => new PipeNetwork(s));
     var plant = new ManualPumpPlant(scene, new BlockPos(0, 8, 0));
     scene.Build();
@@ -103,8 +98,7 @@ public class SteamSupplyScenarioTests
   #region Condenser (closed water loop's recovery leg)
 
   [Fact]
-  public void Spent_steam_is_condensed_and_recovered_into_the_water_line()
-  {
+  public void Spent_steam_is_condensed_and_recovered_into_the_water_line() {
     var scene = new Scene().Network("pipe", s => new PipeNetwork(s));
     var plant = new CondenserPlant(scene, new BlockPos(0, 8, 0));
     scene.Build();
@@ -132,8 +126,7 @@ public class SteamSupplyScenarioTests
   }
 
   [Fact]
-  public void Without_steam_the_condenser_condenses_nothing()
-  {
+  public void Without_steam_the_condenser_condenses_nothing() {
     var scene = new Scene().Network("pipe", s => new PipeNetwork(s));
     var plant = new CondenserPlant(scene, new BlockPos(0, 8, 0));
     scene.Build();

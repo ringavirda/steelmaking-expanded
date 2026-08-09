@@ -26,12 +26,10 @@ namespace SteelmakingExpanded;
 /// pile; and patches a few vanilla collectibles (coke crushing). The pipe network and all
 /// pipe/steam-power content now live in the Pipes and Power Expanded mod (ppex).
 /// </summary>
-public class SteelmakingExpandedModSystem : ModSystem
-{
+public class SteelmakingExpandedModSystem : ModSystem {
   private Harmony? _harmony;
 
-  public override void Dispose()
-  {
+  public override void Dispose() {
     ToolMoldPatches.ClearMeshCache();
     _harmony?.UnpatchAll(Mod.Info.ModID);
     _harmony = null;
@@ -39,8 +37,7 @@ public class SteelmakingExpandedModSystem : ModSystem
   }
 
   #region Creative category
-  public override void StartClientSide(ICoreClientAPI api)
-  {
+  public override void StartClientSide(ICoreClientAPI api) {
     ExCreativeTabs.EnsureTab(Mod.Info.ModID);
 
     // Enforce any config-disabled molds on the client too, so they vanish from the creative
@@ -53,8 +50,7 @@ public class SteelmakingExpandedModSystem : ModSystem
   #endregion
 
   #region Global player interactions
-  public override void StartServerSide(ICoreServerAPI api)
-  {
+  public override void StartServerSide(ICoreServerAPI api) {
     api.Event.AfterActiveSlotChanged += (player, ev) =>
       OnAfterActiveSlotChanged(api, player, ev);
     api.Event.RegisterGameTickListener(_ => OnMoldServerTick(api), 1000);
@@ -68,10 +64,8 @@ public class SteelmakingExpandedModSystem : ModSystem
     CommandRegistry.RegisterAll(api, Mod, GetType().Assembly);
   }
 
-  private static void OnMoldServerTick(ICoreServerAPI api)
-  {
-    foreach (var p in api.World.AllOnlinePlayers)
-    {
+  private static void OnMoldServerTick(ICoreServerAPI api) {
+    foreach (var p in api.World.AllOnlinePlayers) {
       if (p is not IServerPlayer player || player.Entity?.Alive != true)
         continue;
 
@@ -96,8 +90,7 @@ public class SteelmakingExpandedModSystem : ModSystem
     ItemSlot? activeSlot,
     ICoreServerAPI api,
     IServerPlayer player
-  )
-  {
+  ) {
     if (inv == null || inv.ClassName == GlobalConstants.creativeInvClassName)
       return;
 
@@ -110,8 +103,7 @@ public class SteelmakingExpandedModSystem : ModSystem
     ICoreServerAPI api,
     IServerPlayer player,
     ItemSlot? activeSlot
-  )
-  {
+  ) {
     var stack = activeSlot?.Itemstack;
     if (stack?.Block is not BlockToolMold)
       return;
@@ -129,8 +121,7 @@ public class SteelmakingExpandedModSystem : ModSystem
       return;
 
     player.Entity.ReceiveDamage(
-      new DamageSource
-      {
+      new DamageSource {
         Source = EnumDamageSource.Block,
         Type = EnumDamageType.Fire,
       },
@@ -138,8 +129,7 @@ public class SteelmakingExpandedModSystem : ModSystem
     );
   }
 
-  private static bool HasHandProtection(IServerPlayer player)
-  {
+  private static bool HasHandProtection(IServerPlayer player) {
     var charInv = player.InventoryManager?.GetOwnInventory(
       GlobalConstants.characterInvClassName
     );
@@ -157,8 +147,7 @@ public class SteelmakingExpandedModSystem : ModSystem
     ICoreServerAPI api,
     IServerPlayer player,
     ActiveSlotChangeEventArgs ev
-  )
-  {
+  ) {
     var hotbar = player.InventoryManager?.GetHotbarInventory();
     if (hotbar == null || ev.FromSlot < 0 || ev.FromSlot >= hotbar.Count)
       return;
@@ -168,8 +157,7 @@ public class SteelmakingExpandedModSystem : ModSystem
   #endregion
 
   #region Registration
-  public override void Start(ICoreAPI api)
-  {
+  public override void Start(ICoreAPI api) {
     // Load gameplay tunables from ModConfig/smex_values.json (writes defaults on first
     // run). Done before any block entity is constructed so the values apply.
     SmexValues.Load(api);
@@ -183,8 +171,7 @@ public class SteelmakingExpandedModSystem : ModSystem
     // Register this mod's recipe-cost profile so exlib's shared apply pass and the generic
     // /exmod recipes smex <level> command can drive it (see ExRecipeProfiles).
     ExRecipeProfiles.Register(
-      new RecipeProfile
-      {
+      new RecipeProfile {
         Code = Mod.Info.ModID,
         Catalogue = () => SmexRecipeValues.Recipes,
         Defaults = SmexRecipeConfig.DefaultCatalogue,
@@ -200,8 +187,7 @@ public class SteelmakingExpandedModSystem : ModSystem
     // Harmony patches that extend the vanilla tool mold, mold rack and coal pile
     // (filled-mold handling and blast-mix burn-to-slag) without replacing their
     // registered classes, so other mods touching those blocks can coexist.
-    if (!Harmony.HasAnyPatches(Mod.Info.ModID))
-    {
+    if (!Harmony.HasAnyPatches(Mod.Info.ModID)) {
       _harmony = new Harmony(Mod.Info.ModID);
       _harmony.PatchAll(GetType().Assembly);
     }

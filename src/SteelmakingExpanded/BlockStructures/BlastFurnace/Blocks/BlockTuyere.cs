@@ -9,8 +9,7 @@ namespace SteelmakingExpanded.BlockStructures.BlastFurnace.Blocks;
 /// air or hot blast is drawn into the hearth.
 /// </summary>
 [BlockRegister]
-public partial class BlockTuyere : BlockPipe
-{
+public partial class BlockTuyere : BlockPipe {
   public override Dictionary<string, string[]> AllowedOrientations { get; } =
     new() { { "tuyere", ["s", "n", "w", "e"] } };
 

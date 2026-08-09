@@ -7,19 +7,16 @@ namespace SteelmakingExpanded.BlockNetworkMolten;
 /// <summary>
 /// Shared mesh work for the molten-canal family. Currently the open-end cap: the canal,
 /// tap and pedestal all cap unconnected (or closed) connector faces with the same
-/// <c>end.json</c> piece, rotated to the face - previously three copies of the same
-/// tesselate-and-rotate block.
+/// <c>end.json</c> piece, rotated to the face.
 /// </summary>
-public static class MoltenMeshes
-{
+public static class MoltenMeshes {
   private static readonly AssetLocation EndCapShapeLoc = new(
     "smex:shapes/molten/canal/end.json"
   );
 
   /// <summary>Y rotation (degrees) that points the end-cap shape at <paramref name="face"/> (authored facing south).</summary>
   public static float EndCapRotYDeg(BlockFacing face) =>
-    face.Index switch
-    {
+    face.Index switch {
       BlockFacing.indexNORTH => 180f,
       BlockFacing.indexEAST => 90f,
       BlockFacing.indexWEST => 270f,
@@ -36,8 +33,7 @@ public static class MoltenMeshes
     ITesselatorAPI tesselator,
     Block block,
     BlockFacing face
-  )
-  {
+  ) {
     var endShape = api.Assets.Get<Shape>(EndCapShapeLoc);
     if (endShape == null)
       return null;

@@ -18,8 +18,7 @@ namespace PipesAndPowerExpanded.Tests;
 /// line. Charge the main hard (boiler over-pressure stand-in) and the valve keeps the line near its
 /// gate, so the engine runs in its band instead of climbing toward a burst.
 /// </summary>
-internal sealed class RegulatedEnginePlant
-{
+internal sealed class RegulatedEnginePlant {
   public readonly BlockEntityEngineWatt Engine;
   public readonly BlockEntityPressureValve Valve;
 
@@ -27,8 +26,7 @@ internal sealed class RegulatedEnginePlant
   private readonly BlockPos _main;
   private readonly BlockPos _drain;
 
-  public RegulatedEnginePlant(Scene scene, BlockPos enginePos, float gateAtm)
-  {
+  public RegulatedEnginePlant(Scene scene, BlockPos enginePos, float gateAtm) {
     _scene = scene;
 
     var engineBlock = TestBlocks.Configure(
@@ -37,8 +35,7 @@ internal sealed class RegulatedEnginePlant
       55,
       ("side", "north")
     );
-    Engine = new BlockEntityEngineWatt
-    {
+    Engine = new BlockEntityEngineWatt {
       Pos = enginePos.Copy(),
       Block = engineBlock,
     };
@@ -69,8 +66,7 @@ internal sealed class RegulatedEnginePlant
     ReflectionHelpers.SetProperty(valveBlock, "Type", "pressurevalve");
     ReflectionHelpers.SetProperty(valveBlock, "Orientation", orient);
     BlockPos vPos = m1.AddCopy(inletFace);
-    Valve = new BlockEntityPressureValve
-    {
+    Valve = new BlockEntityPressureValve {
       Pos = vPos.Copy(),
       Block = valveBlock,
     };
@@ -104,8 +100,7 @@ internal sealed class RegulatedEnginePlant
   }
 
   /// <summary>Dials the valve's gate to <paramref name="atm"/> (stepping from its 1 atm default).</summary>
-  public void SetGate(float atm)
-  {
+  public void SetGate(float atm) {
     // Walk the gate up/down in the valve's real 0.25 atm steps so the clamp logic is exercised.
     int guard = 0;
     while (
@@ -121,8 +116,7 @@ internal sealed class RegulatedEnginePlant
   }
 
   /// <summary>Charges the steam main to <paramref name="atm"/> (the boiler's over-pressure).</summary>
-  public RegulatedEnginePlant Charge(float atm)
-  {
+  public RegulatedEnginePlant Charge(float atm) {
     _scene
       .NetworkAt<PipeNetwork>(_main)!
       .TryProduceGas(
@@ -140,10 +134,8 @@ internal sealed class RegulatedEnginePlant
   /// continuously over-pressuring the line - re-charging before each tick so the running engine and
   /// the relief valve both act on a fed main (a sealed run would otherwise deplete as the engine draws).
   /// </summary>
-  public RegulatedEnginePlant RunCharged(float atm, int seconds)
-  {
-    for (int i = 0; i < seconds; i++)
-    {
+  public RegulatedEnginePlant RunCharged(float atm, int seconds) {
+    for (int i = 0; i < seconds; i++) {
       Charge(atm);
       _scene.Step(1);
     }
@@ -163,8 +155,7 @@ internal sealed class RegulatedEnginePlant
 /// water at a fixed 1 atm into an output main - the line you run up into a boiler before any steam
 /// engine exists. The intake is the generator; the pump only moves what stands in the input line.
 /// </summary>
-internal sealed class ManualPumpPlant
-{
+internal sealed class ManualPumpPlant {
   public readonly BlockEntityManualFluidPump Pump;
   public readonly BlockEntityFluidIntake Intake;
 
@@ -172,8 +163,7 @@ internal sealed class ManualPumpPlant
   private readonly BlockPos _pond;
   private readonly BlockPos _output;
 
-  public ManualPumpPlant(Scene scene, BlockPos pos)
-  {
+  public ManualPumpPlant(Scene scene, BlockPos pos) {
     _scene = scene;
 
     var pumpBlock = TestBlocks.Configure(
@@ -182,8 +172,7 @@ internal sealed class ManualPumpPlant
       62,
       ("side", "north")
     );
-    Pump = new BlockEntityManualFluidPump
-    {
+    Pump = new BlockEntityManualFluidPump {
       Pos = pos.Copy(),
       Block = pumpBlock,
     };
@@ -206,8 +195,7 @@ internal sealed class ManualPumpPlant
       "Orientation",
       inFace.Opposite.Code[..1]
     );
-    Intake = new BlockEntityFluidIntake
-    {
+    Intake = new BlockEntityFluidIntake {
       Pos = _pond.Copy(),
       Block = intakeBlock,
     };
@@ -227,8 +215,7 @@ internal sealed class ManualPumpPlant
   }
 
   /// <summary>Pre-fills the pond's input line with standing water for the pump to lift.</summary>
-  public ManualPumpPlant FillPond(float litres)
-  {
+  public ManualPumpPlant FillPond(float litres) {
     _scene
       .NetworkAt<PipeNetwork>(_pond)!
       .TryProduceLiquid(litres, 20f, 1f, _scene.World.Accessor);
@@ -236,11 +223,9 @@ internal sealed class ManualPumpPlant
   }
 
   /// <summary>Cranks the pump for <paramref name="seconds"/> ticks (a player holding right-click).</summary>
-  public ManualPumpPlant Crank(int seconds)
-  {
+  public ManualPumpPlant Crank(int seconds) {
     Pump.OnPumpStart();
-    for (int i = 0; i < seconds; i++)
-    {
+    for (int i = 0; i < seconds; i++) {
       Pump.OnPumpStep(); // refresh the watchdog as a held button would
       _scene.Step(1);
     }
@@ -260,8 +245,7 @@ internal sealed class ManualPumpPlant
 /// on toward the boiler instead of venting it. North = spent-steam line, west = feed water, east =
 /// the recovered-water line back to the boiler.
 /// </summary>
-internal sealed class CondenserPlant
-{
+internal sealed class CondenserPlant {
   public readonly BlockEntitySteamCondenser Condenser;
 
   private readonly Scene _scene;
@@ -269,8 +253,7 @@ internal sealed class CondenserPlant
   private readonly BlockPos _feed;
   private readonly BlockPos _recovered;
 
-  public CondenserPlant(Scene scene, BlockPos pos)
-  {
+  public CondenserPlant(Scene scene, BlockPos pos) {
     _scene = scene;
 
     var block = TestBlocks.Configure(
@@ -279,8 +262,7 @@ internal sealed class CondenserPlant
       66,
       ("side", "north")
     );
-    Condenser = new BlockEntitySteamCondenser
-    {
+    Condenser = new BlockEntitySteamCondenser {
       Pos = pos.Copy(),
       Block = block,
     };
@@ -302,8 +284,7 @@ internal sealed class CondenserPlant
     scene.Block(_recovered.AddCopy(BlockFacing.EAST), PpexScenes.Cap(73));
   }
 
-  public CondenserPlant ChargeSteam(float litres)
-  {
+  public CondenserPlant ChargeSteam(float litres) {
     _scene
       .NetworkAt<PipeNetwork>(_steam)!
       .TryProduceGas(
@@ -316,8 +297,7 @@ internal sealed class CondenserPlant
     return this;
   }
 
-  public CondenserPlant ChargeFeedWater(float litres)
-  {
+  public CondenserPlant ChargeFeedWater(float litres) {
     _scene
       .NetworkAt<PipeNetwork>(_feed)!
       .TryProduceLiquid(litres, 40f, 1f, _scene.World.Accessor);

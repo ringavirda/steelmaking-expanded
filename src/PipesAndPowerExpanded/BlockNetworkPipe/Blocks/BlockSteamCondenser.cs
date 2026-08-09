@@ -14,8 +14,7 @@ namespace PipesAndPowerExpanded.BlockNetworkPipe.Blocks;
 /// water sides itself.
 /// </summary>
 [BlockRegister]
-public partial class BlockSteamCondenser : Block, INetworkConnector
-{
+public partial class BlockSteamCondenser : Block, INetworkConnector {
   public string NetworkType => "pipe";
 
   private int Angle => ExOrientation.AngleFromSide(Variant["side"]);
@@ -49,8 +48,7 @@ public partial class BlockSteamCondenser : Block, INetworkConnector
   public BlockFacing SteamInletFace =>
     ExOrientation.RotateFacing(BlockFacing.NORTH, Angle);
 
-  public bool HasConnectorAt(BlockFacing face)
-  {
+  public bool HasConnectorAt(BlockFacing face) {
     int angle = Angle;
     return face == ExOrientation.RotateFacing(BlockFacing.WEST, angle)
       || face == ExOrientation.RotateFacing(BlockFacing.EAST, angle)

@@ -19,8 +19,7 @@ namespace ExpandedLib.Testing;
 /// Typical use: <see cref="Place"/> blocks, <see cref="AddNode"/> them to a network, then
 /// <see cref="Tick"/> to advance one server second at a time and assert on <see cref="NetworkAt"/>.
 /// </summary>
-public sealed class TestWorld
-{
+public sealed class TestWorld {
   private readonly Dictionary<BlockPos, Block> _blocks = new();
   private readonly Dictionary<BlockPos, BlockEntity> _blockEntities = new();
   private readonly Dictionary<int, Block> _blocksById = new();
@@ -59,8 +58,7 @@ public sealed class TestWorld
   /// <summary>Item stacks spawned by the simulation (e.g. a bursting pipe dropping its materials).</summary>
   public List<ItemStack> Drops { get; } = new();
 
-  public TestWorld()
-  {
+  public TestWorld() {
     Air = TestBlocks.Configure(new Block(), "game:air", 0);
     _blocksById[0] = Air;
 
@@ -82,8 +80,7 @@ public sealed class TestWorld
   }
 
   /// <summary>Links <paramref name="be"/> to this world's API so it can resolve networks and ticks.</summary>
-  public TestWorld Attach(BlockEntity be)
-  {
+  public TestWorld Attach(BlockEntity be) {
     be.Api = Api;
     return this;
   }
@@ -93,8 +90,7 @@ public sealed class TestWorld
   /// world's API (so a network node registers itself, captures the manager and schedules its ticks),
   /// exactly as the placement pipeline would. The block entity must already be <see cref="Place"/>d.
   /// </summary>
-  public TestWorld Initialize(BlockEntity be)
-  {
+  public TestWorld Initialize(BlockEntity be) {
     be.Api = Api;
     be.Initialize(Api);
     return this;
@@ -106,8 +102,7 @@ public sealed class TestWorld
   public TestWorld RegisterNetwork(
     string networkType,
     System.Func<BlockNetworkModSystem, BlockNetwork> factory
-  )
-  {
+  ) {
     Networks.RegisterNetworkType(networkType, () => factory(Networks));
     return this;
   }
@@ -118,12 +113,10 @@ public sealed class TestWorld
   /// The block entity is positioned and linked but not <c>Initialize</c>d - the network suite drives
   /// the graph directly rather than through the placement pipeline.
   /// </summary>
-  public TestWorld Place(BlockPos pos, Block block, BlockEntity? be = null)
-  {
+  public TestWorld Place(BlockPos pos, Block block, BlockEntity? be = null) {
     Register(block);
     _blocks[pos] = block;
-    if (be != null)
-    {
+    if (be != null) {
       be.Pos = pos.Copy();
       be.Block = block;
       _blockEntities[pos] = be;
@@ -141,15 +134,13 @@ public sealed class TestWorld
   public TestWorld RegisterBlockEntityFactory(
     string classname,
     Func<BlockEntity> factory
-  )
-  {
+  ) {
     _beFactories[classname] = factory;
     return this;
   }
 
   /// <summary>Registers a block in the id/code lookup without placing it (for orientation-variant swaps).</summary>
-  public TestWorld Register(Block block)
-  {
+  public TestWorld Register(Block block) {
     _blocksById[block.BlockId] = block;
     if (block.Code != null)
       _blocksByCode[block.Code.ToString()] = block;
@@ -163,18 +154,15 @@ public sealed class TestWorld
   /// <see cref="CombustibleProperties"/> so that melt-point classification (liquid/cooling/hardened)
   /// works headlessly. Returns the created item.
   /// </summary>
-  public Item RegisterItem(string code, float meltingPoint = 0f)
-  {
+  public Item RegisterItem(string code, float meltingPoint = 0f) {
     // A unique non-zero id so ItemStack.ResolveBlockOrItem (which re-resolves a cloned/loaded stack
     // by id) finds the item instead of nulling out its Collectible.
-    var item = new Item
-    {
+    var item = new Item {
       Code = new AssetLocation(code),
       ItemId = _nextItemId++,
     };
     if (meltingPoint > 0f)
-      item.CombustibleProps = new CombustibleProperties
-      {
+      item.CombustibleProps = new CombustibleProperties {
         MeltingPoint = (int)meltingPoint,
       };
     _itemsByCode[code] = item;
@@ -220,8 +208,7 @@ public sealed class TestWorld
   /// one tick per second). Mirrors <c>BlockNetworkModSystem.OnServerTick</c> by dispatching
   /// <see cref="BlockNetwork.OnTick"/> for every live network, with <c>dt = 1</c>.
   /// </summary>
-  public void Tick(int seconds = 1)
-  {
+  public void Tick(int seconds = 1) {
     for (int i = 0; i < seconds; i++)
       foreach (var net in Networks.AllNetworks.ToList())
         net.OnTick(Accessor, 1f, Networks);
@@ -229,16 +216,14 @@ public sealed class TestWorld
 
   /// <summary>Fires every block-entity server tick listener registered through <see cref="Api"/>
   /// (i.e. via <c>BlockEntity.RegisterGameTickListener</c>), <paramref name="times"/> times.</summary>
-  public void FireBlockEntityTicks(float dt = 1f, int times = 1)
-  {
+  public void FireBlockEntityTicks(float dt = 1f, int times = 1) {
     for (int i = 0; i < times; i++)
       foreach (var cb in _beTickCallbacks.ToList())
         cb(dt);
   }
 
   /// <summary>Moves the calendar forward without ticking, for calendar-driven effects (evaporation).</summary>
-  public void AdvanceDays(double days)
-  {
+  public void AdvanceDays(double days) {
     _totalDays += days;
     PushCalendar();
   }
@@ -249,8 +234,7 @@ public sealed class TestWorld
 
   #region Fake wiring
 
-  private IBlockAccessor BuildAccessor()
-  {
+  private IBlockAccessor BuildAccessor() {
     var a = Substitute.For<IBlockAccessor>();
 
     a.GetBlock(Arg.Any<BlockPos>()).Returns(ci => GetBlock(ci.Arg<BlockPos>()));
@@ -273,9 +257,7 @@ public sealed class TestWorld
           Arg.Any<ItemStack>()
         )
       )
-      .Do(ci =>
-        DoSpawnBlockEntity(ci.ArgAt<string>(0), ci.ArgAt<BlockPos>(1))
-      );
+      .Do(ci => DoSpawnBlockEntity(ci.ArgAt<string>(0), ci.ArgAt<BlockPos>(1)));
     a.When(x =>
         x.BreakBlock(Arg.Any<BlockPos>(), Arg.Any<IPlayer>(), Arg.Any<float>())
       )
@@ -306,8 +288,7 @@ public sealed class TestWorld
     BlockPos min,
     BlockPos max,
     System.Action<Block, int, int, int> onBlock
-  )
-  {
+  ) {
     int x0 = System.Math.Min(min.X, max.X),
       x1 = System.Math.Max(min.X, max.X);
     int y0 = System.Math.Min(min.Y, max.Y),
@@ -315,13 +296,12 @@ public sealed class TestWorld
     int z0 = System.Math.Min(min.Z, max.Z),
       z1 = System.Math.Max(min.Z, max.Z);
     for (int x = x0; x <= x1; x++)
-    for (int y = y0; y <= y1; y++)
-    for (int z = z0; z <= z1; z++)
-      onBlock(GetBlock(new BlockPos(x, y, z, min.dimension)), x, y, z);
+      for (int y = y0; y <= y1; y++)
+        for (int z = z0; z <= z1; z++)
+          onBlock(GetBlock(new BlockPos(x, y, z, min.dimension)), x, y, z);
   }
 
-  private IServerWorldAccessor BuildWorld()
-  {
+  private IServerWorldAccessor BuildWorld() {
     var w = Substitute.For<IServerWorldAccessor>();
     w.BlockAccessor.Returns(Accessor);
     w.Calendar.Returns(Calendar);
@@ -347,8 +327,7 @@ public sealed class TestWorld
     return w;
   }
 
-  private ICoreServerAPI BuildApi()
-  {
+  private ICoreServerAPI BuildApi() {
     var api = Substitute.For<ICoreServerAPI>();
     // A block entity's Api field is typed ICoreAPI, so it reads the base-interface World/Event/
     // ModLoader members - which ICoreServerAPI re-declares with `new`. Configure both views.
@@ -381,8 +360,7 @@ public sealed class TestWorld
         Arg.Any<int>(),
         Arg.Any<int>()
       )
-      .Returns(ci =>
-      {
+      .Returns(ci => {
         _beTickCallbacks.Add(ci.Arg<System.Action<float>>());
         return (long)_beTickCallbacks.Count;
       });
@@ -409,10 +387,8 @@ public sealed class TestWorld
       ? b
       : null;
 
-  private void DoSetBlock(int id, BlockPos pos)
-  {
-    if (id == 0)
-    {
+  private void DoSetBlock(int id, BlockPos pos) {
+    if (id == 0) {
       _blocks.Remove(pos);
       _blockEntities.Remove(pos);
       return;
@@ -421,8 +397,7 @@ public sealed class TestWorld
       _blocks[pos] = b;
   }
 
-  private void DoSpawnBlockEntity(string classname, BlockPos pos)
-  {
+  private void DoSpawnBlockEntity(string classname, BlockPos pos) {
     if (!_beFactories.TryGetValue(classname, out var factory))
       return;
     var be = factory();
@@ -432,8 +407,7 @@ public sealed class TestWorld
     be.Initialize(Api);
   }
 
-  private void DoExchangeBlock(int id, BlockPos pos)
-  {
+  private void DoExchangeBlock(int id, BlockPos pos) {
     if (!_blocksById.TryGetValue(id, out var b))
       return;
     _blocks[pos] = b;
@@ -441,8 +415,7 @@ public sealed class TestWorld
       be.Block = b;
   }
 
-  private void DoBreak(BlockPos pos)
-  {
+  private void DoBreak(BlockPos pos) {
     _blocks.Remove(pos);
     _blockEntities.Remove(pos);
   }

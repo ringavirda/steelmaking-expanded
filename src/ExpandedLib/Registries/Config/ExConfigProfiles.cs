@@ -9,8 +9,7 @@ namespace ExpandedLib.Registries.Config;
 /// source-generated accessor registers its store here from its <c>Load</c>. Mirrors
 /// <see cref="Recipes.ExRecipeProfiles"/> and lives in exlib so any dependent mod can plug in.
 /// </summary>
-public static class ExConfigProfiles
-{
+public static class ExConfigProfiles {
   private static readonly Dictionary<string, IExConfigAccess> _configs = new(
     StringComparer.OrdinalIgnoreCase
   );

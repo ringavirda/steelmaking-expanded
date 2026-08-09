@@ -14,8 +14,7 @@ namespace SteelmakingExpanded.Compat;
 /// themselves as chunks load and as players join.
 /// </para>
 /// </summary>
-public static class CrushedCokeRetirement
-{
+public static class CrushedCokeRetirement {
   /// <summary>Hides the retired item. Idempotent; call once per side after assets have loaded.</summary>
   public static void Apply(ICoreAPI api) =>
     ExContentGate.HideFromCreativeAndHandbook(

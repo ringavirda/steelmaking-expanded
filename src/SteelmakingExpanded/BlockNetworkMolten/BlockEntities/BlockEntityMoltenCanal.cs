@@ -21,11 +21,9 @@ namespace SteelmakingExpanded.BlockNetworkMolten.BlockEntities;
 /// metal drops below the melting point, blocking flow until chiselled or broken.
 /// </summary>
 [BlockEntityRegister]
-public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
-{
+public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten {
   #region Network
-  public override string NetworkType
-  {
+  public override string NetworkType {
     get => "molten";
     set { }
   }
@@ -80,10 +78,8 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
   /// (start, tap, pedestal) still report when their metal has cooled. Works on both sides
   /// (melting point resolves from the synced <see cref="CellMetalType"/>); empty cells read liquid.
   /// </summary>
-  public MoltenState CellState
-  {
-    get
-    {
+  public MoltenState CellState {
+    get {
       if (Api?.World == null || CellAmount <= 0 || CellMetalType.Length == 0)
         return MoltenState.Liquid;
       Item? item = Api.World.GetItem(new AssetLocation(CellMetalType));
@@ -121,8 +117,7 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
   /// Re-lights the block via <c>MarkBlockDirty</c> when the glow level shifted from
   /// <paramref name="oldGlow"/> (the block id doesn't change, so the engine won't relight on its own).
   /// </summary>
-  private void RelightIfGlowChanged(byte oldGlow)
-  {
+  private void RelightIfGlowChanged(byte oldGlow) {
     if (Api != null && GlowLightLevel != oldGlow)
       Api.World.BlockAccessor.MarkBlockDirty(Pos);
   }
@@ -139,8 +134,7 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
   /// Seals or unseals this canal, then re-registers the node so the graph splits around the seal
   /// (or rejoins when removed).
   /// </summary>
-  public void SetSealed(bool sealedState)
-  {
+  public void SetSealed(bool sealedState) {
     if (Sealed == sealedState)
       return;
     Sealed = sealedState;
@@ -154,14 +148,12 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
   /// Re-walks the graph at this position so a change to <see cref="IsConnectionBroken"/> (seal, tap
   /// close, …) splits or rejoins the run immediately. Server-side only.
   /// </summary>
-  protected void ResyncNetworkNode()
-  {
+  protected void ResyncNetworkNode() {
     if (
       Api?.Side == EnumAppSide.Server
       && NetworkSystem != null
       && Api.World?.BlockAccessor is { } ba
-    )
-    {
+    ) {
       NetworkSystem.RemoveNode(ba, Pos);
       NetworkSystem.AddNode(ba, Pos, NetworkType);
     }
@@ -187,8 +179,7 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
     string type,
     float temperature,
     IWorldAccessor world
-  )
-  {
+  ) {
     if (Solidified || type.Length == 0)
       return 0;
     if (CellAmount > 0f && CellMetalType != type)
@@ -223,8 +214,7 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
   }
 
   /// <summary>Removes up to <paramref name="amount"/> liquid units from this cell. Returns the amount drained. Server-side.</summary>
-  public int DrainMetal(int amount)
-  {
+  public int DrainMetal(int amount) {
     if (Solidified || CellAmount <= 0f)
       return 0;
 
@@ -239,16 +229,14 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
     return actual;
   }
 
-  private void EmptyCell()
-  {
+  private void EmptyCell() {
     CellAmount = 0;
     CellMetalType = "";
     _cellMetalStack = null;
     _cellTemperature = 0f;
   }
 
-  private void SetStackTemperature(IWorldAccessor world, float temp)
-  {
+  private void SetStackTemperature(IWorldAccessor world, float temp) {
     if (_cellMetalStack == null)
       return;
     MoltenMetal.SetTemperature(world, _cellMetalStack, temp);
@@ -263,8 +251,7 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
   /// hot metal poured over an already-full cell, so a continuously-fed fitting stays molten instead
   /// of plugging. Returns true if raised. Server-side.
   /// </summary>
-  internal bool SoakHeat(IWorldAccessor world, float incomingTemp)
-  {
+  internal bool SoakHeat(IWorldAccessor world, float incomingTemp) {
     if (
       CellAmount <= 0f
       || _cellMetalStack == null
@@ -281,8 +268,7 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
   }
 
   /// <summary>Rebuilds the server temperature carrier after a world load (To/FromTreeAttributes only persist type + temperature).</summary>
-  internal void EnsureMetalStack(IWorldAccessor world)
-  {
+  internal void EnsureMetalStack(IWorldAccessor world) {
     if (
       _cellMetalStack != null
       || CellMetalType.Length == 0
@@ -302,8 +288,7 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
   /// VS time-based decay and latches <see cref="Solidified"/> once the metal drops
   /// below its melting point. Driven by <see cref="MoltenNetwork.OnTick"/>.
   /// </summary>
-  internal void UpdateThermal(IWorldAccessor world)
-  {
+  internal void UpdateThermal(IWorldAccessor world) {
     if (CellAmount <= 0f || _cellMetalStack == null)
       return;
 
@@ -320,13 +305,11 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
 
     bool changed = false;
     bool retesselate = false;
-    if (Math.Abs(_cellTemperature - temp) >= 1f)
-    {
+    if (Math.Abs(_cellTemperature - temp) >= 1f) {
       _cellTemperature = temp;
       changed = true;
     }
-    if (SolidifiesWhenCold && !Solidified && temp < meltPoint)
-    {
+    if (SolidifiesWhenCold && !Solidified && temp < meltPoint) {
       Solidified = true;
       changed = true;
       retesselate = true;
@@ -354,8 +337,7 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
   /// the cell, lifts its latch, and rebuilds so it rejoins the run. Returns <c>null</c> off-server
   /// or when not solidified.
   /// </summary>
-  public ItemStack? ClearSolidified()
-  {
+  public ItemStack? ClearSolidified() {
     if (Api?.Side != EnumAppSide.Server || !Solidified || !IsHardened)
       return null;
 
@@ -375,8 +357,7 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
   public bool WouldSpillOnRemoval() => !Solidified && CellAmount > 0f;
 
   /// <summary>Returns the solid metal-bit drop for this solidified cell, or <c>null</c> if there's nothing to drop.</summary>
-  public ItemStack? GetSolidifiedDrop(IWorldAccessor world)
-  {
+  public ItemStack? GetSolidifiedDrop(IWorldAccessor world) {
     if (!Solidified || CellAmount <= 0f || CellMetalType.Length == 0)
       return null;
 
@@ -398,8 +379,7 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
   public override bool OnTesselation(
     ITerrainMeshPool mesher,
     ITesselatorAPI tesselator
-  )
-  {
+  ) {
     // Recompute open faces every tessellation, not from the cache: on chunk load the cache is
     // populated before cross-boundary neighbours exist, capping a connected face. The engine
     // re-tessellates edge blocks once the neighbour chunk arrives, so refreshing here self-corrects
@@ -410,17 +390,14 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
       $"smex:shapes/molten/canal/{Block?.Variant["type"]}.json"
     );
     Shape baseShape = Api.Assets.Get<Shape>(baseShapeLoc);
-    if (baseShape != null)
-    {
+    if (baseShape != null) {
       tesselator.TesselateShape(Block, baseShape, out _baseMesh);
-      if (Block?.Shape != null)
-      {
+      if (Block?.Shape != null) {
         float rotX = Block.Shape.rotateX * GameMath.DEG2RAD;
         float rotY = Block.Shape.rotateY * GameMath.DEG2RAD;
         float rotZ = Block.Shape.rotateZ * GameMath.DEG2RAD;
 
-        if (rotX != 0 || rotY != 0 || rotZ != 0)
-        {
+        if (rotX != 0 || rotY != 0 || rotZ != 0) {
           Vec3f center = new(0.5f, 0.5f, 0.5f);
           _baseMesh.Rotate(center, rotX, rotY, rotZ);
         }
@@ -430,12 +407,9 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
       mesher.AddMeshData(_baseMesh);
 
     // Add rotated ending meshes for open connector faces.
-    if (OpenConnectorFaces != null)
-    {
-      foreach (var face in OpenConnectorFaces)
-      {
-        if (!_cachedEndingMeshes.TryGetValue(face, out var endMesh))
-        {
+    if (OpenConnectorFaces != null) {
+      foreach (var face in OpenConnectorFaces) {
+        if (!_cachedEndingMeshes.TryGetValue(face, out var endMesh)) {
           endMesh = MoltenMeshes.TesselateEndCap(Api, tesselator, Block!, face);
           if (endMesh == null)
             continue;
@@ -459,14 +433,12 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
   // real orientation change.
   private string? _rendererOrientation;
 
-  public override void Initialize(ICoreAPI api)
-  {
+  public override void Initialize(ICoreAPI api) {
     base.Initialize(api);
 
     RefreshOpenConnectorFaces();
 
-    if (api.Side == EnumAppSide.Client)
-    {
+    if (api.Side == EnumAppSide.Client) {
       InitRenderer((ICoreClientAPI)api);
       UpdateRenderer();
     }
@@ -478,8 +450,7 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
   /// original orientation's <c>rotateY</c> - the metal then renders in the pre-rotation direction.
   /// Rebuild the renderer (and refresh the capped open faces) against the new block's shape.
   /// </summary>
-  public override void OnExchanged(Block block)
-  {
+  public override void OnExchanged(Block block) {
     base.OnExchanged(block);
 
     RefreshOpenConnectorFaces();
@@ -487,8 +458,7 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
     if (
       Api is ICoreClientAPI capi
       && block.Variant["orientation"] != _rendererOrientation
-    )
-    {
+    ) {
       _renderer?.Dispose();
       _renderer = null;
       InitRenderer(capi);
@@ -496,27 +466,23 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
     }
   }
 
-  private void RefreshOpenConnectorFaces()
-  {
+  private void RefreshOpenConnectorFaces() {
     if (
       Api?.World?.BlockAccessor == null
       || Block is not BlockNetworkNode netBlock
-    )
-    {
+    ) {
       OpenConnectorFaces = null;
       return;
     }
 
     // A sealed canal caps every connector face regardless of neighbours - the visible seal.
-    if (Sealed)
-    {
+    if (Sealed) {
       BlockFacing[]? faces = netBlock.GetConnectorFaces();
       OpenConnectorFaces = faces is { Length: > 0 } ? faces : null;
       return;
     }
 
-    if (NetworkSystem == null)
-    {
+    if (NetworkSystem == null) {
       OpenConnectorFaces = null;
       return;
     }
@@ -530,8 +496,7 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
   }
 
   /// <summary>Creates the molten-fill renderer from the block's fill-quad attributes. Override to customise the fill geometry.</summary>
-  protected virtual void InitRenderer(ICoreClientAPI capi)
-  {
+  protected virtual void InitRenderer(ICoreClientAPI capi) {
     if (Block is not BlockMoltenCanal canal)
       return;
 
@@ -556,8 +521,7 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
   }
 
   /// <summary>Pushes this cell's fill ratio, temperature and metal stack into the renderer. Override to add custom render state.</summary>
-  protected virtual void UpdateRenderer()
-  {
+  protected virtual void UpdateRenderer() {
     if (_renderer == null)
       return;
 
@@ -566,15 +530,11 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
       MaxUnitCapacity > 0 ? displayAmount / MaxUnitCapacity : 0f;
     _renderer.Temperature = _cellTemperature;
 
-    if (CellMetalType != _cachedMetalType)
-    {
-      if (CellMetalType.Length == 0)
-      {
+    if (CellMetalType != _cachedMetalType) {
+      if (CellMetalType.Length == 0) {
         _cachedMetalStack = null;
         _cachedMetalType = "";
-      }
-      else
-      {
+      } else {
         Item? item = Api.World.GetItem(new AssetLocation(CellMetalType));
         _cachedMetalStack = item != null ? new ItemStack(item) : null;
         // Only advance the cache key when the item resolved; leave stale to retry if not yet registered.
@@ -586,21 +546,18 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
   }
 
   /// <summary>Client-side: shows in-flight poured metal immediately, before the server confirms.</summary>
-  public void ShowPendingFill(float amount)
-  {
+  public void ShowPendingFill(float amount) {
     _pendingFillAmount = amount;
     UpdateRenderer();
   }
 
-  public override void OnBlockRemoved()
-  {
+  public override void OnBlockRemoved() {
     _renderer?.Dispose();
     _renderer = null;
     base.OnBlockRemoved();
   }
 
-  public override void OnBlockUnloaded()
-  {
+  public override void OnBlockUnloaded() {
     _renderer?.Dispose();
     _renderer = null;
     base.OnBlockUnloaded();
@@ -608,8 +565,7 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
   #endregion
 
   #region Serialization / info
-  public override void ToTreeAttributes(ITreeAttribute tree)
-  {
+  public override void ToTreeAttributes(ITreeAttribute tree) {
     base.ToTreeAttributes(tree);
     tree.SetBool("solidified", Solidified);
     tree.SetBool("sealed", Sealed);
@@ -621,8 +577,7 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
   public override void FromTreeAttributes(
     ITreeAttribute tree,
     IWorldAccessor worldForResolving
-  )
-  {
+  ) {
     base.FromTreeAttributes(tree, worldForResolving);
     byte oldGlow = GlowLightLevel;
     Solidified = tree.GetBool("solidified");
@@ -633,8 +588,7 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
     // _cellMetalStack is rebuilt lazily server-side in EnsureMetalStack.
 
     // Invariant: an empty cell is never solidified (also scrubs phantom flags from old saves).
-    if (CellAmount <= 0f)
-    {
+    if (CellAmount <= 0f) {
       Solidified = false;
       CellMetalType = "";
     }
@@ -650,15 +604,13 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
       RelightIfGlowChanged(oldGlow);
   }
 
-  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
-  {
+  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc) {
     base.GetBlockInfo(forPlayer, dsc);
 
     if (Sealed)
       dsc.AppendLine(Lang.Get("smex:canal-sealed"));
 
-    if (Solidified)
-    {
+    if (Solidified) {
       string solidMetalName = MoltenMetal.DisplayName(CellMetalType);
       dsc.AppendLine(
         Lang.Get(
@@ -677,16 +629,12 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten
       return;
     }
 
-    if (CellAmount <= 0f)
-    {
+    if (CellAmount <= 0f) {
       dsc.AppendLine(Lang.Get("smex:canal-empty"));
-    }
-    else
-    {
+    } else {
       string metalName = MoltenMetal.DisplayName(CellMetalType);
       string state = Lang.Get(
-        CellState switch
-        {
+        CellState switch {
           MoltenState.Liquid => "smex:metalstate-liquid",
           MoltenState.Hardened => "smex:metalstate-hardened",
           _ => "smex:metalstate-cooling",

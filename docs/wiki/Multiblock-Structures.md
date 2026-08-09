@@ -2,12 +2,15 @@
 
 `Blocks/Structures/` provides everything a multi-cell machine needs: completion monitoring, a
 build-outline projection (ctrl+shift+right-click), crash-safe incomplete-part highlighting, and a
-shared invisible **filler** block that gives a single-cell mega-block real per-cell collision.
+shared invisible **filler** block that gives a single-cell mega-block real per-cell collision and
+can carry ports and behaviours on the controller's behalf.
 
 There are two independent tools here - use one or both:
 
 1. **The filler system** - make one logical block occupy several world cells with solid
-   collision/selection, while all interaction routes back to the controller block.
+   collision/selection, while all interaction routes back to the controller block. A footprint cell
+   can additionally expose a network port or host block entity behaviours (a mechanical-power
+   intake, say) that the controller's own cell is in the wrong place for.
 2. **`BlockEntityMultiblockStructure`** - a base block entity that monitors whether a designed
    multiblock pattern is complete, runs production only while complete, and shows a build outline
    of missing parts.
@@ -35,11 +38,23 @@ public interface IFillerHost
 // in your blocktype attributes
 "fillerOffsets": [
   { "x": 1, "y": 0, "z": 0, "allowAttach": true },
-  { "x": 0, "y": 1, "z": 0 }
+  { "x": 0, "y": 1, "z": 0 },
+  {
+    "x": 0, "y": 2, "z": 0,
+    "behaviors": [
+      {
+        "code": "exlib.BEBehaviorMPFillerPort",
+        "face": "east",
+        "properties": { "resistance": 0.8 }
+      }
+    ]
+  }
 ]
 ```
 
 `allowAttach` (default `false`) controls whether other blocks may attach to that filler cell.
+`behaviors` (optional) makes the cell host block entity behaviours on the controller's behalf -
+see [Per-cell hosted behaviours](#per-cell-hosted-behaviours-optional).
 
 ### Placing and removing fillers
 
@@ -58,8 +73,8 @@ public static class StructureFillers
     public static void RemoveFillers(IWorldAccessor world, BlockPos principalPos, IEnumerable<FillerCell> cells);
 }
 
-public readonly struct FillerOffset { public Vec3i Offset { get; } public bool AllowAttach { get; } }
-public readonly struct FillerCell   { public BlockPos Pos { get; } public bool AllowAttach { get; } }
+public readonly record struct FillerOffset(Vec3i Offset, bool AllowAttach, FillerBehavior[]? Behaviors = null);
+public readonly record struct FillerCell(BlockPos Pos, bool AllowAttach, FillerBehavior[]? Behaviors = null);
 ```
 
 Typical flow in the controller block:
@@ -101,6 +116,90 @@ public interface IFillerInteractionTarget
 break, pick, drops, sounds, HUD info and interaction help to the controller automatically; the BE
 stores the `Principal` position link plus optional network-port config (`PortFace`,
 `PortNetworkType`) so a filler cell can even expose a network connector on the controller's behalf.
+
+### Per-cell hosted behaviours (optional)
+
+A footprint cell can also carry real block entity behaviours. This is how a mega-block presents a
+connector the controller block cannot: the controller occupies one cell, and a machine port often
+has to sit two cells away. Declare them on the `fillerOffsets` entry:
+
+```jsonc
+{
+  "x": 0, "y": 1, "z": 0,
+  "behaviors": [
+    {
+      "code": "exlib.BEBehaviorMPFillerPort",   // registered BE-behaviour class code
+      "face": "east",                            // optional, in the block's NORTH orientation
+      "properties": { "resistance": 0.8 }        // optional, passed to the behaviour
+    }
+  ]
+}
+```
+
+```csharp
+public readonly record struct FillerBehavior(string Code, BlockFacing? ConnectorFace, JsonObject? Properties);
+
+public interface IFillerHostedBehavior
+{
+    void ConfigureFromFiller(BlockPos? principal, BlockFacing? connectorFace, JsonObject? properties);
+}
+```
+
+`StructureFillers.FootprintCells` rotates each declared `face` into the placed orientation, and
+`PlaceFillers` hands the array to `BlockEntityStructureFiller.SetHostedBehaviors` immediately after
+the `Principal` link is set. The BE instantiates each behaviour by class code, calls
+`ConfigureFromFiller` **before** the behaviour's own `Initialize` (so `SetOrientations` already sees
+the right face), then adds and initialises it. The declarations are saved on the BE and the
+instances recreated on load.
+
+`face` takes either spelling - `"east"` or `"e"` - so a declaration can reuse the single-letter form
+the network-port strings use. Omit it entirely for a behaviour that needs no connector.
+
+> **Orientation comes from the principal.** `exlib:structurefiller` is one shared block with no
+> variants, so its own facing is always north. A hosted behaviour that needs a direction must take
+> it from `ConfigureFromFiller`, never from `Block.Variant`.
+
+### `BEBehaviorMPFillerPort` - a mechanical-power intake on a filler cell
+
+The one hosted behaviour exlib ships. It is a minimal `BEBehaviorMPBase` that joins the vanilla
+mechanical-power network at its cell, renders nothing, and only loads the network with a
+configurable resistance. The controller reads the resulting rotation back and drives its own parts.
+
+```csharp
+public class BEBehaviorMPFillerPort : BEBehaviorMPBase, IFillerHostedBehavior
+{
+    public const float DefaultResistance = 0.5f;   // override with the "resistance" property
+
+    public BlockFacing PortFacing { get; }         // the coupling face, already rotated
+    public bool  IsTurning { get; }                // network present and turning
+    public float Speed { get; }                    // absolute network speed
+    public bool  IsReversed { get; }               // true while the network runs negative
+    public float CurrentAngleRad { get; }          // for phase-locking an animation
+}
+```
+
+`BlockStructureFiller` implements `IMechanicalPowerBlock` for this: a cell reports an axle connector
+when it hosts an MP behaviour whose declared face matches the queried face **or its opposite** -
+both ends of one axle line, so an axle can run straight through the cell and attach from either
+side. The port itself also connects its opposite face on `Initialize`, so a row of ports merges into
+a single network instead of fracturing it.
+
+> **One `AxisSign` per axis, not per facing.** Opposite facings share an axle line, so signing them
+> separately makes the two ends counter-rotate. The port derives its sign from `PortFacing.Axis`.
+
+Read it from the controller's block entity like any other port:
+
+```csharp
+var port = Api.World.BlockAccessor
+    .GetBlockEntity(block.MpPortWorldPos(Pos))
+    ?.GetBehavior<BEBehaviorMPFillerPort>();
+float speed = port is { IsTurning: true } ? port.Speed : 0f;
+```
+
+Machines scale their work by that speed between a minimum (below which they do nothing) and a
+maximum (full rate) - `smex:mpblower` and `ppex:mpfluidpump` both do. To turn a driven part in step
+with the axle rather than merely at the same rate, feed `CurrentAngleRad` to
+[`MPAnim`](Helpers-and-Renderers).
 
 ## Completion monitoring: `BlockEntityMultiblockStructure`
 
@@ -186,4 +285,4 @@ resolves to no block, so the base falls back to a neutral tint instead of crashi
 
 - [Production Machines](Production-Machines) - the tick lifecycle this builds on.
 - [Block Networks](Block-Networks) - a structure that is also a network node must call `AddNode`/`RemoveNode` itself.
-- [Helpers & Renderers](Helpers-and-Renderers) - `ExOrientation` for the rotation math; `SurfaceRenderer` for fluid surfaces.
+- [Helpers & Renderers](Helpers-and-Renderers) - `ExOrientation` for the rotation math; `MPAnim` for phase-locking a driven part to an axle; `SurfaceRenderer` for fluid surfaces.

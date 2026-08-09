@@ -21,8 +21,7 @@ namespace PipesAndPowerExpanded.BlockStructures.Engine.Blocks;
 public partial class BlockEngineCornish
   : BlockEngine,
     IFillerHost,
-    IEngineGeometry
-{
+    IEngineGeometry {
   protected override RepairItem[] RepairItems =>
     [
       new(["metalplate-steel"], 4, "steel plate"),
@@ -33,8 +32,7 @@ public partial class BlockEngineCornish
     IWorldAccessor world,
     IPlayer byPlayer,
     BlockSelection blockSel
-  )
-  {
+  ) {
     // Direct click on the engine's own cell drives the control rods.
     if (TryThrottle(world, byPlayer, blockSel.Position, blockSel.Position))
       return true;
@@ -47,8 +45,7 @@ public partial class BlockEngineCornish
     IPlayer byPlayer,
     BlockSelection principalSel,
     BlockPos clickedCell
-  )
-  {
+  ) {
     // Forwarded from a footprint filler: the rods only answer on the cell above the engine.
     if (TryThrottle(world, byPlayer, principalSel.Position, clickedCell))
       return true;
@@ -71,8 +68,7 @@ public partial class BlockEngineCornish
     IPlayer byPlayer,
     BlockPos enginePos,
     BlockPos clickedCell
-  )
-  {
+  ) {
     if (!IsThrottleCell(enginePos, clickedCell))
       return false;
     if (
@@ -86,12 +82,10 @@ public partial class BlockEngineCornish
     if (held?.Collectible?.Code?.Path?.Contains("wrench") != true)
       return false;
 
-    if (world.Side == EnumAppSide.Server)
-    {
+    if (world.Side == EnumAppSide.Server) {
       var player = byPlayer as IServerPlayer;
       int direction = byPlayer.Entity.Controls.CtrlKey ? -1 : 1;
-      if (be.AdjustThrottle(direction))
-      {
+      if (be.AdjustThrottle(direction)) {
         ExSounds.PlayAt(world, be.Pos, ExSounds.ToggleSwitch, byPlayer);
         player?.SendMessage(
           GlobalConstants.CurrentChatGroup,
@@ -101,9 +95,7 @@ public partial class BlockEngineCornish
           ),
           EnumChatType.Notification
         );
-      }
-      else
-      {
+      } else {
         // Already at the end of the range - tell the player which way it can't go.
         player?.SendIngameError(
           "ppex-engine",
@@ -140,8 +132,7 @@ public partial class BlockEngineCornish
     BlockSelection principalSel,
     IPlayer forPlayer,
     BlockPos clickedCell
-  )
-  {
+  ) {
     WorldInteraction[] help = base.GetFillerInteractionHelp(
       world,
       principalSel,
@@ -163,8 +154,7 @@ public partial class BlockEngineCornish
     IWorldAccessor world,
     BlockPos enginePos,
     WorldInteraction[] baseHelp
-  )
-  {
+  ) {
     if (
       world.BlockAccessor.GetBlockEntity(enginePos)
         is not BlockEntityEngineCornish be
@@ -174,14 +164,12 @@ public partial class BlockEngineCornish
       return baseHelp;
 
     ItemStack[] wrench = ExItems.WrenchStacks(world);
-    WorldInteraction raise = new()
-    {
+    WorldInteraction raise = new() {
       ActionLangCode = "ppex:blockhelp-engine-throttle-up",
       MouseButton = EnumMouseButton.Right,
       Itemstacks = wrench,
     };
-    WorldInteraction lower = new()
-    {
+    WorldInteraction lower = new() {
       ActionLangCode = "ppex:blockhelp-engine-throttle-down",
       MouseButton = EnumMouseButton.Right,
       HotKeyCode = "ctrl",

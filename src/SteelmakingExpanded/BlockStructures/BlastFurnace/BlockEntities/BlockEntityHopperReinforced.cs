@@ -15,8 +15,7 @@ namespace SteelmakingExpanded.BlockStructures.BlastFurnace.BlockEntities;
 /// opens its dialog; Ctrl + right-click toggles the bell hopper's dropping.
 /// </summary>
 [BlockEntityRegister]
-public class BlockEntityHopperReinforced : BlockEntityContainer
-{
+public class BlockEntityHopperReinforced : BlockEntityContainer {
   private InventoryGeneric _inventory;
 
   // The open inventory dialog (client-side only; null when closed).
@@ -38,13 +37,11 @@ public class BlockEntityHopperReinforced : BlockEntityContainer
   public override InventoryBase Inventory => _inventory;
   public override string InventoryClassName => "hopperreinforced";
 
-  public BlockEntityHopperReinforced()
-  {
+  public BlockEntityHopperReinforced() {
     _inventory = new InventoryBlastFurnace(8, "hopperreinforced-0", null, null);
   }
 
-  public override void Initialize(ICoreAPI api)
-  {
+  public override void Initialize(ICoreAPI api) {
     base.Initialize(api);
     _inventory.LateInitialize(
       InventoryClassName + "-" + Pos.X + "/" + Pos.Y + "/" + Pos.Z,
@@ -64,16 +61,13 @@ public class BlockEntityHopperReinforced : BlockEntityContainer
   private void OnServerSlotModified(int slotId) => MarkDirty();
 
   /// <summary>Opens the hopper inventory, or (with Ctrl held) toggles dropping on the bell hopper below.</summary>
-  public void OnInteract(IPlayer byPlayer)
-  {
-    if (byPlayer.Entity.Controls.CtrlKey)
-    {
+  public void OnInteract(IPlayer byPlayer) {
+    if (byPlayer.Entity.Controls.CtrlKey) {
       if (
         Api.Side == EnumAppSide.Server
         && Api.World.BlockAccessor.GetBlockEntity(Pos.DownCopy())
           is BlockEntityHopperBell bell
-      )
-      {
+      ) {
         bell.IsDropping = !bell.IsDropping;
         bell.MarkDirty(true);
       }
@@ -88,10 +82,8 @@ public class BlockEntityHopperReinforced : BlockEntityContainer
       ToggleDialog((ICoreClientAPI)Api, byPlayer);
   }
 
-  private void ToggleDialog(ICoreClientAPI capi, IPlayer byPlayer)
-  {
-    if (_invDialog != null)
-    {
+  private void ToggleDialog(ICoreClientAPI capi, IPlayer byPlayer) {
+    if (_invDialog != null) {
       _invDialog.TryClose();
       return;
     }
@@ -102,8 +94,7 @@ public class BlockEntityHopperReinforced : BlockEntityContainer
       Pos,
       capi
     );
-    _invDialog.OnClosed += () =>
-    {
+    _invDialog.OnClosed += () => {
       _invDialog = null;
       capi.Network.SendBlockEntityPacket(Pos, PacketIdClose);
     };
@@ -123,16 +114,13 @@ public class BlockEntityHopperReinforced : BlockEntityContainer
     IPlayer player,
     int packetid,
     byte[] data
-  )
-  {
-    if (packetid == PacketIdClose)
-    {
+  ) {
+    if (packetid == PacketIdClose) {
       player.InventoryManager?.CloseInventory(Inventory);
       return;
     }
 
-    if (!Api.World.Claims.TryAccess(player, Pos, EnumBlockAccessFlags.Use))
-    {
+    if (!Api.World.Claims.TryAccess(player, Pos, EnumBlockAccessFlags.Use)) {
       Api.World.Logger.Audit(
         "Player {0} sent a hopper inventory packet to {1} without claim access. Rejected.",
         player.PlayerName,
@@ -141,14 +129,12 @@ public class BlockEntityHopperReinforced : BlockEntityContainer
       return;
     }
 
-    if (packetid < 1000)
-    {
+    if (packetid < 1000) {
       Inventory.InvNetworkUtil.HandleClientPacket(player, packetid, data);
       return;
     }
 
-    if (packetid == PacketIdOpen)
-    {
+    if (packetid == PacketIdOpen) {
       player.InventoryManager?.OpenInventory(Inventory);
       return;
     }
@@ -156,15 +142,13 @@ public class BlockEntityHopperReinforced : BlockEntityContainer
     base.OnReceivedClientPacket(player, packetid, data);
   }
 
-  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
-  {
+  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc) {
     base.GetBlockInfo(forPlayer, dsc);
 
     if (
       Api.World.BlockAccessor.GetBlockEntity(Pos.DownCopy())
       is BlockEntityHopperBell bell
-    )
-    {
+    ) {
       dsc.AppendLine(
         Lang.Get(
           "smex:hopper-info-bell",
@@ -181,13 +165,10 @@ public class BlockEntityHopperReinforced : BlockEntityContainer
         )
       );
 
-      if (bell.IsFurnaceFull())
-      {
+      if (bell.IsFurnaceFull()) {
         dsc.AppendLine(Lang.Get("smex:hopper-info-furnacefull"));
       }
-    }
-    else
-    {
+    } else {
       dsc.AppendLine(Lang.Get("smex:hopper-info-nobell"));
     }
   }
@@ -201,17 +182,14 @@ public class BlockEntityHopperReinforced : BlockEntityContainer
   public override bool OnTesselation(
     ITerrainMeshPool mesher,
     ITesselatorAPI tesselator
-  )
-  {
+  ) {
     if (
       Api.World.BlockAccessor.GetBlockEntity(Pos.DownCopy())
         is BlockEntityHopperBell bell
       && bell.BlastMixMagazine > 0
-    )
-    {
+    ) {
       _contentsBaseMesh ??= BuildContentsMesh(tesselator);
-      if (_contentsBaseMesh != null)
-      {
+      if (_contentsBaseMesh != null) {
         float fill = GameMath.Clamp(
           (float)bell.BlastMixMagazine / bell.MaxMagazineCapacity,
           0f,
@@ -230,8 +208,7 @@ public class BlockEntityHopperReinforced : BlockEntityContainer
     return base.OnTesselation(mesher, tesselator);
   }
 
-  private MeshData? BuildContentsMesh(ITesselatorAPI tesselator)
-  {
+  private MeshData? BuildContentsMesh(ITesselatorAPI tesselator) {
     Shape? shape = Api
       .Assets.TryGet(
         new AssetLocation("smex:shapes/blastfurnace/contents-blastmix.json")
@@ -250,10 +227,8 @@ public class InventoryBlastFurnace(
   string className,
   string? instanceID,
   ICoreAPI? api
-) : InventoryGeneric(quantitySlots, className, instanceID, api)
-{
-  protected override ItemSlot NewSlot(int i)
-  {
+) : InventoryGeneric(quantitySlots, className, instanceID, api) {
+  protected override ItemSlot NewSlot(int i) {
     if (i == 0 || i == 1 || i == 4 || i == 5)
       return new ItemSlotBlastFurnace(this, "iron");
     if (i == 2 || i == 6)
@@ -265,18 +240,15 @@ public class InventoryBlastFurnace(
   }
 }
 
-public class ItemSlotBlastFurnace : ItemSlotSurvival
-{
+public class ItemSlotBlastFurnace : ItemSlotSurvival {
   public string AllowedType { get; }
 
   public ItemSlotBlastFurnace(InventoryBase inventory, string allowedType)
-    : base(inventory)
-  {
+    : base(inventory) {
     AllowedType = allowedType;
 
     // The engine automatically handles rendering these hex colors!
-    HexBackgroundColor = allowedType switch
-    {
+    HexBackgroundColor = allowedType switch {
       "iron" => "#A05A3C", // Rust Orange
       "coke" => "#222222", // Dark Charcoal
       "lime" => "#78A278", // Pale Green
@@ -287,8 +259,7 @@ public class ItemSlotBlastFurnace : ItemSlotSurvival
   public override bool CanTakeFrom(
     ItemSlot sourceSlot,
     EnumMergePriority priority = EnumMergePriority.AutoMerge
-  )
-  {
+  ) {
     if (sourceSlot.Itemstack == null)
       return base.CanTakeFrom(sourceSlot, priority);
 
@@ -301,7 +272,12 @@ public class ItemSlotBlastFurnace : ItemSlotSurvival
       && (IronOreCompat.IsCrushedIronOre(path) || path.Equals("blastmix"))
     )
       return base.CanTakeFrom(sourceSlot, priority);
-    if (AllowedType == "coke" && path.Equals("coke"))
+    // The fuel slot takes coke or charcoal; the bell hopper below exchanges them by carbon
+    // content, so a batch can be fed either or a mix of both.
+    if (
+      AllowedType == "coke"
+      && (path.Equals("coke") || path.Equals("charcoal"))
+    )
       return base.CanTakeFrom(sourceSlot, priority);
     if (AllowedType == "lime" && path.Equals("lime"))
       return base.CanTakeFrom(sourceSlot, priority);
@@ -312,16 +288,14 @@ public class ItemSlotBlastFurnace : ItemSlotSurvival
   public override bool CanHold(ItemSlot sourceSlot) => CanTakeFrom(sourceSlot);
 }
 
-public class GuiDialogHopper : GuiDialogBlockEntity
-{
+public class GuiDialogHopper : GuiDialogBlockEntity {
   public GuiDialogHopper(
     string dialogTitle,
     InventoryBase inventory,
     BlockPos blockEntityPos,
     ICoreClientAPI capi
   )
-    : base(dialogTitle, inventory, blockEntityPos, capi)
-  {
+    : base(dialogTitle, inventory, blockEntityPos, capi) {
     if (IsDuplicate)
       return;
 

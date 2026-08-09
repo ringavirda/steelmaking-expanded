@@ -7,7 +7,7 @@ interface (or just let the healer run) and exlib does the chunk sweeping.
 
 ## Block migrations
 
-`BlockMigrationModSystem` collects every `IBlockCodeMigration` and `IBlockRemoval` implementation
+`BlockMigrationModSystem` collects every `IBlockCodeMigration`, `IItemCodeMigration` and `IBlockRemoval` implementation
 (public parameterless constructor, auto-discovered) into one table and applies it as chunk columns
 load - and rewrites matching stacks in containers and player inventories too. Because it matches on
 `Block.Code`, both renumbered ids and missing-block placeholders are handled.

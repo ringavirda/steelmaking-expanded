@@ -15,8 +15,7 @@ namespace ExpandedLib.Registries.Entities;
 /// class: <c>[BlockBehaviorRegister("MultiblockStructure", PrefixModId = false)]</c>).
 /// </para>
 /// </summary>
-public abstract class RegisterAttribute(string? code = null) : Attribute
-{
+public abstract class RegisterAttribute(string? code = null) : Attribute {
   /// <summary>Explicit registry key. When null, the class name is used.</summary>
   public string? Code { get; } = code;
 

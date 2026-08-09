@@ -30,8 +30,7 @@ namespace SteelmakingExpanded.BlockMigrations;
 /// </summary>
 public class ToolMoldDomainMigration
   : IBlockCodeMigration,
-    IBlockEntityMigration
-{
+    IBlockEntityMigration {
   public string Name =>
     "Plate/double-ingot/quad-rod molds moved to smex domain";
 
@@ -60,8 +59,7 @@ public class ToolMoldDomainMigration
 
   public IEnumerable<(AssetLocation oldCode, AssetLocation newCode)> GetRemaps(
     ICoreServerAPI api
-  )
-  {
+  ) {
     foreach (
       var (material, colors) in new[]
       {
@@ -69,15 +67,14 @@ public class ToolMoldDomainMigration
         ("fired", FiredColors),
       }
     )
-    foreach (string color in colors)
-    foreach (string tool in ToolTypes)
-    {
-      string path = $"toolmold-{color}-{material}-{tool}";
-      yield return (
-        new AssetLocation("game", path),
-        new AssetLocation("smex", path)
-      );
-    }
+      foreach (string color in colors)
+        foreach (string tool in ToolTypes) {
+          string path = $"toolmold-{color}-{material}-{tool}";
+          yield return (
+            new AssetLocation("game", path),
+            new AssetLocation("smex", path)
+          );
+        }
   }
 
   /// <summary>
@@ -92,8 +89,7 @@ public class ToolMoldDomainMigration
     ITreeAttribute? oldState,
     BlockEntity newBlockEntity,
     IWorldAccessor world
-  )
-  {
+  ) {
     if (oldState != null)
       newBlockEntity.FromTreeAttributes(oldState, world);
   }

@@ -7,8 +7,7 @@ using Vintagestory.API.MathTools;
 namespace PipesAndPowerExpanded.BlockNetworkPipe.Blocks;
 
 [BlockRegister]
-public partial class BlockFluidIntake : BlockNetworkNode
-{
+public partial class BlockFluidIntake : BlockNetworkNode {
   public override string NetworkType => "pipe";
 
   public override Dictionary<string, string[]> AllowedOrientations { get; } =
@@ -33,14 +32,12 @@ public partial class BlockFluidIntake : BlockNetworkNode
     ItemStack itemstack,
     BlockSelection blockSel,
     ref string failureCode
-  )
-  {
+  ) {
     Block below = world.BlockAccessor.GetBlock(
       blockSel.Position.DownCopy(),
       BlockLayersAccess.Fluid
     );
-    if (below.LiquidCode != "water")
-    {
+    if (below.LiquidCode != "water") {
       // Shown as Lang.Get("placefailure-" + code), so this must be a plain code with a
       // matching "game:placefailure-…" lang entry, not text.
       failureCode = "ppex-fluidintake-nowater";
@@ -65,8 +62,7 @@ public partial class BlockFluidIntake : BlockNetworkNode
     IWorldAccessor world,
     BlockPos pos,
     BlockPos neighbour
-  )
-  {
+  ) {
     if (Orientation == null)
       return;
 

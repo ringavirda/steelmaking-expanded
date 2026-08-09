@@ -16,14 +16,12 @@ namespace SteelmakingExpanded.Patches;
   typeof(BlockMoldRack),
   nameof(BlockMoldRack.OnBlockInteractStart)
 )]
-public static class MoldRackSpillPatch
-{
+public static class MoldRackSpillPatch {
   public static void Postfix(
     IWorldAccessor world,
     IPlayer byPlayer,
     BlockSelection blockSel
-  )
-  {
+  ) {
     if (
       world.Side != EnumAppSide.Server
       || world.BlockAccessor.GetBlockEntity(blockSel.Position)

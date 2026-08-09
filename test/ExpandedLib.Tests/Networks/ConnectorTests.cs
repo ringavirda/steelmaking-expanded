@@ -11,18 +11,15 @@ namespace ExpandedLib.Tests;
 /// Covers connector-level graph queries: reciprocal-connector requirement, open-end detection,
 /// dynamic severing, and the static side/compatibility helpers.
 /// </summary>
-public class ConnectorTests
-{
-  private static TestWorld NewWorld()
-  {
+public class ConnectorTests {
+  private static TestWorld NewWorld() {
     var w = new TestWorld();
     w.RegisterNetwork("test", sys => new StubNetwork(sys));
     return w;
   }
 
   [Fact]
-  public void GetConnectedNeighbors_requires_reciprocal_connector()
-  {
+  public void GetConnectedNeighbors_requires_reciprocal_connector() {
     var w = NewWorld();
     var a = new BlockPos(0, 0, 0);
     var b = new BlockPos(0, 0, 1); // south of A
@@ -36,8 +33,7 @@ public class ConnectorTests
   }
 
   [Fact]
-  public void GetConnectedNeighbors_links_when_both_faces_match()
-  {
+  public void GetConnectedNeighbors_links_when_both_faces_match() {
     var w = NewWorld();
     var a = new BlockPos(0, 0, 0);
     var b = new BlockPos(0, 0, 1);
@@ -54,8 +50,7 @@ public class ConnectorTests
   }
 
   [Fact]
-  public void GetOpenConnectorFaces_reports_air_ends()
-  {
+  public void GetOpenConnectorFaces_reports_air_ends() {
     var w = NewWorld();
     var pos = new BlockPos(0, 0, 0);
     var block = TestNetworkBlock.Create("test", "ns", 1);
@@ -69,8 +64,7 @@ public class ConnectorTests
   }
 
   [Fact]
-  public void IsConnectionBroken_severs_then_restores_traversal()
-  {
+  public void IsConnectionBroken_severs_then_restores_traversal() {
     var w = NewWorld();
     var a = new BlockPos(0, 0, 0);
     var b = new BlockPos(0, 0, 1);
@@ -92,23 +86,20 @@ public class ConnectorTests
   [InlineData("w")]
   [InlineData("u")]
   [InlineData("d")]
-  public void SideToFace_maps_known_codes(string side)
-  {
+  public void SideToFace_maps_known_codes(string side) {
     var face = BlockNetworkModSystem.SideToFace(side);
     Assert.NotNull(face);
     Assert.Equal(side[0], face!.Code[0]);
   }
 
   [Fact]
-  public void SideToFace_returns_null_for_unknown()
-  {
+  public void SideToFace_returns_null_for_unknown() {
     Assert.Null(BlockNetworkModSystem.SideToFace("x"));
     Assert.Null(BlockNetworkModSystem.SideToFace(null));
   }
 
   [Fact]
-  public void IsCompatibleNetworkBlock_matches_only_same_type()
-  {
+  public void IsCompatibleNetworkBlock_matches_only_same_type() {
     var block = TestNetworkBlock.Create("test", "ns", 1);
     Assert.True(BlockNetworkModSystem.IsCompatibleNetworkBlock(block, "test"));
     Assert.False(

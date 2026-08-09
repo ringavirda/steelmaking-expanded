@@ -14,16 +14,13 @@ namespace PipesAndPowerExpanded.Tests;
 /// the entity's private <c>_rcc</c> field (typed <see cref="ExRightClickConstructable"/>). Re-apply
 /// after a real <c>Initialize</c> (which re-reads <c>_rcc</c> from the absent behaviors and clears it).
 /// </summary>
-internal static class RccFake
-{
-  public static void Complete(BlockEntity be)
-  {
+internal static class RccFake {
+  public static void Complete(BlockEntity be) {
     // The single, already-completed construction state set into the behavior's "rcc" field. On
     // 1.22 ExRightClickConstructable subclasses vanilla, so this is vanilla's RightClickConstruction;
     // on 1.20/1.21 it is exlib's ExRightClickConstruction port (vanilla's type doesn't exist there).
 #if GAME_GE_1_22
-    var construction = new RightClickConstruction
-    {
+    var construction = new RightClickConstruction {
       Stages = [new ConstructionStage()],
       CurrentCompletedStage = 0,
     };

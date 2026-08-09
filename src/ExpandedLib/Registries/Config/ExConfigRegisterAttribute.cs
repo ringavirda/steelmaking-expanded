@@ -26,12 +26,10 @@ namespace ExpandedLib.Registries.Config;
   AllowMultiple = false,
   Inherited = false
 )]
-public sealed class ExConfigRegisterAttribute : Attribute
-{
+public sealed class ExConfigRegisterAttribute : Attribute {
   /// <param name="fileName">Config file name under the game's <c>ModConfig</c> folder (e.g. <c>"ppex.json"</c>).</param>
   /// <param name="modId">The owning mod id, used to resolve the running version and tag log lines.</param>
-  public ExConfigRegisterAttribute(string fileName, string modId)
-  {
+  public ExConfigRegisterAttribute(string fileName, string modId) {
     FileName = fileName;
     ModId = modId;
   }

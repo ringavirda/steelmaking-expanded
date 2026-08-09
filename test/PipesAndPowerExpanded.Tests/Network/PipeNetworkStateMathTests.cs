@@ -4,8 +4,7 @@ using Xunit;
 namespace PipesAndPowerExpanded.Tests;
 
 /// <summary>Pure pressure/medium math on <see cref="PipeNetworkState"/> - no world needed.</summary>
-public class PipeNetworkStateMathTests
-{
+public class PipeNetworkStateMathTests {
   [Theory]
   [InlineData(0f, 90f, 0f)]
   [InlineData(45f, 90f, 0.5f)]

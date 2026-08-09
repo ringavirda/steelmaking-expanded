@@ -10,8 +10,7 @@ namespace SteelmakingExpanded.BlockNetworkMolten;
 /// barrels. Draws one quad per footprint box, raised by <see cref="FillRatio"/> and
 /// glow-tinted by <see cref="Temperature"/>, using the current metal's texture.
 /// </summary>
-public class MoltenRenderer : SurfaceRenderer
-{
+public class MoltenRenderer : SurfaceRenderer {
   // Derived from block JSON attributes.
   private readonly float _fillStartY;
   private readonly float _fillHeightLevels;
@@ -46,8 +45,7 @@ public class MoltenRenderer : SurfaceRenderer
     float fillStartY = 0.125f,
     float fillHeightLevels = 12
   )
-    : base(pos, api, footprintBoxes, rotationY, combine: false)
-  {
+    : base(pos, api, footprintBoxes, rotationY, combine: false) {
     _fillStartY = fillStartY;
     _fillHeightLevels = fillHeightLevels - 0.01f;
   }
@@ -68,8 +66,7 @@ public class MoltenRenderer : SurfaceRenderer
   protected override void ConfigureShader(
     IStandardShaderProgram shader,
     IRenderAPI render
-  )
-  {
+  ) {
     shader.RgbaTint = ColorUtil.WhiteArgbVec;
     shader.AverageColor = ColorUtil.ToRGBAVec4f(
       Api.BlockTextureAtlas.GetAverageColor(
@@ -96,13 +93,11 @@ public class MoltenRenderer : SurfaceRenderer
     shader.ExtraGlow = glowLevel;
   }
 
-  protected override bool BindSurfaceTexture(IRenderAPI render)
-  {
+  protected override bool BindSurfaceTexture(IRenderAPI render) {
     // Resolve texture from metal stack, falling back to the last explicit TextureName.
     var firstTex =
       MetalStack!.Item?.FirstTexture ?? MetalStack.Block?.FirstTextureInventory;
-    if (firstTex != null)
-    {
+    if (firstTex != null) {
       TextureName = firstTex
         .Base.Clone()
         .WithPathPrefixOnce("textures/")

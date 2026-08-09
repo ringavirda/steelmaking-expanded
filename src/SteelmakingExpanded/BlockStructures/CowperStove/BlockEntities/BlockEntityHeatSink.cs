@@ -14,22 +14,18 @@ namespace SteelmakingExpanded.BlockStructures.CowperStove.BlockEntities;
 /// pushed in by the stove and renders an incandescent glow above ~500 °C.
 /// </summary>
 [BlockEntityRegister]
-public class BlockEntityHeatSink : BlockEntity
-{
+public class BlockEntityHeatSink : BlockEntity {
   private float _temperature = 20f;
 
   /// <summary>Current heat-sink temperature (°C); changing it re-lights the block when the glow level shifts.</summary>
-  public float Temperature
-  {
+  public float Temperature {
     get => _temperature;
-    set
-    {
+    set {
       byte oldLight = GetLightLevel(_temperature);
       byte newLight = GetLightLevel(value);
       _temperature = value;
 
-      if (oldLight != newLight && Api != null)
-      {
+      if (oldLight != newLight && Api != null) {
         Api.World.BlockAccessor.MarkBlockDirty(Pos);
       }
     }
@@ -39,8 +35,7 @@ public class BlockEntityHeatSink : BlockEntity
   private static byte GetLightLevel(float temp) =>
     BlockNetworkMolten.MoltenMetal.GlowLevel(temp);
 
-  public override void ToTreeAttributes(ITreeAttribute tree)
-  {
+  public override void ToTreeAttributes(ITreeAttribute tree) {
     base.ToTreeAttributes(tree);
     tree.SetFloat("temperature", Temperature);
   }
@@ -48,8 +43,7 @@ public class BlockEntityHeatSink : BlockEntity
   public override void FromTreeAttributes(
     ITreeAttribute tree,
     IWorldAccessor worldForResolving
-  )
-  {
+  ) {
     base.FromTreeAttributes(tree, worldForResolving);
 
     float newTemp = tree.GetFloat("temperature");
@@ -57,14 +51,12 @@ public class BlockEntityHeatSink : BlockEntity
     byte newLight = GetLightLevel(newTemp);
     _temperature = newTemp;
 
-    if (oldLight != newLight && Api?.Side == EnumAppSide.Client)
-    {
+    if (oldLight != newLight && Api?.Side == EnumAppSide.Client) {
       Api.World.BlockAccessor.MarkBlockDirty(Pos);
     }
   }
 
-  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
-  {
+  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc) {
     base.GetBlockInfo(forPlayer, dsc);
     dsc.AppendLine(
       Lang.Get(
@@ -77,8 +69,7 @@ public class BlockEntityHeatSink : BlockEntity
   public override bool OnTesselation(
     ITerrainMeshPool mesher,
     ITesselatorAPI tesselator
-  )
-  {
+  ) {
     if (Temperature <= 500f)
       return false; // Let the engine render the block normally
 
@@ -90,16 +81,14 @@ public class BlockEntityHeatSink : BlockEntity
     byte b = (byte)(color[2] * 255f);
 
     int vertexCount = mesh.Rgba.Length / 4;
-    for (int i = 0; i < vertexCount; i++)
-    {
+    for (int i = 0; i < vertexCount; i++) {
       mesh.Rgba[i * 4 + 0] = (byte)((mesh.Rgba[i * 4 + 0] * b) / 255); // Blue
       mesh.Rgba[i * 4 + 1] = (byte)((mesh.Rgba[i * 4 + 1] * g) / 255);
       mesh.Rgba[i * 4 + 2] = (byte)((mesh.Rgba[i * 4 + 2] * r) / 255); // Red
     }
 
     int glow = (int)GameMath.Clamp((Temperature - 500f) / 2f, 0, 255);
-    for (int i = 0; i < mesh.Flags.Length; i++)
-    {
+    for (int i = 0; i < mesh.Flags.Length; i++) {
       mesh.Flags[i] |= glow; // Forces the engine to bypass ambient occlusion/shadows!
     }
 

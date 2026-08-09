@@ -10,8 +10,7 @@ namespace PipesAndPowerExpanded.Helpers;
 /// The unit system used when formatting measurements for the look-at HUD / block info / handbook.
 /// The simulation itself always runs in metric; this only changes how values are displayed.
 /// </summary>
-public enum MeasurementSystem
-{
+public enum MeasurementSystem {
   /// <summary>Litres, atmospheres, degrees Celsius.</summary>
   Metric,
 
@@ -30,8 +29,7 @@ public enum MeasurementSystem
 /// preferences store, applied for the local player on join and changed via <c>.exmod measure</c>.
 /// </para>
 /// </summary>
-public static class ExMeasure
-{
+public static class ExMeasure {
   /// <summary>The display system currently active on this client (the local player's choice).
   /// Block-info formatters read this; it is set from the per-player preference on join.</summary>
   public static MeasurementSystem System { get; set; } =
@@ -53,8 +51,7 @@ public static class ExMeasure
   #region Volume
 
   /// <summary>A volume given in litres, e.g. <c>"800 L"</c> or <c>"176 gal"</c>.</summary>
-  public static string Volume(float litres, string format = "F0")
-  {
+  public static string Volume(float litres, string format = "F0") {
     var (num, unit) = Vol(litres, format);
     return num + " " + unit;
   }
@@ -65,16 +62,14 @@ public static class ExMeasure
     float litres,
     float maxLitres,
     string format = "F0"
-  )
-  {
+  ) {
     var (a, _) = Vol(litres, format);
     var (b, unit) = Vol(maxLitres, format);
     return a + " / " + b + " " + unit;
   }
 
   /// <summary>A flow rate given in litres per second, e.g. <c>"48 L/s"</c> or <c>"11 gal/s"</c>.</summary>
-  public static string FlowRate(float litresPerSecond, string format = "F1")
-  {
+  public static string FlowRate(float litresPerSecond, string format = "F1") {
     var (num, unit) = Flow(litresPerSecond, format);
     return num + " " + unit;
   }
@@ -84,8 +79,7 @@ public static class ExMeasure
   #region Pressure
 
   /// <summary>A pressure given in atmospheres, e.g. <c>"5.00 atm"</c> or <c>"73.48 psi"</c>.</summary>
-  public static string Pressure(float atm, string format = "F2")
-  {
+  public static string Pressure(float atm, string format = "F2") {
     var (num, unit) = Pres(atm, format);
     return num + " " + unit;
   }
@@ -96,8 +90,7 @@ public static class ExMeasure
     float atm,
     float maxAtm,
     string format = "F1"
-  )
-  {
+  ) {
     var (a, _) = Pres(atm, format);
     var (b, unit) = Pres(maxAtm, format);
     return a + " / " + b + " " + unit;
@@ -108,8 +101,7 @@ public static class ExMeasure
   #region Temperature
 
   /// <summary>A temperature given in degrees Celsius, e.g. <c>"100 °C"</c> or <c>"212 °F"</c>.</summary>
-  public static string Temperature(float celsius, string format = "F0")
-  {
+  public static string Temperature(float celsius, string format = "F0") {
     var (num, unit) = Temp(celsius, format);
     return num + " " + unit;
   }
@@ -134,8 +126,7 @@ public static class ExMeasure
   private static Regex? _metricRegex;
   private static UnitConversion[]? _conversions;
 
-  private static void EnsureConversions()
-  {
+  private static void EnsureConversions() {
     var conversions = new[]
     {
       new UnitConversion(
@@ -191,8 +182,7 @@ public static class ExMeasure
   /// converts too (author the prose with the same metric symbols the lang file defines). Returns
   /// the text unchanged in metric mode and for any text without a recognised unit.
   /// </summary>
-  public static string ConvertMetricText(string text)
-  {
+  public static string ConvertMetricText(string text) {
     if (!Imperial || string.IsNullOrEmpty(text))
       return text;
 
@@ -200,8 +190,7 @@ public static class ExMeasure
 
     return _metricRegex!.Replace(
       text,
-      m =>
-      {
+      m => {
         string numbers = m.Groups[1].Value;
         string symbol = m.Groups[2].Value;
         UnitConversion conv = Array.Find(

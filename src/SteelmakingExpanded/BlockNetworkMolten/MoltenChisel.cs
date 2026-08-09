@@ -9,8 +9,7 @@ using Vintagestory.API.Server;
 namespace SteelmakingExpanded.BlockNetworkMolten;
 
 /// <summary>What a chisel + hammer click resolved to on an <see cref="IChiselableMolten"/> holder.</summary>
-public enum ChiselOutcome
-{
+public enum ChiselOutcome {
   /// <summary>Not a chisel-out here (no chisel + hammer, or nothing solidified) - let the click fall through.</summary>
   NotChiseling,
 
@@ -29,8 +28,7 @@ public enum ChiselOutcome
 /// clear-and-recover step (<see cref="IChiselableMolten.ChiselOut"/>); the drop itself is built with the
 /// shared <see cref="BuildRecovery"/>.
 /// </summary>
-public static class MoltenChisel
-{
+public static class MoltenChisel {
   /// <summary>True when <paramref name="stack"/> is a tool of kind <paramref name="tool"/>.</summary>
   public static bool IsTool(ItemStack? stack, EnumTool tool) =>
     stack?.Collectible?.Tool == tool;
@@ -56,13 +54,11 @@ public static class MoltenChisel
     int units,
     int unitsPerBit = 5,
     bool slagFallback = false
-  )
-  {
+  ) {
     int count = Math.Max(1, units / unitsPerBit);
     AssetLocation loc = MoltenNetwork.SolidDropLocation(metalCode);
     Item? item = world.GetItem(loc);
-    if (item == null)
-    {
+    if (item == null) {
       if (!slagFallback)
         return null;
       Item? slag = world.GetItem(new AssetLocation("smex:slag"));
@@ -91,20 +87,17 @@ public static class MoltenChisel
     AssetLocation sound,
     bool damageChisel = true,
     double yOffset = 0.6
-  )
-  {
+  ) {
     if (!HasChiselAndHammer(byPlayer) || !target.HasChiselableContent)
       return ChiselOutcome.NotChiseling;
 
-    if (!target.CanChiselOut)
-    {
+    if (!target.CanChiselOut) {
       if (world.Side == EnumAppSide.Server && target.ChiselBlockedError != null)
         (byPlayer as IServerPlayer)?.SendIngameError(target.ChiselBlockedError);
       return ChiselOutcome.Blocked;
     }
 
-    if (world.Side == EnumAppSide.Server)
-    {
+    if (world.Side == EnumAppSide.Server) {
       ItemStack? recovered = target.ChiselOut();
       if (
         recovered != null
@@ -137,8 +130,7 @@ public static class MoltenChisel
     IWorldAccessor world,
     string langCode
   ) =>
-    new()
-    {
+    new() {
       ActionLangCode = langCode,
       MouseButton = EnumMouseButton.Right,
       Itemstacks = _chiselStacks ??=

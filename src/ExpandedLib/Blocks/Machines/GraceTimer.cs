@@ -14,8 +14,7 @@ namespace ExpandedLib.Blocks.Machines;
 ///     Explode();
 /// </code>
 /// </summary>
-public struct GraceTimer
-{
+public struct GraceTimer {
   /// <summary>Seconds the condition has held continuously (0 when not counting).</summary>
   public float Elapsed { get; private set; }
 
@@ -26,17 +25,14 @@ public struct GraceTimer
   /// resets it. <paramref name="threshold"/> is passed per-call so a config reload takes effect
   /// without the timer caching a stale limit.
   /// </summary>
-  public bool Update(bool active, float dt, float threshold)
-  {
-    if (!active)
-    {
+  public bool Update(bool active, float dt, float threshold) {
+    if (!active) {
       Elapsed = 0f;
       return false;
     }
 
     Elapsed += dt;
-    if (Elapsed >= threshold)
-    {
+    if (Elapsed >= threshold) {
       Elapsed = 0f;
       return true;
     }

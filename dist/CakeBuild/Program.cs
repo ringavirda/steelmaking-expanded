@@ -16,10 +16,8 @@ using Vintagestory.API.Common;
 
 namespace CakeBuild;
 
-public static class Program
-{
-  public static int Main(string[] args)
-  {
+public static class Program {
+  public static int Main(string[] args) {
     return new CakeHost().UseContext<BuildContext>().Run(args);
   }
 }
@@ -33,8 +31,7 @@ public record ModProject(string Folder, string ModId, string Version);
 /// same as the CI workflows).</summary>
 public record GameTarget(string Tfm, string GameVersion, bool IsCurrent);
 
-public class BuildContext : FrostingContext
-{
+public class BuildContext : FrostingContext {
   // Build order matters: exlib first (the shared lib both mods reference), then ppex
   // (referenced by smex), then smex.
   public static readonly string[] ProjectFolders =
@@ -61,13 +58,11 @@ public class BuildContext : FrostingContext
   public List<ModProject> Projects { get; } = [];
 
   public BuildContext(ICakeContext context)
-    : base(context)
-  {
+    : base(context) {
     BuildConfiguration = context.Argument("configuration", "Release");
     SkipJsonValidation = context.Argument("skipJsonValidation", false);
 
-    foreach (var folder in ProjectFolders)
-    {
+    foreach (var folder in ProjectFolders) {
       var modInfo = context.DeserializeJsonFromFile<ModInfo>(
         $"../../src/{folder}/modinfo.json"
       );
@@ -84,26 +79,19 @@ public class BuildContext : FrostingContext
 }
 
 [TaskName("ValidateJson")]
-public sealed class ValidateJsonTask : FrostingTask<BuildContext>
-{
-  public override void Run(BuildContext context)
-  {
+public sealed class ValidateJsonTask : FrostingTask<BuildContext> {
+  public override void Run(BuildContext context) {
     if (context.SkipJsonValidation)
       return;
 
-    foreach (var project in context.Projects)
-    {
+    foreach (var project in context.Projects) {
       var jsonFiles = context.GetFiles(
         $"../../src/{project.Folder}/assets/**/*.json"
       );
-      foreach (var file in jsonFiles)
-      {
-        try
-        {
+      foreach (var file in jsonFiles) {
+        try {
           JToken.Parse(File.ReadAllText(file.FullPath));
-        }
-        catch (JsonException ex)
-        {
+        } catch (JsonException ex) {
           throw new Exception(
             $"Validation failed for JSON file: {file.FullPath}{Environment.NewLine}{ex.Message}",
             ex
@@ -116,12 +104,9 @@ public sealed class ValidateJsonTask : FrostingTask<BuildContext>
 
 [TaskName("Build")]
 [IsDependentOn(typeof(ValidateJsonTask))]
-public sealed class BuildTask : FrostingTask<BuildContext>
-{
-  public override void Run(BuildContext context)
-  {
-    foreach (var project in context.Projects)
-    {
+public sealed class BuildTask : FrostingTask<BuildContext> {
+  public override void Run(BuildContext context) {
+    foreach (var project in context.Projects) {
       string csproj = $"../../src/{project.Folder}/{project.Folder}.csproj";
       // Wipe the whole bin so stale per-version outputs can't leak into a package.
       string binDir =
@@ -129,12 +114,10 @@ public sealed class BuildTask : FrostingTask<BuildContext>
       context.EnsureDirectoryExists(binDir);
       context.CleanDirectory(binDir);
 
-      foreach (var target in BuildContext.GameTargets)
-      {
+      foreach (var target in BuildContext.GameTargets) {
         context.DotNetPublish(
           csproj,
-          new DotNetPublishSettings
-          {
+          new DotNetPublishSettings {
             Configuration = context.BuildConfiguration,
             Framework = target.Tfm,
             // -p:Legacy=true makes the mod multi-target so the legacy TFMs exist; harmless for the
@@ -152,10 +135,8 @@ public sealed class BuildTask : FrostingTask<BuildContext>
 
 [TaskName("Package")]
 [IsDependentOn(typeof(BuildTask))]
-public sealed class PackageTask : FrostingTask<BuildContext>
-{
-  public override void Run(BuildContext context)
-  {
+public sealed class PackageTask : FrostingTask<BuildContext> {
+  public override void Run(BuildContext context) {
     context.EnsureDirectoryExists("../Releases");
     context.CleanDirectory("../Releases");
 
@@ -164,10 +145,8 @@ public sealed class PackageTask : FrostingTask<BuildContext>
     // current version stays unsuffixed:
     //   Releases/<gameVersion>/<modid>_<modVersion>.zip            (current)
     //   Releases/<gameVersion>/<modid>_<modVersion>_<gameVersion>.zip (legacy)
-    foreach (var target in BuildContext.GameTargets)
-    {
-      foreach (var project in context.Projects)
-      {
+    foreach (var target in BuildContext.GameTargets) {
+      foreach (var project in context.Projects) {
         string stageDir = $"../Releases/{target.GameVersion}/{project.ModId}";
         context.EnsureDirectoryExists(stageDir);
 
@@ -220,8 +199,7 @@ public sealed class PackageTask : FrostingTask<BuildContext>
 
 [TaskName("PackageTesting")]
 [IsDependentOn(typeof(PackageTask))]
-public sealed class PackageTestingTask : FrostingTask<BuildContext>
-{
+public sealed class PackageTestingTask : FrostingTask<BuildContext> {
   // The headless test harness (test/ExpandedLib.Testing) is a DEVELOPER library, not a game mod, so
   // it isn't a mod zip and isn't on NuGet (its API still moves a lot release to release). We ship it
   // as a dev bundle attached to the GitHub release: ExpandedLib.Testing.dll plus the exlib.dll it
@@ -239,16 +217,14 @@ public sealed class PackageTestingTask : FrostingTask<BuildContext>
     + "VsAssemblyResolver.Register() + TestLang.Init() from a [ModuleInitializer]. See the wiki:\n"
     + "https://github.com/ringavirda/modding-vsexpanded/wiki/Testing-Harness\n";
 
-  public override void Run(BuildContext context)
-  {
+  public override void Run(BuildContext context) {
     var current = Array.Find(BuildContext.GameTargets, t => t.IsCurrent)!;
     var exlib = context.Projects.Find(p => p.Folder == "ExpandedLib")!;
 
     // Build the harness for the current target (single-TFM => flat bin/<config> output).
     context.DotNetBuild(
       "../../test/ExpandedLib.Testing/ExpandedLib.Testing.csproj",
-      new DotNetBuildSettings
-      {
+      new DotNetBuildSettings {
         Configuration = context.BuildConfiguration,
         Framework = current.Tfm,
       }

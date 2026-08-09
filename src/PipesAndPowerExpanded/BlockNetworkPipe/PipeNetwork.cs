@@ -16,8 +16,7 @@ namespace PipesAndPowerExpanded.BlockNetworkPipe;
 /// producers overflow up to their own choke); a liquid's is set by the pump. Temperature is a
 /// single network-wide value.
 /// </summary>
-public class PipeNetworkState
-{
+public class PipeNetworkState {
   /// <summary>Content currently held by the network, in litres (gas or water).</summary>
   public float Volume { get; set; }
 
@@ -66,8 +65,7 @@ public class PipeNetworkState
   /// Returns the higher-priority gas of two types when gas runs merge
   /// (Exhaust &gt; Air). Steam ranks with Air (it is just hot Air-pool content).
   /// </summary>
-  public static string GetHigherPriorityGas(string type1, string type2)
-  {
+  public static string GetHigherPriorityGas(string type1, string type2) {
     if (type1 == "Exhaust" || type2 == "Exhaust")
       return "Exhaust";
     if (type1 == "Steam" || type2 == "Steam")
@@ -102,8 +100,7 @@ public class PipeNetworkState
 /// <see cref="TryProduceLiquid"/>/<see cref="TryConsumeLiquid"/>; each pair refuses a run
 /// already carrying the other medium.
 /// </summary>
-public class PipeNetwork : BlockNetwork
-{
+public class PipeNetwork : BlockNetwork {
   public override string NetworkType => "pipe";
 
   public PipeNetwork(BlockNetworkModSystem system)
@@ -113,14 +110,12 @@ public class PipeNetwork : BlockNetwork
   /// Live pipe state, or <c>null</c> when empty. Backed by the base
   /// <see cref="BlockNetwork.State"/> so the typed accessor and base code share one object.
   /// </summary>
-  public new PipeNetworkState? State
-  {
+  public new PipeNetworkState? State {
     get => base.State as PipeNetworkState;
     private set => base.State = value;
   }
 
-  public override void RestoreState(object? state)
-  {
+  public override void RestoreState(object? state) {
     State = state as PipeNetworkState;
   }
 
@@ -152,8 +147,7 @@ public class PipeNetwork : BlockNetwork
 
   #region State inheritance
 
-  public override void InheritStateFrom(BlockNetwork source)
-  {
+  public override void InheritStateFrom(BlockNetwork source) {
     if (source is not PipeNetwork other)
       return;
     State = other.State;
@@ -175,8 +169,7 @@ public class PipeNetwork : BlockNetwork
     IBlockAccessor blockAccessor,
     float maxOutputPressure = 1f,
     bool bypassLeakCap = false
-  )
-  {
+  ) {
     State ??= new PipeNetworkState();
     // A run already carrying water rejects gas - one medium per network. But a physically empty
     // run (Volume <= 0) only keeps its old medium label as a display ghost during the brief
@@ -203,11 +196,9 @@ public class PipeNetwork : BlockNetwork
     float ceiling = ceilingPressure * State.MaxVolume;
     float actualVolume = Math.Min(volume, ceiling - State.Volume);
 
-    if (actualVolume > 0 || State.Volume <= 0)
-    {
+    if (actualVolume > 0 || State.Volume <= 0) {
       float totalVol = State.Volume + actualVolume;
-      if (totalVol > 0)
-      {
+      if (totalVol > 0) {
         State.Temperature =
           (State.Volume * State.Temperature + actualVolume * temperature)
           / totalVol;
@@ -221,8 +212,7 @@ public class PipeNetwork : BlockNetwork
           gasType
         );
 
-      if (actualVolume > 0)
-      {
+      if (actualVolume > 0) {
         State.Volume += actualVolume;
         _producedAccum += actualVolume;
       }
@@ -235,14 +225,12 @@ public class PipeNetwork : BlockNetwork
     }
 
     // Network is at its choke - only upgrade the gas type if needed.
-    if (State.MediumType != gasType)
-    {
+    if (State.MediumType != gasType) {
       string upgraded = PipeNetworkState.GetHigherPriorityGas(
         State.MediumType,
         gasType
       );
-      if (upgraded != State.MediumType)
-      {
+      if (upgraded != State.MediumType) {
         State.MediumType = upgraded;
         BroadcastUpdate(blockAccessor);
       }
@@ -263,8 +251,7 @@ public class PipeNetwork : BlockNetwork
     IBlockAccessor blockAccessor,
     float maxOutputPressure = 1f,
     bool bypassLeakCap = false
-  )
-  {
+  ) {
     float before = State?.Volume ?? 0f;
     TryProduceGas(
       volume,
@@ -284,14 +271,12 @@ public class PipeNetwork : BlockNetwork
   public float TryConsumeGas(
     float requestedVolume,
     IBlockAccessor blockAccessor
-  )
-  {
+  ) {
     if (State == null || State.IsLiquid)
       return 0f;
 
     float available = Math.Min(requestedVolume, State.Volume);
-    if (available > 0)
-    {
+    if (available > 0) {
       State.Volume -= available;
       _consumedAccum += available;
       State.Pressure = PipeNetworkState.ComputeGasPressure(
@@ -317,8 +302,7 @@ public class PipeNetwork : BlockNetwork
     float temperature,
     float setPressure,
     IBlockAccessor blockAccessor
-  )
-  {
+  ) {
     State ??= new PipeNetworkState();
     // A run already carrying gas rejects water - one medium per network. A physically empty run
     // (Volume <= 0) only keeps its old gas label as a display ghost during the empty-clear delay,
@@ -335,8 +319,7 @@ public class PipeNetwork : BlockNetwork
     State.FeedPressure = setPressure;
 
     float actual = Math.Min(volume, State.MaxVolume - State.Volume);
-    if (actual <= 0f)
-    {
+    if (actual <= 0f) {
       // Already brim-full - no more water fits, but keep the pressure in step with the
       // (possibly changed) feed pressure.
       State.Pressure = PipeNetworkState.ComputeLiquidPressure(
@@ -373,8 +356,7 @@ public class PipeNetwork : BlockNetwork
     float temperature,
     float setPressure,
     IBlockAccessor blockAccessor
-  )
-  {
+  ) {
     float before = State?.Volume ?? 0f;
     TryProduceLiquid(volume, temperature, setPressure, blockAccessor);
     return Math.Max(0f, (State?.Volume ?? 0f) - before);
@@ -387,14 +369,12 @@ public class PipeNetwork : BlockNetwork
   public float TryConsumeLiquid(
     float requestedVolume,
     IBlockAccessor blockAccessor
-  )
-  {
+  ) {
     if (State == null || !State.IsLiquid)
       return 0f;
 
     float available = Math.Min(requestedVolume, State.Volume);
-    if (available > 0)
-    {
+    if (available > 0) {
       State.Volume -= available;
       _consumedAccum += available;
       // Draining drops the line below brim-full, so its pressure falls back to the fill ratio.
@@ -427,20 +407,17 @@ public class PipeNetwork : BlockNetwork
     IBlockAccessor world
   ) => liquid ? maxVolume : ComputeMinBurstPressure(world) * maxVolume;
 
-  public override void OnMerge(BlockNetwork other, IBlockAccessor world)
-  {
+  public override void OnMerge(BlockNetwork other, IBlockAccessor world) {
     if (other is not PipeNetwork otherPipe)
       return;
 
-    if (otherPipe.State == null)
-    {
+    if (otherPipe.State == null) {
       if (State != null)
         State.MaxVolume = Nodes.Count * PpexValues.LitresPerPipe;
       return;
     }
 
-    if (State == null)
-    {
+    if (State == null) {
       State = otherPipe.State;
       State.MaxVolume = Nodes.Count * PpexValues.LitresPerPipe;
       State.Volume = Math.Min(
@@ -459,8 +436,7 @@ public class PipeNetwork : BlockNetwork
         State.MediumType,
         otherPipe.State.MediumType
       )
-    )
-    {
+    ) {
       if (otherPipe.State.Volume > State.Volume)
         State = otherPipe.State;
       State.MaxVolume = Nodes.Count * PpexValues.LitresPerPipe;
@@ -480,8 +456,7 @@ public class PipeNetwork : BlockNetwork
 
     // Same medium - blend volume-weighted temperature and combine volume.
     float total = State.Volume + otherPipe.State.Volume;
-    if (total > 0)
-    {
+    if (total > 0) {
       State.Temperature =
         (
           State.Volume * State.Temperature
@@ -490,8 +465,7 @@ public class PipeNetwork : BlockNetwork
     }
 
     // Gas runs resolve the dominant type by priority; water keeps its medium.
-    if (!State.IsLiquid)
-    {
+    if (!State.IsLiquid) {
       if (State.Volume <= 0)
         State.MediumType = otherPipe.State.MediumType;
       else if (otherPipe.State.Volume > 0)
@@ -505,8 +479,7 @@ public class PipeNetwork : BlockNetwork
       total,
       PoolVolumeCeiling(State.IsLiquid, State.MaxVolume, world)
     );
-    if (State.IsLiquid)
-    {
+    if (State.IsLiquid) {
       // Keep the stronger pump's feed pressure, then derive the run's pressure from the
       // combined fill.
       State.FeedPressure = Math.Max(
@@ -518,8 +491,7 @@ public class PipeNetwork : BlockNetwork
         State.MaxVolume,
         State.FeedPressure
       );
-    }
-    else
+    } else
       State.Pressure = PipeNetworkState.ComputeGasPressure(
         State.Volume,
         State.MaxVolume
@@ -529,10 +501,8 @@ public class PipeNetwork : BlockNetwork
   public override void OnSplitFragment(
     BlockNetwork original,
     IBlockAccessor world
-  )
-  {
-    if (original is not PipeNetwork origPipe || origPipe.State == null)
-    {
+  ) {
+    if (original is not PipeNetwork origPipe || origPipe.State == null) {
       State = null;
       return;
     }
@@ -547,13 +517,11 @@ public class PipeNetwork : BlockNetwork
       PoolVolumeCeiling(liquid, maxVolume, world)
     );
 
-    if (frag <= 0f)
-    {
+    if (frag <= 0f) {
       State = null;
       return;
     }
-    State = new PipeNetworkState
-    {
+    State = new PipeNetworkState {
       MaxVolume = maxVolume,
       Volume = frag,
       Temperature = origPipe.State.Temperature,
@@ -577,8 +545,7 @@ public class PipeNetwork : BlockNetwork
     IBlockAccessor blockAccessor,
     float dt,
     BlockNetworkModSystem manager
-  )
-  {
+  ) {
     float instantFlow = Math.Max(_producedAccum, _consumedAccum);
     _producedAccum = 0f;
     _consumedAccum = 0f;
@@ -612,14 +579,12 @@ public class PipeNetwork : BlockNetwork
         State.FeedPressure
       )
       : PipeNetworkState.ComputeGasPressure(State.Volume, State.MaxVolume);
-    if (Math.Abs(State.Pressure - newPressure) > 0.02f)
-    {
+    if (Math.Abs(State.Pressure - newPressure) > 0.02f) {
       State.Pressure = newPressure;
       changed = true;
     }
 
-    if (Math.Abs(State.FlowRate - _smoothedFlow) > 0.01f)
-    {
+    if (Math.Abs(State.FlowRate - _smoothedFlow) > 0.01f) {
       State.FlowRate = _smoothedFlow;
       changed = true;
     }
@@ -643,8 +608,7 @@ public class PipeNetwork : BlockNetwork
     int consumers = 0;
     int totalLeaks = 0;
     var chimneyVents = new List<BlockPos>();
-    foreach (var pos in Nodes)
-    {
+    foreach (var pos in Nodes) {
       var be = blockAccessor.GetBlockEntity(pos);
       if (be is IPipeNode)
         consumers++;
@@ -664,8 +628,7 @@ public class PipeNetwork : BlockNetwork
         continue;
 
       int airOpen = 0;
-      for (int i = 0; i < openFaces.Length; i++)
-      {
+      for (int i = 0; i < openFaces.Length; i++) {
         BlockFacing face = openFaces[i];
         BlockPos nPos = pos.AddCopy(face);
         Block neighbour = blockAccessor.GetBlock(nPos);
@@ -675,8 +638,7 @@ public class PipeNetwork : BlockNetwork
           chimneyCapable
           && face == BlockFacing.UP
           && neighbour.Code?.Path.Contains("chimney") == true
-        )
-        {
+        ) {
           chimneyVents.Add(nPos);
           continue;
         }
@@ -690,31 +652,26 @@ public class PipeNetwork : BlockNetwork
 
       BlockFacing[] leakFaces =
         airOpen == openFaces.Length ? openFaces : openFaces[..airOpen];
-      if (be is BlockEntityPipe pipeBe)
-      {
-        if (State.Volume > 0)
-        {
+      if (be is BlockEntityPipe pipeBe) {
+        if (State.Volume > 0) {
           // Water sprays out of the open end like a poured bucket; gas wisps out.
           if (liquid)
             pipeBe.SpawnLiquidLeak(leakFaces, waterLeakFrac);
           else
             pipeBe.SpawnGasLeak(leakFaces, gasLeakFrac);
         }
-      }
-      else if (be is INetworkNode nodeEntity && State.Volume > 0)
+      } else if (be is INetworkNode nodeEntity && State.Volume > 0)
         nodeEntity.OnOpenConnectorsChanged(leakFaces);
     }
 
-    if (State.OpeningsCount != totalLeaks)
-    {
+    if (State.OpeningsCount != totalLeaks) {
       State.OpeningsCount = totalLeaks;
       changed = true;
     }
 
     // Chimney draw (gas only) - ChimneyGasDrawRate L/s per chimney-capped top
     // connector. Each drawing chimney puffs smoke so the venting is visible.
-    if (!liquid && chimneyVents.Count > 0 && State.Volume > 0)
-    {
+    if (!liquid && chimneyVents.Count > 0 && State.Volume > 0) {
       float vented = Math.Min(
         State.Volume,
         chimneyVents.Count * PpexValues.ChimneyGasDrawRate
@@ -723,12 +680,10 @@ public class PipeNetwork : BlockNetwork
       _consumedAccum += vented;
       changed = true;
 
-      foreach (BlockPos chimneyPos in chimneyVents)
-      {
+      foreach (BlockPos chimneyPos in chimneyVents) {
         SpawnChimneySmoke(manager, chimneyPos, State.MediumType);
         // A continuous low fire roar marks the chimney pulling the network's draught.
-        if (manager.ServerWorld is { } w)
-        {
+        if (manager.ServerWorld is { } w) {
           long last = _chimneyFireMs.GetValueOrDefault(chimneyPos);
           ExSounds.PlayLoop(
             w,
@@ -746,8 +701,7 @@ public class PipeNetwork : BlockNetwork
 
     // Drop sound-throttle stamps for chimneys no longer venting this network, so the
     // map can't grow without bound as chimneys are added and removed over a long uptime.
-    if (_chimneyFireMs.Count > chimneyVents.Count)
-    {
+    if (_chimneyFireMs.Count > chimneyVents.Count) {
       List<BlockPos>? stale = null;
       foreach (var key in _chimneyFireMs.Keys)
         if (!chimneyVents.Contains(key))
@@ -759,17 +713,13 @@ public class PipeNetwork : BlockNetwork
 
     // Leak loss - a gas leak is pressure relief (a small FIXED rate regardless of open-end
     // count, so bulk venting needs a chimney/stack); a water leak drains at a fixed rate.
-    if (totalLeaks > 0 && State.Volume > 0f)
-    {
-      if (liquid)
-      {
+    if (totalLeaks > 0 && State.Volume > 0f) {
+      if (liquid) {
         float lost = Math.Min(State.Volume, PpexValues.LiquidLeakRate * dt);
         State.Volume -= lost;
         if (State.Volume <= 0f)
           State.Pressure = 0f;
-      }
-      else
-      {
+      } else {
         float lost = Math.Min(State.Volume, PpexValues.GasLeakRate);
         State.Volume -= lost;
         if (State.Temperature > 20f)
@@ -781,15 +731,12 @@ public class PipeNetwork : BlockNetwork
     // Natural evaporation of a water run, measured off the calendar so it's independent of
     // tick cadence and charges nothing for time spent unloaded (same rate as the boiler).
     double nowDays = manager.ServerWorld?.Calendar?.TotalDays ?? -1;
-    if (nowDays >= 0)
-    {
-      if (liquid && _lastEvapDays >= 0 && State.Volume > 0f)
-      {
+    if (nowDays >= 0) {
+      if (liquid && _lastEvapDays >= 0 && State.Volume > 0f) {
         float evap = (float)(
           PpexValues.EvaporationLitresPerDay * (nowDays - _lastEvapDays)
         );
-        if (evap > 0f)
-        {
+        if (evap > 0f) {
           State.Volume = Math.Max(0f, State.Volume - evap);
           if (State.Volume <= 0f)
             State.Pressure = 0f;
@@ -812,16 +759,14 @@ public class PipeNetwork : BlockNetwork
       && State.Volume > 0
       && State.Temperature > 20f
       && consumers == 0
-    )
-    {
+    ) {
       State.Temperature = Math.Max(20f, State.Temperature - 2.0f);
       changed = true;
     }
 
     // Clear empty state only once drained AND idle for a few seconds, so a push-and-drain
     // water line (near 0 L while busy) keeps its "Water" label instead of flickering.
-    if (State.Volume <= 0 && _secondsSinceFlow >= EmptyClearDelaySeconds)
-    {
+    if (State.Volume <= 0 && _secondsSinceFlow >= EmptyClearDelaySeconds) {
       State = null;
       _smoothedFlow = 0f;
       changed = true;
@@ -834,8 +779,7 @@ public class PipeNetwork : BlockNetwork
     // nowhere to go. Hold there for PipeOverpressureSeconds and a pipe lets go; any relief
     // dropping the pressure below the rating resets the grace.
     bool pressureFailure = false;
-    if (State != null)
-    {
+    if (State != null) {
       float minBurst = MinBurstPressure(blockAccessor);
       bool overPressure =
         !State.IsLiquid
@@ -843,23 +787,19 @@ public class PipeNetwork : BlockNetwork
         && minBurst < float.MaxValue
         && State.Pressure >= minBurst - 0.001f;
 
-      if (overPressure)
-      {
+      if (overPressure) {
         _overpressureSeconds += dt;
-        if (_overpressureSeconds >= PpexValues.PipeOverpressureSeconds)
-        {
+        if (_overpressureSeconds >= PpexValues.PipeOverpressureSeconds) {
           pressureFailure = true;
           _overpressureSeconds = 0f;
         }
-      }
-      else if (_overpressureSeconds > 0f)
+      } else if (_overpressureSeconds > 0f)
         _overpressureSeconds = 0f;
     }
 
     // Executed last so we never mutate the node set while reading it. Each burst removes a
     // node (fracturing the run) and drops the pipe's materials.
-    if (State != null && pressureFailure)
-    {
+    if (State != null && pressureFailure) {
       foreach (var pos in CollectBursts(blockAccessor))
         ExecuteBurst(pos, blockAccessor, manager);
     }
@@ -870,8 +810,7 @@ public class PipeNetwork : BlockNetwork
   private float? _minBurstCache;
 
   /// <summary>Drops topology-derived caches when the manager changes the node set.</summary>
-  public override void OnTopologyChanged()
-  {
+  public override void OnTopologyChanged() {
     _minBurstCache = null;
   }
 
@@ -881,8 +820,7 @@ public class PipeNetwork : BlockNetwork
   private float MinBurstPressure(IBlockAccessor world) =>
     _minBurstCache ??= ComputeMinBurstPressure(world);
 
-  private float ComputeMinBurstPressure(IBlockAccessor world)
-  {
+  private float ComputeMinBurstPressure(IBlockAccessor world) {
     float minBurst = float.MaxValue;
     foreach (var pos in Nodes)
       if (world.GetBlock(pos) is BlockPipe p && p.CanBurst)
@@ -896,16 +834,14 @@ public class PipeNetwork : BlockNetwork
   /// Finds the pipe that should fail this tick: one random pipe that has held its burst
   /// pressure past the over-pressure grace. Called only when a pressure failure is due.
   /// </summary>
-  private List<BlockPos> CollectBursts(IBlockAccessor world)
-  {
+  private List<BlockPos> CollectBursts(IBlockAccessor world) {
     var result = new List<BlockPos>();
     if (State == null)
       return result;
 
     var pressureCandidates = new List<BlockPos>();
 
-    foreach (var pos in Nodes)
-    {
+    foreach (var pos in Nodes) {
       if (world.GetBlock(pos) is not BlockPipe pipe || !pipe.CanBurst)
         continue;
 
@@ -927,18 +863,15 @@ public class PipeNetwork : BlockNetwork
     BlockPos pos,
     IBlockAccessor world,
     BlockNetworkModSystem manager
-  )
-  {
+  ) {
     Block block = world.GetBlock(pos);
     if (block.BlockId == 0)
       return;
 
     var sworld = manager.ServerWorld;
-    if (sworld != null)
-    {
+    if (sworld != null) {
       ItemStack[]? drops = block.GetDrops(sworld, pos, null);
-      if (drops != null)
-      {
+      if (drops != null) {
         foreach (var ds in drops)
           sworld.SpawnItemEntity(ds, pos.ToVec3d().Add(0.5, 0.5, 0.5));
       }
@@ -961,8 +894,7 @@ public class PipeNetwork : BlockNetwork
     BlockNetworkModSystem manager,
     BlockPos chimneyPos,
     string gasType
-  )
-  {
+  ) {
     if (manager.ServerWorld is { } world)
       ExParticles.ChimneySmoke(world, chimneyPos, gasType);
   }

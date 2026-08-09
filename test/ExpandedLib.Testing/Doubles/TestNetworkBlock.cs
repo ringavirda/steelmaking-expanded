@@ -9,8 +9,7 @@ namespace ExpandedLib.Testing.Doubles;
 /// Bypasses the asset-load pipeline - <see cref="BlockNetworkNode.Orientation"/>/<c>Type</c> are
 /// set directly rather than parsed from variants in <c>OnLoaded</c>.
 /// </summary>
-public sealed class TestNetworkBlock : BlockNetworkNode
-{
+public sealed class TestNetworkBlock : BlockNetworkNode {
   private readonly string _networkType;
 
   public override string NetworkType => _networkType;
@@ -20,8 +19,7 @@ public sealed class TestNetworkBlock : BlockNetworkNode
 
   protected override string GetFallbackOrientation(string? type) => "ns";
 
-  private TestNetworkBlock(string networkType, string orientation)
-  {
+  private TestNetworkBlock(string networkType, string orientation) {
     _networkType = networkType;
     Type = "straight";
     Orientation = orientation;

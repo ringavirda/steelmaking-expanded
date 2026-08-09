@@ -28,6 +28,26 @@ public static class ExOrientation
 `RotateBoxes` returns copies (unchanged for angle 0), so cache the result rather than recomputing
 each frame. `AllowedOrientations`-style lookups should likewise be cached props.
 
+## `MPAnim` - phase-locking to a mechanical axle
+
+Frame math for a mega-block part (a rotor, a gear, a piston) that must turn *in step with* an axle
+rather than merely at a proportional speed. Read the mechanical network's rotation angle each render
+frame - `BEBehaviorMPFillerPort.CurrentAngleRad` for a
+[filler-hosted port](Multiblock-Structures) - and derive the animation frame from it.
+
+```csharp
+public static class MPAnim
+{
+    public static float AdvanceFrame(float currentFrame, float lastAngleRad, float angleRad, int totalFrames);
+    public static float FrameFromAngle(float angleRad, int totalFrames);
+}
+```
+
+`FrameFromAngle` maps the absolute angle onto the frame, so the part stays aligned to the axle - use
+it for anything whose orientation is visible (a gear, a rotor). `AdvanceFrame` integrates the signed
+delta instead, which is what you want when only rate and direction matter (an oscillating beam or
+piston) and reversing the network should reverse the animation without a jump.
+
 ## `ExParticles` - particle catalogue
 
 Named colour presets plus a configurable core and high-level effect helpers - don't build
@@ -145,6 +165,14 @@ Clearing a block's creative tabs and stacks also removes it from the handbook, s
 `HideFromCreativeAndHandbook` does both. Pair it with a config toggle for "disable X" features
 (e.g. `smex` tool-mold gating behind `/exmod molds`).
 
+> **Tabs go empty, stacks go null.** `CreativeInventoryTabs` is set to an empty array, never null:
+> the asset loader always leaves it an array and game code relies on that -
+> `AttachableInteractionHelp` reads `.Length` on it with no null guard while scanning every
+> collectible, so a null crashes the client the moment a player looks at any attachable entity.
+> `CreativeInventoryStacks` is nulled instead, because null is the loader's own default for a
+> collectible that declares no stacks; an empty array there would read as "has stacks" to the same
+> non-null tests. Both hide the collectible, since the handbook tests `Length`, not nullity.
+
 ## `SurfaceRenderer` - flat fluid surfaces
 
 `Renderers/SurfaceRenderer` is an `IRenderer` base for drawing a flat, textured horizontal surface
@@ -184,5 +212,5 @@ mesh per box and lets `SelectMeshIndex` pick the cross-section by fill level.
 
 ## Related pages
 
-- [Multiblock Structures](Multiblock-Structures) - `ExOrientation` drives `SetStructureAngle`.
+- [Multiblock Structures](Multiblock-Structures) - `ExOrientation` drives `SetStructureAngle`; `BEBehaviorMPFillerPort` supplies the angle `MPAnim` consumes.
 - [Config System](Config-System) - back `ExContentGate` toggles with a live config value.

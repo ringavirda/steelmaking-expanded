@@ -24,8 +24,7 @@ namespace SteelmakingExpanded.Patches;
 /// block class, so other mods touching the tool mold can coexist.
 /// </summary>
 [HarmonyPatch]
-public static class ToolMoldPatches
-{
+public static class ToolMoldPatches {
   // Cache of baked held-item meshes (mold body + metal surface), keyed by block + metal +
   // quantised fill/glow so the uploaded-mesh count stays bounded. Cleared on dispose.
   private static readonly Dictionary<
@@ -34,8 +33,7 @@ public static class ToolMoldPatches
   > _heldContentMeshes = [];
 
   /// <summary>Disposes and clears the cached held-content meshes (client shutdown).</summary>
-  public static void ClearMeshCache()
-  {
+  public static void ClearMeshCache() {
     foreach (var meshRef in _heldContentMeshes.Values)
       meshRef?.Dispose();
     _heldContentMeshes.Clear();
@@ -55,8 +53,7 @@ public static class ToolMoldPatches
     ICoreClientAPI capi,
     ItemStack itemstack,
     ref ItemRenderInfo renderinfo
-  )
-  {
+  ) {
     if (__instance is not BlockToolMold mold)
       return;
 
@@ -80,8 +77,7 @@ public static class ToolMoldPatches
 
     if (
       !_heldContentMeshes.TryGetValue(key, out var meshRef) || meshRef.Disposed
-    )
-    {
+    ) {
       meshRef = BuildHeldContentMesh(mold, capi, contents, level, glow, temp);
       if (meshRef == null)
         return;
@@ -98,8 +94,7 @@ public static class ToolMoldPatches
     float level,
     int glow,
     float temp
-  )
-  {
+  ) {
     MeshData? mesh = capi.TesselatorManager.GetDefaultBlockMesh(mold)?.Clone();
     if (mesh == null)
       return null;
@@ -133,16 +128,14 @@ public static class ToolMoldPatches
     byte cr = 255,
       cg = 255,
       cb = 255;
-    if (temp >= 500f)
-    {
+    if (temp >= 500f) {
       float[] inc = ColorUtil.GetIncandescenceColorAsColor4f((int)temp);
       cr = (byte)(GameMath.Clamp(inc[0], 0f, 1f) * 255f);
       cg = (byte)(GameMath.Clamp(inc[1], 0f, 1f) * 255f);
       cb = (byte)(GameMath.Clamp(inc[2], 0f, 1f) * 255f);
     }
     quad.Rgba = new byte[16];
-    for (int i = 0; i < 4; i++)
-    {
+    for (int i = 0; i < 4; i++) {
       quad.Rgba[i * 4] = cr;
       quad.Rgba[i * 4 + 1] = cg;
       quad.Rgba[i * 4 + 2] = cb;
@@ -202,10 +195,8 @@ public static class ToolMoldPatches
     IWorldAccessor world,
     IPlayer forPlayer,
     ref WorldInteraction[] __result
-  )
-  {
-    var pickupFilled = new WorldInteraction
-    {
+  ) {
+    var pickupFilled = new WorldInteraction {
       ActionLangCode = "blockhelp-toolmold-pickup",
       MouseButton = EnumMouseButton.Right,
       // Gate on an empty hand directly (not RequireFreeHand, which draws an empty slot in the hint).
@@ -232,8 +223,7 @@ public static class ToolMoldPatches
     IWorldAccessor world,
     BlockPos pos,
     ref ItemStack[] __result
-  )
-  {
+  ) {
     if (
       __result is not { Length: > 0 }
       || !MoldGating.IsToolMoldDisabled(__instance.Code)
@@ -260,31 +250,26 @@ public static class ToolMoldPatches
     BlockToolMold mold,
     IWorldAccessor world,
     BlockEntityToolMold be
-  )
-  {
+  ) {
     if (mold.Attributes == null || be.MetalContent?.Collectible == null)
       return false;
 
     string metal = be.MetalContent.Collectible.LastCodePart();
 
     var templates = new List<JsonItemStack>();
-    if (mold.Attributes["drop"].Exists)
-    {
+    if (mold.Attributes["drop"].Exists) {
       var one = mold.Attributes["drop"]
         .AsObject<JsonItemStack>(null, mold.Code.Domain);
       if (one != null)
         templates.Add(one);
-    }
-    else
-    {
+    } else {
       var many = mold.Attributes["drops"]
         .AsObject<JsonItemStack[]>(null, mold.Code.Domain);
       if (many != null)
         templates.AddRange(many);
     }
 
-    foreach (var tmpl in templates)
-    {
+    foreach (var tmpl in templates) {
       if (tmpl?.Code == null)
         continue;
       AssetLocation loc = tmpl.Code.Clone();
@@ -314,8 +299,7 @@ public static class ToolMoldPatches
     IPlayer byPlayer,
     BlockSelection blockSel,
     ref bool __result
-  )
-  {
+  ) {
     if (
       world.BlockAccessor.GetBlockEntity(blockSel.Position)
         is not BlockEntityToolMold be
@@ -330,8 +314,7 @@ public static class ToolMoldPatches
     )
       return true;
 
-    if (world.Side == EnumAppSide.Client)
-    {
+    if (world.Side == EnumAppSide.Client) {
       __result = true;
       return false;
     }
@@ -346,21 +329,17 @@ public static class ToolMoldPatches
       && be.IsHardened
       && be.IsFull
       && CanCastInto(__instance, world, be)
-    )
-    {
+    ) {
       // A server admin can disable this mold type (early-game balance) - then it yields no casting.
-      if (MoldGating.IsToolMoldDisabled(__instance.Code))
-      {
+      if (MoldGating.IsToolMoldDisabled(__instance.Code)) {
         (byPlayer as IServerPlayer)?.SendIngameError("smex-molddisabled");
         __result = true;
         return false;
       }
 
       ItemStack[]? molded = be.GetStateAwareMoldedStacks();
-      if (molded is { Length: > 0 })
-      {
-        foreach (var stack in molded)
-        {
+      if (molded is { Length: > 0 }) {
+        foreach (var stack in molded) {
           int stackSize = stack.StackSize;
           if (!byPlayer.InventoryManager.TryGiveItemstack(stack))
             world.SpawnItemEntity(stack, dropPos);
@@ -402,15 +381,13 @@ public static class ToolMoldPatches
         be.MetalContent,
         be.FillLevel
       )
-    )
-    {
+    ) {
       __result = true;
       return false;
     }
 
     var moldStack = new ItemStack(__instance);
-    if (hasMetal)
-    {
+    if (hasMetal) {
       var beData = new TreeAttribute();
       beData.SetItemstack("contents", be.MetalContent!.Clone());
       beData.SetInt("fillLevel", be.FillLevel);

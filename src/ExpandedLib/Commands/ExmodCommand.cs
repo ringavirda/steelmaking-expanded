@@ -20,10 +20,8 @@ namespace ExpandedLib.Commands;
 /// </para>
 /// </summary>
 [CommandRegister(Side = EnumAppSide.Universal)]
-public sealed class ExmodCommand : IExCommand
-{
-  public void Register(ICoreAPI api, Mod mod)
-  {
+public sealed class ExmodCommand : IExCommand {
+  public void Register(ICoreAPI api, Mod mod) {
     bool isClient = api.Side == EnumAppSide.Client;
     string descKey = isClient
       ? "command-exmod-desc-client"

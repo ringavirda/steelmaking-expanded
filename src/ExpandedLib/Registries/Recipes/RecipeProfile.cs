@@ -8,8 +8,7 @@ namespace ExpandedLib.Registries.Recipes;
 /// <c>/exmod recipes &lt;code&gt; &lt;level&gt;</c> command flips. A mod registers one of these in its
 /// <c>Start</c> so the command and the library's apply pass can find it by <see cref="Code"/>.
 /// </summary>
-public sealed class RecipeProfile
-{
+public sealed class RecipeProfile {
   /// <summary>The mod's short code used on the command line, e.g. <c>"smex"</c> in
   /// <c>/exmod recipes smex cheap</c>.</summary>
   public required string Code { get; init; }

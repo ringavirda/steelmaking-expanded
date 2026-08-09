@@ -11,7 +11,8 @@ scratch:
 - a generic **block-network** graph (auto-orienting node blocks, merge/fracture handling, a
   single manager) - used for gas pipes, steam pipes and molten-metal canals;
 - **multiblock structures** with completion monitoring, build-outline projection and an
-  invisible filler block that gives mega-blocks real per-cell collision;
+  invisible filler block that gives mega-blocks real per-cell collision - and can carry a
+  network port or a block entity behaviour on the controller's behalf;
 - a **production-machine** tick lifecycle base;
 - **attribute-driven registration** for blocks/items/entities/behaviours/commands, plus a
   source-generated, versioned, live-editable **config** system;

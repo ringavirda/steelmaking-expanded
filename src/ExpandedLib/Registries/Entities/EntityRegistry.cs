@@ -14,19 +14,16 @@ namespace ExpandedLib.Registries.Entities;
 /// matching registry, using the <c>{modid}.{ClassName}</c> naming convention. Replaces the long
 /// hand-written list of <c>api.Register*Class</c> calls a mod system would otherwise carry.
 /// </summary>
-public static class EntityRegistry
-{
+public static class EntityRegistry {
   /// <summary>
   /// Registers every <see cref="RegisterAttribute"/>-decorated class in <paramref name="asm"/>
   /// (default: the calling mod's own assembly). Call once from <c>ModSystem.Start</c>.
   /// </summary>
-  public static void RegisterAll(ICoreAPI api, Mod mod, Assembly? asm = null)
-  {
+  public static void RegisterAll(ICoreAPI api, Mod mod, Assembly? asm = null) {
     asm ??= Assembly.GetCallingAssembly();
     string modId = mod.Info.ModID;
 
-    foreach (Type type in ReflectionScan.GetCandidateTypes(asm))
-    {
+    foreach (Type type in ReflectionScan.GetCandidateTypes(asm)) {
       var attr = type.GetCustomAttributes()
         .OfType<RegisterAttribute>()
         .FirstOrDefault();
@@ -36,8 +33,7 @@ public static class EntityRegistry
       string baseKey = attr.Code ?? type.Name;
       string key = attr.PrefixModId ? $"{modId}.{baseKey}" : baseKey;
 
-      switch (attr)
-      {
+      switch (attr) {
         case BlockRegisterAttribute
           when Validate<Block>(api, modId, type, "block"):
           api.RegisterBlockClass(key, type);
@@ -84,8 +80,7 @@ public static class EntityRegistry
     string modId,
     Type type,
     string kind
-  )
-  {
+  ) {
     if (typeof(TBase).IsAssignableFrom(type))
       return true;
 
@@ -111,8 +106,7 @@ public static class EntityRegistry
     string key,
     RegisterAttribute attr,
     Type type
-  )
-  {
+  ) {
     api.RegisterBlockEntityClass(key, type);
 
     const string prefix = "BlockEntity";

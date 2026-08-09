@@ -15,15 +15,13 @@ namespace PipesAndPowerExpanded.Patches;
 /// postfix adds a look-at info line so the player sees it venting.
 /// </summary>
 [HarmonyPatch(typeof(Block), nameof(Block.GetPlacedBlockInfo))]
-public static class ChimneyVentInfoPatch
-{
+public static class ChimneyVentInfoPatch {
   public static void Postfix(
     Block __instance,
     IWorldAccessor world,
     BlockPos pos,
     ref string __result
-  )
-  {
+  ) {
     // Only vanilla (or any) chimney blocks; everything else passes through untouched.
     if (__instance.Code?.Path?.Contains("chimney") != true)
       return;

@@ -18,28 +18,24 @@ namespace SteelmakingExpanded.BlockNetworkMolten.Blocks;
 /// be chiselled out. Sneak + right-click picks the barrel up with its contents.
 /// </summary>
 [BlockRegister]
-public partial class BlockMoltenBarrel : Block
-{
+public partial class BlockMoltenBarrel : Block {
   private MeshData? _barrelBaseMesh;
 
   // Cached item list for the pour interaction help, populated on load. (The chisel list is shared
   // through MoltenChisel.ChiselHelp.)
   private ItemStack[] _smeltedCrucibles = [];
 
-  public override void OnLoaded(ICoreAPI api)
-  {
+  public override void OnLoaded(ICoreAPI api) {
     base.OnLoaded(api);
 
     // Cache all smelted crucibles
     var crucibleList = new List<ItemStack>();
-    foreach (var block in api.World.Blocks)
-    {
+    foreach (var block in api.World.Blocks) {
       if (
         block.Code != null
         && block.Code.Path.StartsWith("crucible-")
         && block.Code.Path.EndsWith("-smelted")
-      )
-      {
+      ) {
         crucibleList.Add(new ItemStack(block));
       }
     }
@@ -58,13 +54,11 @@ public partial class BlockMoltenBarrel : Block
     IBlockAccessor blockAccessor,
     BlockPos pos,
     ItemStack? stack = null
-  )
-  {
+  ) {
     if (
       pos != null
       && blockAccessor.GetBlockEntity(pos) is BlockEntityMoltenBarrel be
-    )
-    {
+    ) {
       byte val = be.GlowLightLevel;
       if (val > 0)
         return [8, 7, val];
@@ -78,8 +72,7 @@ public partial class BlockMoltenBarrel : Block
     ItemStack itemstack,
     EnumItemRenderTarget target,
     ref ItemRenderInfo renderinfo
-  )
-  {
+  ) {
     base.OnBeforeRender(capi, itemstack, target, ref renderinfo);
 
     var (metal, units) = MoltenContents.Read(
@@ -99,8 +92,7 @@ public partial class BlockMoltenBarrel : Block
     var cache = GetMeshRefCache(capi);
     int fillStep = (int)GameMath.Clamp(fillRatio * 16f, 0f, 16f);
     string key = $"{metal.Collectible.Code}|{fillStep}|{glow / 16}";
-    if (!cache.TryGetValue(key, out var meshRef))
-    {
+    if (!cache.TryGetValue(key, out var meshRef)) {
       MeshData mesh = GenMeshWithContent(capi, metal, fillRatio, glow);
       meshRef = cache[key] = capi.Render.UploadMultiTextureMesh(mesh);
     }
@@ -109,8 +101,7 @@ public partial class BlockMoltenBarrel : Block
 
   private Dictionary<string, MultiTextureMeshRef> GetMeshRefCache(
     ICoreClientAPI capi
-  )
-  {
+  ) {
     string cacheKey = "moltenBarrelMeshRefs:" + Code;
     if (
       capi.ObjectCache.TryGetValue(cacheKey, out var existing)
@@ -127,8 +118,7 @@ public partial class BlockMoltenBarrel : Block
     ItemStack metal,
     float fillRatio,
     int glow
-  )
-  {
+  ) {
     _barrelBaseMesh ??= TesselateBaseMesh(capi);
     MeshData combined = _barrelBaseMesh.Clone();
 
@@ -151,8 +141,7 @@ public partial class BlockMoltenBarrel : Block
     if (texPos == null)
       return combined;
 
-    foreach (Cuboidf box in boxes)
-    {
+    foreach (Cuboidf box in boxes) {
       MeshData quad = QuadMeshUtil.GetQuad();
       quad.Rgba = new byte[16];
       quad.Rgba.Fill(byte.MaxValue);
@@ -187,22 +176,18 @@ public partial class BlockMoltenBarrel : Block
     return combined;
   }
 
-  private MeshData TesselateBaseMesh(ICoreClientAPI capi)
-  {
+  private MeshData TesselateBaseMesh(ICoreClientAPI capi) {
     capi.Tesselator.TesselateBlock(this, out MeshData mesh);
     return mesh;
   }
 
-  public override void OnUnloaded(ICoreAPI api)
-  {
-    if (api is ICoreClientAPI capi)
-    {
+  public override void OnUnloaded(ICoreAPI api) {
+    if (api is ICoreClientAPI capi) {
       string cacheKey = "moltenBarrelMeshRefs:" + Code;
       if (
         capi.ObjectCache.TryGetValue(cacheKey, out var existing)
         && existing is Dictionary<string, MultiTextureMeshRef> dict
-      )
-      {
+      ) {
         foreach (var meshRef in dict.Values)
           meshRef.Dispose();
         capi.ObjectCache.Remove(cacheKey);
@@ -216,8 +201,7 @@ public partial class BlockMoltenBarrel : Block
     IWorldAccessor world,
     IPlayer byPlayer,
     BlockSelection blockSel
-  )
-  {
+  ) {
     if (
       world.BlockAccessor.GetBlockEntity(blockSel.Position)
       is not BlockEntityMoltenBarrel be
@@ -229,8 +213,7 @@ public partial class BlockMoltenBarrel : Block
       .ActiveHotbarSlot
       ?.Itemstack
       ?.Collectible;
-    if (heldItem?.Tool == EnumTool.Chisel)
-    {
+    if (heldItem?.Tool == EnumTool.Chisel) {
       // A chisel in hand resolves here either way: chip the hardened metal out (shared ritual; the
       // barrel takes no tool wear and chips at 10 units/bit), or do nothing when it isn't hardened yet.
       var outcome = MoltenChisel.TryChisel(
@@ -245,8 +228,7 @@ public partial class BlockMoltenBarrel : Block
       return outcome != ChiselOutcome.NotChiseling;
     }
 
-    if (byPlayer.Entity.Controls.ShiftKey)
-    {
+    if (byPlayer.Entity.Controls.ShiftKey) {
       if (world.Side == EnumAppSide.Client)
         return true;
 
@@ -273,8 +255,7 @@ public partial class BlockMoltenBarrel : Block
     IWorldAccessor world,
     BlockPos blockPos,
     ItemStack byItemStack
-  )
-  {
+  ) {
     base.OnBlockPlaced(world, blockPos, byItemStack);
 
     if (byItemStack == null)
@@ -282,8 +263,7 @@ public partial class BlockMoltenBarrel : Block
 
     if (
       world.BlockAccessor.GetBlockEntity(blockPos) is BlockEntityMoltenBarrel be
-    )
-    {
+    ) {
       // Assign fields directly instead of FromTreeAttributes: the base
       // deserializer rebuilds Pos from posx/posy/posz, which this partial tree
       // lacks, corrupting the block entity position to (0,0,0) on reload.
@@ -301,8 +281,7 @@ public partial class BlockMoltenBarrel : Block
     StringBuilder dsc,
     IWorldAccessor world,
     bool withDebugInfo
-  )
-  {
+  ) {
     base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
 
     if (inSlot.Itemstack?.Attributes?["blockEntityAttributes"] == null)
@@ -315,14 +294,12 @@ public partial class BlockMoltenBarrel : Block
     );
     int maxUnits = MaxUnits; // generated const, baked from the block JSON's "maxUnits" attribute.
 
-    if (currentUnits <= 0)
-    {
+    if (currentUnits <= 0) {
       dsc.AppendLine(Lang.Get("smex:moltenbarrel-info-empty", maxUnits));
       return;
     }
 
-    if (metalContent == null)
-    {
+    if (metalContent == null) {
       dsc.AppendLine(
         Lang.Get("smex:moltenbarrel-info-units", currentUnits, maxUnits)
       );
@@ -330,8 +307,7 @@ public partial class BlockMoltenBarrel : Block
     }
 
     string state = Lang.Get(
-      MoltenMetal.StateOf(world, metalContent) switch
-      {
+      MoltenMetal.StateOf(world, metalContent) switch {
         MoltenState.Liquid => "smex:metalstate-liquid",
         MoltenState.Hardened => "smex:metalstate-hardened",
         _ => "smex:metalstate-soft",
@@ -356,8 +332,7 @@ public partial class BlockMoltenBarrel : Block
     IWorldAccessor world,
     BlockSelection selection,
     IPlayer forPlayer
-  )
-  {
+  ) {
     var interactions =
       base.GetPlacedBlockInteractionHelp(world, selection, forPlayer) ?? [];
 
@@ -377,11 +352,9 @@ public partial class BlockMoltenBarrel : Block
       },
     };
 
-    if (!isHardened && !isFull)
-    {
+    if (!isHardened && !isFull) {
       result.Add(
-        new WorldInteraction
-        {
+        new WorldInteraction {
           ActionLangCode = "smex:blockhelp-barrel-pour",
           MouseButton = EnumMouseButton.Right,
           Itemstacks = _smeltedCrucibles,
@@ -397,8 +370,7 @@ public partial class BlockMoltenBarrel : Block
     return result.ToArray();
   }
 
-  public override bool CanBePlacedInto(ItemStack stack, ItemSlot slot)
-  {
+  public override bool CanBePlacedInto(ItemStack stack, ItemSlot slot) {
     return slot.Inventory?.ClassName == "backpack";
   }
 
@@ -407,8 +379,7 @@ public partial class BlockMoltenBarrel : Block
     BlockPos pos,
     IPlayer byPlayer,
     float dropQuantityMultiplier = 1
-  )
-  {
+  ) {
     // Molten metal hits the ground and sizzles when a still-liquid barrel breaks.
     if (
       world.Side == EnumAppSide.Server
@@ -435,8 +406,7 @@ public partial class BlockMoltenBarrel : Block
     BlockPos pos,
     IPlayer? byPlayer,
     float dropQuantityMultiplier = 1f
-  )
-  {
+  ) {
     var drops = new List<ItemStack> { new ItemStack(this) };
 
     if (world.BlockAccessor.GetBlockEntity(pos) is BlockEntityMoltenBarrel be)

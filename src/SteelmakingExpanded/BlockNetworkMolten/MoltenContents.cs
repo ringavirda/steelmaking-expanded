@@ -10,8 +10,7 @@ namespace SteelmakingExpanded.BlockNetworkMolten;
 /// into the world restores seamlessly. The tap, the mold pedestal, the barrel block and
 /// the held-item info all used to hand-roll these reads/writes.
 /// </summary>
-public static class MoltenContents
-{
+public static class MoltenContents {
   /// <summary>Tree key for a barrel's stored unit count.</summary>
   public const string BarrelUnitsKey = "currentUnitAmount";
 
@@ -26,8 +25,7 @@ public static class MoltenContents
     ItemStack itemStack,
     string unitsKey,
     IWorldAccessor worldForResolve
-  )
-  {
+  ) {
     if (
       itemStack.Attributes?["blockEntityAttributes"]
       is not ITreeAttribute beData
@@ -55,16 +53,14 @@ public static class MoltenContents
     string unitsKey,
     ItemStack? content,
     int units
-  )
-  {
+  ) {
     if (content == null || units <= 0)
       return;
 
     var beData = new TreeAttribute();
     beData.SetItemstack("contents", content.Clone());
     beData.SetInt(unitsKey, units);
-    if (unitsKey == MoldUnitsKey)
-    {
+    if (unitsKey == MoldUnitsKey) {
       beData.SetBool("shattered", false);
       beData.SetFloat("meshAngle", 0f);
     }

@@ -15,12 +15,10 @@ namespace ExpandedLib.Commands;
 /// since recipe costs are host-authoritative (the <c>/exmod</c> root requires <c>controlserver</c>).
 /// </summary>
 [SubCommandRegister(Side = EnumAppSide.Server)]
-public sealed class RecipesSubCommand : IExSubCommand
-{
+public sealed class RecipesSubCommand : IExSubCommand {
   public string ParentName => "exmod";
 
-  public void Register(ICoreAPI api, Mod mod, IChatCommand parent)
-  {
+  public void Register(ICoreAPI api, Mod mod, IChatCommand parent) {
     parent
       .BeginSubCommand("recipes")
       .WithDescription(Lang.Get("exlib:command-recipes-desc"))
@@ -32,8 +30,7 @@ public sealed class RecipesSubCommand : IExSubCommand
       .EndSubCommand();
   }
 
-  private static TextCommandResult OnCommand(TextCommandCallingArgs args)
-  {
+  private static TextCommandResult OnCommand(TextCommandCallingArgs args) {
     string? code = (args[0] as string)?.ToLowerInvariant();
     string? level = (args[1] as string)?.ToLowerInvariant();
 
@@ -74,8 +71,7 @@ public sealed class RecipesSubCommand : IExSubCommand
     );
   }
 
-  private static string ListProfiles()
-  {
+  private static string ListProfiles() {
     if (ExRecipeProfiles.Codes.Count == 0)
       return Lang.Get("exlib:command-recipes-none");
 

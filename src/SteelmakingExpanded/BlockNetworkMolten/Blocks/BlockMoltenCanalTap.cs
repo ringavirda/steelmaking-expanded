@@ -17,13 +17,11 @@ namespace SteelmakingExpanded.BlockNetworkMolten.Blocks;
 /// barrel/mold; Ctrl + right-click toggles pouring on and off.
 /// </summary>
 [BlockRegister]
-public partial class BlockMoltenCanalTap : BlockMoltenCanal
-{
+public partial class BlockMoltenCanalTap : BlockMoltenCanal {
   // Barrel + large molds (anvil, helve hammer) that can be cast in the tap.
   private ItemStack[]? _acceptedContents;
 
-  public override void OnLoaded(ICoreAPI api)
-  {
+  public override void OnLoaded(ICoreAPI api) {
     base.OnLoaded(api);
 
     var list = new List<ItemStack>();
@@ -40,8 +38,7 @@ public partial class BlockMoltenCanalTap : BlockMoltenCanal
     IWorldAccessor world,
     IPlayer byPlayer,
     BlockSelection blockSel
-  )
-  {
+  ) {
     if (
       world.BlockAccessor.GetBlockEntity(blockSel.Position)
       is not BlockEntityMoltenCanalTap be
@@ -61,13 +58,11 @@ public partial class BlockMoltenCanalTap : BlockMoltenCanal
     if (world.Side == EnumAppSide.Client)
       return true;
 
-    if (sneak)
-    {
+    if (sneak) {
       if (!HasSolidSupportBelow(world, blockSel.Position))
         return false;
 
-      if (be.HasContent)
-      {
+      if (be.HasContent) {
         // A mold full of still-liquid metal may only be taken into an empty
         // hand - anywhere else in the inventory it instantly spills.
         bool liquidMold =
@@ -96,28 +91,19 @@ public partial class BlockMoltenCanalTap : BlockMoltenCanal
           liquidMold,
           blockSel.Position.ToVec3d().Add(0.5, 1.0, 0.5)
         );
-      }
-      else
-      {
+      } else {
         var heldSlot = byPlayer.InventoryManager.ActiveHotbarSlot;
         if (heldSlot?.Itemstack is not { } heldStack)
           return false;
 
-        if (heldStack.Block is BlockMoltenBarrel)
-        {
+        if (heldStack.Block is BlockMoltenBarrel) {
           be.AddBarrel(heldStack);
-        }
-        else if (MoldKinds.IsLarge(heldStack.Block))
-        {
+        } else if (MoldKinds.IsLarge(heldStack.Block)) {
           be.AddMold(heldStack);
-        }
-        else if (heldStack.Block is BlockToolMold)
-        {
+        } else if (heldStack.Block is BlockToolMold) {
           (byPlayer as IServerPlayer)?.SendIngameError("smex-moldtoosmall");
           return false;
-        }
-        else
-        {
+        } else {
           return false;
         }
 
@@ -126,9 +112,7 @@ public partial class BlockMoltenCanalTap : BlockMoltenCanal
       }
       ExSounds.Play(world.Api, blockSel.Position, ExSounds.Ingot, 0.7f);
       be.MarkDirty(true);
-    }
-    else
-    {
+    } else {
       be.TryTogglePouring();
     }
 
@@ -143,8 +127,7 @@ public partial class BlockMoltenCanalTap : BlockMoltenCanal
   private static bool HasSolidSupportBelow(
     IWorldAccessor world,
     BlockPos tapPos
-  )
-  {
+  ) {
     Block below = world.BlockAccessor.GetBlock(tapPos.DownCopy());
     return below.SideSolid[BlockFacing.UP.Index]
       && below is not BlockStructureFiller;
@@ -154,8 +137,7 @@ public partial class BlockMoltenCanalTap : BlockMoltenCanal
     IWorldAccessor world,
     BlockSelection selection,
     IPlayer forPlayer
-  )
-  {
+  ) {
     var interactions =
       base.GetPlacedBlockInteractionHelp(world, selection, forPlayer) ?? [];
 
@@ -177,23 +159,18 @@ public partial class BlockMoltenCanalTap : BlockMoltenCanal
     if (!HasSolidSupportBelow(world, selection.Position))
       return result.ToArray();
 
-    if (!hasContent)
-    {
+    if (!hasContent) {
       result.Add(
-        new WorldInteraction
-        {
+        new WorldInteraction {
           ActionLangCode = "smex:blockhelp-tap-placecontent",
           MouseButton = EnumMouseButton.Right,
           HotKeyCode = "sneak",
           Itemstacks = _acceptedContents,
         }
       );
-    }
-    else
-    {
+    } else {
       result.Add(
-        new WorldInteraction
-        {
+        new WorldInteraction {
           ActionLangCode = "smex:blockhelp-tap-removecontent",
           MouseButton = EnumMouseButton.Right,
           HotKeyCode = "sneak",
@@ -209,8 +186,7 @@ public partial class BlockMoltenCanalTap : BlockMoltenCanal
     BlockPos pos,
     IPlayer byPlayer,
     float dropQuantityMultiplier = 1f
-  )
-  {
+  ) {
     // A parked barrel/mold is stored on the BE (the player's item was consumed on
     // placement), not as a separate block, so drop it - with its contents - before
     // the tap is removed, otherwise it is silently lost.
@@ -219,8 +195,7 @@ public partial class BlockMoltenCanalTap : BlockMoltenCanal
       && byPlayer is not { WorldData.CurrentGameMode: EnumGameMode.Creative }
       && world.BlockAccessor.GetBlockEntity(pos) is BlockEntityMoltenCanalTap be
       && be.HasContent
-    )
-    {
+    ) {
       ItemStack? parked = be.IsBarrel
         ? be.RemoveBarrel()
         : (be.MoldStack != null ? be.RemoveMold() : null);
@@ -235,8 +210,7 @@ public partial class BlockMoltenCanalTap : BlockMoltenCanal
     new() { { "tap", ["n", "s", "w", "e"] } };
 
   protected override string GetFallbackOrientation(string? type) =>
-    type switch
-    {
+    type switch {
       "tap" => "n",
       _ => "n",
     };
@@ -246,14 +220,12 @@ public partial class BlockMoltenCanalTap : BlockMoltenCanal
     out float rotX,
     out float rotY,
     out float rotZ
-  )
-  {
+  ) {
     rotX = 0;
     rotY = 0;
     rotZ = 0;
 
-    switch (orientation)
-    {
+    switch (orientation) {
       case "n":
         rotY = 0;
         break;

@@ -17,8 +17,7 @@ namespace ExpandedLib.Registries.Config;
 /// any upgrade that crosses <see cref="ToVersion"/>, regardless of how old the file is.
 /// </para>
 /// </summary>
-public sealed class ExConfigMigration
-{
+public sealed class ExConfigMigration {
   /// <summary>The mod version this reset is tied to (e.g. <c>"0.9.2"</c>). The reset fires when the
   /// player first runs a build at or past this version having last saved below it.</summary>
   public required string ToVersion { get; init; }

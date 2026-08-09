@@ -14,15 +14,12 @@ namespace SteelmakingExpanded.Tests;
 /// bell's magazine/dropping state below it. The slot accept rules are covered by
 /// <see cref="HopperSlotTests"/>; this pins the slot <em>layout</em> and the info text.
 /// </summary>
-public class HopperReinforcedBeTests
-{
+public class HopperReinforcedBeTests {
   private static BlockEntityHopperReinforced Hopper(
     TestWorld world,
     BlockPos pos
-  )
-  {
-    var be = new BlockEntityHopperReinforced
-    {
+  ) {
+    var be = new BlockEntityHopperReinforced {
       Pos = pos,
       Block = TestBlocks.Configure(new Block(), "smex:hopperreinforced", 91),
     };
@@ -34,11 +31,9 @@ public class HopperReinforcedBeTests
   private static BlockEntityHopperBell BellBelow(
     TestWorld world,
     BlockEntityHopperReinforced hopper
-  )
-  {
+  ) {
     var pos = hopper.Pos.DownCopy();
-    var bell = new BlockEntityHopperBell
-    {
+    var bell = new BlockEntityHopperBell {
       Pos = pos,
       Block = TestBlocks.Configure(new Block(), "smex:hopperbell", 90),
     };
@@ -48,8 +43,7 @@ public class HopperReinforcedBeTests
   }
 
   /// <summary>A player holding Ctrl (for the bell-dropping toggle interaction).</summary>
-  private static IPlayer CtrlPlayer()
-  {
+  private static IPlayer CtrlPlayer() {
     var player = Substitute.For<IPlayer>();
     var entity = Substitute.For<EntityPlayer>();
     entity.Controls.CtrlKey = true; // Controls is a real field on the proxy
@@ -58,8 +52,7 @@ public class HopperReinforcedBeTests
   }
 
   /// <summary>A player whose land-claim access to the hopper is granted or denied.</summary>
-  private static IPlayer AccessPlayer(TestWorld world, bool granted)
-  {
+  private static IPlayer AccessPlayer(TestWorld world, bool granted) {
     var player = Substitute.For<IPlayer>();
     player.PlayerName.Returns("tester");
     world
@@ -86,8 +79,7 @@ public class HopperReinforcedBeTests
   public void The_eight_slots_are_typed_iron_coke_and_flux(
     int slot,
     string expectedType
-  )
-  {
+  ) {
     var hopper = Hopper(new TestWorld(), new BlockPos(0, 16, 0));
 
     Assert.Equal(8, hopper.Inventory.Count);
@@ -100,8 +92,7 @@ public class HopperReinforcedBeTests
   #region Bell-dropping toggle
 
   [Fact]
-  public void Ctrl_interacting_toggles_the_bell_hoppers_dropping()
-  {
+  public void Ctrl_interacting_toggles_the_bell_hoppers_dropping() {
     var world = new TestWorld();
     var hopper = Hopper(world, new BlockPos(0, 16, 0));
     var bell = BellBelow(world, hopper);
@@ -125,8 +116,7 @@ public class HopperReinforcedBeTests
   // harness can't stand up, so these pin the open/close + claim-guard handshake around it.
 
   [Fact]
-  public void Open_packet_opens_the_inventory_on_the_server()
-  {
+  public void Open_packet_opens_the_inventory_on_the_server() {
     var world = new TestWorld();
     var hopper = Hopper(world, new BlockPos(0, 16, 0));
     var player = AccessPlayer(world, granted: true);
@@ -137,8 +127,7 @@ public class HopperReinforcedBeTests
   }
 
   [Fact]
-  public void Close_packet_closes_the_inventory_on_the_server()
-  {
+  public void Close_packet_closes_the_inventory_on_the_server() {
     var world = new TestWorld();
     var hopper = Hopper(world, new BlockPos(0, 16, 0));
     var player = AccessPlayer(world, granted: true);
@@ -149,8 +138,7 @@ public class HopperReinforcedBeTests
   }
 
   [Fact]
-  public void Open_packet_is_rejected_without_claim_access()
-  {
+  public void Open_packet_is_rejected_without_claim_access() {
     var world = new TestWorld();
     var hopper = Hopper(world, new BlockPos(0, 16, 0));
     var player = AccessPlayer(world, granted: false);

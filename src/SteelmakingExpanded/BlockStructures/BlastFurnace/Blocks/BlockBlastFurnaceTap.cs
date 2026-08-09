@@ -16,33 +16,28 @@ namespace SteelmakingExpanded.BlockStructures.BlastFurnace.Blocks;
 /// beneath the spout.
 /// </summary>
 [BlockRegister]
-public partial class BlockBlastFurnaceTap : Block
-{
+public partial class BlockBlastFurnaceTap : Block {
   public override bool OnBlockInteractStart(
     IWorldAccessor world,
     IPlayer byPlayer,
     BlockSelection blockSel
-  )
-  {
+  ) {
     if (
       world.BlockAccessor.GetBlockEntity(blockSel.Position)
       is BlockEntityBlastFurnaceTap tap
-    )
-    {
+    ) {
       // Prevent toggling if the player is holding an item/block
       if (!byPlayer.Entity.RightHandItemSlot.Empty)
         return false;
 
       // Opening requires a canal start directly below the tap's spout.
       bool isOpening = !tap.IsPouring;
-      if (isOpening)
-      {
+      if (isOpening) {
         BlockFacing facing = BlockFacing.FromCode(Variant["side"]);
         BlockPos startPos = blockSel
           .Position.AddCopy(facing.Opposite)
           .DownCopy();
-        if (world.BlockAccessor.GetBlock(startPos) is not BlockMoltenCanalStart)
-        {
+        if (world.BlockAccessor.GetBlock(startPos) is not BlockMoltenCanalStart) {
           (world.Api as ICoreClientAPI)?.TriggerIngameError(
             this,
             "nocanal",
@@ -75,13 +70,11 @@ public partial class BlockBlastFurnaceTap : Block
     IWorldAccessor world,
     BlockSelection selection,
     IPlayer forPlayer
-  )
-  {
+  ) {
     var baseHelp =
       base.GetPlacedBlockInteractionHelp(world, selection, forPlayer) ?? [];
 
-    var toggleHelp = new WorldInteraction
-    {
+    var toggleHelp = new WorldInteraction {
       ActionLangCode = "smex:blockhelp-tap-toggle",
       MouseButton = EnumMouseButton.Right,
       // Toggling needs an empty hand (a held item is placed instead). Gate the
@@ -92,8 +85,7 @@ public partial class BlockBlastFurnaceTap : Block
     return baseHelp.Append(toggleHelp).ToArray();
   }
 
-  public override ItemStack OnPickBlock(IWorldAccessor world, BlockPos pos)
-  {
+  public override ItemStack OnPickBlock(IWorldAccessor world, BlockPos pos) {
     return new ItemStack(
       world.GetBlock(new AssetLocation("smex", "blastfurnacetap-north")) ?? this
     );
@@ -104,8 +96,7 @@ public partial class BlockBlastFurnaceTap : Block
     BlockPos pos,
     IPlayer? byPlayer,
     float dropQuantityMultiplier = 1f
-  )
-  {
+  ) {
     return
     [
       new ItemStack(

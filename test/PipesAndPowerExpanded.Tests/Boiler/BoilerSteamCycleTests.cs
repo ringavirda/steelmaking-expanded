@@ -12,8 +12,7 @@ namespace PipesAndPowerExpanded.Tests;
 /// boiler, so no Api or structure is required - this pins the safety behaviour (venting never
 /// collapses working pressure, condensation can never run the pressure up toward a burst).
 /// </summary>
-public class BoilerSteamCycleTests
-{
+public class BoilerSteamCycleTests {
   private const float Capacity = 800f; // CornishBoilerCapacity
   private const float MaxBoilWater = 500f; // CornishBoilerMaxBoilWater
   private const float VentRate = 200f; // BoilerLidVentRate (L/s)
@@ -23,8 +22,7 @@ public class BoilerSteamCycleTests
     float water,
     float steam,
     BlockEntityBoiler.BoilerState state = BlockEntityBoiler.BoilerState.Idle
-  )
-  {
+  ) {
     var be = new BlockEntityBoilerCornish();
     ReflectionHelpers.SetField(be, "_waterVolume", water);
     ReflectionHelpers.SetField(be, "_steamVolume", steam);
@@ -41,16 +39,14 @@ public class BoilerSteamCycleTests
   #region Lid venting
 
   [Fact]
-  public void Venting_idle_steam_bleeds_down_at_the_lid_rate()
-  {
+  public void Venting_idle_steam_bleeds_down_at_the_lid_rate() {
     var be = Boiler(water: 0f, steam: 1000f); // Idle -> floor 0
     ReflectionHelpers.Invoke(be, "VentExcessSteam", 1f);
     Assert.Equal(1000f - VentRate, Steam(be), 3); // 800 L left after one second
   }
 
   [Fact]
-  public void Venting_while_running_stops_at_the_headspace_floor()
-  {
+  public void Venting_while_running_stops_at_the_headspace_floor() {
     // Boiling: the floor is the steam that fills the head-space above the water
     // (Capacity - water), so venting never collapses the working pressure to zero.
     var be = Boiler(
@@ -64,8 +60,7 @@ public class BoilerSteamCycleTests
   }
 
   [Fact]
-  public void Venting_does_nothing_below_the_floor()
-  {
+  public void Venting_does_nothing_below_the_floor() {
     var be = Boiler(
       water: 500f,
       steam: 250f,
@@ -80,8 +75,7 @@ public class BoilerSteamCycleTests
   #region Internal condensation
 
   [Fact]
-  public void Condensing_turns_steam_back_into_water_at_the_expansion_ratio()
-  {
+  public void Condensing_turns_steam_back_into_water_at_the_expansion_ratio() {
     var be = Boiler(water: 100f, steam: 200f);
     // pressure 200/700 = 0.29 < 16, water room 400 L; half a second condenses 100 L steam.
     ReflectionHelpers.Invoke(be, "CondenseInternal", 0.5f);
@@ -90,8 +84,7 @@ public class BoilerSteamCycleTests
   }
 
   [Fact]
-  public void Condensing_refuses_above_the_expansion_pressure_so_it_cannot_drive_a_burst()
-  {
+  public void Condensing_refuses_above_the_expansion_pressure_so_it_cannot_drive_a_burst() {
     // pressure = steam / (Capacity - water); 13000 / 800 = 16.25 >= 16 -> refuse.
     var be = Boiler(water: 0f, steam: 13000f);
     ReflectionHelpers.Invoke(be, "CondenseInternal", 1f);
@@ -100,8 +93,7 @@ public class BoilerSteamCycleTests
   }
 
   [Fact]
-  public void Condensing_stops_when_the_vessel_is_full_to_the_boil_ceiling()
-  {
+  public void Condensing_stops_when_the_vessel_is_full_to_the_boil_ceiling() {
     var be = Boiler(water: MaxBoilWater, steam: 100f); // no water room left
     ReflectionHelpers.Invoke(be, "CondenseInternal", 1f);
     Assert.Equal(100f, Steam(be), 3);
@@ -113,8 +105,7 @@ public class BoilerSteamCycleTests
   #region Shutdown reset
 
   [Fact]
-  public void Shutting_down_returns_to_idle_and_clears_the_timers()
-  {
+  public void Shutting_down_returns_to_idle_and_clears_the_timers() {
     var be = Boiler(
       water: 300f,
       steam: 200f,

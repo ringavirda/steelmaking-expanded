@@ -14,7 +14,9 @@ of its own - install it because another mod depends on it.
 - **Multiblock structures** (`Blocks/Structures/`) - completion monitoring,
   build-outline projection (ctrl+shift+rmb), crash-safe incomplete-part highlighting,
   and the shared invisible `structurefiller` block that gives mega-block machines
-  per-cell collision.
+  per-cell collision. A footprint cell can also expose a network port or host block
+  entity behaviours on the controller's behalf - `BEBehaviorMPFillerPort` is the
+  mechanical-power intake built on that.
 - **Production machines** (`Blocks/Machines/`) - `BlockEntityProductionMachine` base
   (the tick lifecycle + operational gate) and `MachinePorts` helpers, shared by
   engines, furnaces, converters and sub-machines.

@@ -14,15 +14,12 @@ namespace SteelmakingExpanded.Tests;
 /// brain and forwards the break handoff to it. Covers the mirror update, the control link + state
 /// persistence, and the solidified-drop forwarding on break.
 /// </summary>
-public class ConverterBessemerTests
-{
+public class ConverterBessemerTests {
   private static BlockEntityConverterBessemer Vessel(
     TestWorld world,
     BlockPos pos
-  )
-  {
-    var be = new BlockEntityConverterBessemer
-    {
+  ) {
+    var be = new BlockEntityConverterBessemer {
       Pos = pos,
       Block = TestBlocks.Configure(
         new Block(),
@@ -39,10 +36,8 @@ public class ConverterBessemerTests
   private static BlockEntityConverterControl Control(
     TestWorld world,
     BlockPos pos
-  )
-  {
-    var be = new BlockEntityConverterControl
-    {
+  ) {
+    var be = new BlockEntityConverterControl {
       Pos = pos,
       Block = TestBlocks.Configure(
         new Block(),
@@ -59,16 +54,14 @@ public class ConverterBessemerTests
   #region Mirror
 
   [Fact]
-  public void A_fresh_vessel_is_unconstructed_and_not_solidified()
-  {
+  public void A_fresh_vessel_is_unconstructed_and_not_solidified() {
     var be = Vessel(new TestWorld(), new BlockPos(0, 8, 0));
     Assert.False(be.IsConstructed);
     Assert.False(be.IsSolidified);
   }
 
   [Fact]
-  public void UpdateMirror_reflects_the_pushed_state()
-  {
+  public void UpdateMirror_reflects_the_pushed_state() {
     var be = Vessel(new TestWorld(), new BlockPos(0, 8, 0));
 
     be.UpdateMirror(
@@ -90,8 +83,7 @@ public class ConverterBessemerTests
   #region Break handoff
 
   [Fact]
-  public void CollectBreakDrops_forwards_to_the_linked_control()
-  {
+  public void CollectBreakDrops_forwards_to_the_linked_control() {
     var world = new TestWorld();
     world.RegisterItem("game:metalbit-iron");
     var ironItem = world.RegisterItem("game:ingot-iron", 1500f);
@@ -111,8 +103,7 @@ public class ConverterBessemerTests
   }
 
   [Fact]
-  public void CollectBreakDrops_is_null_with_no_control_linked()
-  {
+  public void CollectBreakDrops_is_null_with_no_control_linked() {
     var be = Vessel(new TestWorld(), new BlockPos(0, 8, 0));
     Assert.Null(be.CollectBreakDrops());
   }
@@ -122,8 +113,7 @@ public class ConverterBessemerTests
   #region Serialization
 
   [Fact]
-  public void Mirror_state_and_control_link_round_trip_through_the_tree()
-  {
+  public void Mirror_state_and_control_link_round_trip_through_the_tree() {
     var world = new TestWorld();
     var src = Vessel(world, new BlockPos(0, 8, 0));
     src.LinkControl(new BlockPos(3, 7, 4));

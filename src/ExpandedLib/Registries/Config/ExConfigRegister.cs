@@ -22,8 +22,7 @@ namespace ExpandedLib.Registries.Config;
 /// <typeparam name="TConfig">The mod's config POCO; needs a parameterless constructor whose property
 /// initialisers define the defaults, and must record the version it was written under.</typeparam>
 public sealed class ExConfigRegister<TConfig> : IExConfigAccess
-  where TConfig : class, IExVersionedConfig, new()
-{
+  where TConfig : class, IExVersionedConfig, new() {
   private readonly string _fileName;
   private readonly string _modId;
   private readonly ExConfigMigration[] _migrations;
@@ -54,8 +53,7 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
     string fileName,
     string modId,
     params ExConfigMigration[] migrations
-  )
-  {
+  ) {
     _fileName = fileName;
     _modId = modId;
     _migrations = migrations ?? [];
@@ -66,8 +64,7 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
   /// startup, before any value is read. Both sides read; only the server writes, because in
   /// singleplayer the two sides share one <c>ModConfig</c> folder rather than each holding a local
   /// copy, so two writers would race over the player's file.</summary>
-  public void Load(ICoreAPI api)
-  {
+  public void Load(ICoreAPI api) {
     _api = api;
     ExConfigFiles.RenameLegacy(api, _modId, _fileName, LegacyFileNames);
 
@@ -75,15 +72,12 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
     // A file that is present but unreadable is the player's hand-edited data. Preserve a copy
     // before the defaults overwrite it - silently replacing it is how an edited value "reverts".
     bool unreadable = false;
-    try
-    {
+    try {
       config = api.LoadModConfig<TConfig>(_fileName) ?? new TConfig();
       // An empty or whitespace-only file deserializes to null instead of throwing, so it lands here
       // rather than in the catch and would otherwise be the one destructive case that logs nothing.
       unreadable = ExConfigFiles.IsPresentButBlank(_fileName);
-    }
-    catch (Exception e)
-    {
+    } catch (Exception e) {
       api.Logger.Error(
         "[{0}] Failed to read {1}; using defaults. {2}",
         _modId,
@@ -121,8 +115,7 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
   /// in <see cref="Load"/>). The repaired config is written back, so the file is fixed on disk too.
   /// Complex/collection properties (e.g. a recipe catalogue) carry their own repair.
   /// </summary>
-  private void Sanitize(TConfig config, ILogger logger)
-  {
+  private void Sanitize(TConfig config, ILogger logger) {
     var defaults = new TConfig();
     var reset = new List<string>();
 
@@ -130,8 +123,7 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
       var p in typeof(TConfig).GetProperties(
         BindingFlags.Public | BindingFlags.Instance
       )
-    )
-    {
+    ) {
       if (
         !p.CanRead
         || !p.CanWrite
@@ -140,13 +132,11 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
         continue;
 
       object? value = p.GetValue(config);
-      bool bad =
-        AsNumber(value) is double n
-          ? !InNumericRange(p, n)
-          : value is null && p.PropertyType == typeof(string);
+      bool bad = AsNumber(value) is double n
+        ? !InNumericRange(p, n)
+        : value is null && p.PropertyType == typeof(string);
 
-      if (bad)
-      {
+      if (bad) {
         p.SetValue(config, p.GetValue(defaults));
         reset.Add(p.Name);
       }
@@ -163,15 +153,13 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
 
   /// <summary>Resets the fields named by every migration whose <see cref="ExConfigMigration.ToVersion"/>
   /// is crossed by the upgrade from the file's stamped version to the running build.</summary>
-  private void ApplyMigrations(TConfig config, string current, ILogger logger)
-  {
+  private void ApplyMigrations(TConfig config, string current, ILogger logger) {
     string stored = config.ConfigVersion ?? string.Empty;
     if (stored == current)
       return; // same build - nothing to migrate.
 
     var defaults = new TConfig();
-    foreach (var m in _migrations.OrderBy(m => ParseVersion(m.ToVersion)))
-    {
+    foreach (var m in _migrations.OrderBy(m => ParseVersion(m.ToVersion))) {
       bool crossed =
         CompareVersions(m.ToVersion, stored) > 0
         && CompareVersions(m.ToVersion, current) <= 0
@@ -188,8 +176,7 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
     TConfig defaults,
     ExConfigMigration m,
     ILogger logger
-  )
-  {
+  ) {
     var writable = typeof(TConfig)
       .GetProperties(BindingFlags.Public | BindingFlags.Instance)
       .Where(p =>
@@ -199,8 +186,7 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
       );
 
     IEnumerable<PropertyInfo> toReset;
-    if (m.ResetFields is { Length: > 0 })
-    {
+    if (m.ResetFields is { Length: > 0 }) {
       var wanted = new HashSet<string>(m.ResetFields, StringComparer.Ordinal);
       var byName = writable.ToDictionary(p => p.Name);
       foreach (var name in wanted.Where(n => !byName.ContainsKey(n)))
@@ -211,9 +197,7 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
           name
         );
       toReset = byName.Values.Where(p => wanted.Contains(p.Name));
-    }
-    else
-    {
+    } else {
       toReset = writable;
     }
 
@@ -233,14 +217,10 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
   /// <summary>Writes the live <see cref="Config"/> back to <c>ModConfig/&lt;fileName&gt;</c>. Called at
   /// the end of <see cref="Load"/>; also public so a runtime config-mutating command (e.g. an admin
   /// toggle) can persist a change made through <see cref="Config"/>.</summary>
-  public void Save()
-  {
-    try
-    {
+  public void Save() {
+    try {
       _api?.StoreModConfig(Config, _fileName);
-    }
-    catch (Exception e)
-    {
+    } catch (Exception e) {
       _api?.Logger.Warning(
         "[{0}] Could not write {1}. {2}",
         _modId,
@@ -270,11 +250,9 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
     EditableProps.Select(p => p.Name).ToArray();
 
   /// <inheritdoc/>
-  public bool TryGet(string name, out string canonicalName, out string value)
-  {
+  public bool TryGet(string name, out string canonicalName, out string value) {
     var p = FindProp(name);
-    if (p == null)
-    {
+    if (p == null) {
       canonicalName = name;
       value = string.Empty;
       return false;
@@ -286,12 +264,10 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
   }
 
   /// <inheritdoc/>
-  public ExConfigEditResult Set(string name, string raw)
-  {
+  public ExConfigEditResult Set(string name, string raw) {
     var p = FindProp(name);
     if (p == null)
-      return new ExConfigEditResult
-      {
+      return new ExConfigEditResult {
         Status = ExConfigEditStatus.UnknownValue,
         Name = name,
       };
@@ -299,8 +275,7 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
     string oldValue = Format(p.GetValue(Config));
 
     if (!TryParse(p.PropertyType, raw, out object? parsed, out string expected))
-      return new ExConfigEditResult
-      {
+      return new ExConfigEditResult {
         Status = ExConfigEditStatus.ParseFailed,
         Name = p.Name,
         OldValue = oldValue,
@@ -308,8 +283,7 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
       };
 
     if (AsNumber(parsed) is double n && !InNumericRange(p, n))
-      return new ExConfigEditResult
-      {
+      return new ExConfigEditResult {
         Status = ExConfigEditStatus.OutOfRange,
         Name = p.Name,
         OldValue = oldValue,
@@ -318,8 +292,7 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
 
     p.SetValue(Config, parsed);
     Save();
-    return new ExConfigEditResult
-    {
+    return new ExConfigEditResult {
       Status = ExConfigEditStatus.Ok,
       Name = p.Name,
       OldValue = oldValue,
@@ -341,8 +314,7 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
     || t == typeof(double);
 
   private static string Format(object? v) =>
-    v switch
-    {
+    v switch {
       float f => f.ToString(CultureInfo.InvariantCulture),
       double d => d.ToString(CultureInfo.InvariantCulture),
       bool b => b ? "true" : "false",
@@ -358,21 +330,17 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
     string raw,
     out object? value,
     out string expected
-  )
-  {
+  ) {
     value = null;
 
-    if (type == typeof(string))
-    {
+    if (type == typeof(string)) {
       expected = "text";
       value = raw;
       return true;
     }
-    if (type == typeof(bool))
-    {
+    if (type == typeof(bool)) {
       expected = "true/false";
-      switch (raw.Trim().ToLowerInvariant())
-      {
+      switch (raw.Trim().ToLowerInvariant()) {
         case "true" or "on" or "yes" or "1":
           value = true;
           return true;
@@ -383,8 +351,7 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
           return false;
       }
     }
-    if (type == typeof(int))
-    {
+    if (type == typeof(int)) {
       expected = "whole number";
       if (
         int.TryParse(
@@ -393,15 +360,13 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
           CultureInfo.InvariantCulture,
           out int i
         )
-      )
-      {
+      ) {
         value = i;
         return true;
       }
       return false;
     }
-    if (type == typeof(long))
-    {
+    if (type == typeof(long)) {
       expected = "whole number";
       if (
         long.TryParse(
@@ -410,15 +375,13 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
           CultureInfo.InvariantCulture,
           out long l
         )
-      )
-      {
+      ) {
         value = l;
         return true;
       }
       return false;
     }
-    if (type == typeof(float))
-    {
+    if (type == typeof(float)) {
       expected = "number";
       if (
         float.TryParse(
@@ -427,15 +390,13 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
           CultureInfo.InvariantCulture,
           out float f
         )
-      )
-      {
+      ) {
         value = f;
         return true;
       }
       return false;
     }
-    if (type == typeof(double))
-    {
+    if (type == typeof(double)) {
       expected = "number";
       if (
         double.TryParse(
@@ -444,8 +405,7 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
           CultureInfo.InvariantCulture,
           out double d
         )
-      )
-      {
+      ) {
         value = d;
         return true;
       }
@@ -459,8 +419,7 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
   /// <summary>The numeric value of <paramref name="v"/> as a <see cref="double"/>, or <c>null</c> for a
   /// non-numeric (string/bool) property.</summary>
   private static double? AsNumber(object? v) =>
-    v switch
-    {
+    v switch {
       float f => f,
       double d => d,
       int i => i,
@@ -471,16 +430,14 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
   /// <summary>The inclusive <c>[min, max]</c> a numeric property accepts: its
   /// <see cref="ExConfigRangeAttribute"/> when present, else the baseline non-negative range
   /// <c>[0, +∞)</c>.</summary>
-  private static (double Min, double Max) RangeOf(PropertyInfo p)
-  {
+  private static (double Min, double Max) RangeOf(PropertyInfo p) {
     var attr = p.GetCustomAttribute<ExConfigRangeAttribute>();
     return attr != null ? (attr.Min, attr.Max) : (0d, double.PositiveInfinity);
   }
 
   /// <summary>Whether <paramref name="n"/> is finite and within the property's accepted range - so an
   /// edit cannot push the config into a value the next load would just reset.</summary>
-  private static bool InNumericRange(PropertyInfo p, double n)
-  {
+  private static bool InNumericRange(PropertyInfo p, double n) {
     if (double.IsNaN(n) || double.IsInfinity(n))
       return false;
     var (min, max) = RangeOf(p);
@@ -490,8 +447,7 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
   /// <summary>A compact, language-neutral description of the property's accepted range for the edit
   /// error: <c>"0..1"</c> for a bounded range, <c>"0+"</c> for a floor only. Avoids <c>&lt;</c>/<c>&gt;</c>
   /// for VTML safety.</summary>
-  private static string FormatRange(PropertyInfo p)
-  {
+  private static string FormatRange(PropertyInfo p) {
     var (min, max) = RangeOf(p);
     string lo = min.ToString(CultureInfo.InvariantCulture);
     return double.IsPositiveInfinity(max)
@@ -502,8 +458,7 @@ public sealed class ExConfigRegister<TConfig> : IExConfigAccess
 
   /// <summary>Parses a mod version (e.g. <c>"0.9.1"</c>, tolerating a <c>-prerelease</c> suffix) into a
   /// comparable <see cref="Version"/>; unparseable or empty versions sort lowest.</summary>
-  private static Version ParseVersion(string? v)
-  {
+  private static Version ParseVersion(string? v) {
     if (string.IsNullOrWhiteSpace(v))
       return new Version(0, 0);
     int dash = v.IndexOf('-');

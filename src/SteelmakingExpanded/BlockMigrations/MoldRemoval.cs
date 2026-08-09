@@ -14,8 +14,7 @@ namespace SteelmakingExpanded.BlockMigrations;
 /// <see cref="MoldGating.IsToolMoldDisabled"/>, so it is a no-op while every mold is enabled. Molds
 /// sitting in a mold pedestal are stored outside any inventory, so the pedestal clears those itself.
 /// </summary>
-public class MoldRemoval : IBlockRemoval
-{
+public class MoldRemoval : IBlockRemoval {
   public string Name => "Disabled tool molds";
 
   public IEnumerable<AssetLocation> GetRemovals(ICoreServerAPI api) =>

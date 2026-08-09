@@ -28,10 +28,8 @@ namespace ExpandedLib;
 /// <see cref="Blocks.Migrations.BlockMigrationModSystem"/>); the game auto-loads them too.
 /// </para>
 /// </summary>
-public class ExpandedLibModSystem : ModSystem
-{
-  public override void Start(ICoreAPI api)
-  {
+public class ExpandedLibModSystem : ModSystem {
+  public override void Start(ICoreAPI api) {
     // Auto-register the library's [BlockRegister]/[BlockEntityRegister]/[BlockBehaviorRegister] classes (filler block + entity, the
     // MultiblockStructure behaviour) under the exlib domain.
     EntityRegistry.RegisterAll(api, Mod, GetType().Assembly);
@@ -44,8 +42,7 @@ public class ExpandedLibModSystem : ModSystem
     );
   }
 
-  public override void StartClientSide(ICoreClientAPI api)
-  {
+  public override void StartClientSide(ICoreClientAPI api) {
     // Load the per-player display-preference store (writes the file on first run). The preference
     // definitions are contributed by the dependent mods in their own StartClientSide; applying on
     // LevelFinalize (after every mod has started) picks up whatever they registered.
@@ -64,8 +61,7 @@ public class ExpandedLibModSystem : ModSystem
     ExRecipeProfiles.ApplyAll(api);
   }
 
-  public override void StartServerSide(ICoreServerAPI api)
-  {
+  public override void StartServerSide(ICoreServerAPI api) {
     // Register the server-side counterpart: the universal exmod root surfaces here as /exmod, plus the
     // generic /exmod recipes <mod> <level> switch over the recipe profiles dependent mods register.
     CommandRegistry.RegisterAll(api, Mod, GetType().Assembly);

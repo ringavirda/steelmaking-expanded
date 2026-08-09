@@ -14,20 +14,16 @@ namespace SteelmakingExpanded.Tests;
 /// stack construction, and the simple state transitions (transition to melting, extinguish-to-idle)
 /// stand on their own. Those are pinned here.
 /// </summary>
-public class BlastFurnaceTests
-{
-  private static TestWorld NewWorld()
-  {
+public class BlastFurnaceTests {
+  private static TestWorld NewWorld() {
     var world = new TestWorld();
     world.RegisterItem("game:ingot-iron", 1500f);
     world.RegisterItem("smex:slag");
     return world;
   }
 
-  private static BlockEntityBlastFurnace Furnace(TestWorld world)
-  {
-    var be = new BlockEntityBlastFurnace
-    {
+  private static BlockEntityBlastFurnace Furnace(TestWorld world) {
+    var be = new BlockEntityBlastFurnace {
       Pos = new BlockPos(0, 16, 0),
       Block = TestBlocks.Configure(
         new Block(),
@@ -46,14 +42,12 @@ public class BlastFurnaceTests
   #region State machine
 
   [Fact]
-  public void Defaults_to_idle()
-  {
+  public void Defaults_to_idle() {
     Assert.Equal(BlastFurnaceState.Idle, Furnace(NewWorld()).State);
   }
 
   [Fact]
-  public void TransitionToMelting_moves_firing_into_melting()
-  {
+  public void TransitionToMelting_moves_firing_into_melting() {
     var be = Furnace(NewWorld());
     ReflectionHelpers.SetProperty(
       be,
@@ -68,8 +62,7 @@ public class BlastFurnaceTests
   }
 
   [Fact]
-  public void Extinguish_returns_to_idle_and_resets_heat()
-  {
+  public void Extinguish_returns_to_idle_and_resets_heat() {
     var be = Furnace(NewWorld());
     ReflectionHelpers.SetProperty(
       be,
@@ -95,8 +88,7 @@ public class BlastFurnaceTests
   #region Molten stack construction
 
   [Fact]
-  public void CreateMoltenStack_builds_iron_at_the_network_code()
-  {
+  public void CreateMoltenStack_builds_iron_at_the_network_code() {
     var world = NewWorld();
     var be = Furnace(world);
 
@@ -109,8 +101,7 @@ public class BlastFurnaceTests
   }
 
   [Fact]
-  public void CreateMoltenStack_maps_slag_to_its_own_domain()
-  {
+  public void CreateMoltenStack_maps_slag_to_its_own_domain() {
     var world = NewWorld();
     var be = Furnace(world);
 
@@ -122,8 +113,7 @@ public class BlastFurnaceTests
   }
 
   [Fact]
-  public void CreateMoltenStack_is_null_for_an_unresolved_metal()
-  {
+  public void CreateMoltenStack_is_null_for_an_unresolved_metal() {
     var world = NewWorld(); // gold not registered
     var be = Furnace(world);
 
@@ -138,8 +128,7 @@ public class BlastFurnaceTests
   #region Serialization
 
   [Fact]
-  public void Furnace_state_round_trips_through_the_tree()
-  {
+  public void Furnace_state_round_trips_through_the_tree() {
     var world = NewWorld();
     var src = Furnace(world);
     ReflectionHelpers.SetProperty(

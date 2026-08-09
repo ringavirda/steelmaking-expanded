@@ -9,16 +9,14 @@ namespace PipesAndPowerExpanded.BlockStructures.Engine.Blocks;
 /// it places normally. The reverse (engine onto an existing sub-machine) is handled in
 /// <see cref="BlockEngine.OnBlockPlaced"/>.
 /// </summary>
-public abstract class BlockEngineSubmachine : Block
-{
+public abstract class BlockEngineSubmachine : Block {
   public override bool TryPlaceBlock(
     IWorldAccessor world,
     IPlayer byPlayer,
     ItemStack itemstack,
     BlockSelection blockSel,
     ref string failureCode
-  )
-  {
+  ) {
     // Only override orientation at an engine's sub-machine slot; else use normal placement.
     if (
       BlockEngine.TryFindEngineFor(
@@ -27,15 +25,13 @@ public abstract class BlockEngineSubmachine : Block
         out _,
         out BlockEngine engineBlock
       )
-    )
-    {
+    ) {
       string side = BlockEngine.SubmachineSide(engineBlock.Variant["side"]);
       Block? oriented = world.GetBlock(CodeWithVariant("side", side));
       if (
         oriented != null
         && CanPlaceBlock(world, byPlayer, blockSel, ref failureCode)
-      )
-      {
+      ) {
         oriented.DoPlaceBlock(world, byPlayer, blockSel, itemstack);
         return true;
       }

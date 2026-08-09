@@ -15,8 +15,7 @@ namespace PipesAndPowerExpanded.Tests;
 /// <see cref="BlockEngineWatt"/> (offsets fall back to coded defaults with no JSON): north-facing, so
 /// the steam inlet is south and the sub-machine sits two cells north.
 /// </summary>
-internal sealed class EngineFixture
-{
+internal sealed class EngineFixture {
   public readonly BlockEntityEngineWatt Engine;
   public readonly BlockEngineWatt Block;
   public readonly BlockEntityEngineFluidPump Pump;
@@ -24,8 +23,7 @@ internal sealed class EngineFixture
   private readonly Scene _scene;
   private readonly BlockPos _inletPipe;
 
-  public EngineFixture(Scene scene, BlockPos pos)
-  {
+  public EngineFixture(Scene scene, BlockPos pos) {
     _scene = scene;
 
     Block = TestBlocks.Configure(
@@ -58,8 +56,7 @@ internal sealed class EngineFixture
       22,
       ("side", "east")
     );
-    Pump = new BlockEntityEngineFluidPump
-    {
+    Pump = new BlockEntityEngineFluidPump {
       Pos = subPos.Copy(),
       Block = pumpBlock,
     };
@@ -67,8 +64,7 @@ internal sealed class EngineFixture
   }
 
   /// <summary>Charges the inlet steam network to <paramref name="atm"/> (a single 30 L pipe).</summary>
-  public EngineFixture SetInletPressure(float atm)
-  {
+  public EngineFixture SetInletPressure(float atm) {
     _scene
       .NetworkAt<PipeNetwork>(_inletPipe)!
       .TryProduceGas(

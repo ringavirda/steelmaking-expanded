@@ -1,7 +1,10 @@
 <strong>What is hot blast?</strong> Preheated air under pressure that allows
 chemical processes and smelting occur inside the furnace. For the purposes of
-this production, blast is air under pressure higher than 2.5 atm and temperature
-higher than 800 °C.
+this production, blast is air above 800 °C carried at working pressure. The two
+machines that drink it ask for different pressures: the <strong>blast furnace
+fires from 1.5 atm</strong>, while the <a href=\"handbooksearch://bessemer
+converter\">Bessemer converter</a> holds out for <strong>2.5 atm</strong>. That
+gap is what separates iron from steel - see the air sources below.
 <br><br>
 <strong>Why hot blast?</strong> A raw blast furnace tops out around 1400 °C -
 not enough to melt iron. To push past that you reclaim the heat it throws away
@@ -16,7 +19,12 @@ machines and structures for this to work. For the air/exhaust you will need:
 <br>
 - The <a href=\"handbooksearch://air blower\">Air Blower</a> - a steam-engine
 sub-machine that pressurizes Air into <strong>Blast</strong>. This is what forces
-gas through the cowper stoves and into the furnace through tuyeres. 
+gas through the cowper stoves and into the furnace through tuyeres. It can reach
+the converter's 2.5 atm, but only if the engine is fed enough steam - its output
+is capped at about 75% of the engine's inlet pressure.
+<br>
+- The <a href=\"handbooksearch://twin-tub blower\">Twin-Tub Blower</a> - bellows
+worked by an axle instead of by steam. Cheaper and weaker, and described below.
 <br>
 - <a href=\"handbooksearch://piping valve\">Valves</a> open and close a line by
 hand - essential for swapping the cowper stoves around and controlling the flow
@@ -31,7 +39,26 @@ structure's face and are a part of their multiblock footprint.
 <br>
 Each network tracks its gas type, volume and temperature; an open-ended pipe
 leaks. Think carefully how many machines you need so you won't under or over
-supply! 
+supply!
+<br><br>
+<strong>The Twin-Tub Blower - blast without steam.</strong> A pair of bellows
+worked by a mechanical axle, so a waterwheel or a windmill can blow the furnace
+and the iron stage never has to wait for a boiler. It fills its main at
+<strong>60 L/s</strong> at full speed and holds it at <strong>2.0 atm</strong>:
+over the furnace's gate, under the converter's. That is the whole trade - a
+mechanically blown furnace will make you iron, but steel still needs steam behind
+an <a href=\"handbooksearch://air blower\">Air Blower</a>.
+<br>
+Below axle speed <strong>0.5</strong> the bellows deliver nothing and at
+<strong>1.5</strong> they deliver everything, scaling between. A vanilla
+waterwheel sits near speed 1, which is half output and still covers the two
+tuyeres of one furnace.
+<br>
+It is raised in stages like a boiler or an engine: craft the wooden frame on the
+grid, then <hk>rightmouse</hk> it with each stage's materials in your hotbar to
+add the beam, the axle and gear, the tubs and finally the pipe connection. The
+frame is 1 x 2 x 3 - the axle couples on the side of the tall near end, and the
+blast main butts against the far end.
 <br><br>
 <strong>The Cowper Stove - a heat regenerator.</strong> Pipe the furnace's
 <strong>Exhaust</strong> into a <a href=\"handbooksearch://cowper stove
@@ -50,7 +77,7 @@ temperature will start rising again toward ~1700 °C.
 <br>
 - 1 x Cowper Stove Intake (the control block) 
 <br>
-- 4 x Heat Sink 
+- 4 x Heat Sink (refractory brick, any tier)
 <br>
 - 2 x Gas Outlet (any refractory)
 <br>
@@ -70,8 +97,9 @@ inside a stove it cannot heat up.
 <br><br>
 <strong>The Smoke Stack.</strong> A blast furnace produces more exhaust than the
 stoves can swallow. The <a href=\"handbooksearch://smoke stack intake\">Smoke
-Stack</a> vents the surplus to the sky - a backed-up exhaust line chokes and
-extinguishes the furnace, so treat it as the safety valve of the whole system. 
+Stack</a> vents the surplus to the sky - a backed-up exhaust line stalls the
+furnace back to its natural draught and stops the melt, so treat it as the safety
+valve of the whole system.
 <br>
 <strong>Blocks required:</strong> 
 <br>

@@ -14,8 +14,7 @@ namespace SteelmakingExpanded.BlockStructures.Engine.BlockEntities;
 /// source.
 /// </summary>
 [BlockEntityRegister]
-public class BlockEntityEngineAirBlower : BlockEntityEngineSubmachine
-{
+public class BlockEntityEngineAirBlower : BlockEntityEngineSubmachine {
   // Cylinder cycle keyframes (60-frame loop): the piston tops out at frame 15 (intake) and
   // bottoms out at frame 45 (compression). See assets cornish/airblower.json.
   private const int PistonTopFrame = 15;
@@ -39,10 +38,8 @@ public class BlockEntityEngineAirBlower : BlockEntityEngineSubmachine
   /// (intake) and an iron clang as it bottoms out (compression). On the intake stroke it also
   /// draws a wisp of faint ambient air down into the open top of the cylinder.
   /// </summary>
-  protected override void OnCycleStroke(float last, float cur, int total)
-  {
-    if (PistonCycleSounds.CrossedFrame(last, cur, total, PistonTopFrame))
-    {
+  protected override void OnCycleStroke(float last, float cur, int total) {
+    if (PistonCycleSounds.CrossedFrame(last, cur, total, PistonTopFrame)) {
       ExSounds.PlayLocal(Api.World, Pos, ExSounds.Bellows, 0.6f, 16f);
       ExParticles.AirInhale(Api.World, CylinderMouth, 4);
     }
@@ -50,8 +47,7 @@ public class BlockEntityEngineAirBlower : BlockEntityEngineSubmachine
       ExSounds.PlayLocal(Api.World, Pos, ExSounds.AnvilMergeHit, 0.2f, 16f);
   }
 
-  protected override void DoWork(float power, float dt)
-  {
+  protected override void DoWork(float power, float dt) {
     if (power <= 0f)
       return;
     PipeNetwork? leftNet = ConnectedNetwork(LeftFace);

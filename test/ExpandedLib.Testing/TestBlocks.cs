@@ -9,8 +9,7 @@ namespace ExpandedLib.Testing;
 /// <see cref="Block"/> has a <c>null</c> <see cref="RegistryObject.Variant"/>, so any code path
 /// touching <c>Variant["..."]</c> would throw - <see cref="Configure"/> primes it.
 /// </summary>
-public static class TestBlocks
-{
+public static class TestBlocks {
   /// <summary>
   /// Assigns <paramref name="code"/>/<paramref name="id"/> and builds the relaxed variant map
   /// from <paramref name="variants"/>. The relaxed map returns <c>null</c> (not a throw) for
@@ -23,8 +22,7 @@ public static class TestBlocks
     int id,
     params (string key, string value)[] variants
   )
-    where T : Block
-  {
+    where T : Block {
     block.Code = new AssetLocation(code);
     block.BlockId = id;
     foreach (var (key, value) in variants)

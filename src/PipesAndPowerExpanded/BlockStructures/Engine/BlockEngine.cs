@@ -23,8 +23,7 @@ namespace PipesAndPowerExpanded.BlockStructures.Engine;
 public abstract class BlockEngine
   : Block,
     INetworkConnector,
-    IFillerInteractionTarget
-{
+    IFillerInteractionTarget {
   // Pipe ports in north orientation, rotated to the placed orientation at runtime.
   private static readonly BlockFacing[] BaseConnectorFaces =
   [
@@ -42,10 +41,8 @@ public abstract class BlockEngine
 
   public string NetworkType => "pipe";
 
-  public bool HasConnectorAt(BlockFacing face)
-  {
-    foreach (var baseFace in BaseConnectorFaces)
-    {
+  public bool HasConnectorAt(BlockFacing face) {
+    foreach (var baseFace in BaseConnectorFaces) {
       if (ExOrientation.RotateFacing(baseFace, Angle) == face)
         return true;
     }
@@ -83,8 +80,7 @@ public abstract class BlockEngine
   /// east→south, south→west, west→north. The single rule both placement directions use.
   /// </summary>
   public static string SubmachineSide(string engineSide) =>
-    engineSide switch
-    {
+    engineSide switch {
       "north" => "east",
       "east" => "south",
       "south" => "west",
@@ -102,10 +98,8 @@ public abstract class BlockEngine
     BlockPos submachinePos,
     out BlockPos enginePos,
     out BlockEngine engineBlock
-  )
-  {
-    foreach (var f in BlockFacing.HORIZONTALS)
-    {
+  ) {
+    foreach (var f in BlockFacing.HORIZONTALS) {
       BlockPos cand = submachinePos.AddCopy(
         f.Normali.X * 2,
         0,
@@ -114,8 +108,7 @@ public abstract class BlockEngine
       if (
         blockAccessor.GetBlock(cand) is BlockEngine eng
         && eng.SubmachinePos(cand).Equals(submachinePos)
-      )
-      {
+      ) {
         enginePos = cand;
         engineBlock = eng;
         return true;
@@ -147,8 +140,7 @@ public abstract class BlockEngine
   /// hard while over-pressure). Read from the optional <c>cylinderVentOffset</c> JSON attribute
   /// (master-cell frame); the horizontal part rotates by the body angle to track the cylinder.
   /// </summary>
-  public Vec3d CylinderVentPos(BlockPos enginePos)
-  {
+  public Vec3d CylinderVentPos(BlockPos enginePos) {
     Vec3d off = ReadVentOffset();
     float x = (float)off.X;
     float z = (float)off.Z;
@@ -165,8 +157,7 @@ public abstract class BlockEngine
     IPlayer byPlayer,
     BlockSelection blockSel,
     ref string failureCode
-  )
-  {
+  ) {
     if (!base.CanPlaceBlock(world, byPlayer, blockSel, ref failureCode))
       return false;
 
@@ -175,8 +166,7 @@ public abstract class BlockEngine
       blockSel.Position,
       BodyAngle
     );
-    if (!StructureFillers.CanPlace(world, cells))
-    {
+    if (!StructureFillers.CanPlace(world, cells)) {
       failureCode = "notenoughspace";
       return false;
     }
@@ -187,8 +177,7 @@ public abstract class BlockEngine
     IWorldAccessor world,
     BlockPos blockPos,
     ItemStack? byItemStack = null
-  )
-  {
+  ) {
     base.OnBlockPlaced(world, blockPos, byItemStack);
     StructureFillers.PlaceFillers(
       world,
@@ -206,8 +195,7 @@ public abstract class BlockEngine
   /// <see cref="SubmachineSide"/>). <c>ExchangeBlock</c> keeps the block entity alive, re-binding
   /// its animator and engine back-reference via <c>OnExchanged</c>.
   /// </summary>
-  private void ReorientSubmachine(IWorldAccessor world, BlockPos enginePos)
-  {
+  private void ReorientSubmachine(IWorldAccessor world, BlockPos enginePos) {
     var ba = world.BlockAccessor;
     BlockPos subPos = SubmachinePos(enginePos);
     if (ba.GetBlock(subPos) is not BlockEngineSubmachine sub)
@@ -227,8 +215,7 @@ public abstract class BlockEngine
     BlockPos pos,
     IPlayer? byPlayer,
     float dropQuantityMultiplier = 1f
-  )
-  {
+  ) {
     StructureFillers.RemoveFillers(
       world,
       pos,
@@ -258,8 +245,7 @@ public abstract class BlockEngine
     IWorldAccessor world,
     BlockSelection selection,
     IPlayer forPlayer
-  )
-  {
+  ) {
     var help = RepairInteractionHelp(
       world,
       selection.Position,
@@ -285,8 +271,7 @@ public abstract class BlockEngine
     IWorldAccessor world,
     BlockPos enginePos,
     WorldInteraction[]? baseHelp
-  )
-  {
+  ) {
     baseHelp ??= [];
 
     // Only a broken engine is repairable - show the wrench action then.
@@ -296,8 +281,7 @@ public abstract class BlockEngine
     )
       return baseHelp;
 
-    var repairHelp = new WorldInteraction
-    {
+    var repairHelp = new WorldInteraction {
       ActionLangCode = "ppex:blockhelp-engine-repair",
       MouseButton = EnumMouseButton.Right,
       Itemstacks = ExItems.WrenchStacks(world),
@@ -353,8 +337,7 @@ public abstract class BlockEngine
     IWorldAccessor world,
     IPlayer byPlayer,
     BlockSelection blockSel
-  )
-  {
+  ) {
     // A held placeable block (not a liquid container) = the player is building against the
     // engine (e.g. a pipe on the steam inlet/water outlet); let vanilla place it on the clicked
     // face. Construction materials and the wrench are items, so they fall through below.
@@ -367,8 +350,7 @@ public abstract class BlockEngine
       world.BlockAccessor.GetBlockEntity(blockSel.Position)
         is BlockEntityEngine be
       && be.IsBroken
-    )
-    {
+    ) {
       if (world.Side == EnumAppSide.Server)
         TryRepair(world, byPlayer, be);
       return true;
@@ -382,13 +364,11 @@ public abstract class BlockEngine
     IWorldAccessor world,
     IPlayer byPlayer,
     BlockEntityEngine be
-  )
-  {
+  ) {
     var player = byPlayer as IServerPlayer;
     ItemSlot? slot = byPlayer.InventoryManager?.ActiveHotbarSlot;
 
-    if (slot?.Itemstack?.Collectible?.Code?.Path?.Contains("wrench") != true)
-    {
+    if (slot?.Itemstack?.Collectible?.Code?.Path?.Contains("wrench") != true) {
       player?.SendIngameError(
         "ppex-engine",
         Lang.Get("ppex:engine-repair-wrench")
@@ -400,14 +380,12 @@ public abstract class BlockEngine
     // Creative players repair instantly with the wrench - no materials needed or consumed.
     bool creative =
       byPlayer.WorldData?.CurrentGameMode == EnumGameMode.Creative;
-    if (!creative)
-    {
+    if (!creative) {
       bool hasAll = RepairItems.All(r =>
         ExInventory.Count(byPlayer, stack => Matches(stack, r.Codes))
         >= r.Quantity
       );
-      if (!hasAll)
-      {
+      if (!hasAll) {
         // Print exactly what the repair needs to the chat instead of cluttering the help.
         PrintRepairMaterials(player);
         return;

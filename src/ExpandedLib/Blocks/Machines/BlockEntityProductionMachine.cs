@@ -16,8 +16,7 @@ namespace ExpandedLib.Blocks.Machines;
 /// <see cref="CanRunProduction"/>: when it returns <c>false</c> the machine is idle and
 /// <see cref="OnIdleProductionTick"/> runs instead (default no-op).
 /// </summary>
-public abstract class BlockEntityProductionMachine : BlockEntity
-{
+public abstract class BlockEntityProductionMachine : BlockEntity {
   private long _productionTickId;
 
   /// <summary>Interval (ms) of the production tick.</summary>
@@ -37,16 +36,14 @@ public abstract class BlockEntityProductionMachine : BlockEntity
   /// </summary>
   protected virtual bool AutoStartProduction => true;
 
-  public override void Initialize(ICoreAPI api)
-  {
+  public override void Initialize(ICoreAPI api) {
     base.Initialize(api);
     if (api.Side == EnumAppSide.Server && AutoStartProduction)
       StartProductionTick();
   }
 
   /// <summary>Registers the production tick (idempotent, server-side only).</summary>
-  protected void StartProductionTick()
-  {
+  protected void StartProductionTick() {
     if (_productionTickId == 0 && Api?.Side == EnumAppSide.Server)
       _productionTickId = RegisterGameTickListener(
         RunProductionTick,
@@ -55,10 +52,8 @@ public abstract class BlockEntityProductionMachine : BlockEntity
   }
 
   /// <summary>Unregisters the production tick.</summary>
-  protected void StopProductionTick()
-  {
-    if (_productionTickId != 0)
-    {
+  protected void StopProductionTick() {
+    if (_productionTickId != 0) {
       UnregisterGameTickListener(_productionTickId);
       _productionTickId = 0;
     }
@@ -73,8 +68,7 @@ public abstract class BlockEntityProductionMachine : BlockEntity
   /// </summary>
   private const float MaxCatchupTickMultiple = 2f;
 
-  private void RunProductionTick(float dt)
-  {
+  private void RunProductionTick(float dt) {
     dt = GameMath.Min(dt, ProductionTickMs / 1000f * MaxCatchupTickMultiple);
     if (CanRunProduction)
       OnProductionTick(dt);
@@ -88,14 +82,12 @@ public abstract class BlockEntityProductionMachine : BlockEntity
   /// <summary>Runs in place of <see cref="OnProductionTick"/> while the machine is not operational. Default: no-op.</summary>
   protected virtual void OnIdleProductionTick(float dt) { }
 
-  public override void OnBlockRemoved()
-  {
+  public override void OnBlockRemoved() {
     base.OnBlockRemoved();
     StopProductionTick();
   }
 
-  public override void OnBlockUnloaded()
-  {
+  public override void OnBlockUnloaded() {
     base.OnBlockUnloaded();
     StopProductionTick();
   }

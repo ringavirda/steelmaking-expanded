@@ -22,8 +22,7 @@ namespace PipesAndPowerExpanded.BlockStructures.ManualPump.BlockEntities;
 /// standing input water is moved out first, then the intake refills it.
 /// </summary>
 [BlockEntityRegister]
-public class BlockEntityManualFluidPump : BlockEntity
-{
+public class BlockEntityManualFluidPump : BlockEntity {
   // --- Synced run state (server-authoritative, mirrored to clients for animation/sound) ---
   /// <summary>True while a player is actively cranking the pump (holding right-click).</summary>
   private bool _pumping;
@@ -55,19 +54,15 @@ public class BlockEntityManualFluidPump : BlockEntity
   private BlockFacing OutputFace =>
     ExOrientation.RotateFacing(BlockFacing.NORTH, Angle);
 
-  public override void Initialize(ICoreAPI api)
-  {
+  public override void Initialize(ICoreAPI api) {
     base.Initialize(api);
 
-    if (api.Side == EnumAppSide.Server)
-    {
+    if (api.Side == EnumAppSide.Server) {
       // Nobody is holding the button right after load, so ignore any persisted run state.
       _pumping = false;
       _drawingWater = false;
       _serverTickId = RegisterGameTickListener(OnServerTick, 1000);
-    }
-    else
-    {
+    } else {
       _animatable = GetBehavior<BEBehaviorAnimatable>();
       InitAnimator();
       ApplyAnim(_pumping);
@@ -79,8 +74,7 @@ public class BlockEntityManualFluidPump : BlockEntity
   #region Interaction (driven by the block / top filler)
 
   /// <summary>Begins (or keeps alive) a crank started by a right-click hold on the pump.</summary>
-  public void OnPumpStart()
-  {
+  public void OnPumpStart() {
     _lastStepMs = Api.World.ElapsedMilliseconds;
     if (_pumping)
       return;
@@ -95,8 +89,7 @@ public class BlockEntityManualFluidPump : BlockEntity
   /// <summary>Ends the crank when the button is released.</summary>
   public void OnPumpStop() => StopPumping();
 
-  private void StopPumping()
-  {
+  private void StopPumping() {
     if (!_pumping && !_drawingWater)
       return;
     _pumping = false;
@@ -109,14 +102,12 @@ public class BlockEntityManualFluidPump : BlockEntity
 
   #region Server work
 
-  private void OnServerTick(float dt)
-  {
+  private void OnServerTick(float dt) {
     if (!_pumping)
       return;
 
     // Watchdog: covers a missed stop event (held interaction stopped refreshing the timestamp).
-    if (Api.World.ElapsedMilliseconds - _lastStepMs > 1200)
-    {
+    if (Api.World.ElapsedMilliseconds - _lastStepMs > 1200) {
       StopPumping();
       return;
     }
@@ -129,8 +120,7 @@ public class BlockEntityManualFluidPump : BlockEntity
   /// (capped by output free capacity) first, then have the intake refill it, so the input pipe
   /// reads as a water line rather than an empty "Air" pool at broadcast time.
   /// </summary>
-  private void DoWork(float dt)
-  {
+  private void DoWork(float dt) {
     var ba = Api.World.BlockAccessor;
     PipeNetwork? inputNet = ConnectedNetwork(InputFace);
     PipeNetwork? outputNet = ConnectedNetwork(OutputFace);
@@ -138,8 +128,7 @@ public class BlockEntityManualFluidPump : BlockEntity
     // The intake is the generator; with none on the input line the crank turns but moves nothing.
     BlockEntityFluidIntake? intake = FindIntake(inputNet);
     bool drawing = intake != null;
-    if (drawing)
-    {
+    if (drawing) {
       float amount = PpexValues.ManualPumpWaterPerSecond * dt;
       float move = Math.Min(amount, OutputFreeCapacity(outputNet));
       float drawn = inputNet?.TryConsumeLiquid(move, ba) ?? 0f;
@@ -149,8 +138,7 @@ public class BlockEntityManualFluidPump : BlockEntity
       intake!.ProduceWater(amount, 20f, ba);
     }
 
-    if (drawing != _drawingWater)
-    {
+    if (drawing != _drawingWater) {
       _drawingWater = drawing;
       MarkDirty();
     }
@@ -162,13 +150,11 @@ public class BlockEntityManualFluidPump : BlockEntity
     this.ConnectedNetwork<PipeNetwork>(connectorFace);
 
   /// <summary>The first fluid intake on <paramref name="net"/> that can currently draw water, or <c>null</c>.</summary>
-  private BlockEntityFluidIntake? FindIntake(PipeNetwork? net)
-  {
+  private BlockEntityFluidIntake? FindIntake(PipeNetwork? net) {
     if (net == null)
       return null;
     var ba = Api.World.BlockAccessor;
-    foreach (var p in net.Nodes)
-    {
+    foreach (var p in net.Nodes) {
       if (
         ba.GetBlockEntity(p) is BlockEntityFluidIntake intake
         && intake.CanIntake
@@ -188,10 +174,8 @@ public class BlockEntityManualFluidPump : BlockEntity
 
   #region Client animation + sound
 
-  private void OnClientTick(float dt)
-  {
-    if (_pumping != _animPumping)
-    {
+  private void OnClientTick(float dt) {
+    if (_pumping != _animPumping) {
       _animPumping = _pumping;
       ApplyAnim(_pumping);
     }
@@ -202,8 +186,7 @@ public class BlockEntityManualFluidPump : BlockEntity
   /// Builds the animator from the block's shape. Leaves <see cref="_animatorReady"/> false if the
   /// shape fails to resolve, so a pose is never queued against a null animator (vanilla NREs).
   /// </summary>
-  private void InitAnimator()
-  {
+  private void InitAnimator() {
     if (Api is not ICoreClientAPI || _animatable == null)
       return;
 
@@ -227,18 +210,15 @@ public class BlockEntityManualFluidPump : BlockEntity
   /// Holds one animation at a time - <c>cycle</c> while cranked, <c>idle</c> otherwise. Keeping
   /// one active stops the animator mesh vanishing (and the GetBlockInfo NRE).
   /// </summary>
-  private void ApplyAnim(bool running)
-  {
+  private void ApplyAnim(bool running) {
     if (_animatable == null || !_animatorReady)
       return;
 
     var util = _animatable.animUtil;
-    if (running)
-    {
+    if (running) {
       util.StopAnimation("idle");
       util.StartAnimation(
-        new AnimationMetaData
-        {
+        new AnimationMetaData {
           Animation = "cycle",
           Code = "cycle",
           AnimationSpeed = 1f,
@@ -246,13 +226,10 @@ public class BlockEntityManualFluidPump : BlockEntity
           EaseOutSpeed = 5f,
         }.Init()
       );
-    }
-    else
-    {
+    } else {
       util.StopAnimation("cycle");
       util.StartAnimation(
-        new AnimationMetaData
-        {
+        new AnimationMetaData {
           Animation = "idle",
           Code = "idle",
           AnimationSpeed = 1f,
@@ -267,13 +244,11 @@ public class BlockEntityManualFluidPump : BlockEntity
   /// Drives the two looping work sounds from the synced state: a muted iron grind whenever the
   /// pump is cranked, and a watering loop on top of it only while it is actually drawing water.
   /// </summary>
-  private void UpdateSounds()
-  {
+  private void UpdateSounds() {
     if (Api is not ICoreClientAPI)
       return;
 
-    if (_pumping)
-    {
+    if (_pumping) {
       _grindSound ??= ExSounds.CreateLoop(
         Api,
         Pos,
@@ -283,12 +258,10 @@ public class BlockEntityManualFluidPump : BlockEntity
       );
       if (_grindSound?.IsPlaying == false)
         _grindSound.Start();
-    }
-    else if (_grindSound?.IsPlaying == true)
+    } else if (_grindSound?.IsPlaying == true)
       _grindSound.Stop();
 
-    if (_drawingWater)
-    {
+    if (_drawingWater) {
       _waterSound ??= ExSounds.CreateLoop(
         Api,
         Pos,
@@ -298,13 +271,11 @@ public class BlockEntityManualFluidPump : BlockEntity
       );
       if (_waterSound?.IsPlaying == false)
         _waterSound.Start();
-    }
-    else if (_waterSound?.IsPlaying == true)
+    } else if (_waterSound?.IsPlaying == true)
       _waterSound.Stop();
   }
 
-  private void DisposeSounds()
-  {
+  private void DisposeSounds() {
     _grindSound?.Stop();
     _grindSound?.Dispose();
     _grindSound = null;
@@ -317,8 +288,7 @@ public class BlockEntityManualFluidPump : BlockEntity
 
   #region Persistence + lifecycle
 
-  public override void ToTreeAttributes(ITreeAttribute tree)
-  {
+  public override void ToTreeAttributes(ITreeAttribute tree) {
     base.ToTreeAttributes(tree);
     tree.SetBool("pumping", _pumping);
     tree.SetBool("drawingWater", _drawingWater);
@@ -327,15 +297,13 @@ public class BlockEntityManualFluidPump : BlockEntity
   public override void FromTreeAttributes(
     ITreeAttribute tree,
     IWorldAccessor worldForResolving
-  )
-  {
+  ) {
     base.FromTreeAttributes(tree, worldForResolving);
     _pumping = tree.GetBool("pumping");
     _drawingWater = tree.GetBool("drawingWater");
   }
 
-  public override void OnBlockRemoved()
-  {
+  public override void OnBlockRemoved() {
     if (_serverTickId != 0)
       UnregisterGameTickListener(_serverTickId);
     if (_clientTickId != 0)
@@ -344,8 +312,7 @@ public class BlockEntityManualFluidPump : BlockEntity
     base.OnBlockRemoved();
   }
 
-  public override void OnBlockUnloaded()
-  {
+  public override void OnBlockUnloaded() {
     if (_serverTickId != 0)
       UnregisterGameTickListener(_serverTickId);
     if (_clientTickId != 0)

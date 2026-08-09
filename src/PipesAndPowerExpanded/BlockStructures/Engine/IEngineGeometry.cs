@@ -8,8 +8,7 @@ namespace PipesAndPowerExpanded.BlockStructures.Engine;
 /// concrete engines (Watt/Cornish) satisfy it for free via their generated <c>SubmachineOffset</c> /
 /// <c>GearHousingOffset</c> members; the base casts <c>this</c> to this interface.
 /// </summary>
-public interface IEngineGeometry
-{
+public interface IEngineGeometry {
   /// <summary>Sub-machine cell offset (the block's <c>submachineOffset</c> node), or null.</summary>
   JsonObject? SubmachineOffset { get; }
 

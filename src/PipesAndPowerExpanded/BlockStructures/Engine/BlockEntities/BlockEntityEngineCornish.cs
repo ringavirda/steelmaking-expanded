@@ -15,8 +15,7 @@ namespace PipesAndPowerExpanded.BlockStructures.Engine.BlockEntities;
 /// hotter line to engage. The break itself lives in <see cref="BlockEntityEngine"/>.
 /// </summary>
 [BlockEntityRegister]
-public class BlockEntityEngineCornish : BlockEntityEngine
-{
+public class BlockEntityEngineCornish : BlockEntityEngine {
   // Control-rod setting: 0 = low, 1 = normal, 2 = high.
   private int _throttle = 1;
 
@@ -33,16 +32,14 @@ public class BlockEntityEngineCornish : BlockEntityEngine
   // The control rods raise the operating band with the steam admission, so throttling up needs
   // a hotter line and throttling down works off a softer one.
   protected override float EngagePressure =>
-    ThrottleIndex switch
-    {
+    ThrottleIndex switch {
       0 => PpexValues.CornishEngineEngagePressureLow,
       2 => PpexValues.CornishEngineEngagePressureHigh,
       _ => PpexValues.CornishEngineEngagePressureNormal,
     };
 
   protected override float BreakPressure =>
-    ThrottleIndex switch
-    {
+    ThrottleIndex switch {
       0 => PpexValues.CornishEngineBreakPressureLow,
       2 => PpexValues.CornishEngineBreakPressureHigh,
       _ => PpexValues.CornishEngineBreakPressureNormal,
@@ -50,8 +47,7 @@ public class BlockEntityEngineCornish : BlockEntityEngine
 
   // Cylinder steam scales with throttle: double the puff on high, none on low.
   protected override int CylinderSteamPuffCount =>
-    ThrottleIndex switch
-    {
+    ThrottleIndex switch {
       0 => 0,
       2 => 4,
       _ => 2,
@@ -65,24 +61,21 @@ public class BlockEntityEngineCornish : BlockEntityEngine
     ThrottleIndex == 2 ? PpexValues.CornishEngineOverclockPitch : 1f;
 
   protected override float RunSteamRate =>
-    ThrottleIndex switch
-    {
+    ThrottleIndex switch {
       0 => PpexValues.CornishEngineSteamLow,
       2 => PpexValues.CornishEngineSteamHigh,
       _ => PpexValues.CornishEngineSteamNormal,
     };
 
   protected override float RunPower =>
-    ThrottleIndex switch
-    {
+    ThrottleIndex switch {
       0 => PpexValues.CornishEnginePowerLow,
       2 => PpexValues.CornishEnginePowerHigh,
       _ => PpexValues.CornishEnginePowerNormal,
     };
 
   protected override float RunWaterOutput =>
-    ThrottleIndex switch
-    {
+    ThrottleIndex switch {
       0 => PpexValues.CornishEngineWaterLow,
       2 => PpexValues.CornishEngineWaterHigh,
       _ => PpexValues.CornishEngineWaterNormal,
@@ -92,8 +85,7 @@ public class BlockEntityEngineCornish : BlockEntityEngine
   /// Moves the control rods one step in <paramref name="direction"/> (positive = toward high),
   /// clamped. Returns <c>true</c> when the setting changed. Server-side.
   /// </summary>
-  public bool AdjustThrottle(int direction)
-  {
+  public bool AdjustThrottle(int direction) {
     int next = Math.Clamp(ThrottleIndex + Math.Sign(direction), 0, 2);
     if (next == ThrottleIndex)
       return false;
@@ -102,8 +94,7 @@ public class BlockEntityEngineCornish : BlockEntityEngine
     return true;
   }
 
-  public override void ToTreeAttributes(ITreeAttribute tree)
-  {
+  public override void ToTreeAttributes(ITreeAttribute tree) {
     base.ToTreeAttributes(tree);
     tree.SetInt("throttle", _throttle);
   }
@@ -111,8 +102,7 @@ public class BlockEntityEngineCornish : BlockEntityEngine
   public override void FromTreeAttributes(
     ITreeAttribute tree,
     IWorldAccessor worldForResolving
-  )
-  {
+  ) {
     base.FromTreeAttributes(tree, worldForResolving);
     _throttle = tree.GetInt("throttle", 1);
   }
@@ -120,8 +110,7 @@ public class BlockEntityEngineCornish : BlockEntityEngine
   public override void GetBlockInfo(
     IPlayer forPlayer,
     System.Text.StringBuilder dsc
-  )
-  {
+  ) {
     base.GetBlockInfo(forPlayer, dsc);
     if (!IsConstructed || IsBroken)
       return;

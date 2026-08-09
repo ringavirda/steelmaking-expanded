@@ -14,8 +14,7 @@ namespace PipesAndPowerExpanded.BlockStructures.Engine.Blocks;
 [BlockRegister]
 public partial class BlockEngineMPGenerator
   : BlockEngineSubmachine,
-    IMechanicalPowerBlock
-{
+    IMechanicalPowerBlock {
   private bool IsXAxis => Variant["side"] is "east" or "west";
 
   public bool HasMechPowerConnectorAt(

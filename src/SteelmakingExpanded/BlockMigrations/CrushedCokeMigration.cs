@@ -20,15 +20,12 @@ namespace SteelmakingExpanded.BlockMigrations;
 /// costs about what it did.
 /// </para>
 /// </summary>
-public class CrushedCokeMigration : IItemCodeMigration
-{
+public class CrushedCokeMigration : IItemCodeMigration {
   public string Name => "Crushed coke to coke";
 
-  public IEnumerable<(
-    AssetLocation oldCode,
-    AssetLocation newCode
-  )> GetRemaps(ICoreServerAPI api)
-  {
+  public IEnumerable<(AssetLocation oldCode, AssetLocation newCode)> GetRemaps(
+    ICoreServerAPI api
+  ) {
     yield return (
       new AssetLocation("game", "crushed-coke"),
       new AssetLocation("game", "coke")

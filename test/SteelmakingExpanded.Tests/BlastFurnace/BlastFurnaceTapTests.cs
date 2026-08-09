@@ -14,21 +14,17 @@ namespace SteelmakingExpanded.Tests;
 /// canal start beneath it. Covers the open/closed toggle, persistence, and the <c>TryPourMetal</c>
 /// handoff (gated on being open and on a receiving canal start below).
 /// </summary>
-public class BlastFurnaceTapTests
-{
+public class BlastFurnaceTapTests {
   private const string Iron = "game:ingot-iron";
 
-  private static TestWorld NewWorld()
-  {
+  private static TestWorld NewWorld() {
     var world = new TestWorld();
     world.RegisterItem(Iron, 1500f);
     return world;
   }
 
-  private static BlockEntityBlastFurnaceTap Tap(TestWorld world)
-  {
-    var be = new BlockEntityBlastFurnaceTap
-    {
+  private static BlockEntityBlastFurnaceTap Tap(TestWorld world) {
+    var be = new BlockEntityBlastFurnaceTap {
       Pos = new BlockPos(0, 12, 0),
       Block = TestBlocks.Configure(
         new Block(),
@@ -46,12 +42,10 @@ public class BlastFurnaceTapTests
   private static BlockEntityMoltenCanalStart CanalBelow(
     TestWorld world,
     BlockEntityBlastFurnaceTap tap
-  )
-  {
+  ) {
     var facing = BlockFacing.FromCode("north");
     var pos = tap.Pos.AddCopy(facing.Opposite).DownCopy();
-    var start = new BlockEntityMoltenCanalStart
-    {
+    var start = new BlockEntityMoltenCanalStart {
       Block = TestBlocks.Configure(
         new Block(),
         "smex:moltencanalstart-ns",
@@ -66,16 +60,14 @@ public class BlastFurnaceTapTests
   }
 
   private static ItemStack IronStack(TestWorld world, int units, float temp) =>
-    new(world.World.GetItem(new AssetLocation(Iron))!, units)
-    {
+    new(world.World.GetItem(new AssetLocation(Iron))!, units) {
       // Temperature carrier so the canal start's pour path works.
     };
 
   #region Toggle / persistence
 
   [Fact]
-  public void Defaults_closed_and_toggles_open()
-  {
+  public void Defaults_closed_and_toggles_open() {
     var be = Tap(NewWorld());
     Assert.False(be.IsPouring);
     be.TogglePouring();
@@ -85,8 +77,7 @@ public class BlastFurnaceTapTests
   }
 
   [Fact]
-  public void Pour_state_round_trips_through_the_tree()
-  {
+  public void Pour_state_round_trips_through_the_tree() {
     var world = NewWorld();
     var src = Tap(world);
     src.TogglePouring();
@@ -105,8 +96,7 @@ public class BlastFurnaceTapTests
   #region TryPourMetal
 
   [Fact]
-  public void A_closed_tap_pours_nothing()
-  {
+  public void A_closed_tap_pours_nothing() {
     var world = NewWorld();
     var tap = Tap(world);
     CanalBelow(world, tap); // present, but tap is closed
@@ -117,8 +107,7 @@ public class BlastFurnaceTapTests
   }
 
   [Fact]
-  public void An_open_tap_hands_metal_to_the_canal_start_below()
-  {
+  public void An_open_tap_hands_metal_to_the_canal_start_below() {
     var world = NewWorld();
     var tap = Tap(world);
     var canal = CanalBelow(world, tap);
@@ -132,8 +121,7 @@ public class BlastFurnaceTapTests
   }
 
   [Fact]
-  public void An_open_tap_over_nothing_pours_nothing()
-  {
+  public void An_open_tap_over_nothing_pours_nothing() {
     var world = NewWorld();
     var tap = Tap(world);
     tap.TogglePouring(); // open, but no canal beneath

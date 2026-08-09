@@ -11,15 +11,13 @@ namespace SteelmakingExpanded.BlockStructures.BlastFurnace.Blocks;
 /// mix and drops it into the furnace.
 /// </summary>
 [BlockRegister]
-public partial class BlockHopperBell : Block
-{
+public partial class BlockHopperBell : Block {
   public override ItemStack[] GetDrops(
     IWorldAccessor world,
     BlockPos pos,
     IPlayer? byPlayer,
     float dropQuantityMultiplier = 1f
-  )
-  {
+  ) {
     var drops = new List<ItemStack>(
       base.GetDrops(world, pos, byPlayer, dropQuantityMultiplier)
     );
@@ -28,8 +26,7 @@ public partial class BlockHopperBell : Block
     if (
       world.BlockAccessor.GetBlockEntity(pos) is BlockEntityHopperBell be
       && be.BlastMixMagazine > 0
-    )
-    {
+    ) {
       Item? blastmix = world.GetItem(new AssetLocation("smex", "blastmix"));
       if (blastmix != null)
         drops.Add(new ItemStack(blastmix, be.BlastMixMagazine));

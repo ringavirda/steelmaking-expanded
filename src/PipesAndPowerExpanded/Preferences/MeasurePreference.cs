@@ -17,8 +17,7 @@ namespace PipesAndPowerExpanded.Preferences;
 /// </para>
 /// </summary>
 [PreferenceRegister]
-public sealed class MeasurePreference : IExPreference
-{
+public sealed class MeasurePreference : IExPreference {
   public string Key => "measure";
 
   public IReadOnlyList<string> Options { get; } = ["metric", "imperial"];

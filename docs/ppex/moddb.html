@@ -24,7 +24,7 @@
 <p>The smallest self-sufficient steam line, start to finish:</p>
 <ol>
   <li>Place a Fluid Intake on a pond, over a three-deep column of water.</li>
-  <li>Build a Cornish Boiler with its firebox, fill it through the top hatch with buckets, and light a coal pile behind its door. Vent the firebox through a chimney.</li>
+  <li>Build a Cornish Boiler with its firebox, fill it through the top hatch with buckets (or from a Manual Fluid Pump, or a Mechanical Fluid Pump if you already turn axles), and light a coal pile behind its door. Vent the firebox through a chimney.</li>
   <li>Raise a Watt Engine nearby and pipe the boiler's steam outlet to its inlet through a Pressure Valve gated at about 2-3 atm.</li>
   <li>Drop a sub-machine into the engine's drive cell: a Fluid Pump (pipe the intake into it and its output back into the boiler to close the water loop), or a Mechanical Power Generator (run its axles to your machines).</li>
   <li>Route the engine's condensate drain back toward the boiler. That is a steam plant that feeds itself.</li>
@@ -73,6 +73,7 @@
       <li><strong>Pressure valve</strong> - a directional bridge that overflows from one network to another once the input side rises above its set gate. Holds a network at the pressure a machine needs.</li>
       <li><strong>Steam condenser</strong> - the only way to bridge a gas and a fluid: it injects steam into a running water flow, condensing it into the water network.</li>
       <li><strong>Outlets, passthroughs and fluid intakes</strong> - cross a structure wall, connect to a machine face, or draw fresh water from a pond.</li>
+      <li><strong>Pumps without an engine</strong> - the hand-cranked Manual Fluid Pump (about 2 L/s at 1 atm) and the axle-driven Mechanical Fluid Pump (about 8 L/s at a fixed 1.5 atm). Both move water an intake has drawn, and both fill a boiler that has no engine of its own yet.</li>
     </ul>
   </div>
 </div>
@@ -101,7 +102,7 @@
     <ul>
       <li><strong>Fluid pump</strong> - pushes fluid from its bottom connection out the front. Needs a fluid intake in the bottom network. A Watt engine yields about 5 L/s of water.</li>
       <li><strong>Mechanical Power Generator</strong> - turns the engine's power into MP through axle connections; a Watt engine comfortably drives a couple of helve hammers.</li>
-      <li><strong>Air blower</strong> (from smex) - pressurises air to the levels the blast furnace and Bessemer converter need; its output pressure is capped by the engine's inlet steam pressure.</li>
+      <li><strong>Air blower</strong> (from smex) - pressurises air to the levels the blast furnace and Bessemer converter need; its output pressure is capped by the engine's inlet steam pressure. The converter is the only machine that needs steam behind its air - smex also ships an axle-driven twin-tub blower that covers the blast furnace.</li>
     </ul>
     <p>Placing a sub-machine in the correct cell links it to the engine automatically. Every engine has a built-in steam condenser, so it recycles some steam; connect a pipe to the right side of the engine to route that condensate back to your boilers.</p>
   </div>

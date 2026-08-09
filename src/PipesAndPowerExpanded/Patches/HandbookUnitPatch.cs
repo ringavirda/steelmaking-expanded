@@ -24,8 +24,7 @@ namespace PipesAndPowerExpanded.Patches;
 /// </para>
 /// </summary>
 [HarmonyPatch(typeof(GuiHandbookTextPage), "Init")]
-public static class HandbookUnitPatch
-{
+public static class HandbookUnitPatch {
   /// <summary>
   /// Rebuilds the survival handbook's pages so their prose re-converts to the current
   /// <see cref="ExMeasure.System"/>. Page text is only converted in <c>Init</c>, which runs when the
@@ -34,10 +33,8 @@ public static class HandbookUnitPatch
   /// used because the dialog instance and method are not public; a failure just leaves the handbook
   /// on its previous units rather than disrupting the command.
   /// </summary>
-  public static void Rebuild(ICoreClientAPI capi)
-  {
-    try
-    {
+  public static void Rebuild(ICoreClientAPI capi) {
+    try {
       var handbook = capi.ModLoader.GetModSystem<ModSystemSurvivalHandbook>();
       if (handbook == null)
         return;
@@ -49,21 +46,17 @@ public static class HandbookUnitPatch
       // loadEntries() clears and re-creates every page from config/handbook, re-running each page's
       // Init (and this patch) for the now-active unit system.
       Traverse.Create(dialog).Method("loadEntries").GetValue();
-    }
-    catch
-    {
+    } catch {
       // Never let a display refresh break the measure command.
     }
   }
 
   // Prefix so the text is converted before Init builds it into display components.
-  public static void Prefix(GuiHandbookTextPage __instance)
-  {
+  public static void Prefix(GuiHandbookTextPage __instance) {
     if (ExMeasure.System != MeasurementSystem.Imperial)
       return;
 
-    try
-    {
+    try {
       var field = Traverse.Create(__instance).Field("Text");
       string? raw = field.GetValue<string>();
       if (string.IsNullOrEmpty(raw))
@@ -74,9 +67,7 @@ public static class HandbookUnitPatch
       string converted = ExMeasure.ConvertMetricText(resolved);
       if (converted != raw)
         field.SetValue(converted);
-    }
-    catch
-    {
+    } catch {
       // Never let a display tweak break the handbook; fall back to the authored metric text.
     }
   }

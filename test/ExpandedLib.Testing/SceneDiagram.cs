@@ -22,13 +22,11 @@ namespace ExpandedLib.Testing;
 /// The legend is supplied by the test (it is mod-specific - which glyph means which oriented pipe,
 /// canal, machine, or cap), keeping this parser itself mod-agnostic.
 /// </summary>
-public sealed class SceneDiagram
-{
+public sealed class SceneDiagram {
   private readonly Dictionary<char, System.Action<BlockPos>> _legend = new();
 
   /// <summary>Maps a glyph to the action that places it at a resolved world position.</summary>
-  public SceneDiagram On(char glyph, System.Action<BlockPos> place)
-  {
+  public SceneDiagram On(char glyph, System.Action<BlockPos> place) {
     _legend[glyph] = place;
     return this;
   }
@@ -44,11 +42,9 @@ public sealed class SceneDiagram
     int y = 0,
     int originX = 0,
     int originZ = 0
-  )
-  {
+  ) {
     string[] rows = ascii.Replace("\r", "").Trim('\n').Split('\n');
-    for (int row = 0; row < rows.Length; row++)
-    {
+    for (int row = 0; row < rows.Length; row++) {
       string line = rows[row];
       for (int col = 0; col < line.Length; col++)
         if (_legend.TryGetValue(line[col], out var place))
@@ -76,8 +72,7 @@ public sealed class SceneDiagram
     int originX,
     int originZ,
     params string[] layers
-  )
-  {
+  ) {
     for (int i = 0; i < layers.Length; i++)
       Layer(layers[i], baseY + i, originX, originZ);
     return this;

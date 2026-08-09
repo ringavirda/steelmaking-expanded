@@ -21,8 +21,7 @@ namespace SteelmakingExpanded.BlockStructures.Converter.BlockEntities;
 /// on break.
 /// </summary>
 [BlockEntityRegister]
-public class BlockEntityConverterBessemer : BlockEntity, IChiselableMolten
-{
+public class BlockEntityConverterBessemer : BlockEntity, IChiselableMolten {
   private BlockPos? _controlPos;
   private ConverterOpState _opState = ConverterOpState.Normal;
   private bool _solidified;
@@ -40,14 +39,12 @@ public class BlockEntityConverterBessemer : BlockEntity, IChiselableMolten
 
   #region Lifecycle
 
-  public override void Initialize(ICoreAPI api)
-  {
+  public override void Initialize(ICoreAPI api) {
     base.Initialize(api);
     _animatable = GetBehavior<BEBehaviorAnimatable>();
     _rcc = GetBehavior<ExRightClickConstructable>();
 
-    if (api is ICoreClientAPI && _animatable != null)
-    {
+    if (api is ICoreClientAPI && _animatable != null) {
       // Re-render whenever the construction stage adds/removes elements.
       if (_rcc != null)
         _rcc.OnShapeChanged += OnConstructShapeChanged;
@@ -59,22 +56,19 @@ public class BlockEntityConverterBessemer : BlockEntity, IChiselableMolten
 
   private string AnimCacheKey => "converterbessemer-" + Block.Variant["side"];
 
-  public override void OnBlockRemoved()
-  {
+  public override void OnBlockRemoved() {
     if (_rcc != null)
       _rcc.OnShapeChanged -= OnConstructShapeChanged;
     base.OnBlockRemoved();
   }
 
-  public override void OnBlockUnloaded()
-  {
+  public override void OnBlockUnloaded() {
     if (_rcc != null)
       _rcc.OnShapeChanged -= OnConstructShapeChanged;
     base.OnBlockUnloaded();
   }
 
-  private void OnConstructShapeChanged(CompositeShape cs)
-  {
+  private void OnConstructShapeChanged(CompositeShape cs) {
     RebuildAnimator(cs?.SelectiveElements);
     ApplyPose();
   }
@@ -83,8 +77,7 @@ public class BlockEntityConverterBessemer : BlockEntity, IChiselableMolten
   /// (Re)builds the animator to render exactly the currently-built elements (only the mesh is
   /// filtered to <paramref name="selectiveElements"/>; the animator hierarchy stays the full shape).
   /// </summary>
-  private void RebuildAnimator(string[]? selectiveElements)
-  {
+  private void RebuildAnimator(string[]? selectiveElements) {
     if (Api is not ICoreClientAPI || _animatable == null)
       return;
 
@@ -114,8 +107,7 @@ public class BlockEntityConverterBessemer : BlockEntity, IChiselableMolten
   #region Control link
 
   /// <summary>Records the position of the control block that drives this vessel.</summary>
-  public void LinkControl(BlockPos controlPos)
-  {
+  public void LinkControl(BlockPos controlPos) {
     _controlPos = controlPos.Copy();
     MarkDirty(true);
   }
@@ -131,8 +123,7 @@ public class BlockEntityConverterBessemer : BlockEntity, IChiselableMolten
     bool solidified,
     int chargeUnits,
     ConverterOpState state
-  )
-  {
+  ) {
     bool changed =
       _solidified != solidified
       || _chargeUnits != chargeUnits
@@ -158,8 +149,7 @@ public class BlockEntityConverterBessemer : BlockEntity, IChiselableMolten
     LiningY2 = 2.0f;
 
   /// <summary>Emits rising smoke from the vessel mouth while refining; called from the control's tick.</summary>
-  public void SpawnSmokeParticles(float intensity = 1f)
-  {
+  public void SpawnSmokeParticles(float intensity = 1f) {
     // Called from the control's server tick; server-spawned particles replicate to clients, so
     // don't gate on the client API here.
     if (Api == null)
@@ -211,8 +201,7 @@ public class BlockEntityConverterBessemer : BlockEntity, IChiselableMolten
       ExOrientation.AngleFromSide(Block.Variant["side"])
     );
 
-  private void ApplyPose()
-  {
+  private void ApplyPose() {
     if (Api is not ICoreClientAPI || _animatable == null || !_animatorReady)
       return;
 
@@ -223,16 +212,14 @@ public class BlockEntityConverterBessemer : BlockEntity, IChiselableMolten
 
     // Pose tilts only apply once the vessel is built; during construction it
     // simply renders the partial mesh at rest via "idle".
-    string code = (IsConstructed ? _opState : ConverterOpState.Normal) switch
-    {
+    string code = (IsConstructed ? _opState : ConverterOpState.Normal) switch {
       ConverterOpState.Filling => "filling",
       ConverterOpState.Pouring => "pouring",
       _ => "idle",
     };
 
     util.StartAnimation(
-      new AnimationMetaData
-      {
+      new AnimationMetaData {
         Animation = code,
         Code = code,
         // The whole vessel tilts - slow and heavy. Idle just holds it visible.
@@ -286,8 +273,7 @@ public class BlockEntityConverterBessemer : BlockEntity, IChiselableMolten
   /// The vessel carries the live operational readout (charge, progress, power, status); the state
   /// lives on the control brain, which builds the text.
   /// </summary>
-  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
-  {
+  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc) {
     base.GetBlockInfo(forPlayer, dsc);
 
     // During construction the RCC interaction help covers what's next - no operational state yet.
@@ -301,11 +287,9 @@ public class BlockEntityConverterBessemer : BlockEntity, IChiselableMolten
 
   #region Serialization
 
-  public override void ToTreeAttributes(ITreeAttribute tree)
-  {
+  public override void ToTreeAttributes(ITreeAttribute tree) {
     base.ToTreeAttributes(tree);
-    if (_controlPos != null)
-    {
+    if (_controlPos != null) {
       tree.SetInt("ctrlX", _controlPos.X);
       tree.SetInt("ctrlY", _controlPos.Y);
       tree.SetInt("ctrlZ", _controlPos.Z);
@@ -318,8 +302,7 @@ public class BlockEntityConverterBessemer : BlockEntity, IChiselableMolten
   public override void FromTreeAttributes(
     ITreeAttribute tree,
     IWorldAccessor worldForResolving
-  )
-  {
+  ) {
     base.FromTreeAttributes(tree, worldForResolving);
     if (tree.HasAttribute("ctrlX"))
       _controlPos = new BlockPos(

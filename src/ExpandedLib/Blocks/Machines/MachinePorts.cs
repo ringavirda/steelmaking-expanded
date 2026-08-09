@@ -11,8 +11,7 @@ namespace ExpandedLib.Blocks.Machines;
 /// wrappers with one set of extensions, so the "machine port = the network in the cell across the
 /// connector face" rule lives in a single place.
 /// </summary>
-public static class MachinePorts
-{
+public static class MachinePorts {
   /// <summary>The block-network manager, resolved from the entity's API (cached by the mod loader).</summary>
   public static BlockNetworkModSystem? NetworkSystem(this BlockEntity be) =>
     be.Api?.ModLoader.GetModSystem<BlockNetworkModSystem>();

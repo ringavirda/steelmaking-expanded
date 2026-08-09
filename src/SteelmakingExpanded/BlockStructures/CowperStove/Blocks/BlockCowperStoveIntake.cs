@@ -12,8 +12,7 @@ namespace SteelmakingExpanded.BlockStructures.CowperStove.Blocks;
 /// shared <c>MultiblockStructure</c> block behavior declared in the block JSON.
 /// </summary>
 [BlockRegister]
-public partial class BlockCowperStoveIntake : Block, INetworkConnector
-{
+public partial class BlockCowperStoveIntake : Block, INetworkConnector {
   public string NetworkType => "pipe";
 
   /// <summary>The exhaust connector sits on the intake's local-south face, rotated with the block.</summary>

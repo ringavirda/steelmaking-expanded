@@ -19,8 +19,7 @@ namespace SteelmakingExpanded.Tests;
 /// reads (hearth blast-mix piles, blast-fed tuyeres) and the iron tap + canal, then drives the tick.
 /// Timers are fast-forwarded so the multi-minute melt is reachable in a test.
 /// </summary>
-internal sealed class BlastFurnaceRig
-{
+internal sealed class BlastFurnaceRig {
   public readonly TestWorld World;
   public readonly BlockEntityBlastFurnace Furnace;
   public BlockEntityMoltenCanalStart? Canal { get; private set; }
@@ -29,15 +28,13 @@ internal sealed class BlastFurnaceRig
   private readonly PipeNetwork[] _tuyeres;
   private float _blastTemp = -1f;
 
-  public BlastFurnaceRig(int blastMix = 400)
-  {
+  public BlastFurnaceRig(int blastMix = 400) {
     World = new TestWorld();
     World.RegisterItem("game:ingot-iron", 1500f);
     World.RegisterItem("smex:slag");
     World.RegisterNetwork("pipe", s => new PipeNetwork(s));
 
-    Furnace = new BlockEntityBlastFurnace
-    {
+    Furnace = new BlockEntityBlastFurnace {
       Pos = _pos,
       Block = TestBlocks.Configure(
         new Block(),
@@ -72,12 +69,10 @@ internal sealed class BlastFurnaceRig
     ];
   }
 
-  private void BlastmixPile(BlockPos pos, int units)
-  {
+  private void BlastmixPile(BlockPos pos, int units) {
     var pile = new BlockEntityCoalPile { Pos = pos.Copy() };
     var inv = new InventoryGeneric(1, "coalpile", "test", World.Api, null);
-    var blastmix = new Item
-    {
+    var blastmix = new Item {
       Code = new AssetLocation("smex", "blastmix"),
       ItemId = 4242,
     };
@@ -97,8 +92,7 @@ internal sealed class BlastFurnaceRig
     World.Attach(pile);
   }
 
-  private PipeNetwork Tuyere(BlockPos pos, int id)
-  {
+  private PipeNetwork Tuyere(BlockPos pos, int id) {
     var pipe = PipeTestWorld.MakePipe(orientation: "ns", id: id);
     var be = new BlockEntityPipe { Pos = pos.Copy(), Block = pipe };
     World.Place(pos, pipe, be);
@@ -114,8 +108,7 @@ internal sealed class BlastFurnaceRig
   /// by valving their cowper stoves off the exhaust main, as the handbook's regenerator swap
   /// requires. Without this the rig has no outlets at all and the choke path never runs.
   /// </summary>
-  public BlastFurnaceRig WithBlockedExhaust()
-  {
+  public BlastFurnaceRig WithBlockedExhaust() {
     Tuyere(_pos.AddCopy(0, 3, 1), 30);
     Tuyere(_pos.AddCopy(0, 3, 3), 31);
     // Seal both stubs. An open end vents a fixed 8 L/s, which frees enough room for the next tick
@@ -131,25 +124,21 @@ internal sealed class BlastFurnaceRig
   }
 
   /// <summary>Turns the air blowers on: hot blast (≥800 °C, pressurised) at the tuyeres each tick.</summary>
-  public BlastFurnaceRig FeedBlast(float temp = 950f)
-  {
+  public BlastFurnaceRig FeedBlast(float temp = 950f) {
     _blastTemp = temp;
     return this;
   }
 
   /// <summary>Cuts the blast off (the air blowers stopped / the cowpers ran cold).</summary>
-  public BlastFurnaceRig CutBlast()
-  {
+  public BlastFurnaceRig CutBlast() {
     _blastTemp = -1f;
     return this;
   }
 
   /// <summary>Places an open iron tap below the furnace with a canal start under it.</summary>
-  public BlastFurnaceRig WithIronTapAndCanal()
-  {
+  public BlastFurnaceRig WithIronTapAndCanal() {
     BlockPos tapPos = Global(2, -2, 2);
-    var tap = new BlockEntityBlastFurnaceTap
-    {
+    var tap = new BlockEntityBlastFurnaceTap {
       Pos = tapPos.Copy(),
       Block = TestBlocks.Configure(
         new Block(),
@@ -163,8 +152,7 @@ internal sealed class BlastFurnaceRig
     tap.TogglePouring(); // open
 
     BlockPos canalPos = tapPos.AddCopy(BlockFacing.NORTH.Opposite).DownCopy();
-    Canal = new BlockEntityMoltenCanalStart
-    {
+    Canal = new BlockEntityMoltenCanalStart {
       Pos = canalPos.Copy(),
       Block = TestBlocks.Configure(
         new Block(),
@@ -183,13 +171,10 @@ internal sealed class BlastFurnaceRig
     (BlockPos)ReflectionHelpers.Invoke(Furnace, "GetGlobalPos", x, y, z)!;
 
   /// <summary>Advances the furnace tick <paramref name="ticks"/> times, re-feeding blast each tick.</summary>
-  public BlastFurnaceRig Tick(int ticks = 1)
-  {
-    for (int i = 0; i < ticks; i++)
-    {
+  public BlastFurnaceRig Tick(int ticks = 1) {
+    for (int i = 0; i < ticks; i++) {
       if (_blastTemp >= 0f)
-        foreach (var net in _tuyeres)
-        {
+        foreach (var net in _tuyeres) {
           net.TryProduceGas(
             150f,
             _blastTemp,
@@ -206,32 +191,27 @@ internal sealed class BlastFurnaceRig
 
   #region Fast-forward + accessors
 
-  public BlastFurnaceRig SetState(BlastFurnaceState s)
-  {
+  public BlastFurnaceRig SetState(BlastFurnaceState s) {
     ReflectionHelpers.SetProperty(Furnace, nameof(Furnace.State), s);
     return this;
   }
 
-  public BlastFurnaceRig SetTemp(float t)
-  {
+  public BlastFurnaceRig SetTemp(float t) {
     ReflectionHelpers.SetField(Furnace, "_internalTemp", t);
     return this;
   }
 
-  public BlastFurnaceRig SetSecondsAboveMelting(float s)
-  {
+  public BlastFurnaceRig SetSecondsAboveMelting(float s) {
     ReflectionHelpers.SetField(Furnace, "_secondsAboveMelting", s);
     return this;
   }
 
-  public BlastFurnaceRig SetMeltSeconds(float s)
-  {
+  public BlastFurnaceRig SetMeltSeconds(float s) {
     ReflectionHelpers.SetField(Furnace, "_meltSeconds", s);
     return this;
   }
 
-  public BlastFurnaceRig SetMoltenIron(float v)
-  {
+  public BlastFurnaceRig SetMoltenIron(float v) {
     ReflectionHelpers.SetField(Furnace, "_moltenIron", v);
     return this;
   }
@@ -239,6 +219,7 @@ internal sealed class BlastFurnaceRig
   public BlastFurnaceState State => Furnace.State;
   public float Temp =>
     (float)ReflectionHelpers.GetField(Furnace, "_internalTemp")!;
+
   /// <summary>Blast mix still in the hearth, as the last tick counted it. Falls only when a melt
   /// cycle actually completes, so it is the honest witness for "is this furnace still working".</summary>
   public int MixCount =>

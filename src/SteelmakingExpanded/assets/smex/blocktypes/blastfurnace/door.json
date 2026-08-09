@@ -27,7 +27,7 @@
     },
     "multiblockStructure": {
       "blockNumbers": {
-        "game:refractorybricks-good-tier3": 1,
+        "game:refractorybricks-good-tier*": 1,
         "game:multiblock-monolithic-0-p1-0": 2,
         "smex:blastfurnacedoor*": 3,
         "smex:blastfurnacetap*": 4,

@@ -16,8 +16,7 @@ namespace SteelmakingExpanded.Tests;
 /// output cell, refining iron into steel, and latching solid below the melting point. Plus the
 /// player-facing operability gate, which must refuse an unbuilt converter.
 /// </summary>
-public class ConverterControlProcessTests
-{
+public class ConverterControlProcessTests {
   private const string Iron = "game:ingot-iron";
   private const string Steel = "game:ingot-steel";
 
@@ -25,8 +24,7 @@ public class ConverterControlProcessTests
   private static readonly (int x, int y, int z) InputTapLocal = (1, 1, 2);
   private static readonly (int x, int y, int z) OutputStartLocal = (1, -2, 2);
 
-  private static TestWorld NewWorld()
-  {
+  private static TestWorld NewWorld() {
     var world = new TestWorld();
     world.RegisterItem(Iron, 1500f);
     world.RegisterItem(Steel, 1500f);
@@ -34,10 +32,8 @@ public class ConverterControlProcessTests
     return world;
   }
 
-  private static BlockEntityConverterControl Control(TestWorld world)
-  {
-    var be = new BlockEntityConverterControl
-    {
+  private static BlockEntityConverterControl Control(TestWorld world) {
+    var be = new BlockEntityConverterControl {
       Pos = new BlockPos(0, 8, 0),
       Block = TestBlocks.Configure(
         new Block(),
@@ -60,8 +56,7 @@ public class ConverterControlProcessTests
     TestWorld world,
     BlockEntityConverterControl control,
     (int x, int y, int z) local
-  )
-  {
+  ) {
     var pos = (BlockPos)
       ReflectionHelpers.Invoke(
         control,
@@ -70,8 +65,7 @@ public class ConverterControlProcessTests
         local.y,
         local.z
       )!;
-    var cell = new BlockEntityMoltenCanal
-    {
+    var cell = new BlockEntityMoltenCanal {
       Block = TestBlocks.Configure(
         new Block(),
         "smex:moltencanal-straight-ns",
@@ -88,8 +82,7 @@ public class ConverterControlProcessTests
   #region Filling
 
   [Fact]
-  public void TickFilling_draws_molten_metal_from_the_input_cell()
-  {
+  public void TickFilling_draws_molten_metal_from_the_input_cell() {
     var world = NewWorld();
     var be = Control(world);
     var input = PlaceCell(world, be, InputTapLocal);
@@ -102,8 +95,7 @@ public class ConverterControlProcessTests
   }
 
   [Fact]
-  public void TickFilling_does_nothing_when_the_input_cell_is_empty()
-  {
+  public void TickFilling_does_nothing_when_the_input_cell_is_empty() {
     var world = NewWorld();
     var be = Control(world);
     PlaceCell(world, be, InputTapLocal); // present but empty
@@ -118,8 +110,7 @@ public class ConverterControlProcessTests
   #region Pouring
 
   [Fact]
-  public void TickPouring_pushes_the_charge_into_the_output_cell()
-  {
+  public void TickPouring_pushes_the_charge_into_the_output_cell() {
     var world = NewWorld();
     var be = Control(world);
     var output = PlaceCell(world, be, OutputStartLocal);
@@ -138,8 +129,7 @@ public class ConverterControlProcessTests
   #region Refining
 
   [Fact]
-  public void CompleteRefining_turns_the_iron_charge_into_steel()
-  {
+  public void CompleteRefining_turns_the_iron_charge_into_steel() {
     var world = NewWorld();
     var be = Control(world);
     ReflectionHelpers.SetField(be, "_content", Metal(world, Iron, 1400f));
@@ -161,8 +151,7 @@ public class ConverterControlProcessTests
   public void UpdateSolidified_latches_against_the_melting_point(
     float temp,
     bool expected
-  )
-  {
+  ) {
     var world = NewWorld();
     var be = Control(world);
     ReflectionHelpers.SetField(be, "_content", Metal(world, Iron, temp));
@@ -181,8 +170,7 @@ public class ConverterControlProcessTests
   #region Operability gate
 
   [Fact]
-  public void CanOperate_refuses_an_incomplete_structure_with_a_reason()
-  {
+  public void CanOperate_refuses_an_incomplete_structure_with_a_reason() {
     var world = NewWorld();
     var be = Control(world);
 
@@ -193,8 +181,7 @@ public class ConverterControlProcessTests
   }
 
   [Fact]
-  public void IsConverterPresent_is_false_with_no_vessel_placed()
-  {
+  public void IsConverterPresent_is_false_with_no_vessel_placed() {
     var world = NewWorld();
     Assert.False(Control(world).IsConverterPresent());
   }

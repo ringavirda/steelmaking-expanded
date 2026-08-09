@@ -13,19 +13,16 @@ namespace SteelmakingExpanded.BlockStructures.BlastFurnace.Blocks;
 /// bell hopper below.
 /// </summary>
 [BlockRegister]
-public partial class BlockHopperReinforced : Block
-{
+public partial class BlockHopperReinforced : Block {
   public override bool OnBlockInteractStart(
     IWorldAccessor world,
     IPlayer byPlayer,
     BlockSelection blockSel
-  )
-  {
+  ) {
     if (
       world.BlockAccessor.GetBlockEntity(blockSel.Position)
       is BlockEntityHopperReinforced be
-    )
-    {
+    ) {
       be.OnInteract(byPlayer);
       return true;
     }
@@ -37,14 +34,12 @@ public partial class BlockHopperReinforced : Block
     IWorldAccessor world,
     BlockSelection selection,
     IPlayer forPlayer
-  )
-  {
+  ) {
     var baseHelp =
       base.GetPlacedBlockInteractionHelp(world, selection, forPlayer) ?? [];
 
     // Plain RMB always opens the hopper inventory.
-    var openHelp = new WorldInteraction
-    {
+    var openHelp = new WorldInteraction {
       ActionLangCode = "smex:blockhelp-hopper-open",
       MouseButton = EnumMouseButton.Right,
     };
@@ -52,10 +47,8 @@ public partial class BlockHopperReinforced : Block
     if (
       world.BlockAccessor.GetBlockEntity(selection.Position.DownCopy())
       is BlockEntityHopperBell
-    )
-    {
-      var toggleHelp = new WorldInteraction
-      {
+    ) {
+      var toggleHelp = new WorldInteraction {
         ActionLangCode = "smex:blockhelp-hopper-toggle",
         HotKeyCodes = ["ctrl"],
         MouseButton = EnumMouseButton.Right,

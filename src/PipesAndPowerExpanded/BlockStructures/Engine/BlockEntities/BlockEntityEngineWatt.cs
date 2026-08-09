@@ -12,8 +12,7 @@ namespace PipesAndPowerExpanded.BlockStructures.Engine.BlockEntities;
 /// <see cref="BlockEntityEngine"/>.
 /// </summary>
 [BlockEntityRegister]
-public class BlockEntityEngineWatt : BlockEntityEngine
-{
+public class BlockEntityEngineWatt : BlockEntityEngine {
   protected override float MaxPowerValue => PpexValues.WattEngineMaxPower;
   protected override float EngagePressure =>
     PpexValues.WattEngineEngagePressure;
@@ -25,8 +24,7 @@ public class BlockEntityEngineWatt : BlockEntityEngine
   public override void GetBlockInfo(
     IPlayer forPlayer,
     System.Text.StringBuilder dsc
-  )
-  {
+  ) {
     base.GetBlockInfo(forPlayer, dsc);
     if (!IsConstructed || IsBroken)
       return;

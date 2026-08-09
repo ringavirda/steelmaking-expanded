@@ -14,14 +14,11 @@ namespace PipesAndPowerExpanded.Tests;
 /// is driven directly with hand-built networks - no block-face wiring needed. Also pins the pure
 /// classification helpers and the HUD-mirror round trip.
 /// </summary>
-public class CondenserBeTests
-{
-  private static (TestWorld world, BlockEntitySteamCondenser be) Rig()
-  {
+public class CondenserBeTests {
+  private static (TestWorld world, BlockEntitySteamCondenser be) Rig() {
     var world = new TestWorld();
     world.RegisterNetwork("pipe", sys => new PipeNetwork(sys));
-    var be = new BlockEntitySteamCondenser
-    {
+    var be = new BlockEntitySteamCondenser {
       Pos = new BlockPos(0, 0, 0),
       Block = TestBlocks.Configure(new Block(), "ppex:steamcondenser", 65),
     };
@@ -34,8 +31,7 @@ public class CondenserBeTests
     int nodes,
     float litres,
     float temp = 30f
-  )
-  {
+  ) {
     var net = PipeTestWorld.LooseNet(world.Networks, nodes);
     if (litres > 0f)
       net.TryProduceLiquid(litres, temp, 1f, world.Accessor);
@@ -47,8 +43,7 @@ public class CondenserBeTests
     int nodes,
     float litres,
     float temp = 150f
-  )
-  {
+  ) {
     var net = PipeTestWorld.LooseNet(world.Networks, nodes);
     net.TryProduceGas(
       litres,
@@ -83,8 +78,7 @@ public class CondenserBeTests
   #region Process
 
   [Fact]
-  public void Steam_condenses_into_the_through_flow_outlet()
-  {
+  public void Steam_condenses_into_the_through_flow_outlet() {
     var (world, be) = Rig();
     var steam = SteamNet(world, 6, 300f);
     var inlet = WaterNet(world, 6, 60f); // fuller -> inlet
@@ -100,8 +94,7 @@ public class CondenserBeTests
   }
 
   [Fact]
-  public void With_no_water_line_drawn_steam_just_vents_as_gas()
-  {
+  public void With_no_water_line_drawn_steam_just_vents_as_gas() {
     var (world, be) = Rig();
     var steam = SteamNet(world, 6, 300f);
     float steamBefore = steam.State!.Volume;
@@ -113,8 +106,7 @@ public class CondenserBeTests
   }
 
   [Fact]
-  public void A_water_loop_takes_the_condensate_directly()
-  {
+  public void A_water_loop_takes_the_condensate_directly() {
     var (world, be) = Rig();
     var steam = SteamNet(world, 6, 300f);
     var loop = WaterNet(world, 6, 40f);
@@ -130,8 +122,7 @@ public class CondenserBeTests
   }
 
   [Fact]
-  public void Idle_with_no_steam_and_no_water_does_nothing()
-  {
+  public void Idle_with_no_steam_and_no_water_does_nothing() {
     var (world, be) = Rig();
     Assert.False(Process(be, null, null, null, world.Accessor));
   }
@@ -141,8 +132,7 @@ public class CondenserBeTests
   #region Serialization
 
   [Fact]
-  public void Condensing_mirror_round_trips_through_the_tree()
-  {
+  public void Condensing_mirror_round_trips_through_the_tree() {
     var (world, be) = Rig();
     var steam = SteamNet(world, 6, 300f);
     var inlet = WaterNet(world, 6, 60f);
@@ -154,8 +144,7 @@ public class CondenserBeTests
     var tree = new TreeAttribute();
     be.ToTreeAttributes(tree);
 
-    var restored = new BlockEntitySteamCondenser
-    {
+    var restored = new BlockEntitySteamCondenser {
       Pos = be.Pos.Copy(),
       Block = be.Block,
     };

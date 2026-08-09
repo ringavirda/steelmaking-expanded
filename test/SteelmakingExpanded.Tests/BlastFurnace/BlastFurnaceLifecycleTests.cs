@@ -14,20 +14,16 @@ namespace SteelmakingExpanded.Tests;
 /// into molten iron + slag (capacity-clamped) and the hearth blast-mix accounting. These are the
 /// numbers the firing/melting tick relies on but the gated <c>OnProductionTick</c> made unreachable.
 /// </summary>
-public class BlastFurnaceLifecycleTests
-{
-  private static TestWorld NewWorld()
-  {
+public class BlastFurnaceLifecycleTests {
+  private static TestWorld NewWorld() {
     var world = new TestWorld();
     world.RegisterItem("game:ingot-iron", 1500f);
     world.RegisterItem("smex:slag");
     return world;
   }
 
-  private static BlockEntityBlastFurnace Furnace(TestWorld world)
-  {
-    var be = new BlockEntityBlastFurnace
-    {
+  private static BlockEntityBlastFurnace Furnace(TestWorld world) {
+    var be = new BlockEntityBlastFurnace {
       Pos = new BlockPos(0, 16, 0),
       Block = TestBlocks.Configure(
         new Block(),
@@ -48,14 +44,12 @@ public class BlastFurnaceLifecycleTests
     TestWorld world,
     BlockPos pos,
     int units
-  )
-  {
+  ) {
     var pile = new BlockEntityCoalPile { Pos = pos.Copy() };
     // Pass a real Api so slot.MarkDirty() (DidModifyItemSlot) doesn't NRE when ConsumeForMelting
     // takes blast mix out of the slot.
     var inv = new InventoryGeneric(1, "coalpile", "test", world.Api, null);
-    var blastmix = new Item
-    {
+    var blastmix = new Item {
       Code = new AssetLocation("smex", "blastmix"),
       ItemId = 4242,
     };
@@ -87,8 +81,7 @@ public class BlastFurnaceLifecycleTests
   #region ConsumeForMelting
 
   [Fact]
-  public void A_melt_cycle_burns_blast_mix_into_molten_iron_and_slag()
-  {
+  public void A_melt_cycle_burns_blast_mix_into_molten_iron_and_slag() {
     var world = NewWorld();
     var be = Furnace(world);
     var pile = BlastmixPile(world, new BlockPos(0, 13, 0), 100);
@@ -108,8 +101,7 @@ public class BlastFurnaceLifecycleTests
   }
 
   [Fact]
-  public void Molten_output_is_clamped_at_the_furnace_capacity()
-  {
+  public void Molten_output_is_clamped_at_the_furnace_capacity() {
     var world = NewWorld();
     var be = Furnace(world);
     var pile = BlastmixPile(world, new BlockPos(0, 13, 0), 100);
@@ -133,8 +125,7 @@ public class BlastFurnaceLifecycleTests
   }
 
   [Fact]
-  public void Melting_draws_from_the_upper_piles_first()
-  {
+  public void Melting_draws_from_the_upper_piles_first() {
     var world = NewWorld();
     var be = Furnace(world);
     var low = BlastmixPile(world, new BlockPos(0, 12, 0), 50);
@@ -158,8 +149,7 @@ public class BlastFurnaceLifecycleTests
   #region Blast-mix accounting
 
   [Fact]
-  public void Mix_count_totals_the_hearth_and_reports_full_at_the_fire_threshold()
-  {
+  public void Mix_count_totals_the_hearth_and_reports_full_at_the_fire_threshold() {
     var world = NewWorld();
     var be = Furnace(world);
     var pile = BlastmixPile(
@@ -176,8 +166,7 @@ public class BlastFurnaceLifecycleTests
   }
 
   [Fact]
-  public void A_thin_charge_does_not_read_as_full()
-  {
+  public void A_thin_charge_does_not_read_as_full() {
     var world = NewWorld();
     var be = Furnace(world);
     var pile = BlastmixPile(world, new BlockPos(0, 13, 0), 10);
@@ -194,8 +183,7 @@ public class BlastFurnaceLifecycleTests
   #region Extinguish solidifies the molten charge
 
   [Fact]
-  public void Extinguishing_a_melt_solidifies_the_iron_in_the_hearth()
-  {
+  public void Extinguishing_a_melt_solidifies_the_iron_in_the_hearth() {
     var world = NewWorld();
     world.Register(
       TestBlocks.Configure(new Block(), "smex:solidifiediron", 70)

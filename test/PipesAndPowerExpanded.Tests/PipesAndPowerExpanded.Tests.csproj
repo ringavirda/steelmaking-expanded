@@ -25,6 +25,12 @@
       <HintPath>$(GamePath)/Mods/VSEssentials.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <!-- Lets a test prime a block with the `attributes` node from its shipped JSON def, so the
+         generated attribute accessors read what the game hands them. -->
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(GamePath)/Lib/Newtonsoft.Json.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

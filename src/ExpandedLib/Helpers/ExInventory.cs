@@ -9,14 +9,11 @@ namespace ExpandedLib.Helpers;
 /// repairs) and the hotbar-only scope (converter spawning), so each machine no longer
 /// hand-rolls its own walk/take loops.
 /// </summary>
-public static class ExInventory
-{
+public static class ExInventory {
   /// <summary>Total stack size of all items in the player's inventories matching <paramref name="matches"/>.</summary>
-  public static int Count(IPlayer player, System.Func<ItemStack, bool> matches)
-  {
+  public static int Count(IPlayer player, System.Func<ItemStack, bool> matches) {
     int count = 0;
-    player.Entity.WalkInventory(slot =>
-    {
+    player.Entity.WalkInventory(slot => {
       if (slot?.Itemstack != null && matches(slot.Itemstack))
         count += slot.Itemstack.StackSize;
       return true;
@@ -32,15 +29,12 @@ public static class ExInventory
     IPlayer player,
     System.Func<ItemStack, bool> matches,
     int quantity
-  )
-  {
+  ) {
     int remaining = quantity;
-    player.Entity.WalkInventory(slot =>
-    {
+    player.Entity.WalkInventory(slot => {
       if (remaining <= 0)
         return false;
-      if (slot?.Itemstack != null && matches(slot.Itemstack))
-      {
+      if (slot?.Itemstack != null && matches(slot.Itemstack)) {
         int take = Math.Min(remaining, slot.Itemstack.StackSize);
         slot.TakeOut(take);
         slot.MarkDirty();
@@ -55,8 +49,7 @@ public static class ExInventory
   public static int CountHotbar(
     IPlayer player,
     System.Func<ItemStack, bool> matches
-  )
-  {
+  ) {
     int count = 0;
     var hotbar = player.InventoryManager?.GetHotbarInventory();
     if (hotbar == null)
@@ -75,18 +68,15 @@ public static class ExInventory
     IPlayer player,
     System.Func<ItemStack, bool> matches,
     int quantity
-  )
-  {
+  ) {
     int remaining = quantity;
     var hotbar = player.InventoryManager?.GetHotbarInventory();
     if (hotbar == null)
       return 0;
-    foreach (var slot in hotbar)
-    {
+    foreach (var slot in hotbar) {
       if (remaining <= 0)
         break;
-      if (slot?.Itemstack != null && matches(slot.Itemstack))
-      {
+      if (slot?.Itemstack != null && matches(slot.Itemstack)) {
         int take = Math.Min(remaining, slot.Itemstack.StackSize);
         slot.TakeOut(take);
         slot.MarkDirty();

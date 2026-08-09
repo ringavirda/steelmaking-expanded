@@ -10,8 +10,7 @@ namespace PipesAndPowerExpanded.BlockStructures.Boiler.BlockEntities;
 /// block's <c>waterRendererBox</c> attribute in the JSON).
 /// </summary>
 [BlockEntityRegister]
-public class BlockEntityBoilerCornish : BlockEntityBoiler
-{
+public class BlockEntityBoilerCornish : BlockEntityBoiler {
   protected override float Capacity => PpexValues.CornishBoilerCapacity;
   protected override float MinBoilWater => PpexValues.CornishBoilerMinBoilWater;
   protected override float MaxBoilWater => PpexValues.CornishBoilerMaxBoilWater;

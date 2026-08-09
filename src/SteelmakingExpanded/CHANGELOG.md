@@ -5,6 +5,68 @@ All notable changes to this mod are documented here. The format is based on
 [Semantic Versioning](https://semver.org/). For changes before this file existed,
 see the git history.
 
+## [0.9.6] - 2026-08-09
+
+Covers the 0.9.3 through 0.9.5 development bumps, which were never published separately.
+
+### Added
+
+- **Twin-Tub Blower** - axle-driven bellows, and the only air source that needs no steam.
+  A waterwheel or windmill will now run a blast furnace, so the iron chain no longer waits
+  on a boiler. It delivers 60 L/s at full axle speed and raises its run to 2.0 atm, which
+  clears the furnace's blast gate and never reaches the converter's - mechanical power
+  makes iron, steam is still required for steel. Right-click constructed: the grid recipe
+  gives a wooden frame, and the beam, axle, tubs and pipe connection follow.
+- **The blast furnace burns charcoal as well as coke.** Charcoal carries about half the
+  carbon, so a batch takes four charcoal where two coke would do, and the two mix freely
+  in one batch. The coke oven is still the efficient route, not the only one.
+- **Every refractory structure accepts any brick tier.** Only the Bessemer converter still
+  asks for a specific tier.
+
+### Changed
+
+- **The blast furnace's blast gate is separate from the converter's,** and lower: the
+  furnace fires at 1.5 atm, the converter still needs 2.5. Iron is reachable with
+  mechanical power; steel is not.
+- **The heat sink is built from refractory brick** rather than iron sheet, which is what a
+  regenerator is actually made of. It comes in three tiers, its recipe takes any of them,
+  and existing heat sinks are converted on load.
+- **The blast furnace takes coke whole; crushed coke is retired.** The intermediate existed
+  only to be fed to the furnace, and producing it meant bolting a crushing recipe onto
+  vanilla coke - which put this mod in the middle of every other mod's crushing economy.
+  Leftover crushed coke converts to coke one-for-one as chunks load. The per-batch cost is
+  restated in whole coke.
+- **The blast furnace pushes its exhaust at 2 atm.** At the old implicit 1 atm the
+  pressure-relief valve in the setup diagrams could never open.
+
+### Fixed
+
+- **A blocked flue stalls the blast furnace instead of extinguishing it.** Shutting the hot
+  exhaust off to a cowper stove is exactly what the handbook's regenerator swap requires,
+  but it counted as a disruption, so thirty seconds later the furnace died - dumping the
+  molten iron, slagging every hearth pile and ending the campaign. A choked furnace now
+  falls back to its natural draught ceiling and resumes when the exhaust reopens.
+  The choke test itself was also wrong: it read "any outlet refused" where it meant "no
+  outlet accepted", so piping one gas outlet and leaving the other bare choked the furnace
+  permanently, and the message naming the reason never appeared.
+- **The reinforced hopper's contents no longer go stale on the client.** The bell hopper
+  marked itself after draining the hopper above, but the client reads those slots from the
+  hopper's own block entity - so the contents looked right until the dialog was reopened,
+  and relogging cleared it. It now syncs on every inventory change, including a chute
+  feeding it.
+- **Molten canals settle instead of sloshing.** Levelling moved the whole difference
+  between two cells, so an adjacent pair inverted every tick. Taps and mold pedestals still
+  take everything offered, so a run can still empty.
+- **The smoke stack accepts clinker brick and every brick course colour.** The masonry
+  legend enumerated seven of the eight colours and omitted clinker, so a chimney built from
+  them never completed and the only feedback was the outline.
+- **Slag paths and the heat sink no longer render near-black** under lighting mods; they
+  declared the light absorption vanilla reserves for solid opaque cubes.
+- **A rotated blast furnace no longer scans the wrong cells** for the first few ticks after
+  loading.
+- **Nothing is patched into another mod's crushing recipes.** The compatibility patch that
+  disabled a crushing recipe by index is gone along with crushed coke itself.
+
 ## [0.9.2] - 2026-06-21
 
 ### Added

@@ -12,8 +12,7 @@ namespace ExpandedLib.Blocks.Construction;
 /// applies immediately. exlib has a single runtime type identity, so this registry is shared across all
 /// dependent mods.
 /// </summary>
-public static class ExRccSettings
-{
+public static class ExRccSettings {
   private static readonly Dictionary<string, Func<float>> _brokenDropsRatios =
     new();
 

@@ -13,8 +13,7 @@ namespace SteelmakingExpanded;
 /// <see cref="SmexConfig.RecipeLevel"/>) and applied on the next world reload.
 /// </summary>
 [ExConfigRegister("smex_recipes.json", "smex")]
-public class SmexRecipeConfig : IExVersionedConfig
-{
+public class SmexRecipeConfig : IExVersionedConfig {
   public string? ConfigVersion { get; set; }
 
   private Dictionary<string, RecipeCostEntry>? _recipes;
@@ -22,8 +21,7 @@ public class SmexRecipeConfig : IExVersionedConfig
   /// <summary>Never null: a missing or null <c>Recipes</c> in the file falls back to the code
   /// defaults. Missing/broken individual entries are repaired against <see cref="DefaultCatalogue"/>
   /// at load by <see cref="ExRecipeCosts.Reconcile"/>.</summary>
-  public Dictionary<string, RecipeCostEntry> Recipes
-  {
+  public Dictionary<string, RecipeCostEntry> Recipes {
     get => _recipes ??= Defaults();
     set => _recipes = value;
   }
@@ -39,11 +37,9 @@ public class SmexRecipeConfig : IExVersionedConfig
   // style). Profiles are auto-filled at load: the normal baseline is read from the live recipe and the
   // cheap profile is scaled (half cost), both editable in the file.
   private static Dictionary<string, RecipeCostEntry> Defaults() =>
-    new()
-    {
+    new() {
       // RCC construction (the Bessemer converter vessel).
-      ["converterbessemer-rcc"] = new()
-      {
+      ["converterbessemer-rcc"] = new() {
         Type = "rcc",
         Match = "smex:converterbessemer-*",
       },

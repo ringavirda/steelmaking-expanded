@@ -9,7 +9,6 @@
     "hit": "game:block/anvil",
     "walk": "game:walk/stone"
   },
-  "requiredMiningTier": 4,
   "resistance": 45.0,
   "maxstacksize": 1,
   "drops": [],
@@ -117,7 +116,7 @@
             "requireStacks": [
               {
                 "type": "item",
-                "code": "refractorybrick-fired-tier3",
+                "code": "refractorybrick-fired-tier2",
                 "quantity": 60
               },
               {
@@ -132,7 +131,7 @@
             "requireStacks": [
               {
                 "type": "item",
-                "code": "refractorybrick-fired-tier3",
+                "code": "refractorybrick-fired-tier2",
                 "quantity": 24
               },
               {

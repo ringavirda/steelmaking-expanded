@@ -8,13 +8,11 @@ namespace SteelmakingExpanded.Tests;
 /// and poured back out into the output canal. Exercises the molten input/output cells, the blast gas
 /// network and the converter's refining process together - the final stage of an already-running line.
 /// </summary>
-public class BessemerScenarioTests
-{
+public class BessemerScenarioTests {
   #region Full charge → refine → pour cycle
 
   [Fact]
-  public void Molten_iron_is_charged_blown_into_steel_and_poured_to_the_output_canal()
-  {
+  public void Molten_iron_is_charged_blown_into_steel_and_poured_to_the_output_canal() {
     var rig = new ConverterRig();
 
     // 1. Fill: the furnace tap pours molten iron into the input canal, the converter draws it in.
@@ -58,8 +56,7 @@ public class BessemerScenarioTests
   // path - where leftover steel from the first heat could latch the type-mismatch guard and refuse a
   // fresh iron charge. A finished, poured converter must accept and refine a brand-new iron charge.
   [Fact]
-  public void A_second_iron_heat_can_be_charged_and_refined_after_pouring_the_first()
-  {
+  public void A_second_iron_heat_can_be_charged_and_refined_after_pouring_the_first() {
     var rig = new ConverterRig();
 
     // First heat: iron → steel → poured out, emptying the vessel.
@@ -90,8 +87,7 @@ public class BessemerScenarioTests
   #region Blast dependency
 
   [Fact]
-  public void Without_blast_the_charge_does_not_refine()
-  {
+  public void Without_blast_the_charge_does_not_refine() {
     var rig = new ConverterRig();
     rig.PourIronToInput(50);
     rig.Fill();
@@ -108,8 +104,7 @@ public class BessemerScenarioTests
   #region Mechanical-power gate (engine→generator→transmission→converter)
 
   [Fact]
-  public void A_turning_transmission_gives_the_converter_power()
-  {
+  public void A_turning_transmission_gives_the_converter_power() {
     var rig = new ConverterRig();
     rig.SetMechPower(speed: 1f); // the engine's MP generator spins the transmission axle
 
@@ -120,8 +115,7 @@ public class BessemerScenarioTests
   }
 
   [Fact]
-  public void A_stalled_transmission_leaves_the_converter_unpowered()
-  {
+  public void A_stalled_transmission_leaves_the_converter_unpowered() {
     var rig = new ConverterRig();
     rig.SetMechPower(speed: 0f); // axle present but not turning (engine off / overstressed)
 
@@ -129,8 +123,7 @@ public class BessemerScenarioTests
   }
 
   [Fact]
-  public void With_no_mechanical_network_the_converter_has_no_power()
-  {
+  public void With_no_mechanical_network_the_converter_has_no_power() {
     var rig = new ConverterRig();
     // The transmission block is placed but was never spun up (no MP network behind it).
     Assert.False(rig.HasPower);

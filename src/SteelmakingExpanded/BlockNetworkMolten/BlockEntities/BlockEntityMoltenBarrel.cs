@@ -22,8 +22,7 @@ namespace SteelmakingExpanded.BlockNetworkMolten.BlockEntities;
 public class BlockEntityMoltenBarrel
   : BlockEntity,
     ILiquidMetalSink,
-    IChiselableMolten
-{
+    IChiselableMolten {
   /// <summary>The metal currently stored, or <c>null</c> when empty.</summary>
   public ItemStack? MetalContent;
 
@@ -60,10 +59,8 @@ public class BlockEntityMoltenBarrel
   /// <see cref="MoltenMetal.GlowLevel"/> scale). Read by
   /// <see cref="Blocks.BlockMoltenBarrel.GetLightHsv"/>; 0 when empty or cool.
   /// </summary>
-  public byte GlowLightLevel
-  {
-    get
-    {
+  public byte GlowLightLevel {
+    get {
       if (Api?.World == null || MetalContent == null || CurrentUnitAmount <= 0)
         return 0;
       return MoltenMetal.GlowLevel(
@@ -76,11 +73,9 @@ public class BlockEntityMoltenBarrel
   /// Re-lights the block via <c>MarkBlockDirty</c> when the glow level shifts (the block id never
   /// changes, so the engine won't on its own). Driven by a dedicated tick since the barrel has no other.
   /// </summary>
-  private void UpdateGlow()
-  {
+  private void UpdateGlow() {
     byte g = GlowLightLevel;
-    if (g != _lastGlow)
-    {
+    if (g != _lastGlow) {
       _lastGlow = g;
       Api?.World.BlockAccessor.MarkBlockDirty(Pos);
     }
@@ -93,8 +88,7 @@ public class BlockEntityMoltenBarrel
   public bool CanReceiveAny => !IsFull;
 
   /// <inheritdoc/>
-  public bool CanReceive(ItemStack metal)
-  {
+  public bool CanReceive(ItemStack metal) {
     if (IsFull)
       return false;
     if (
@@ -118,8 +112,7 @@ public class BlockEntityMoltenBarrel
     ItemStack metal,
     ref int amount,
     float temperature
-  )
-  {
+  ) {
     if (IsFull)
       return;
     if (
@@ -132,16 +125,13 @@ public class BlockEntityMoltenBarrel
     )
       return;
 
-    if (MetalContent == null)
-    {
+    if (MetalContent == null) {
       MetalContent = metal.Clone();
       MetalContent.ResolveBlockOrItem(Api.World);
       MoltenMetal.SetTemperature(Api.World, MetalContent, temperature);
       MetalContent.StackSize = 1;
       MoltenMetal.SetCooldownSpeed(MetalContent, ContentCooldownSpeed);
-    }
-    else
-    {
+    } else {
       MoltenMetal.SetTemperature(Api.World, MetalContent, temperature);
     }
 
@@ -154,26 +144,21 @@ public class BlockEntityMoltenBarrel
   }
 
   /// <inheritdoc/>
-  public void OnPourOver()
-  {
+  public void OnPourOver() {
     MarkDirty(true);
   }
 
-  public override void Initialize(ICoreAPI api)
-  {
+  public override void Initialize(ICoreAPI api) {
     base.Initialize(api);
     // MaxUnitAmount is the generated BlockMoltenBarrel.MaxUnits const (from the JSON) - no read here.
 
-    if (api.Side == EnumAppSide.Client)
-    {
+    if (api.Side == EnumAppSide.Client) {
       InitRenderer((ICoreClientAPI)api);
       UpdateRenderer();
       // Metal cools after the last broadcast (the barrel only syncs on fill/chisel), so refresh
       // the surface glow from the stack's live temperature or it snaps cold on interaction.
       RegisterGameTickListener(_ => UpdateRenderer(), 1000);
-    }
-    else
-    {
+    } else {
       // No other server tick exists, so drive the cooling glow fade from here.
       RegisterGameTickListener(_ => OnServerTick(), 1000);
     }
@@ -182,8 +167,7 @@ public class BlockEntityMoltenBarrel
   // Server tick: keep the stored metal's cooldown rate in step with the live config so a
   // `/exmod config smex MoltenCooldownSpeed ...` change affects metal already in the barrel,
   // then fade the incandescent glow as it cools.
-  private void OnServerTick()
-  {
+  private void OnServerTick() {
     if (MetalContent != null && CurrentUnitAmount > 0)
       MoltenMetal.SyncCooldownSpeed(
         Api.World,
@@ -193,8 +177,7 @@ public class BlockEntityMoltenBarrel
     UpdateGlow();
   }
 
-  private void InitRenderer(ICoreClientAPI capi)
-  {
+  private void InitRenderer(ICoreClientAPI capi) {
     var barrel = (BlockMoltenBarrel)Block;
     Cuboidf[] boxes = FillQuads.BoxesFrom(
       barrel.FillQuadsByLevel,
@@ -214,13 +197,11 @@ public class BlockEntityMoltenBarrel
     capi.Event.RegisterRenderer(_renderer, EnumRenderStage.Opaque);
   }
 
-  private void UpdateRenderer()
-  {
+  private void UpdateRenderer() {
     if (_renderer == null)
       return;
 
-    if (MetalContent == null || CurrentUnitAmount <= 0)
-    {
+    if (MetalContent == null || CurrentUnitAmount <= 0) {
       _renderer.FillRatio = 0f;
       return;
     }
@@ -234,15 +215,13 @@ public class BlockEntityMoltenBarrel
     _renderer.MetalStack = MetalContent;
   }
 
-  public override void OnBlockRemoved()
-  {
+  public override void OnBlockRemoved() {
     _renderer?.Dispose();
     _renderer = null;
     base.OnBlockRemoved();
   }
 
-  public override void OnBlockUnloaded()
-  {
+  public override void OnBlockUnloaded() {
     _renderer?.Dispose();
     _renderer = null;
     base.OnBlockUnloaded();
@@ -267,8 +246,7 @@ public class BlockEntityMoltenBarrel
   string? IChiselableMolten.ChiselBlockedError => null;
 
   /// <summary>Server-side: empties the barrel and returns the recovered metal bits (10 units each).</summary>
-  public ItemStack? ChiselOut()
-  {
+  public ItemStack? ChiselOut() {
     if (
       Api?.Side != EnumAppSide.Server
       || MetalContent == null
@@ -295,12 +273,9 @@ public class BlockEntityMoltenBarrel
   #endregion
 
   /// <summary>Resolves the block-defined drop(s) for a full, hardened barrel of <paramref name="fromMetal"/>.</summary>
-  public ItemStack[] GetMoldedStacks(ItemStack fromMetal)
-  {
-    try
-    {
-      if (Block.Attributes["drop"].Exists)
-      {
+  public ItemStack[] GetMoldedStacks(ItemStack fromMetal) {
+    try {
+      if (Block.Attributes["drop"].Exists) {
         var jstack = Block
           .Attributes["drop"]
           .AsObject<JsonItemStack>(null, Block.Code.Domain);
@@ -320,20 +295,16 @@ public class BlockEntityMoltenBarrel
       if (jstacks == null)
         return Array.Empty<ItemStack>();
       var list = new List<ItemStack>();
-      foreach (var jstack in jstacks)
-      {
+      foreach (var jstack in jstacks) {
         var stack = StackFromCode(jstack, fromMetal);
-        if (stack != null)
-        {
+        if (stack != null) {
           if (MetalContent != null)
             stack.Collectible.SetTemperature(Api.World, stack, Temperature);
           list.Add(stack);
         }
       }
       return list.ToArray();
-    }
-    catch (Exception e)
-    {
+    } catch (Exception e) {
       Api.World.Logger.Error(
         "Failed to parse drop/drops attribute for molten barrel {0}: {1}",
         Block.Code,
@@ -347,8 +318,7 @@ public class BlockEntityMoltenBarrel
   /// Returns the drops for the metal inside the barrel when it is broken: the
   /// block-defined drop(s) when full and hardened, otherwise metal bits at 5 units each.
   /// </summary>
-  public ItemStack[] GetMetalDrops()
-  {
+  public ItemStack[] GetMetalDrops() {
     if (MetalContent == null || CurrentUnitAmount <= 0)
       return [];
 
@@ -365,8 +335,7 @@ public class BlockEntityMoltenBarrel
     return drop != null ? [drop] : [];
   }
 
-  private ItemStack? StackFromCode(JsonItemStack jstack, ItemStack fromMetal)
-  {
+  private ItemStack? StackFromCode(JsonItemStack jstack, ItemStack fromMetal) {
     jstack.Code.Path = jstack.Code.Path.Replace(
       "{metal}",
       fromMetal.Collectible.LastCodePart()
@@ -375,8 +344,7 @@ public class BlockEntityMoltenBarrel
     return jstack.ResolvedItemstack;
   }
 
-  public override void ToTreeAttributes(ITreeAttribute tree)
-  {
+  public override void ToTreeAttributes(ITreeAttribute tree) {
     base.ToTreeAttributes(tree);
     tree.SetItemstack("contents", MetalContent);
     tree.SetInt("currentUnitAmount", CurrentUnitAmount);
@@ -385,33 +353,28 @@ public class BlockEntityMoltenBarrel
   public override void FromTreeAttributes(
     ITreeAttribute tree,
     IWorldAccessor worldForResolve
-  )
-  {
+  ) {
     base.FromTreeAttributes(tree, worldForResolve);
     MetalContent = tree.GetItemstack("contents");
     CurrentUnitAmount = tree.GetInt("currentUnitAmount");
     MetalContent?.ResolveBlockOrItem(worldForResolve);
-    if (Api?.Side == EnumAppSide.Client)
-    {
+    if (Api?.Side == EnumAppSide.Client) {
       UpdateRenderer();
       UpdateGlow();
     }
   }
 
-  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
-  {
+  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc) {
     base.GetBlockInfo(forPlayer, dsc);
 
-    if (MetalContent == null || CurrentUnitAmount <= 0)
-    {
+    if (MetalContent == null || CurrentUnitAmount <= 0) {
       dsc.AppendLine(Lang.Get("smex:moltenbarrel-info-empty", MaxUnitAmount));
       return;
     }
 
     // The barrel labels its in-between state "soft" (re-meltable) rather than "cooling".
     string state = Lang.Get(
-      MoltenMetal.StateOf(Api.World, MetalContent) switch
-      {
+      MoltenMetal.StateOf(Api.World, MetalContent) switch {
         MoltenState.Liquid => "smex:metalstate-liquid",
         MoltenState.Hardened => "smex:metalstate-hardened",
         _ => "smex:metalstate-soft",
@@ -431,8 +394,7 @@ public class BlockEntityMoltenBarrel
   public override void OnStoreCollectibleMappings(
     Dictionary<int, AssetLocation> blockIdMapping,
     Dictionary<int, AssetLocation> itemIdMapping
-  )
-  {
+  ) {
     MetalContent?.Collectible.OnStoreCollectibleMappings(
       Api.World,
       new DummySlot(MetalContent),
@@ -447,10 +409,8 @@ public class BlockEntityMoltenBarrel
     Dictionary<int, AssetLocation> oldItemIdMapping,
     int schematicSeed,
     bool resolveImports
-  )
-  {
-    if (MetalContent != null)
-    {
+  ) {
+    if (MetalContent != null) {
       MetalContent.FixMapping(
         oldBlockIdMapping,
         oldItemIdMapping,

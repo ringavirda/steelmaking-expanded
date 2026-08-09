@@ -18,8 +18,7 @@ namespace PipesAndPowerExpanded.BlockNetworkPipe.BlockEntities;
 /// backed-up water (plus condensate) out, no water line at all vents drawn steam as gas.
 /// </summary>
 [BlockEntityRegister]
-public class BlockEntitySteamCondenser : BlockEntity
-{
+public class BlockEntitySteamCondenser : BlockEntity {
   private long _tickId;
 
   // Client-display mirror, synced via the tree.
@@ -32,17 +31,14 @@ public class BlockEntitySteamCondenser : BlockEntity
   private PipeNetwork? ConnectedNetwork(BlockFacing connectorFace) =>
     this.ConnectedNetwork<PipeNetwork>(connectorFace);
 
-  public override void Initialize(ICoreAPI api)
-  {
+  public override void Initialize(ICoreAPI api) {
     base.Initialize(api);
-    if (api.Side == EnumAppSide.Server)
-    {
+    if (api.Side == EnumAppSide.Server) {
       _tickId = RegisterGameTickListener(OnTick, 1000);
     }
   }
 
-  private void OnTick(float dt)
-  {
+  private void OnTick(float dt) {
     if (CondenserBlock == null)
       return;
 
@@ -56,8 +52,7 @@ public class BlockEntitySteamCondenser : BlockEntity
 
     bool condensing = Process(steamNet, netA, faceA, netB, faceB, dt, ba);
 
-    if (condensing != _condensing)
-    {
+    if (condensing != _condensing) {
       _condensing = condensing;
       MarkDirty(true);
     }
@@ -76,8 +71,7 @@ public class BlockEntitySteamCondenser : BlockEntity
     BlockFacing faceB,
     float dt,
     IBlockAccessor ba
-  )
-  {
+  ) {
     // Only water-capable sides count for the water line; a gas run is unplumbed for water.
     PipeNetwork? wa = CanTakeWater(netA) ? netA : null;
     PipeNetwork? wb = CanTakeWater(netB) ? netB : null;
@@ -88,8 +82,7 @@ public class BlockEntitySteamCondenser : BlockEntity
       : PpexValues.BoilingPoint;
 
     // Both water faces on the same run (a loop): nothing to pass, just drop in condensate.
-    if (wa != null && ReferenceEquals(wa, wb))
-    {
+    if (wa != null && ReferenceEquals(wa, wb)) {
       if (!steam)
         return false;
       float looped =
@@ -112,8 +105,7 @@ public class BlockEntitySteamCondenser : BlockEntity
 
     // No water line plumbed on either side - there is nowhere to condense steam into, so any
     // steam drawn just vents out of the condenser as gas (capped at the pipe-leak rate).
-    if (inNet == null && outNet == null)
-    {
+    if (inNet == null && outNet == null) {
       if (!steam)
         return false;
       float ventGas = steamNet!.TryConsumeGas(
@@ -123,8 +115,7 @@ public class BlockEntitySteamCondenser : BlockEntity
         ),
         ba
       );
-      if (ventGas > 0f)
-      {
+      if (ventGas > 0f) {
         ExParticles.GasVent(
           Api.World,
           Pos,
@@ -144,8 +135,7 @@ public class BlockEntitySteamCondenser : BlockEntity
 
     // Steam condenses into its (much smaller) hot-water volume, merged into the line below.
     float condensed = 0f;
-    if (steam)
-    {
+    if (steam) {
       float used = steamNet!.TryConsumeGas(
         PpexValues.CondenserSteamPerSecond * dt,
         ba
@@ -156,8 +146,7 @@ public class BlockEntitySteamCondenser : BlockEntity
     // No outlet piped: the water line backs up and leaks out the open outlet face. Drain
     // what the open end can shed from the inlet, add the condensate, and spray it all out
     // (the water is lost). Capped at the pipe water-leak rate like any open-ended run.
-    if (outNet == null)
-    {
+    if (outNet == null) {
       float drained =
         inNet != null
           ? inNet.TryConsumeLiquid(PpexValues.LiquidLeakRate * dt, ba)
@@ -204,8 +193,7 @@ public class BlockEntitySteamCondenser : BlockEntity
     float temp,
     float pressure,
     IBlockAccessor ba
-  )
-  {
+  ) {
     net.TryProduceLiquid(
       amount,
       Math.Clamp(temp, 20f, PpexValues.BoilingPoint - 1f),
@@ -233,22 +221,19 @@ public class BlockEntitySteamCondenser : BlockEntity
     && net.State.MediumType == "Steam"
     && net.State.Volume > 0f;
 
-  public override void OnBlockRemoved()
-  {
+  public override void OnBlockRemoved() {
     if (_tickId != 0)
       UnregisterGameTickListener(_tickId);
     base.OnBlockRemoved();
   }
 
-  public override void OnBlockUnloaded()
-  {
+  public override void OnBlockUnloaded() {
     if (_tickId != 0)
       UnregisterGameTickListener(_tickId);
     base.OnBlockUnloaded();
   }
 
-  public override void ToTreeAttributes(ITreeAttribute tree)
-  {
+  public override void ToTreeAttributes(ITreeAttribute tree) {
     base.ToTreeAttributes(tree);
     tree.SetBool("condensing", _condensing);
   }
@@ -256,8 +241,7 @@ public class BlockEntitySteamCondenser : BlockEntity
   public override void FromTreeAttributes(
     ITreeAttribute tree,
     IWorldAccessor worldForResolving
-  )
-  {
+  ) {
     base.FromTreeAttributes(tree, worldForResolving);
     _condensing = tree.GetBool("condensing");
   }
@@ -265,8 +249,7 @@ public class BlockEntitySteamCondenser : BlockEntity
   public override void GetBlockInfo(
     IPlayer forPlayer,
     System.Text.StringBuilder dsc
-  )
-  {
+  ) {
     base.GetBlockInfo(forPlayer, dsc);
     dsc.AppendLine(
       Lang.Get(

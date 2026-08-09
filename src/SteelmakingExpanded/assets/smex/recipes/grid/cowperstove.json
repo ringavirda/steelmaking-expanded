@@ -33,8 +33,15 @@
   },
   {
     "name": "Heat Sink",
-    "ingredientPattern": "HP_,PNP,_P_",
+    "ingredientPattern": "_H_,BPB,BNB",
     "ingredients": {
+      "B": {
+        "type": "item",
+        "code": "game:refractorybrick-fired-*",
+        "name": "tier",
+        "allowedVariants": ["tier1", "tier2", "tier3"],
+        "quantity": 1
+      },
       "N": {
         "type": "item",
         "code": "game:metalnailsandstrips-*",
@@ -53,7 +60,7 @@
     "height": 3,
     "output": {
       "type": "block",
-      "code": "smex:cowperstoveheatsink-north"
+      "code": "smex:cowperstoveheatsink-{tier}-north"
     }
   }
 ]

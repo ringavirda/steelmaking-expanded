@@ -12,8 +12,7 @@ namespace ExpandedLib.Registries.Commands;
 /// <see cref="SubCommandRegisterAttribute"/> (options that attach to an existing command), and
 /// builds each one - so a mod system never hand-wires <c>api.ChatCommands.Create(...)</c> calls.
 /// </summary>
-public static class CommandRegistry
-{
+public static class CommandRegistry {
   /// <summary>
   /// Registers every <see cref="CommandRegisterAttribute"/>-decorated <see cref="IExCommand"/> and
   /// every <see cref="SubCommandRegisterAttribute"/>-decorated <see cref="IExSubCommand"/> in
@@ -24,22 +23,18 @@ public static class CommandRegistry
   /// <see cref="Vintagestory.API.Common.IChatCommandApi.GetOrCreate(string)"/>, so a parent command
   /// need not exist (or be registered by the same mod) beforehand.
   /// </summary>
-  public static void RegisterAll(ICoreAPI api, Mod mod, Assembly? asm = null)
-  {
+  public static void RegisterAll(ICoreAPI api, Mod mod, Assembly? asm = null) {
     asm ??= Assembly.GetCallingAssembly();
     string modId = mod.Info.ModID;
 
-    foreach (Type type in ReflectionScan.GetCandidateTypes(asm))
-    {
+    foreach (Type type in ReflectionScan.GetCandidateTypes(asm)) {
       var attr = type.GetCustomAttribute<CommandRegisterAttribute>();
-      if (attr != null)
-      {
+      if (attr != null) {
         // Universal commands register on whichever side runs; sided ones only on their own side.
         if (attr.Side != EnumAppSide.Universal && attr.Side != api.Side)
           continue;
 
-        if (!typeof(IExCommand).IsAssignableFrom(type))
-        {
+        if (!typeof(IExCommand).IsAssignableFrom(type)) {
           api.Logger.Warning(
             "[{0}] CommandRegistry: {1} has [CommandRegister] but does not implement IExCommand; skipped.",
             modId,
@@ -54,13 +49,11 @@ public static class CommandRegistry
       }
 
       var subAttr = type.GetCustomAttribute<SubCommandRegisterAttribute>();
-      if (subAttr != null)
-      {
+      if (subAttr != null) {
         if (subAttr.Side != EnumAppSide.Universal && subAttr.Side != api.Side)
           continue;
 
-        if (!typeof(IExSubCommand).IsAssignableFrom(type))
-        {
+        if (!typeof(IExSubCommand).IsAssignableFrom(type)) {
           api.Logger.Warning(
             "[{0}] CommandRegistry: {1} has [SubCommandRegister] but does not implement IExSubCommand; skipped.",
             modId,

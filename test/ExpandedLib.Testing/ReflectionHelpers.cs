@@ -8,15 +8,13 @@ namespace ExpandedLib.Testing;
 /// must be primed for a headless test (e.g. the network manager's server-world back-reference,
 /// normally assigned only inside <c>StartServerSide</c>).
 /// </summary>
-public static class ReflectionHelpers
-{
+public static class ReflectionHelpers {
   /// <summary>Sets a property's value through its (possibly non-public) setter.</summary>
   public static void SetProperty(
     object target,
     string propertyName,
     object? value
-  )
-  {
+  ) {
     PropertyInfo prop =
       target
         .GetType()
@@ -51,10 +49,8 @@ public static class ReflectionHelpers
     object target,
     string methodName,
     params object?[] args
-  )
-  {
-    for (Type? t = target.GetType(); t != null; t = t.BaseType)
-    {
+  ) {
+    for (Type? t = target.GetType(); t != null; t = t.BaseType) {
       MethodInfo? m = t.GetMethod(
         methodName,
         BindingFlags.Public
@@ -70,10 +66,8 @@ public static class ReflectionHelpers
     );
   }
 
-  private static FieldInfo FindField(Type type, string fieldName)
-  {
-    for (Type? t = type; t != null; t = t.BaseType)
-    {
+  private static FieldInfo FindField(Type type, string fieldName) {
+    for (Type? t = type; t != null; t = t.BaseType) {
       FieldInfo? f = t.GetField(
         fieldName,
         BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance

@@ -14,8 +14,7 @@ namespace ExpandedLib.Registries.Commands;
 /// parameterless constructor, so a sub-command should hold no constructor state.
 /// </para>
 /// </summary>
-public interface IExSubCommand
-{
+public interface IExSubCommand {
   /// <summary>Name of the existing top-level command to attach to (e.g. <c>"exmod"</c>). The
   /// registry creates it on first use if no mod has registered it yet.</summary>
   string ParentName { get; }

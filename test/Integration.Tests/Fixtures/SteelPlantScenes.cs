@@ -21,8 +21,7 @@ namespace SteelmakingExpanded.Tests;
 /// process runs against a real blast supply (the per-state steps are driven directly, as the gated
 /// <c>OnProductionTick</c> also requires an aligned transmission + constructed vessel).
 /// </summary>
-internal sealed class ConverterRig
-{
+internal sealed class ConverterRig {
   private const string Iron = "game:ingot-iron";
   private const string Steel = "game:ingot-steel";
 
@@ -40,16 +39,14 @@ internal sealed class ConverterRig
 
   private readonly PipeNetwork _blast;
 
-  public ConverterRig()
-  {
+  public ConverterRig() {
     World = new TestWorld();
     World.RegisterItem(Iron, 1500f);
     World.RegisterItem(Steel, 1500f);
     World.RegisterItem("game:metalbit-iron");
     World.RegisterNetwork("pipe", s => new PipeNetwork(s));
 
-    Control = new BlockEntityConverterControl
-    {
+    Control = new BlockEntityConverterControl {
       Pos = new BlockPos(0, 8, 0),
       Block = TestBlocks.Configure(
         new Block(),
@@ -78,8 +75,7 @@ internal sealed class ConverterRig
     BlockFacing connFace = ((BlockConverterIntake)intakeBlock).ConnectorFace;
     BlockPos blastPos = intakePos.AddCopy(connFace);
     var blastPipe = PipeTestWorld.MakePipe(orientation: "ns", id: 12);
-    var blastBe = new BlockEntityPipe
-    {
+    var blastBe = new BlockEntityPipe {
       Pos = blastPos.Copy(),
       Block = blastPipe,
     };
@@ -96,8 +92,7 @@ internal sealed class ConverterRig
       13,
       ("side", "north")
     );
-    Transmission = new BlockEntityConverterTransmission
-    {
+    Transmission = new BlockEntityConverterTransmission {
       Pos = transPos.Copy(),
       Block = transBlock,
     };
@@ -110,8 +105,7 @@ internal sealed class ConverterRig
   /// axle chain spinning it). Attaches the real MP behavior + a faked turning network so the control's
   /// <see cref="BlockEntityConverterControl.HasPower"/> reads it.
   /// </summary>
-  public ConverterRig SetMechPower(float speed)
-  {
+  public ConverterRig SetMechPower(float speed) {
     var mp = new BEBehaviorMPConverterTransmission(Transmission);
     MechPower.Attach(Transmission, mp, MechPower.Network(speed));
     return this;
@@ -123,11 +117,9 @@ internal sealed class ConverterRig
   private BlockPos GlobalPos((int x, int y, int z) l) =>
     (BlockPos)ReflectionHelpers.Invoke(Control, "GetGlobalPos", l.x, l.y, l.z)!;
 
-  private BlockEntityMoltenCanal PlaceCell((int x, int y, int z) local, int id)
-  {
+  private BlockEntityMoltenCanal PlaceCell((int x, int y, int z) local, int id) {
     BlockPos pos = GlobalPos(local);
-    var cell = new BlockEntityMoltenCanal
-    {
+    var cell = new BlockEntityMoltenCanal {
       Pos = pos.Copy(),
       Block = TestBlocks.Configure(
         new Block(),
@@ -149,15 +141,13 @@ internal sealed class ConverterRig
   ) => MoltenMetal.CreateStack(world.World, code, temp)!;
 
   /// <summary>Pours molten iron into the input canal cell (the furnace tap feeding the converter).</summary>
-  public ConverterRig PourIronToInput(int units, float temp = 1700f)
-  {
+  public ConverterRig PourIronToInput(int units, float temp = 1700f) {
     Input.PushMetal(units, MetalStack(World, Iron, temp), World.World);
     return this;
   }
 
   /// <summary>Charges the intake's gas network with blast (Air at <paramref name="atm"/> ≥ 2.5 atm).</summary>
-  public ConverterRig ChargeBlast(float atm = 3f)
-  {
+  public ConverterRig ChargeBlast(float atm = 3f) {
     _blast.TryProduceGas(
       atm * 30f,
       20f,
@@ -176,8 +166,7 @@ internal sealed class ConverterRig
   public ConverterRig Pour() => Invoke("TickPouring");
 
   /// <summary>Jumps the refining clock to just before completion so the next <see cref="Refine"/> finishes it.</summary>
-  public ConverterRig FastForwardToAlmostDone()
-  {
+  public ConverterRig FastForwardToAlmostDone() {
     ReflectionHelpers.SetField(
       Control,
       "_processSeconds",
@@ -186,8 +175,7 @@ internal sealed class ConverterRig
     return this;
   }
 
-  private ConverterRig Invoke(string method)
-  {
+  private ConverterRig Invoke(string method) {
     ReflectionHelpers.Invoke(Control, method, 1f);
     return this;
   }
@@ -211,8 +199,7 @@ internal sealed class ConverterRig
 /// (hot blast for the furnace tuyeres) and the core gives its heat up. Wires the stove's exhaust
 /// intake (charge), and the air passthrough + hot-air outlet it reads on discharge.
 /// </summary>
-internal sealed class CowperRig
-{
+internal sealed class CowperRig {
   public readonly TestWorld World;
   public readonly BlockEntityCowperStove Stove;
 
@@ -221,14 +208,12 @@ internal sealed class CowperRig
   private readonly PipeNetwork _airInNet;
   private readonly PipeNetwork _hotOut;
 
-  public CowperRig()
-  {
+  public CowperRig() {
     World = new TestWorld();
     World.RegisterNetwork("pipe", sys => new PipeNetwork(sys));
 
     var pos = new BlockPos(0, 8, 0);
-    Stove = new BlockEntityCowperStove
-    {
+    Stove = new BlockEntityCowperStove {
       Pos = pos,
       Block = TestBlocks.Configure(
         new Block(),
@@ -285,8 +270,7 @@ internal sealed class CowperRig
     // pipe at the hot-blast cell - both resolved from the stove's structure-local offsets.
     BlockPos airInPos = GlobalPos(0, 1, 2);
     var ptBlock = PipeTestWorld.MakePipe(orientation: "ns", id: 20);
-    _airIn = new BlockEntityPipePassthrough
-    {
+    _airIn = new BlockEntityPipePassthrough {
       Pos = airInPos.Copy(),
       Block = ptBlock,
     };
@@ -302,8 +286,7 @@ internal sealed class CowperRig
 
     BlockPos hotOutPos = GlobalPos(0, 1, 0);
     var outBlock = PipeTestWorld.MakePipe(orientation: "ns", id: 21);
-    var outBe = new BlockEntityPipe
-    {
+    var outBe = new BlockEntityPipe {
       Pos = hotOutPos.Copy(),
       Block = outBlock,
     };
@@ -323,8 +306,7 @@ internal sealed class CowperRig
     (BlockPos)ReflectionHelpers.Invoke(Stove, "GetGlobalPos", x, y, z)!;
 
   /// <summary>A sealed 2-cell pipe run butted against <paramref name="face"/> of <paramref name="at"/>.</summary>
-  private PipeNetwork SealedRunOn(BlockPos at, BlockFacing face, int firstId)
-  {
+  private PipeNetwork SealedRunOn(BlockPos at, BlockFacing face, int firstId) {
     var pipe = PipeTestWorld.MakePipe(orientation: "ns", id: firstId);
     BlockPos p1 = at.AddCopy(face);
     BlockPos p2 = p1.AddCopy(face);
@@ -341,8 +323,7 @@ internal sealed class CowperRig
   }
 
   /// <summary>Charges the exhaust intake with hot furnace exhaust, then runs one production tick.</summary>
-  public CowperRig ChargeFromExhaust(float exhaustTemp, float litres = 60f)
-  {
+  public CowperRig ChargeFromExhaust(float exhaustTemp, float litres = 60f) {
     _exhaust.TryProduceGas(
       litres,
       exhaustTemp,
@@ -359,8 +340,7 @@ internal sealed class CowperRig
   /// line is valved off first (drained) - a stove only discharges while it is NOT taking exhaust, the
   /// real two-stove charge/discharge swap.
   /// </summary>
-  public CowperRig DischargeAir(float airTemp = 20f, float litres = 60f)
-  {
+  public CowperRig DischargeAir(float airTemp = 20f, float litres = 60f) {
     _exhaust.TryConsumeGas(float.MaxValue, World.Accessor); // valve the exhaust off
     _airInNet.TryProduceGas(
       litres,
@@ -384,8 +364,7 @@ internal sealed class CowperRig
     float exhaustTemp = 1200f,
     float airLitres = 60f,
     float exhaustLitres = 60f
-  )
-  {
+  ) {
     _airInNet.TryProduceGas(
       airLitres,
       20f,

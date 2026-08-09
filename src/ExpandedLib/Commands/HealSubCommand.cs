@@ -14,12 +14,10 @@ namespace ExpandedLib.Commands;
 /// root already requires <c>controlserver</c>.
 /// </summary>
 [SubCommandRegister(Side = EnumAppSide.Server)]
-public sealed class HealSubCommand : IExSubCommand
-{
+public sealed class HealSubCommand : IExSubCommand {
   public string ParentName => "exmod";
 
-  public void Register(ICoreAPI api, Mod mod, IChatCommand parent)
-  {
+  public void Register(ICoreAPI api, Mod mod, IChatCommand parent) {
     var healer = api.ModLoader.GetModSystem<BlockEntityHealModSystem>();
 
     parent

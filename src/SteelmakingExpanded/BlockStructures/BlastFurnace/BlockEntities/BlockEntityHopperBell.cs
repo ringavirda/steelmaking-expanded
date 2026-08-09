@@ -17,8 +17,7 @@ namespace SteelmakingExpanded.BlockStructures.BlastFurnace.BlockEntities;
 /// it into the furnace shaft below while dropping is enabled.
 /// </summary>
 [BlockEntityRegister]
-public class BlockEntityHopperBell : BlockEntity
-{
+public class BlockEntityHopperBell : BlockEntity {
   private long _tickId;
   private Item? _blastMixItem;
   private int _blastMixMagazine = 0;
@@ -34,16 +33,13 @@ public class BlockEntityHopperBell : BlockEntity
   public int MaxMagazineCapacity => SmexValues.HopperMaxMagazineCapacity;
 
   /// <summary>Whether the hopper is dropping blast mix into the furnace.</summary>
-  public bool IsDropping
-  {
+  public bool IsDropping {
     get => _isDropping;
-    set
-    {
+    set {
       if (_isDropping == value)
         return;
       _isDropping = value;
-      if (Api?.Side == EnumAppSide.Server)
-      {
+      if (Api?.Side == EnumAppSide.Server) {
         if (_isDropping)
           StartTicking();
         else
@@ -52,28 +48,23 @@ public class BlockEntityHopperBell : BlockEntity
     }
   }
 
-  public override void Initialize(ICoreAPI api)
-  {
+  public override void Initialize(ICoreAPI api) {
     base.Initialize(api);
 
-    if (api.Side == EnumAppSide.Server)
-    {
+    if (api.Side == EnumAppSide.Server) {
       _blastMixItem = api.World.GetItem(new AssetLocation("smex", "blastmix"));
       if (_isDropping)
         StartTicking();
     }
   }
 
-  private void StartTicking()
-  {
+  private void StartTicking() {
     if (_tickId == 0 && Api != null)
       _tickId = RegisterGameTickListener(OnServerTick, 1000);
   }
 
-  private void StopTicking()
-  {
-    if (_tickId != 0 && Api != null)
-    {
+  private void StopTicking() {
+    if (_tickId != 0 && Api != null) {
       UnregisterGameTickListener(_tickId);
       _tickId = 0;
     }
@@ -82,8 +73,7 @@ public class BlockEntityHopperBell : BlockEntity
   public override void FromTreeAttributes(
     ITreeAttribute tree,
     IWorldAccessor worldForResolving
-  )
-  {
+  ) {
     base.FromTreeAttributes(tree, worldForResolving);
     int oldMagazine = _blastMixMagazine;
     _blastMixMagazine = tree.GetInt("blastMixMagazine");
@@ -91,21 +81,18 @@ public class BlockEntityHopperBell : BlockEntity
 
     // The reinforced hopper above renders its contents pile from our magazine level,
     // so nudge it to re-tessellate whenever that level changes on the client.
-    if (oldMagazine != _blastMixMagazine && Api?.Side == EnumAppSide.Client)
-    {
+    if (oldMagazine != _blastMixMagazine && Api?.Side == EnumAppSide.Client) {
       Api.World.BlockAccessor.GetBlockEntity(Pos.UpCopy())?.MarkDirty(true);
     }
   }
 
-  public override void ToTreeAttributes(ITreeAttribute tree)
-  {
+  public override void ToTreeAttributes(ITreeAttribute tree) {
     base.ToTreeAttributes(tree);
     tree.SetInt("blastMixMagazine", _blastMixMagazine);
     tree.SetBool("isDropping", IsDropping);
   }
 
-  private void OnServerTick(float dt)
-  {
+  private void OnServerTick(float dt) {
     if (
       Api.World.BlockAccessor.GetBlockEntity(Pos.UpCopy())
       is not BlockEntityHopperReinforced topHopper
@@ -121,7 +108,6 @@ public class BlockEntityHopperBell : BlockEntity
     bool feedChanged = false;
 
     int ironOreReq = SmexValues.HopperIronOreRequired;
-    int cokeReq = SmexValues.HopperCokeRequired;
     int limeReq = SmexValues.HopperLimeRequired;
     int blastmixProd = SmexValues.HopperBlastmixProduced;
     int dropAmount = SmexValues.HopperDropAmount;
@@ -129,11 +115,9 @@ public class BlockEntityHopperBell : BlockEntity
     // Reclaimed blastmix sitting in the hopper feeds straight into the magazine
     // (1:1), taking priority over crafting fresh blastmix from ore.
     int magazineSpace = MaxMagazineCapacity - _blastMixMagazine;
-    if (magazineSpace > 0)
-    {
+    if (magazineSpace > 0) {
       int reclaim = System.Math.Min(magazineSpace, CountItems(inv, IsBlastmix));
-      if (reclaim > 0)
-      {
+      if (reclaim > 0) {
         ConsumeItems(inv, IsBlastmix, reclaim);
         _blastMixMagazine += reclaim;
         feedChanged = true;
@@ -141,33 +125,27 @@ public class BlockEntityHopperBell : BlockEntity
       }
     }
 
-    while (_blastMixMagazine <= MaxMagazineCapacity - blastmixProd)
-    {
+    while (_blastMixMagazine <= MaxMagazineCapacity - blastmixProd) {
       if (
         CountItems(inv, IsIronOre) >= ironOreReq
-        && CountItems(inv, IsCoke) >= cokeReq
+        && CountCarbon(inv) >= CarbonPerBatch
         && CountItems(inv, IsLime) >= limeReq
-      )
-      {
+      ) {
         ConsumeItems(inv, IsIronOre, ironOreReq);
-        ConsumeItems(inv, IsCoke, cokeReq);
+        ConsumeCarbon(inv);
         ConsumeItems(inv, IsLime, limeReq);
 
         _blastMixMagazine += blastmixProd;
         feedChanged = true;
         MarkDirty(true);
-      }
-      else
-      {
+      } else {
         break;
       }
     }
 
-    if (_blastMixMagazine >= dropAmount && !IsFurnaceFull())
-    {
+    if (_blastMixMagazine >= dropAmount && !IsFurnaceFull()) {
       BlockPos? targetPos = FindBestPileLocation(dropAmount);
-      if (targetPos != null)
-      {
+      if (targetPos != null) {
         DropBlastMix(targetPos, dropAmount);
         _blastMixMagazine -= dropAmount;
         MarkDirty(true);
@@ -185,8 +163,7 @@ public class BlockEntityHopperBell : BlockEntity
   }
 
   /// <summary>Returns <c>true</c> when the furnace shaft below has no room for more blast mix.</summary>
-  public bool IsFurnaceFull()
-  {
+  public bool IsFurnaceFull() {
     if (Api == null)
       return false;
 
@@ -195,10 +172,8 @@ public class BlockEntityHopperBell : BlockEntity
       return false;
 
     BlockPos planeCenter = Pos.DownCopy(3);
-    for (int dx = -1; dx <= 1; dx++)
-    {
-      for (int dz = -1; dz <= 1; dz++)
-      {
+    for (int dx = -1; dx <= 1; dx++) {
+      for (int dz = -1; dz <= 1; dz++) {
         Block planeBlock = Api.World.BlockAccessor.GetBlock(
           planeCenter.AddCopy(dx, 0, dz)
         );
@@ -210,25 +185,21 @@ public class BlockEntityHopperBell : BlockEntity
     return true;
   }
 
-  private BlockPos? FindBestPileLocation(int dropAmount)
-  {
+  private BlockPos? FindBestPileLocation(int dropAmount) {
     int maxDepth = 15;
     int floorY = Pos.Y;
 
-    for (int d = 2; d <= maxDepth; d++)
-    {
+    for (int d = 2; d <= maxDepth; d++) {
       BlockPos checkPos = Pos.DownCopy(d);
       Block b = Api.World.BlockAccessor.GetBlock(checkPos);
 
-      if (b.Replaceable < 6000 && b.Code?.Path.StartsWith("coalpile") != true)
-      {
+      if (b.Replaceable < 6000 && b.Code?.Path.StartsWith("coalpile") != true) {
         floorY = checkPos.Y + 1;
         break;
       }
     }
 
-    for (int y = floorY; y < Pos.Y; y++)
-    {
+    for (int y = floorY; y < Pos.Y; y++) {
       BlockPos centerPos = new BlockPos(Pos.X, y, Pos.Z);
 
       if (IsValidPileTarget(centerPos, dropAmount))
@@ -246,8 +217,7 @@ public class BlockEntityHopperBell : BlockEntity
         centerPos.AddCopy(-1, 0, 1),
       ];
 
-      foreach (var n in neighbors)
-      {
+      foreach (var n in neighbors) {
         if (IsValidPileTarget(n, dropAmount))
           return n;
       }
@@ -256,26 +226,22 @@ public class BlockEntityHopperBell : BlockEntity
     return null;
   }
 
-  private bool IsValidPileTarget(BlockPos pos, int dropAmount)
-  {
+  private bool IsValidPileTarget(BlockPos pos, int dropAmount) {
     Block b = Api.World.BlockAccessor.GetBlock(pos);
 
     if (b.Replaceable >= 6000)
       return true;
 
-    if (b.Code?.Path.StartsWith("coalpile") == true)
-    {
+    if (b.Code?.Path.StartsWith("coalpile") == true) {
       if (
         Api.World.BlockAccessor.GetBlockEntity(pos)
         is BlockEntityItemPile pileBe
-      )
-      {
+      ) {
         var slot = pileBe.inventory[0];
         if (slot.Empty)
           return true;
 
-        if (slot.Itemstack.Collectible.Code.Path.Equals("blastmix"))
-        {
+        if (slot.Itemstack.Collectible.Code.Path.Equals("blastmix")) {
           if (slot.StackSize + dropAmount <= 16)
             return true;
         }
@@ -285,40 +251,32 @@ public class BlockEntityHopperBell : BlockEntity
     return false;
   }
 
-  private void DropBlastMix(BlockPos targetPos, int amount)
-  {
+  private void DropBlastMix(BlockPos targetPos, int amount) {
     if (_blastMixItem == null)
       return;
 
     Block blockAtTarget = Api.World.BlockAccessor.GetBlock(targetPos);
 
-    if (blockAtTarget.Replaceable >= 6000)
-    {
+    if (blockAtTarget.Replaceable >= 6000) {
       Block? coalPileBlock = Api.World.GetBlock(
         new AssetLocation("game", "coalpile")
       );
-      if (coalPileBlock != null)
-      {
+      if (coalPileBlock != null) {
         Api.World.BlockAccessor.SetBlock(coalPileBlock.BlockId, targetPos);
         blockAtTarget = coalPileBlock;
       }
     }
 
-    if (blockAtTarget.Code?.Path.StartsWith("coalpile") == true)
-    {
+    if (blockAtTarget.Code?.Path.StartsWith("coalpile") == true) {
       if (
         Api.World.BlockAccessor.GetBlockEntity(targetPos)
         is BlockEntityItemPile pileBe
-      )
-      {
+      ) {
         var slot = pileBe.inventory[0];
 
-        if (slot.Empty)
-        {
+        if (slot.Empty) {
           slot.Itemstack = new ItemStack(_blastMixItem, amount);
-        }
-        else
-        {
+        } else {
           slot.Itemstack.StackSize += amount;
         }
 
@@ -347,17 +305,64 @@ public class BlockEntityHopperBell : BlockEntity
   private bool IsCoke(ItemStack stack) =>
     stack.Collectible.Code.Path.Equals("coke");
 
+  private bool IsCharcoal(ItemStack stack) =>
+    stack.Collectible.Code.Path.Equals("charcoal");
+
+  #region Burden carbon
+
+  // The two fuels are counted in a shared unit rather than as separate quotas, so a batch can be
+  // fed coke, charcoal or any mix of the two at one exchange rate. Scaling by BOTH configured
+  // amounts keeps the arithmetic exact in integers whatever the two are set to: at the defaults
+  // (2 coke or 4 charcoal) a batch costs 8 units, coke is worth 4 and charcoal 2.
+
+  /// <summary>Carbon units one piece of coke contributes.</summary>
+  private static int CarbonPerCoke => SmexValues.HopperCharcoalRequired;
+
+  /// <summary>Carbon units one piece of charcoal contributes.</summary>
+  private static int CarbonPerCharcoal => SmexValues.HopperCokeRequired;
+
+  /// <summary>Carbon units one blast-mix batch costs.</summary>
+  private static int CarbonPerBatch =>
+    SmexValues.HopperCokeRequired * SmexValues.HopperCharcoalRequired;
+
+  /// <summary>Total carbon units the hopper's fuel slots currently hold.</summary>
+  private int CountCarbon(InventoryBase inv) =>
+    CountItems(inv, IsCoke) * CarbonPerCoke
+    + CountItems(inv, IsCharcoal) * CarbonPerCharcoal;
+
+  /// <summary>
+  /// Takes one batch worth of carbon, spending coke first so the denser fuel is used up before
+  /// the bulkier one. The charcoal remainder is rounded up to a whole piece, which can only
+  /// over-spend when the two configured amounts do not divide evenly.
+  /// </summary>
+  private void ConsumeCarbon(InventoryBase inv) {
+    int needed = CarbonPerBatch;
+
+    int cokeAvailable = CountItems(inv, IsCoke);
+    int cokeTaken = Math.Min(cokeAvailable, needed / CarbonPerCoke);
+    if (cokeTaken > 0) {
+      ConsumeItems(inv, IsCoke, cokeTaken);
+      needed -= cokeTaken * CarbonPerCoke;
+    }
+
+    if (needed <= 0)
+      return;
+
+    int charcoalTaken = (needed + CarbonPerCharcoal - 1) / CarbonPerCharcoal;
+    ConsumeItems(inv, IsCharcoal, charcoalTaken);
+  }
+
+  #endregion
+
   private bool IsLime(ItemStack stack) =>
     stack.Collectible.Code.Path.Equals("lime");
 
   private static int CountItems(
     InventoryBase inv,
     System.Func<ItemStack, bool> matcher
-  )
-  {
+  ) {
     int count = 0;
-    foreach (var slot in inv)
-    {
+    foreach (var slot in inv) {
       if (!slot.Empty && matcher(slot.Itemstack))
         count += slot.StackSize;
     }
@@ -368,11 +373,9 @@ public class BlockEntityHopperBell : BlockEntity
     InventoryBase inv,
     System.Func<ItemStack, bool> matcher,
     int amountToTake
-  )
-  {
+  ) {
     int remaining = amountToTake;
-    foreach (var slot in inv)
-    {
+    foreach (var slot in inv) {
       if (slot.Empty || !matcher(slot.Itemstack))
         continue;
 
@@ -386,14 +389,12 @@ public class BlockEntityHopperBell : BlockEntity
     }
   }
 
-  public override void OnBlockRemoved()
-  {
+  public override void OnBlockRemoved() {
     base.OnBlockRemoved();
     StopTicking();
   }
 
-  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
-  {
+  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc) {
     base.GetBlockInfo(forPlayer, dsc);
     dsc.AppendLine(
       Lang.Get(

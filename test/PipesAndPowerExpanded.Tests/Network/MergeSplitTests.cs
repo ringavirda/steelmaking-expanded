@@ -9,11 +9,9 @@ namespace PipesAndPowerExpanded.Tests;
 /// Merge and fracture state handling - the source of several historical bugs (a valve toggle
 /// re-walking the graph and dumping an over-pressured run back to 1 atm).
 /// </summary>
-public class MergeSplitTests
-{
+public class MergeSplitTests {
   [Fact]
-  public void Merge_same_medium_blends_temperature_and_sums_volume()
-  {
+  public void Merge_same_medium_blends_temperature_and_sums_volume() {
     var w = new TestWorld();
     var a = PipeTestWorld.LooseNet(w.Networks, 2); // MaxVolume 60
     a.TryProduceGas(60f, 100f, "Air", w.Accessor);
@@ -30,8 +28,7 @@ public class MergeSplitTests
   }
 
   [Fact]
-  public void Merge_incompatible_media_keeps_the_larger_run()
-  {
+  public void Merge_incompatible_media_keeps_the_larger_run() {
     var w = new TestWorld();
     var gas = PipeTestWorld.LooseNet(w.Networks, 2);
     gas.TryProduceGas(60f, 120f, "Air", w.Accessor);
@@ -47,8 +44,7 @@ public class MergeSplitTests
   }
 
   [Fact]
-  public void SplitFragment_preserves_gas_over_pressure()
-  {
+  public void SplitFragment_preserves_gas_over_pressure() {
     // Regression: a fracture must cap a gas fragment at the burst ceiling, not 1 atm.
     var (w, net) = PipeTestWorld.Run(3, "iron", capEnds: true);
     net.TryProduceGas(1000f, 200f, "Steam", w.Accessor, maxOutputPressure: 10f);
@@ -64,8 +60,7 @@ public class MergeSplitTests
   }
 
   [Fact]
-  public void SplitFragment_takes_proportional_share()
-  {
+  public void SplitFragment_takes_proportional_share() {
     var w = new TestWorld();
     var orig = PipeTestWorld.LooseNet(w.Networks, 4); // MaxVolume 120
     orig.TryProduceGas(80f, 120f, "Air", w.Accessor);

@@ -22,8 +22,7 @@ namespace PipesAndPowerExpanded.BlockMigrations;
 /// network stays continuous.</description></item>
 /// </list>
 /// </summary>
-public class PipeMigration : IBlockCodeMigration
-{
+public class PipeMigration : IBlockCodeMigration {
   public string Name => "Pipes and steam power moved to ppex";
 
   // Pipe shapes that gained an iron/steel material axis (old smex code had no material suffix).
@@ -38,8 +37,7 @@ public class PipeMigration : IBlockCodeMigration
   ];
 
   // Old per-axis/per-facing orientations collapsed onto the surviving straight-pipe axes.
-  private static readonly Dictionary<string, string> StraightAxis = new()
-  {
+  private static readonly Dictionary<string, string> StraightAxis = new() {
     ["ns"] = "ns",
     ["sn"] = "ns",
     ["n"] = "ns",
@@ -52,10 +50,8 @@ public class PipeMigration : IBlockCodeMigration
 
   public IEnumerable<(AssetLocation oldCode, AssetLocation newCode)> GetRemaps(
     ICoreServerAPI api
-  )
-  {
-    foreach (Block block in api.World.Blocks)
-    {
+  ) {
+    foreach (Block block in api.World.Blocks) {
       if (block?.Code == null || block.Code.Domain != "ppex")
         continue;
 
@@ -64,8 +60,7 @@ public class PipeMigration : IBlockCodeMigration
 
       // straight/bend/t-/x-junction + valves: old code is the material-less gaspipe variant.
       // Only the iron variant has a legacy origin; steel pipes are new this version.
-      if (type != null && MaterialTypes.Contains(type))
-      {
+      if (type != null && MaterialTypes.Contains(type)) {
         if (block.Variant["material"] != "iron")
           continue;
         string orient = block.Variant["orientation"];
@@ -102,12 +97,12 @@ public class PipeMigration : IBlockCodeMigration
       ),
     ];
     foreach (var (shape, orients) in brickShapes)
-    foreach (string tier in refractory)
-    foreach (string orient in orients)
-      yield return (
-        new AssetLocation("smex", $"gaspipe-{shape}-{tier}-{orient}"),
-        new AssetLocation("ppex", $"pipe-{shape}-fire-{orient}")
-      );
+      foreach (string tier in refractory)
+        foreach (string orient in orients)
+          yield return (
+            new AssetLocation("smex", $"gaspipe-{shape}-{tier}-{orient}"),
+            new AssetLocation("ppex", $"pipe-{shape}-fire-{orient}")
+          );
 
     // Pre-brick legacy passthrough/outlet (before the brick variantgroup existed) → fire brick.
     foreach (string o in new[] { "ns", "we", "ud" })
@@ -143,11 +138,11 @@ public class PipeMigration : IBlockCodeMigration
       "refractorytier3",
     ];
     foreach (string brick in heatedBricks)
-    foreach (string o in new[] { "ns", "sn", "we", "ew" })
-      yield return (
-        new AssetLocation("smex", $"gaspipe-heated-{brick}-{o}"),
-        new AssetLocation("ppex", $"pipe-straight-{StraightAxis[o]}-iron")
-      );
+      foreach (string o in new[] { "ns", "sn", "we", "ew" })
+        yield return (
+          new AssetLocation("smex", $"gaspipe-heated-{brick}-{o}"),
+          new AssetLocation("ppex", $"pipe-straight-{StraightAxis[o]}-iron")
+        );
 
     foreach (string o in new[] { "n", "s", "w", "e" })
       yield return (

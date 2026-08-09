@@ -10,8 +10,7 @@ namespace ExpandedLib.Helpers;
 /// <see cref="RisingPlume"/> for new effects). Methods do no side-checking: spawn on the server to
 /// broadcast to nearby clients, or on the client to show locally.
 /// </summary>
-public static class ExParticles
-{
+public static class ExParticles {
   /// <summary>White vapour (steam / pressurised air venting).</summary>
   public static readonly int Vapor = ColorUtil.ToRgba(130, 235, 235, 240);
 
@@ -57,8 +56,7 @@ public static class ExParticles
     EvolvingNatFloat? opacityEvolve = null,
     EvolvingNatFloat? sizeEvolve = null,
     bool shouldDieInLiquid = false
-  )
-  {
+  ) {
     var particles = new SimpleParticleProperties(
       minQuantity,
       maxQuantity,
@@ -72,8 +70,7 @@ public static class ExParticles
       minSize,
       maxSize,
       model
-    )
-    {
+    ) {
       ShouldDieInLiquid = shouldDieInLiquid,
     };
     // Evolve properties are non-nullable; only set them when supplied so presets without
@@ -180,11 +177,9 @@ public static class ExParticles
   /// Short-lived white steam plume rising out of the top of <paramref name="cell"/>
   /// (an open boiler lid or steam-outlet neck). <paramref name="count"/> sets the density.
   /// </summary>
-  public static void SteamPlume(IWorldAccessor world, BlockPos cell, int count)
-  {
+  public static void SteamPlume(IWorldAccessor world, BlockPos cell, int count) {
     var rnd = world.Rand;
-    for (int i = 0; i < count; i++)
-    {
+    for (int i = 0; i < count; i++) {
       Vec3d p = new(
         cell.X + 0.5 + (rnd.NextDouble() - 0.5) * 0.5,
         cell.Y + 0.9 + rnd.NextDouble() * 0.25,
@@ -291,8 +286,7 @@ public static class ExParticles
     BlockPos pos,
     BlockFacing face,
     float intensity = 1f
-  )
-  {
+  ) {
     float t = GameMath.Clamp(intensity, 0f, 1f);
     Vec3d center = FaceCenter(pos, face);
     Spawn(
@@ -322,8 +316,7 @@ public static class ExParticles
     BlockPos pos,
     BlockFacing face,
     string gasType
-  )
-  {
+  ) {
     if (GasColor(gasType, ventAir: false) is not int color)
       return;
 
@@ -356,8 +349,7 @@ public static class ExParticles
     BlockPos pos,
     BlockFacing face,
     float intensity = 1f
-  )
-  {
+  ) {
     float t = GameMath.Clamp(intensity, 0f, 1f);
     Vec3d center = FaceCenter(pos, face);
     Spawn(
@@ -382,8 +374,7 @@ public static class ExParticles
   /// Blue water splash pooling out of the top of <paramref name="cell"/> - condensate
   /// (engine outlet) with nowhere to drain.
   /// </summary>
-  public static void WaterSpill(IWorldAccessor world, BlockPos cell)
-  {
+  public static void WaterSpill(IWorldAccessor world, BlockPos cell) {
     var pos = new Vec3d(cell.X + 0.5, cell.Y + 0.1, cell.Z + 0.5);
     Spawn(
       world,

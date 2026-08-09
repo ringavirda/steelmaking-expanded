@@ -44,7 +44,7 @@ If you build your mod outside this repo, reference the shipped `exlib.dll` (the 
 install) with `<Private>false</Private>` so you don't bundle a second copy.
 
 > **One library identity.** In this monorepo only **one** mod assembly physically contains
-> `ExpandedLib` (it is compiled into `ppex.dll`), and the other mods project-reference it so the
+> `ExpandedLib` (it is compiled into its own `exlib.dll`), and the other mods project-reference it so the
 > network-manager and registries are a single identity at runtime. If you ship your own mod
 > separately you simply depend on the installed `exlib` mod - there is exactly one `exlib` in a
 > running game.

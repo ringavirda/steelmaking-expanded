@@ -18,16 +18,13 @@ namespace SteelmakingExpanded.BlockNetworkMolten.BlockEntities;
 /// hammer) - draining the network each tick while pouring is enabled.
 /// </summary>
 [BlockEntityRegister]
-public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
-{
+public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal {
   private bool _isPouring;
 
   /// <summary>Whether the tap is actively draining the network into its content.</summary>
-  public bool IsPouring
-  {
+  public bool IsPouring {
     get => _isPouring;
-    private set
-    {
+    private set {
       if (_isPouring == value)
         return;
       _isPouring = value;
@@ -115,8 +112,7 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
   private static float MoldCooldownSpeed =>
     SmexValues.MoltenCooldownSpeed * SmexValues.TapMoldCooldownCoefficient;
 
-  public override void Initialize(ICoreAPI api)
-  {
+  public override void Initialize(ICoreAPI api) {
     base.Initialize(api);
     if (api.Side == EnumAppSide.Server)
       RegisterGameTickListener(OnServerTick, 1000);
@@ -126,15 +122,13 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
       RegisterGameTickListener(_ => UpdateRenderer(), 1000);
   }
 
-  public override void OnBlockRemoved()
-  {
+  public override void OnBlockRemoved() {
     _contentRenderer?.Dispose();
     _contentRenderer = null;
     base.OnBlockRemoved();
   }
 
-  public override void OnBlockUnloaded()
-  {
+  public override void OnBlockUnloaded() {
     _contentRenderer?.Dispose();
     _contentRenderer = null;
     base.OnBlockUnloaded();
@@ -142,16 +136,14 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
 
   #region Renderer
 
-  protected override void UpdateRenderer()
-  {
+  protected override void UpdateRenderer() {
     base.UpdateRenderer();
     if (!IsPouring && _renderer != null)
       _renderer.FillRatio = 0f;
     UpdateContentRenderer();
   }
 
-  private void UpdateContentRenderer()
-  {
+  private void UpdateContentRenderer() {
     if (Api is not ICoreClientAPI capi)
       return;
 
@@ -162,8 +154,7 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
     int currentUnits = 0;
     int maxUnits = 0;
 
-    if (IsBarrel)
-    {
+    if (IsBarrel) {
       contentBlock = capi.World.GetBlock(
         new AssetLocation("smex:moltenbarrel")
       );
@@ -171,9 +162,7 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
       content = BarrelMetalContent;
       currentUnits = BarrelCurrentUnits;
       maxUnits = BarrelMaxUnits;
-    }
-    else if (IsMold && MoldStack?.Block != null)
-    {
+    } else if (IsMold && MoldStack?.Block != null) {
       contentBlock = MoldStack.Block;
       key = "mold:" + contentBlock.Code;
       raiseY = MoldMeshRaiseY;
@@ -187,8 +176,7 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
     if (_contentRenderer == null)
       return;
 
-    if (content == null || currentUnits <= 0 || maxUnits <= 0)
-    {
+    if (content == null || currentUnits <= 0 || maxUnits <= 0) {
       _contentRenderer.FillRatio = 0f;
       _contentRenderer.MetalStack = null;
       return;
@@ -201,8 +189,7 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
     );
 
     string metalCode = content.Collectible.Code.ToString();
-    if (metalCode != _cachedContentMetalType)
-    {
+    if (metalCode != _cachedContentMetalType) {
       _cachedContentMetalStack = new ItemStack(content.Collectible);
       _cachedContentMetalType = metalCode;
     }
@@ -214,8 +201,7 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
     string? key,
     Block? block,
     float raiseY
-  )
-  {
+  ) {
     if (key == _contentRendererKey && _contentRenderer != null)
       return;
 
@@ -257,8 +243,7 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
     Block block,
     out float fillStartY,
     out float fillHeightLevels
-  )
-  {
+  ) {
     // The parked content varies (a barrel or any large mold), so the surface must follow the CONTENT
     // block's own fill geometry - NOT the tap's generated FillStart/FillHeight consts, which would
     // pin a parked barrel's metal at the tap's spout height. Molds aren't [BlockRegister] partials
@@ -276,8 +261,7 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
   #region Barrel attach / detach
 
   /// <summary>Parks <paramref name="barrelStack"/> under the tap, adopting any metal it already holds.</summary>
-  public void AddBarrel(ItemStack barrelStack)
-  {
+  public void AddBarrel(ItemStack barrelStack) {
     (BarrelMetalContent, BarrelCurrentUnits) = MoltenContents.Read(
       barrelStack,
       MoltenContents.BarrelUnitsKey,
@@ -290,8 +274,7 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
   }
 
   /// <summary>Removes the parked barrel and returns it, preserving its contents in <c>blockEntityAttributes</c>.</summary>
-  public ItemStack RemoveBarrel()
-  {
+  public ItemStack RemoveBarrel() {
     IsBarrel = false;
     var barrelBlock = Api.World.GetBlock(
       new AssetLocation("smex:moltenbarrel")
@@ -314,8 +297,7 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
   #region Mold attach / detach
 
   /// <summary>Parks <paramref name="itemStack"/> (a large mold) under the tap, adopting any metal it already holds.</summary>
-  public void AddMold(ItemStack itemStack)
-  {
+  public void AddMold(ItemStack itemStack) {
     MoldStack = itemStack.Clone();
     MoldStack.StackSize = 1;
 
@@ -334,8 +316,7 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
   }
 
   /// <summary>Removes the parked mold and returns it, preserving any cast metal in <c>blockEntityAttributes</c>.</summary>
-  public ItemStack RemoveMold()
-  {
+  public ItemStack RemoveMold() {
     IsMold = false;
     var stack = MoldStack!.Clone();
 
@@ -359,8 +340,7 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
   public bool HasContent => IsBarrel || IsMold;
 
   /// <summary>Toggles whether the tap drains the network into its parked content.</summary>
-  public void TryTogglePouring()
-  {
+  public void TryTogglePouring() {
     IsPouring = !IsPouring; // setter re-walks the network on change
     ExSounds.Play(Api, Pos, ExSounds.Latch, 0.7f);
     MarkDirty(true);
@@ -370,8 +350,7 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
 
   #region Server tick: drain network into the current content
 
-  private void OnServerTick(float dt)
-  {
+  private void OnServerTick(float dt) {
     // Keep the parked mold's cooldown rate in step with the live config (the parked barrel cools at a
     // fixed slow rate by design, so it is left alone) - this runs every tick, before the pour gate, so
     // a `/exmod config smex MoltenCooldownSpeed ...` change affects metal already cast in the mold.
@@ -388,8 +367,7 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
 
     // Barrels accept metal even when hardened (it re-melts); molds stay gated (a hardened mold is
     // a finished cast).
-    if (IsBarrel)
-    {
+    if (IsBarrel) {
       var content = BarrelMetalContent;
       int drained = DrainInto(
         ref content,
@@ -397,16 +375,13 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
         BarrelMaxUnits,
         300f
       );
-      if (drained > 0)
-      {
+      if (drained > 0) {
         BarrelMetalContent = content;
         BarrelCurrentUnits += drained;
         PlayDrainSound();
         MarkDirty(true);
       }
-    }
-    else if (IsMold && !IsContentHardened(MoldMetalContent))
-    {
+    } else if (IsMold && !IsContentHardened(MoldMetalContent)) {
       var content = MoldMetalContent;
       int drained = DrainInto(
         ref content,
@@ -414,8 +389,7 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
         MoldMaxUnits,
         MoldCooldownSpeed
       );
-      if (drained > 0)
-      {
+      if (drained > 0) {
         MoldMetalContent = content;
         MoldCurrentUnits += drained;
         PlayDrainSound();
@@ -441,8 +415,7 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
     int currentUnits,
     int maxUnits,
     float cooldownSpeed
-  )
-  {
+  ) {
     if (currentUnits >= maxUnits)
       return 0;
     if (
@@ -464,14 +437,11 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
     if (drained <= 0f)
       return 0;
 
-    if (content == null)
-    {
+    if (content == null) {
       content = MoltenMetal.CreateStack(Api.World, type, temp, cooldownSpeed);
       if (content == null)
         return 0;
-    }
-    else
-    {
+    } else {
       MoltenMetal.SetTemperature(Api.World, content, temp);
     }
     return (int)drained;
@@ -484,8 +454,7 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
 
   #region Serialization
 
-  public override void ToTreeAttributes(ITreeAttribute tree)
-  {
+  public override void ToTreeAttributes(ITreeAttribute tree) {
     base.ToTreeAttributes(tree);
     tree.SetBool("isPouring", IsPouring);
 
@@ -504,8 +473,7 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
   public override void FromTreeAttributes(
     ITreeAttribute tree,
     IWorldAccessor worldForResolving
-  )
-  {
+  ) {
     bool wasBarrel = IsBarrel;
     bool wasMold = IsMold;
     base.FromTreeAttributes(tree, worldForResolving);
@@ -528,8 +496,7 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
     MoldCurrentUnits = tree.GetInt("moldCurrentUnits");
     MoldMaxUnits = tree.GetInt("moldMaxUnits", SmexValues.MoldDefaultUnits);
 
-    if (IsBarrel != wasBarrel || IsMold != wasMold)
-    {
+    if (IsBarrel != wasBarrel || IsMold != wasMold) {
       _moldMesh = null;
       _tessellatedMoldCode = null;
       MarkDirty(true);
@@ -538,8 +505,7 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
       UpdateRenderer();
   }
 
-  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
-  {
+  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc) {
     base.GetBlockInfo(forPlayer, dsc);
 
     if (IsBarrel)
@@ -575,18 +541,15 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
     ItemStack? content,
     int currentUnits,
     int maxUnits
-  )
-  {
-    if (content == null || currentUnits <= 0)
-    {
+  ) {
+    if (content == null || currentUnits <= 0) {
       dsc.AppendLine(Lang.Get("smex:canal-content-empty", label));
       return;
     }
 
     float temp = MoltenMetal.GetTemperature(Api.World, content);
     string state = Lang.Get(
-      MoltenMetal.StateOf(Api.World, content) switch
-      {
+      MoltenMetal.StateOf(Api.World, content) switch {
         MoltenState.Liquid => "smex:metalstate-liquid",
         MoltenState.Hardened => "smex:metalstate-hardened",
         _ => "smex:metalstate-cooling",
@@ -612,14 +575,11 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
   public override bool OnTesselation(
     ITerrainMeshPool mesher,
     ITesselatorAPI tesselator
-  )
-  {
+  ) {
     base.OnTesselation(mesher, tesselator);
 
-    if (IsBarrel)
-    {
-      if (_barrelMesh == null)
-      {
+    if (IsBarrel) {
+      if (_barrelMesh == null) {
         Shape? barrelShape = Api.Assets.Get<Shape>(
           new AssetLocation("smex:shapes/molten/barrel.json")
         );
@@ -628,14 +588,11 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
       }
       if (_barrelMesh != null)
         mesher.AddMeshData(_barrelMesh);
-    }
-    else if (IsMold && MoldStack?.Block != null)
-    {
+    } else if (IsMold && MoldStack?.Block != null) {
       if (
         _moldMesh == null
         || !Equals(_tessellatedMoldCode, MoldStack.Block.Code)
-      )
-      {
+      ) {
         tesselator.TesselateBlock(MoldStack.Block, out _moldMesh);
         _tessellatedMoldCode = MoldStack.Block.Code;
         _moldMesh.Translate(0f, MoldMeshRaiseY, 0f);
@@ -647,8 +604,7 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
       mesher.AddMeshData(_moldMesh);
     }
 
-    if (!IsPouring)
-    {
+    if (!IsPouring) {
       if (_tapEndMesh == null && Orientation != null)
         _tapEndMesh = MoltenMeshes.TesselateEndCap(
           Api,
@@ -658,9 +614,7 @@ public class BlockEntityMoltenCanalTap : BlockEntityMoltenCanal
         );
       if (_tapEndMesh != null)
         mesher.AddMeshData(_tapEndMesh);
-    }
-    else
-    {
+    } else {
       _tapEndMesh = null;
     }
 

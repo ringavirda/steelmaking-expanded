@@ -7,15 +7,13 @@ using Xunit;
 namespace SteelmakingExpanded.Tests;
 
 /// <summary>
-/// Regression guard for the RCC mega-block break/mining JSON, which the headless harness can't load
-/// (blocks are configured by hand, not from assets). Reads the shipped block JSON directly and pins:
-/// the Bessemer converter and the boilers must NOT drop themselves (control-spawned / built in place,
-/// not a placeable frame) and must scatter 80% of their construction cost; the craftable engines keep
-/// their frame-recovery self-drop; and the pickaxe tiers (converter + steel Lancashire boiler = iron;
-/// engines + iron Cornish boiler = bronze).
+/// Regression guard for the RCC mega-block break JSON, which the headless harness can't load (blocks
+/// are configured by hand, not from assets). Reads the shipped block JSON directly and pins the two
+/// standing rules: every machine placed from a crafted item hands that item back when broken, and
+/// breaking one recovers all of its construction materials. Only the Bessemer converter withholds a
+/// self-drop, because it is spawned by its control block and no vessel item exists to return.
 /// </summary>
-public class MegablockDropTierTests
-{
+public class MegablockDropTierTests {
   private const string Bessemer =
     "src/SteelmakingExpanded/assets/smex/blocktypes/converter/bessemer.json";
   private const string Watt =
@@ -27,15 +25,19 @@ public class MegablockDropTierTests
   private const string BoilerCornish =
     "src/PipesAndPowerExpanded/assets/ppex/blocktypes/boiler/cornish.json";
 
-  // Pickaxe tooltier in this game version: bronzes = 3, iron = 4, steel = 5.
-  private const int BronzeTier = 3;
-  private const int IronTier = 4;
+  private static readonly string[] AllMegablocks =
+  [
+    Bessemer,
+    Watt,
+    EngineCornish,
+    Lancashire,
+    BoilerCornish,
+  ];
 
   #region Converter (control-spawned: no self-drop)
 
   [Fact]
-  public void Bessemer_converter_does_not_drop_itself_as_a_block()
-  {
+  public void Bessemer_converter_does_not_drop_itself_as_a_block() {
     // An explicit empty "drops" array suppresses the auto-populated self-drop. Without it the
     // registry hands the block its own code as a drop - the reported bug.
     JsonElement block = Block(Bessemer);
@@ -47,56 +49,19 @@ public class MegablockDropTierTests
     Assert.Equal(0, drops.GetArrayLength());
   }
 
-  [Fact]
-  public void Bessemer_converter_salvage_ratio_defaults_to_80_percent()
-  {
-    // The salvage fraction moved off the block JSON to the player-tunable config (smex
-    // RccBrokenDropsRatio); the behaviour reads it live via ExRccSettings, so the JSON no longer
-    // carries brokenDropsRatio and the default lives on the config.
-    Assert.Equal(0.8f, new SmexConfig().RccBrokenDropsRatio, 3);
-    Assert.False(
-      Constructable(Block(Bessemer)).TryGetProperty("brokenDropsRatio", out _),
-      "brokenDropsRatio must no longer live in the block JSON (moved to config)"
-    );
-  }
-
-  [Fact]
-  public void Bessemer_converter_needs_an_iron_tier_pickaxe()
-  {
-    Assert.Equal(IronTier, MiningTier(Block(Bessemer)));
-  }
-
   #endregion
 
-  #region Boilers (built in place: no self-drop)
-
-  [Theory]
-  [InlineData(Lancashire)]
-  [InlineData(BoilerCornish)]
-  public void Boilers_do_not_drop_themselves_as_a_block(string path)
-  {
-    // Like the converter, a boiler is built in place (RightClickConstructable), not placed from a
-    // frame item, so it must declare "drops": [] to suppress the auto-populated self-drop.
-    JsonElement block = Block(path);
-    Assert.True(
-      block.TryGetProperty("drops", out JsonElement drops),
-      $"{path} must declare \"drops\": [] to suppress the self-drop"
-    );
-    Assert.Equal(JsonValueKind.Array, drops.ValueKind);
-    Assert.Equal(0, drops.GetArrayLength());
-  }
-
-  #endregion
-
-  #region Engines (craftable frames: self-drop is correct)
+  #region Crafted frames (self-drop is correct)
 
   [Theory]
   [InlineData(Watt)]
   [InlineData(EngineCornish)]
-  public void Engines_still_drop_their_craftable_frame(string path)
-  {
-    // Engines ARE placeable, craftable frames - breaking one should recover the frame block, so they
-    // must NOT carry the converter/boiler empty-drops override.
+  [InlineData(Lancashire)]
+  [InlineData(BoilerCornish)]
+  public void A_machine_placed_from_a_crafted_item_hands_it_back(string path) {
+    // Engines and boilers are placed from a crafted frame item, so breaking one must return that
+    // item on top of the construction materials. Withholding it made taking a machine down to move
+    // it a net loss - the converter is the only machine with no item to return.
     JsonElement block = Block(path);
     bool suppressesSelfDrop =
       block.TryGetProperty("drops", out JsonElement drops)
@@ -120,8 +85,7 @@ public class MegablockDropTierTests
   // it again. (The 1.22 drop code is vanilla-backed and the legacy reimpl is excluded from this target,
   // so the totals are asserted off the shipped JSON.)
   [Fact]
-  public void Lancashire_boiler_full_construction_cost_is_pinned()
-  {
+  public void Lancashire_boiler_full_construction_cost_is_pinned() {
     Dictionary<string, int> cost = ConstructionCost(Block(Lancashire));
 
     Assert.Equal(34, cost["metalplate-steel"]); // 10 + 8 + 16
@@ -131,19 +95,16 @@ public class MegablockDropTierTests
   }
 
   // Sums every stage's requireStacks quantity by ingredient code (the full build cost).
-  private static Dictionary<string, int> ConstructionCost(JsonElement block)
-  {
+  private static Dictionary<string, int> ConstructionCost(JsonElement block) {
     var totals = new Dictionary<string, int>();
     foreach (
       JsonElement stage in Constructable(block)
         .GetProperty("stages")
         .EnumerateArray()
-    )
-    {
+    ) {
       if (!stage.TryGetProperty("requireStacks", out JsonElement stacks))
         continue;
-      foreach (JsonElement ing in stacks.EnumerateArray())
-      {
+      foreach (JsonElement ing in stacks.EnumerateArray()) {
         string code = ing.GetProperty("code").GetString()!;
         totals[code] =
           totals.GetValueOrDefault(code)
@@ -155,66 +116,59 @@ public class MegablockDropTierTests
 
   #endregion
 
-  #region Engines + boilers (shared: mining tier, 80% salvage)
+  #region Salvage and mining (shared rules)
 
-  // Bronze tier: both engines and the iron Cornish boiler. The steel Lancashire boiler is welded steel
-  // like the converter, so it takes an iron pickaxe - pinned separately.
-  [Theory]
-  [InlineData(Watt)]
-  [InlineData(EngineCornish)]
-  [InlineData(BoilerCornish)]
-  public void Engines_and_the_cornish_boiler_need_a_bronze_tier_pickaxe(
-    string path
-  )
-  {
-    Assert.Equal(BronzeTier, MiningTier(Block(path)));
-  }
-
+  // Breaking a machine intact returns everything it cost. The salvage tax only discouraged
+  // rebuilding a plant, which is a normal part of laying one out; a burst boiler is still penalised,
+  // through BoilerExplosionDropRatio.
   [Fact]
-  public void Lancashire_boiler_needs_an_iron_tier_pickaxe()
-  {
-    Assert.Equal(IronTier, MiningTier(Block(Lancashire)));
-  }
-
-  [Fact]
-  public void Engine_and_boiler_salvage_ratio_defaults_to_80_percent()
-  {
-    // The salvage fraction moved off the block JSON to the player-tunable config (ppex
-    // RccBrokenDropsRatio), shared by every ppex engine/boiler and read live via ExRccSettings.
+  public void Breaking_a_machine_intact_recovers_all_of_its_materials() {
+    Assert.Equal(1.0f, new SmexConfig().RccBrokenDropsRatio, 3);
     Assert.Equal(
-      0.8f,
+      1.0f,
       new PipesAndPowerExpanded.PpexConfig().RccBrokenDropsRatio,
       3
     );
   }
 
+  // No machine gates breaking on a pickaxe tier. The tiers only ever delayed a player who would
+  // have the metal to build the machine in the first place.
   [Theory]
-  [InlineData(Watt)]
-  [InlineData(EngineCornish)]
-  [InlineData(Lancashire)]
-  [InlineData(BoilerCornish)]
-  public void Engines_and_boilers_no_longer_carry_a_json_drop_ratio(string path)
-  {
+  [MemberData(nameof(EveryMegablock))]
+  public void No_machine_demands_a_mining_tier(string path) {
+    Assert.False(
+      Block(path).TryGetProperty("requiredMiningTier", out _),
+      $"{path} must not gate breaking on a pickaxe tier"
+    );
+  }
+
+  [Theory]
+  [MemberData(nameof(EveryMegablock))]
+  public void No_machine_carries_a_json_drop_ratio(string path) {
+    // The salvage fraction lives on the player-tunable config (RccBrokenDropsRatio), read live via
+    // ExRccSettings, so it must not be pinned per block in JSON.
     Assert.False(
       Constructable(Block(path)).TryGetProperty("brokenDropsRatio", out _),
-      $"{path} brokenDropsRatio must move to config (ppex RccBrokenDropsRatio)"
+      $"{path} brokenDropsRatio must live in config, not the block JSON"
     );
+  }
+
+  public static TheoryData<string> EveryMegablock() {
+    var data = new TheoryData<string>();
+    foreach (string path in AllMegablocks)
+      data.Add(path);
+    return data;
   }
 
   #endregion
 
   #region Asset loading
 
-  private static int MiningTier(JsonElement block) =>
-    block.GetProperty("requiredMiningTier").GetInt32();
-
   // The ExRightClickConstructable entity behavior's properties node (holds brokenDropsRatio + stages).
-  private static JsonElement Constructable(JsonElement block)
-  {
+  private static JsonElement Constructable(JsonElement block) {
     foreach (
       JsonElement b in block.GetProperty("entityBehaviors").EnumerateArray()
-    )
-    {
+    ) {
       if (
         b.TryGetProperty("name", out JsonElement name)
         && name.GetString() == "ExRightClickConstructable"
@@ -226,8 +180,7 @@ public class MegablockDropTierTests
     );
   }
 
-  private static JsonElement Block(string repoRelativePath)
-  {
+  private static JsonElement Block(string repoRelativePath) {
     string full = Path.Combine(
       RepoRoot(),
       repoRelativePath.Replace('/', Path.DirectorySeparatorChar)
@@ -235,8 +188,7 @@ public class MegablockDropTierTests
     Assert.True(File.Exists(full), $"missing asset: {full}");
     using var doc = JsonDocument.Parse(
       File.ReadAllText(full),
-      new JsonDocumentOptions
-      {
+      new JsonDocumentOptions {
         CommentHandling = JsonCommentHandling.Skip,
         AllowTrailingCommas = true,
       }
@@ -244,8 +196,7 @@ public class MegablockDropTierTests
     return doc.RootElement.Clone();
   }
 
-  private static string RepoRoot()
-  {
+  private static string RepoRoot() {
     DirectoryInfo? dir = new(AppContext.BaseDirectory);
     while (
       dir != null

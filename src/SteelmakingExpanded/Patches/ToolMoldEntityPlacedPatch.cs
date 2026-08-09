@@ -21,10 +21,8 @@ namespace SteelmakingExpanded.Patches;
 /// instance type.
 /// </summary>
 [HarmonyPatch(typeof(BlockEntity), nameof(BlockEntity.OnBlockPlaced))]
-public static class ToolMoldEntityPlacedPatch
-{
-  public static void Postfix(BlockEntity __instance, ItemStack? byItemStack)
-  {
+public static class ToolMoldEntityPlacedPatch {
+  public static void Postfix(BlockEntity __instance, ItemStack? byItemStack) {
     if (__instance is not BlockEntityToolMold be)
       return;
 

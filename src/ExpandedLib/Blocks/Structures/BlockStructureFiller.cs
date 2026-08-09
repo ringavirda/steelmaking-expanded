@@ -4,6 +4,7 @@ using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
+using Vintagestory.GameContent.Mechanics;
 
 namespace ExpandedLib.Blocks.Structures;
 
@@ -16,8 +17,10 @@ namespace ExpandedLib.Blocks.Structures;
 /// <c>BlockMPMultiblockGear</c>.
 /// </summary>
 [BlockRegister]
-public partial class BlockStructureFiller : Block, INetworkConnector
-{
+public partial class BlockStructureFiller
+  : Block,
+    INetworkConnector,
+    IMechanicalPowerBlock {
   // INetworkConnector: a plain filler is inert (type ""), but a principal can turn one cell into
   // a fixed port by setting PortFace/PortNetworkType on its BE (e.g. the boiler's steam outlet).
   // The position-less members are the inert fallback; the network system uses the position-aware
@@ -39,6 +42,51 @@ public partial class BlockStructureFiller : Block, INetworkConnector
     world.GetBlockEntity(pos) is BlockEntityStructureFiller be
     && be.PortFace == face.Code[0].ToString();
 
+  // IMechanicalPowerBlock: a footprint cell becomes a mechanical-power intake when its
+  // fillerOffsets entry hosts an MP behaviour (e.g. exlib.BEBehaviorMPFillerPort) with a connector
+  // face. The vanilla MP network discovers power by asking the block at each cell whether it
+  // accepts an axle on a given face.
+  public bool HasMechPowerConnectorAt(
+    IWorldAccessor world,
+    BlockPos pos,
+    BlockFacing face
+#if GAME_GE_1_22
+    ,
+    BlockMPBase forBlock
+#endif
+  ) {
+    if (
+      world.BlockAccessor.GetBlockEntity(pos)
+        is not BlockEntityStructureFiller be
+      || be.GetBehavior<BEBehaviorMPBase>() == null
+      || be.HostedBehaviors == null
+    )
+      return false;
+    // A mechanical axle couples along an axis, so a port declared on one face accepts a connection
+    // on that face or its opposite (both ends of the axle line), letting an axle run straight
+    // through the cell and attach from either side.
+    foreach (FillerBehavior b in be.HostedBehaviors)
+      if (
+        b.ConnectorFace != null
+        && (b.ConnectorFace == face || b.ConnectorFace.Opposite == face)
+      )
+        return true;
+    return false;
+  }
+
+  public void DidConnectAt(
+    IWorldAccessor world,
+    BlockPos pos,
+    BlockFacing face
+  ) { }
+
+  /// <summary>The MP network of the hosted port behaviour at this cell, or null when it hosts none.</summary>
+  public MechanicalNetwork? GetNetwork(IWorldAccessor world, BlockPos pos) =>
+    world
+      .BlockAccessor.GetBlockEntity(pos)
+      ?.GetBehavior<BEBehaviorMPBase>()
+      ?.Network;
+
   // Fillers are solid so they collide, but by default aren't an attachment surface (else
   // torches/vines/slabs could hang on the invisible footprint). A cell opts back in via its
   // fillerOffsets "allowAttach" flag.
@@ -48,8 +96,7 @@ public partial class BlockStructureFiller : Block, INetworkConnector
     BlockPos pos,
     BlockFacing blockFace,
     Cuboidi? attachmentArea = null
-  )
-  {
+  ) {
     if (
       blockAccessor.GetBlockEntity(pos) is BlockEntityStructureFiller be
       && be.AllowAttach
@@ -72,15 +119,13 @@ public partial class BlockStructureFiller : Block, INetworkConnector
     IBlockAccessor blockAccessor,
     BlockSelection blockSel,
     ItemStack? stack = null
-  )
-  {
+  ) {
     if (
       blockSel?.Position != null
       && blockAccessor.GetBlockEntity(blockSel.Position)
         is BlockEntityStructureFiller be
       && be.Principal != null
-    )
-    {
+    ) {
       Block principal = blockAccessor.GetBlock(be.Principal);
       if (principal.Id != 0 && principal != this)
         return principal.GetSounds(blockAccessor, blockSel, stack);
@@ -94,8 +139,7 @@ public partial class BlockStructureFiller : Block, INetworkConnector
     BlockPos pos,
     out BlockPos principalPos,
     out Block principalBlock
-  )
-  {
+  ) {
     principalPos = null!;
     principalBlock = null!;
     if (
@@ -113,8 +157,7 @@ public partial class BlockStructureFiller : Block, INetworkConnector
   private static BlockSelection Repoint(
     BlockSelection sel,
     BlockPos principalPos
-  )
-  {
+  ) {
     BlockSelection clone = sel.Clone();
     clone.Position = principalPos;
     return clone;
@@ -124,8 +167,7 @@ public partial class BlockStructureFiller : Block, INetworkConnector
     IWorldAccessor world,
     IPlayer byPlayer,
     BlockSelection blockSel
-  )
-  {
+  ) {
     // A held placeable block means the player is building on the footprint, not driving the
     // principal - skip the forward. Liquid containers are the exception: the principal (e.g. a
     // boiler pouring from a bucket) still needs to see them, so those forward.
@@ -138,8 +180,7 @@ public partial class BlockStructureFiller : Block, INetworkConnector
     if (
       !placingBlock
       && TryGetPrincipal(world, blockSel.Position, out var pp, out var pb)
-    )
-    {
+    ) {
       BlockSelection psel = Repoint(blockSel, pp);
       bool handled = pb is IFillerInteractionTarget target
         ? target.OnFillerInteractStart(world, byPlayer, psel, blockSel.Position)
@@ -169,8 +210,7 @@ public partial class BlockStructureFiller : Block, INetworkConnector
     IWorldAccessor world,
     IPlayer byPlayer,
     BlockSelection blockSel
-  )
-  {
+  ) {
     if (!TryGetPrincipal(world, blockSel.Position, out var pp, out var pb))
       return base.OnBlockInteractStep(secondsUsed, world, byPlayer, blockSel);
     BlockSelection psel = Repoint(blockSel, pp);
@@ -190,10 +230,8 @@ public partial class BlockStructureFiller : Block, INetworkConnector
     IWorldAccessor world,
     IPlayer byPlayer,
     BlockSelection blockSel
-  )
-  {
-    if (!TryGetPrincipal(world, blockSel.Position, out var pp, out var pb))
-    {
+  ) {
+    if (!TryGetPrincipal(world, blockSel.Position, out var pp, out var pb)) {
       base.OnBlockInteractStop(secondsUsed, world, byPlayer, blockSel);
       return;
     }
@@ -217,8 +255,7 @@ public partial class BlockStructureFiller : Block, INetworkConnector
     float remainingResistance,
     float dt,
     int counter
-  )
-  {
+  ) {
     IWorldAccessor world = player?.Entity?.World ?? api.World;
     if (!TryGetPrincipal(world, blockSel.Position, out var pp, out var pb))
       return base.OnGettingBroken(
@@ -244,12 +281,10 @@ public partial class BlockStructureFiller : Block, INetworkConnector
     BlockPos pos,
     IPlayer byPlayer,
     float dropQuantityMultiplier = 1f
-  )
-  {
+  ) {
     // Breaking any filler breaks the whole structure: the principal's OnBlockBroken clears every
     // filler cell via StructureFillers.RemoveFillers. Orphaned fillers fall back to a plain remove.
-    if (!TryGetPrincipal(world, pos, out var pp, out var pb))
-    {
+    if (!TryGetPrincipal(world, pos, out var pp, out var pb)) {
       base.OnBlockBroken(world, pos, byPlayer, dropQuantityMultiplier);
       return;
     }
@@ -260,8 +295,7 @@ public partial class BlockStructureFiller : Block, INetworkConnector
       world.BlockAccessor.SetBlock(0, pos);
   }
 
-  public override ItemStack OnPickBlock(IWorldAccessor world, BlockPos pos)
-  {
+  public override ItemStack OnPickBlock(IWorldAccessor world, BlockPos pos) {
     if (!TryGetPrincipal(world, pos, out var pp, out var pb))
       return base.OnPickBlock(world, pos);
     return pb.OnPickBlock(world, pp);
@@ -281,8 +315,7 @@ public partial class BlockStructureFiller : Block, INetworkConnector
     IWorldAccessor world,
     BlockPos pos,
     IPlayer forPlayer
-  )
-  {
+  ) {
     if (!TryGetPrincipal(world, pos, out var pp, out var pb))
       return base.GetPlacedBlockInfo(world, pos, forPlayer);
     return pb.GetPlacedBlockInfo(world, pp, forPlayer);
@@ -292,8 +325,7 @@ public partial class BlockStructureFiller : Block, INetworkConnector
     IWorldAccessor world,
     BlockSelection selection,
     IPlayer forPlayer
-  )
-  {
+  ) {
     if (!TryGetPrincipal(world, selection.Position, out var pp, out var pb))
       return base.GetPlacedBlockInteractionHelp(world, selection, forPlayer);
     BlockSelection psel = Repoint(selection, pp);

@@ -69,7 +69,7 @@
       "drop": { "type": "item", "code": "game:ingot-{metal}", "quantity": 2 }
     },
     "toolmold-*-fired-quadrod": {
-      "requiredUnits": 200,
+      "requiredUnits": 400,
       "fillHeight": 1,
       "moldrackable": true,
       "onmoldrackTransform": { "rotation": { "z": 90 } },

@@ -9,8 +9,7 @@ namespace ExpandedLib.Blocks.Migrations;
 /// is a plain block-id replace; with it, the old BE's serialized tree is read before the swap and
 /// handed to <see cref="MigrateBlockEntity"/> to copy or reshape onto the new BE.
 /// </summary>
-public interface IBlockEntityMigration
-{
+public interface IBlockEntityMigration {
   /// <summary>
   /// Called immediately after the new block is placed, for each migrated position.
   /// </summary>

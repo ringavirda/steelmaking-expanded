@@ -19,8 +19,7 @@ namespace PipesAndPowerExpanded;
   LegacyFileNames = new string[] { "ppex.json" },
   Manageable = true
 )]
-public class PpexConfig : IExVersionedConfig
-{
+public class PpexConfig : IExVersionedConfig {
   /// <summary>Mod version that last wrote this file; drives the <see cref="Migrations"/> resets.
   /// Managed by <see cref="ExConfigRegister{TConfig}"/> - do not set by hand.</summary>
   public string? ConfigVersion { get; set; }
@@ -44,6 +43,13 @@ public class PpexConfig : IExVersionedConfig
     {
       ToVersion = "0.6.5",
       ResetFields = [nameof(MpLoadPerEnginePower)],
+    },
+    // 0.6.6: mining a machine intact now returns all of its construction materials (0.8 -> 1.0);
+    // the salvage tax only discouraged rebuilding a plant. Bursting one is still penalised.
+    new()
+    {
+      ToVersion = "0.6.6",
+      ResetFields = [nameof(RccBrokenDropsRatio)],
     },
   ];
 
@@ -150,9 +156,12 @@ public class PpexConfig : IExVersionedConfig
   public float BoilerExplosionDropRatio { get; set; } = 0.4f;
 
   /// <summary>Fraction (0..1) of an engine/boiler's construction materials recovered when it is mined
-  /// intact - the right-click-construction salvage ratio. Player-tunable; applied live on the next break.</summary>
+  /// intact - the right-click-construction salvage ratio. Full recovery by default: taking a machine
+  /// down to move it is a normal part of laying out a plant, and a tax on that only discourages
+  /// rebuilding. Bursting one is still penalised, through <see cref="BoilerExplosionDropRatio"/>.
+  /// Player-tunable; applied live on the next break.</summary>
   [ExConfigRange(0, 1)]
-  public float RccBrokenDropsRatio { get; set; } = 0.8f;
+  public float RccBrokenDropsRatio { get; set; } = 1.0f;
 
   /// <summary>Internal steam (L/s) an open lid vents to atmosphere.</summary>
   public float BoilerLidVentRate { get; set; } = 200f;
@@ -276,6 +285,21 @@ public class PpexConfig : IExVersionedConfig
   /// <summary>Water (L/s) the manual (hand-cranked) fluid pump transfers from its intake line to
   /// its output line at a fixed 1 atm - a manual boiler-startup feed, slower than the engine pump.</summary>
   public float ManualPumpWaterPerSecond { get; set; } = 2f;
+
+  /// <summary>Water (L/s) the mechanical fluid pump moves at or above <see cref="MpPumpMaxSpeed"/>.
+  /// Between the hand crank and the engine pump: it runs off a line shaft, so it can fill a boiler
+  /// that has no engine of its own yet.</summary>
+  public float MpPumpWaterPerSecond { get; set; } = 8f;
+
+  /// <summary>Delivery head (atm) the mechanical fluid pump commands, independent of axle speed -
+  /// the walking beam lifts the same column however fast it runs.</summary>
+  public float MpPumpDeliveryPressure { get; set; } = 1.5f;
+
+  /// <summary>Axle speed at or below which the mechanical fluid pump moves nothing.</summary>
+  public float MpPumpMinSpeed { get; set; } = 0.5f;
+
+  /// <summary>Axle speed at or above which the mechanical fluid pump moves its full rate.</summary>
+  public float MpPumpMaxSpeed { get; set; } = 1.5f;
 
   /// <summary>A fluid intake only draws water when the whole cube of this depth directly below it is water.</summary>
   public int FluidIntakeWaterDepth { get; set; } = 3;

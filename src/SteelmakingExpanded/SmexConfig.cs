@@ -16,8 +16,7 @@ namespace SteelmakingExpanded;
   LegacyFileNames = new string[] { "smex.json" },
   Manageable = true
 )]
-public class SmexConfig : IExVersionedConfig
-{
+public class SmexConfig : IExVersionedConfig {
   /// <summary>Mod version that last wrote this file; drives the <see cref="Migrations"/> resets.
   /// Managed by <see cref="ExConfigRegister{TConfig}"/> - do not set by hand.</summary>
   public string? ConfigVersion { get; set; }
@@ -69,6 +68,13 @@ public class SmexConfig : IExVersionedConfig
         nameof(HopperCokeRequired),
         nameof(BfExhaustOutputPressure),
       ],
+    },
+    // 0.9.6: breaking the converter now returns all of its construction materials (0.8 -> 1.0);
+    // the salvage tax only discouraged rebuilding a plant.
+    new()
+    {
+      ToVersion = "0.9.6",
+      ResetFields = [nameof(RccBrokenDropsRatio)],
     },
   ];
 
@@ -134,13 +140,37 @@ public class SmexConfig : IExVersionedConfig
   #endregion
 
   #region Air blower / blast
-  /// <summary>Pressure (atm) at or above which air in a pipe network counts as "blast".</summary>
+  /// <summary>
+  /// Pressure (atm) at or above which air counts as blast for the Bessemer converter. Only a steam
+  /// blower reaches it: it sits above <see cref="MpBlowerMaxPressure"/>, so a mechanically blown
+  /// shop can make iron but not steel.
+  /// </summary>
   public float BlastPressureThreshold { get; set; } = 2.5f;
 
   /// <summary>Air (L/s) the blower injects per unit of engine power (Cornish 0.2/0.4/0.8 →
   /// 9.6/19.2/38.4 L/s, Watt 0.3 → 14.4 L/s); output pressure tracks the engine's inlet steam ×
   /// <see cref="PipesAndPowerExpanded.PpexValues.SteamEngineEfficiency"/>.</summary>
   public float AirBlowerOutputPerSecond { get; set; } = 48f;
+  #endregion
+
+  #region Mechanical blower
+  /// <summary>Air (L/s) the twin-tub blower delivers at or above <see cref="MpBlowerMaxSpeed"/>.
+  /// A vanilla waterwheel turns at roughly speed 1, that is half rated output, which still covers
+  /// the two tuyeres of one blast furnace.</summary>
+  public float MpBlowerOutputPerSecond { get; set; } = 60f;
+
+  /// <summary>
+  /// Pressure ceiling (atm) the twin-tub blower raises its run to. Above
+  /// <see cref="BfBlastPressureThreshold"/> so bellows run a blast furnace, below
+  /// <see cref="BlastPressureThreshold"/> so they can never blow the converter.
+  /// </summary>
+  public float MpBlowerMaxPressure { get; set; } = 2.0f;
+
+  /// <summary>Axle speed at or below which the bellows deliver nothing.</summary>
+  public float MpBlowerMinSpeed { get; set; } = 0.5f;
+
+  /// <summary>Axle speed at or above which the bellows deliver full output.</summary>
+  public float MpBlowerMaxSpeed { get; set; } = 1.5f;
   #endregion
 
   #region Player safety
@@ -219,6 +249,13 @@ public class SmexConfig : IExVersionedConfig
 
   /// <summary>Air/blast (L/s) the blast furnace draws through each tuyere.</summary>
   public float TuyereIntakeVolume { get; set; } = 12f;
+
+  /// <summary>
+  /// Pressure (atm) the air at a tuyere must reach before it counts as blast and the furnace will
+  /// fire. Separate from the converter's <see cref="BlastPressureThreshold"/>: iron is gated low
+  /// enough for a mechanical blower to reach, steel is not.
+  /// </summary>
+  public float BfBlastPressureThreshold { get; set; } = 1.5f;
   #endregion
 
   #region Bessemer converter
@@ -249,8 +286,11 @@ public class SmexConfig : IExVersionedConfig
   public float BessemerChiselMaxFraction { get; set; } = 0.2f;
 
   /// <summary>Fraction (0..1) of the converter's construction materials recovered when its vessel is
-  /// broken - the right-click-construction salvage ratio. Player-tunable; applied live on the next break.</summary>
-  public float RccBrokenDropsRatio { get; set; } = 0.8f;
+  /// broken - the right-click-construction salvage ratio. Full recovery by default: taking a machine
+  /// down to move it is a normal part of laying out a plant, and a tax on that only discourages
+  /// rebuilding. Player-tunable; applied live on the next break.</summary>
+  [ExConfigRange(0, 1)]
+  public float RccBrokenDropsRatio { get; set; } = 1.0f;
   #endregion
 
   #region Hopper bell (blast-mix maker)
@@ -263,6 +303,13 @@ public class SmexConfig : IExVersionedConfig
   /// <summary>Coke consumed per blast-mix batch. Whole coke: the furnace no longer takes the
   /// crushed intermediate, and 3 crushed coke was 1.5 coke at the old 1:2 crush ratio.</summary>
   public int HopperCokeRequired { get; set; } = 2;
+
+  /// <summary>
+  /// Charcoal consumed per blast-mix batch when the hopper is fed charcoal instead of coke.
+  /// Charcoal carries roughly half the carbon of coke, so it takes twice as many pieces; the two
+  /// fuels mix freely within one batch at that exchange rate.
+  /// </summary>
+  public int HopperCharcoalRequired { get; set; } = 4;
 
   /// <summary>Lime consumed per blast-mix batch.</summary>
   public int HopperLimeRequired { get; set; } = 1;

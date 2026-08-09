@@ -16,8 +16,7 @@ namespace SteelmakingExpanded.BlockStructures.BlastFurnace.BlockEntities;
 /// hand down into the canal start beneath it.
 /// </summary>
 [BlockEntityRegister]
-public class BlockEntityBlastFurnaceTap : BlockEntity
-{
+public class BlockEntityBlastFurnaceTap : BlockEntity {
   /// <summary>Whether the tap is currently open and pouring.</summary>
   public bool IsPouring { get; private set; } = false;
 
@@ -26,20 +25,17 @@ public class BlockEntityBlastFurnaceTap : BlockEntity
 
   #region Lifecycle
 
-  public override void Initialize(ICoreAPI api)
-  {
+  public override void Initialize(ICoreAPI api) {
     base.Initialize(api);
     _animatable = GetBehavior<BEBehaviorAnimatable>();
 
-    if (api is ICoreClientAPI capi && _animatable != null)
-    {
+    if (api is ICoreClientAPI capi && _animatable != null) {
       InitAnimator(capi);
       ApplyPourPose();
     }
   }
 
-  private void InitAnimator(ICoreClientAPI capi)
-  {
+  private void InitAnimator(ICoreClientAPI capi) {
     Shape? shape = capi
       .Assets.TryGet(
         Block
@@ -61,21 +57,18 @@ public class BlockEntityBlastFurnaceTap : BlockEntity
   }
 
   /// <summary>Toggles the tap open/closed and updates its pour pose.</summary>
-  public void TogglePouring()
-  {
+  public void TogglePouring() {
     IsPouring = !IsPouring;
     MarkDirty(true);
   }
 
-  private void ApplyPourPose()
-  {
+  private void ApplyPourPose() {
     if (Api is not ICoreClientAPI || _animatable == null || !_animatorReady)
       return;
 
     if (IsPouring)
       _animatable.animUtil.StartAnimation(
-        new AnimationMetaData
-        {
+        new AnimationMetaData {
           Animation = "open",
           Code = "open",
           AnimationSpeed = 1.5f,
@@ -91,8 +84,7 @@ public class BlockEntityBlastFurnaceTap : BlockEntity
 
   #region Serialization
 
-  public override void ToTreeAttributes(ITreeAttribute tree)
-  {
+  public override void ToTreeAttributes(ITreeAttribute tree) {
     base.ToTreeAttributes(tree);
     tree.SetBool("isPouring", IsPouring);
   }
@@ -100,8 +92,7 @@ public class BlockEntityBlastFurnaceTap : BlockEntity
   public override void FromTreeAttributes(
     ITreeAttribute tree,
     IWorldAccessor worldForResolving
-  )
-  {
+  ) {
     base.FromTreeAttributes(tree, worldForResolving);
     bool prev = IsPouring;
     IsPouring = tree.GetBool("isPouring");
@@ -113,8 +104,7 @@ public class BlockEntityBlastFurnaceTap : BlockEntity
 
   #region HUD
 
-  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
-  {
+  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc) {
     base.GetBlockInfo(forPlayer, dsc);
     dsc.AppendLine(
       Lang.Get(
@@ -132,8 +122,7 @@ public class BlockEntityBlastFurnaceTap : BlockEntity
   /// Pushes <paramref name="moltenMetal"/> into the canal start beneath the spout.
   /// Returns the amount the canal actually consumed (0 if not pouring or nothing was transferred).
   /// </summary>
-  public int TryPourMetal(ItemStack moltenMetal, float temperature)
-  {
+  public int TryPourMetal(ItemStack moltenMetal, float temperature) {
     if (!IsPouring || moltenMetal == null)
       return 0;
 

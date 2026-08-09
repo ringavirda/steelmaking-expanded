@@ -8,8 +8,7 @@ namespace SteelmakingExpanded.BlockNetworkMolten.Blocks;
 /// Classifies tool molds by where they can be cast: small molds sit on the
 /// mold pedestal, large molds (anvil, helve hammer) are cast in the canal tap.
 /// </summary>
-public static class MoldKinds
-{
+public static class MoldKinds {
   /// <summary>Tool-mold types too large for the pedestal; cast in the canal tap instead.</summary>
   public static readonly HashSet<string> LargeToolTypes =
   [

@@ -1,0 +1,139 @@
+{
+  "code": "mpfluidpump",
+  "class": "ppex.BlockMpFluidPump",
+  "entityClass": "ppex.BlockEntityMpFluidPump",
+  "blockmaterial": "Metal",
+  "sounds": {
+    "place": "game:block/planks",
+    "break": "game:block/planks",
+    "hit": "game:block/planks",
+    "walk": "game:walk/wood"
+  },
+  "resistance": 12.0,
+  "maxstacksize": 1,
+  "behaviors": [
+    { "name": "HorizontalOrientable" },
+    { "name": "BlockEntityInteract" }
+  ],
+  "entityBehaviors": [
+    { "name": "Animatable" },
+    { "name": "ppex.BEBehaviorMpPumpDrive" },
+    {
+      "name": "ExRightClickConstructable",
+      "properties": {
+        "stages": [
+          {
+            "addElements": ["Root/Base", "Root/BaseExtension"]
+          },
+          {
+            "requireStacks": [
+              { "type": "item", "code": "game:plank-*", "quantity": 4 },
+              { "type": "block", "code": "game:woodenaxle-ud", "quantity": 1 },
+              {
+                "type": "item",
+                "code": "rod-*",
+                "name": "ppex:rcc-ingredient-rod",
+                "allowedVariants": ["iron", "steel"],
+                "storeWildCard": "metal",
+                "quantity": 2
+              }
+            ],
+            "addElements": ["Root/GearAxle"]
+          },
+          {
+            "requireStacks": [
+              {
+                "type": "item",
+                "code": "metalplate-*",
+                "name": "ppex:rcc-ingredient-metalplate",
+                "allowedVariants": ["iron", "steel"],
+                "storeWildCard": "metal",
+                "quantity": 1
+              },
+              {
+                "type": "item",
+                "code": "rod-*",
+                "name": "ppex:rcc-ingredient-rod",
+                "allowedVariants": ["iron", "steel"],
+                "storeWildCard": "metal",
+                "quantity": 2
+              }
+            ],
+            "addElements": ["Root/Piston"]
+          },
+          {
+            "requireStacks": [
+              {
+                "type": "block",
+                "code": "ppex:pipe-straight-*",
+                "quantity": 2
+              },
+              {
+                "type": "item",
+                "code": "metalplate-*",
+                "name": "ppex:rcc-ingredient-metalplate",
+                "allowedVariants": ["iron", "steel"],
+                "storeWildCard": "metal",
+                "quantity": 2
+              },
+              {
+                "type": "item",
+                "code": "metalnailsandstrips-*",
+                "name": "ppex:rcc-ingredient-nailsandstrips",
+                "allowedVariants": ["iron", "steel"],
+                "storeWildCard": "metal",
+                "quantity": 2
+              }
+            ],
+            "addElements": ["Root/BasePipe"]
+          },
+          {
+            "requireStacks": [
+              {
+                "type": "item",
+                "code": "metalplate-*",
+                "name": "ppex:rcc-ingredient-metalplate",
+                "allowedVariants": ["iron", "steel"],
+                "storeWildCard": "metal",
+                "quantity": 4
+              },
+              {
+                "type": "item",
+                "code": "metalnailsandstrips-*",
+                "name": "ppex:rcc-ingredient-nailsandstrips",
+                "allowedVariants": ["iron", "steel"],
+                "storeWildCard": "metal",
+                "quantity": 4
+              }
+            ],
+            "addElements": ["Root/ReservoirConn"]
+          }
+        ]
+      }
+    }
+  ],
+  "variantgroups": [
+    { "code": "side", "loadFromProperties": "abstract/horizontalorientation" }
+  ],
+  "creativeinventory": {
+    "general": ["*-north"],
+    "ppex": ["*-north"]
+  },
+  "attributes": {
+    "sourceOffset": { "x": 0, "y": 0, "z": 2 },
+    "outletOffset": { "x": 0, "y": 1, "z": 2 },
+    "fillerOffsets": [
+      { "x": 0, "y": 0, "z": 1 },
+      { "x": 0, "y": 0, "z": 2 },
+      { "x": 0, "y": 1, "z": 2 }
+    ]
+  },
+  "shapebytype": {
+    "*-north": { "base": "ppex:mpfluidpump", "rotateY": 180 },
+    "*-east": { "base": "ppex:mpfluidpump", "rotateY": 90 },
+    "*-south": { "base": "ppex:mpfluidpump", "rotateY": 0 },
+    "*-west": { "base": "ppex:mpfluidpump", "rotateY": 270 }
+  },
+  "sidesolid": { "all": false },
+  "sideopaque": { "all": false }
+}
