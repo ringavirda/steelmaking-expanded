@@ -691,3 +691,5 @@ fabric.properties
 
 /docs/plans/
 /scripts/
+# draw.io writes a .$-prefixed lock/backup beside the diagram it has open.
+.$*.drawio.bkp

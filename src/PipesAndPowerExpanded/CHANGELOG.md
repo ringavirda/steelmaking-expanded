@@ -20,6 +20,31 @@ see the git history.
 - Engine sub-machines showed nothing when looked at. The water pump now reports its flow and delivery
   pressure - and says so when it has no intake on the source line - and the mechanical generator
   reports shaft speed against the engine's rating, including when the shaft is labouring.
+- **A water wheel drove its whole network at the wrong speed after a world reload**, until you broke
+  and replaced any axle. This is a bug in the game's own water wheel: its periodic water check
+  overwrites the wheel's gearing with a fixed value, and the check always fires once on load. A
+  network is only ever as fast as its gearing says, so every machine on the shaft ran wrong with it -
+  a geared blower fed a blast furnace a fraction of the air it should have, and the furnace went out.
+  Patched here, since nothing downstream can work around it.
+- **Steam engines sprayed water at the outlet even with a pipe connected.** A condensate line that is
+  full - which is what a closed water loop always is - reads the same as no line at all to the code
+  that decided this. Only an outlet with nothing plumbed onto it, or one plumbed into a line carrying
+  gas, sprays now; a line that is merely backed up takes what it can and the rest is lost quietly.
+- **The mechanical fluid pump read the raw network speed**, ignoring its own gear ratio. A network's
+  speed is held in the frame of whichever machine started it, so a geared pump's stroke rate changed
+  between one world load and the next.
+- **The Engines article recommended a build that bursts the engine.** It said a single Cornish
+  boiler can safely power a Watt engine; the boiler holds up to 5 atm and the Watt wears toward a
+  burst above 4. The article now sends you to a pressure valve between the two.
+- **A temperature difference was converted like a temperature.** The imperial conversion added the
+  freezing-point offset to a delta, so any figure that is a number of degrees gained or lost - the
+  converter's scrap heat cost - read 32 °F too high. Absolute temperatures were always right.
+- The Fluid Intake link in the starter walkthrough went to an empty handbook search in English.
+- **A pipe carrying its whole load reported "Empty"** (player-reported, of blast furnace tuyeres). A
+  run drained as fast as it is fed holds nothing, and its medium label clears with the last litre -
+  and the throughput line was shown only when that label was set, so the pipes working hardest were
+  the ones that looked dead. Throughput is now reported whenever gas is moving, named when the run
+  still knows what it carries.
 
 ## [0.6.6] - 2026-08-09
 

@@ -51,6 +51,14 @@ public class BlockEntityBlastFurnace : BlockEntityMultiblockStructure {
   private float _airDrawn = 0f;
   private float _airRequested = 0f;
   private float _blastPressure = 0f;
+
+  /// <summary>
+  /// Flue gas the furnace actually put into its outlets last tick, in litres per second - zero when
+  /// it has none, which is why this is not simply the total it produced. Nothing in game reads it;
+  /// it exists so the exhaust invariant can be asserted, namely that one smoke stack clears one
+  /// furnace at its melt ceiling. The figure the furnace produced was once pushed into every outlet
+  /// rather than shared between them, which no correctly sized stack could keep up with.
+  /// </summary>
   private float _exhaustVented = 0f;
 
   /// <summary>Base yaw (radians) of the furnace door, used to orient the multiblock structure.</summary>

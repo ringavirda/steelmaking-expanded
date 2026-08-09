@@ -64,6 +64,21 @@ pull in.
   stacks are converted on world load.
 - Cowper stoves cool when idle and drain faster under a heavy blast, so alternating two of them is a
   real decision rather than a formality.
+- **Cold scrap costs the converter's bath its heat, and blast pressure buys it back.** There is no
+  fixed scrap limit: scrap is cold mass on the heat balance, and the limit is wherever it drags the
+  bath under the refining temperature. On the minimum blast that is about 15% of the vessel; at 6
+  atm, as hard as a Cornish engine driving an air blower can blow, it is 40%. The return falls away
+  as you push - the first atmosphere over the gate is worth far more than the fourth - so half a
+  vessel of scrap is out of reach at any pressure. A full stack of 128 bits is 27% of capacity and
+  wants about 3 atm behind it.
+- **The blow's air draw and speed climb across the same band.** They used to reach full rate at 4
+  atm, so pressure above that bought scrap tolerance for nothing. A converter now draws 12 L/s at
+  the gate and 48 L/s at 6 atm, and refines proportionally faster for it.
+- **Scrap returns as steel unit for unit.** The 3% burn-off is gone; material loss on a remelt is not
+  this mod's idea.
+- The converter's look-at panel is three lines instead of five: one charge line carrying the fill,
+  the split between molten metal and scrap, and what the scrap is costing; then blast supplied
+  against blast needed; then pressure against the gate. Nothing is stated twice.
 
 ### Removed
 
@@ -100,6 +115,28 @@ pull in.
 - A burden batch mixing crushed ore and nuggets could quietly cost up to 8 ore units more than the
   batch was worth, because the last nugget cannot be split. The surplus is now banked against the
   next batch, so a long run pays exactly the advertised rate per item.
+- **The handbook sent players to the wrong block to charge scrap.** It said to right-click the
+  control; the vessel takes scrap at its upper hatch, the same cell a frozen heat is chiselled out
+  of. It also now says that one click charges the whole stack in hand.
+- **The handbook promised a five-minute blow.** The blow's length follows the blast now - about ten
+  minutes on the 2.5 atm gate, two and a half at 6 atm - and the article said five regardless.
+- **The cowper stove's four gas ports are documented.** Which one takes exhaust, which gives hot
+  blast, which takes air and which vents was left to be worked out by trial.
+- **Cowper stoves discharged far too fast.** The heat a stove gave up was scaled by the gas standing
+  in the whole cold main rather than by the air passing through the stove, so the length of your
+  blast main set the discharge rate: a modest run emptied a full stove in about half a minute
+  instead of seven.
+- **The converter reported 0 atm with blast standing at its intake.** The panel is drawn on the
+  client, where the pipe network it was asking cannot be reached. The blast figures are measured
+  during the blow now and sent with the rest of the machine's state.
+- **The converter's fill figure ignored charged scrap**, though scrap takes up the same room, so a
+  vessel reading half full could refuse to take more.
+- **Charging scrap took every matching stack off the hotbar** instead of the one in hand. Holding
+  iron bits also swallowed your steel. It now takes only what you are holding.
+- **Iron and steel scrap are tracked apart and come back apart.** Breaking or chiselling a vessel
+  mid-charge returned one lump of whatever the molten charge happened to be; each kind now returns
+  as itself. Scrap charged into an empty vessel - the order the converter expects - was destroyed
+  outright when the vessel was broken.
 
 ### Configuration
 

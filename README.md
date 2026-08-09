@@ -21,12 +21,18 @@ steel making:
 | `src/Directory.Build.props`     | Shared MSBuild config + the supported-game-version manifest.           |
 | `test/`                         | Headless xUnit test projects (per-mod unit tests + cross-mod integration). |
 | `scripts/`                      | Game/.NET provisioning, mod staging, test runners.                     |
-| `docs/`                         | Diagrams, screenshots, moddb listing + handbook sources.              |
+| `docs/`                         | Diagrams, screenshots, moddb listing + handbook drafts (see below).    |
 | `dist/CakeBuild/`               | Cake build project that publishes per-game-version release zips into `dist/Releases/`. |
 | `VintageStory.sln`              | Solution tying the projects together.                                  |
 
 `smex` project-references `exlib` and `ppex` (with `Private=false`), so players install
 all three mods separately; the network manager identity lives in `exlib` only.
+
+**The handbook lives in the lang files, not in `docs/`.** What the game shows is the
+`handbook-*-text` entry in each mod's `assets/<domain>/lang/*.json`, and that is the copy to
+edit. The `docs/<mod>/handbook/*.html` files are earlier drafts of the same articles, kept for
+the moddb listing; they have drifted from the shipped text and must not be treated as a source
+to re-sync from.
 
 ## Code conventions
 

@@ -98,7 +98,8 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
   private bool _solidified;
   private string _status = Lang.Get("smex:bessemer-status-idle");
 
-  // Last tick's operating point. Synced, since the bath is never blown client-side.
+  // Last tick's operating point, both recomputed from blast pressure every refining tick and read
+  // only here - not synced and not persisted, since a reload recomputes them before anything asks.
   private float _processTemp;
   private float _convSpeed;
 
@@ -1217,7 +1218,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
             _contentUnits,
             metal,
             _scrapUnits,
-            ExMeasure.Temperature(ScrapHeatCost)
+            ExMeasure.TemperatureDelta(ScrapHeatCost)
           )
           : Lang.Get(
             "smex:bessemer-info-charge",
@@ -1235,7 +1236,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
           "smex:bessemer-info-charge-scraponly",
           _scrapUnits,
           CapacityUnits,
-          ExMeasure.Temperature(ScrapHeatCost)
+          ExMeasure.TemperatureDelta(ScrapHeatCost)
         )
       );
     }
@@ -1287,8 +1288,6 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
       scrapTree.SetInt(code, units);
     tree["scrap"] = scrapTree;
     tree.SetFloat("processSeconds", _processSeconds);
-    tree.SetFloat("processTemp", _processTemp);
-    tree.SetFloat("convSpeed", _convSpeed);
     tree.SetFloat("blastPressure", _blastPressure);
     tree.SetFloat("airDrawn", _airDrawn);
     tree.SetFloat("airDemand", _airDemand);
@@ -1315,8 +1314,6 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
       // chargeable with the same change, so nothing else can be sitting in an older vessel.
       AddScrap("game:metalbit-iron", tree.GetInt("scrapUnits"));
     _processSeconds = tree.GetFloat("processSeconds");
-    _processTemp = tree.GetFloat("processTemp");
-    _convSpeed = tree.GetFloat("convSpeed");
     _blastPressure = tree.GetFloat("blastPressure");
     _airDrawn = tree.GetFloat("airDrawn");
     _airDemand = tree.GetFloat("airDemand");

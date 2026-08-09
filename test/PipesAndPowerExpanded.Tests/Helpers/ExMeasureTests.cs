@@ -55,6 +55,25 @@ public class ExMeasureTests : System.IDisposable {
     Assert.StartsWith("212 ", ExMeasure.Temperature(100f));
   }
 
+  /// <summary>
+  /// A difference in temperature scales but does not shift: the freezing-point offset belongs to a
+  /// point on the scale, not to a distance along it. The converter's scrap penalty is a delta and
+  /// read 32 °F too high through the absolute formatter.
+  /// </summary>
+  [Fact]
+  public void Imperial_temperature_delta_scales_without_the_freezing_offset() {
+    ExMeasure.System = MeasurementSystem.Imperial;
+    // A 16 C drop is a 28.8 F drop -> "29" at F0, not 60.8.
+    Assert.StartsWith("29 ", ExMeasure.TemperatureDelta(16f));
+    Assert.StartsWith("576 ", ExMeasure.TemperatureDelta(320f));
+  }
+
+  [Fact]
+  public void Metric_temperature_delta_is_the_figure_itself() {
+    ExMeasure.System = MeasurementSystem.Metric;
+    Assert.StartsWith("16 ", ExMeasure.TemperatureDelta(16f));
+  }
+
   [Fact]
   public void Volume_range_prints_the_unit_once_after_the_pair() {
     ExMeasure.System = MeasurementSystem.Metric;

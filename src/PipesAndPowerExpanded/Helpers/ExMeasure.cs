@@ -106,6 +106,19 @@ public static class ExMeasure {
     return num + " " + unit;
   }
 
+  /// <summary>
+  /// A temperature DIFFERENCE in degrees Celsius - how much hotter or colder, not how hot. Scaled
+  /// into Fahrenheit without the freezing-point offset, which belongs to a point on the scale and
+  /// not to a distance along it: a 16 °C penalty is 29 °F, never 61.
+  /// </summary>
+  public static string TemperatureDelta(
+    float celsiusDelta,
+    string format = "F0"
+  ) =>
+    Num(Imperial ? celsiusDelta * 9f / 5f : celsiusDelta, format)
+    + " "
+    + Unit(Imperial ? "fahrenheit" : "celsius");
+
   #endregion
 
   #region Handbook prose conversion

@@ -75,14 +75,9 @@ public class ConverterControlBeTests {
   /// </summary>
   [Fact]
   public void Every_field_the_readout_prints_reaches_the_client() {
-    string[] readoutFields =
-    [
-      "_processTemp",
-      "_convSpeed",
-      "_blastPressure",
-      "_airDrawn",
-      "_airDemand",
-    ];
+    // _processTemp and _convSpeed are deliberately absent: nothing prints them any more, so they
+    // are recomputed each tick rather than sent.
+    string[] readoutFields = ["_blastPressure", "_airDrawn", "_airDemand"];
 
     var src = Control();
     // A distinct value per field, so a mix-up between two fails as loudly as a missing one.
