@@ -80,7 +80,8 @@ public class SmexConfig : IExVersionedConfig {
     // air rather than a gate, the blast furnace out-yields a bloomery, the converter remelts scrap,
     // and every figure downstream of those moved with them. A saved config carrying the old numbers
     // would leave a furnace that cannot reach its own melting point on cold blast, or blowers that
-    // cannot feed the new air demand, so the whole rebalanced set is pushed out.
+    // cannot feed the new air demand, so the whole rebalanced set is pushed out. The blast-mix keys
+    // are also renamed to burden; a saved value under the old name is dropped and takes its default.
     new()
     {
       ToVersion = "0.9.7",
@@ -164,25 +165,25 @@ public class SmexConfig : IExVersionedConfig {
   public int CanalUnsealClayRefund { get; set; } = 2;
   #endregion
 
-  #region Blastmix
-  /// <summary>Blast-mix units that must be loaded into the hearth before the furnace can fire.</summary>
-  public int BlastMixRequiredToFire { get; set; } = 320;
+  #region Burden
+  /// <summary>Burden units that must be loaded into the hearth before the furnace can fire.</summary>
+  public int BurdenRequiredToFire { get; set; } = 320;
 
   /// <summary>
-  /// Blast-mix units a lit furnace must keep in its hearth to stay lit. A furnace robbed below this
-  /// has too thin a column to hold a working bed and goes out; the mix left in the piles is not
+  /// Burden units a lit furnace must keep in its hearth to stay lit. A furnace robbed below this
+  /// has too thin a column to hold a working bed and goes out; the burden left in the piles is not
   /// consumed or spoiled, so a relit furnace picks it back up once the hearth is refilled to
-  /// <see cref="BlastMixRequiredToFire"/>.
+  /// <see cref="BurdenRequiredToFire"/>.
   /// </summary>
-  public int BlastMixRequiredToRun { get; set; } = 144;
+  public int BurdenRequiredToRun { get; set; } = 144;
 
   /// <summary>
-  /// Seconds a lit blast-mix pile keeps burning outside a blown furnace before it goes out. A pile
-  /// no furnace is drawing air through has nothing feeding it, so it burns down and stops - the mix
+  /// Seconds a lit burden pile keeps burning outside a blown furnace before it goes out. A pile
+  /// no furnace is drawing air through has nothing feeding it, so it burns down and stops - the burden
   /// is left cold and unchanged, ready to be lit again. Long enough to light a whole hearth by hand
   /// before the first piles die.
   /// </summary>
-  public int BlastmixBurnTime { get; set; } = 300;
+  public int BurdenBurnTime { get; set; } = 300;
   #endregion
 
   #region Bessemer converter
@@ -221,21 +222,27 @@ public class SmexConfig : IExVersionedConfig {
 
   #region Mechanical blower
   /// <summary>
-  /// Air (L/s) the twin-tub blower delivers per unit of axle speed. The tubs are a positive
-  /// displacement - one turn of the shaft sweeps them once - so throughput is simply proportional
-  /// to shaft speed, with no threshold below which it delivers nothing and no speed past which it
-  /// stops gaining.
+  /// Air (L/s) the twin-tub blower approaches at unbounded axle speed - the volume its tubs can
+  /// sweep. Never actually reached: output follows
+  /// <c>MpBlowerMaxLitres * speed / (speed + MpBlowerHalfOutputSpeed)</c>, proportional near zero
+  /// and flattening as the bellows run out of time to refill between strokes.
   /// <para>
-  /// Sized off the WATERWHEEL, which is the drive this is meant to be built around. A vanilla
-  /// waterwheel tops out at speed 0.3 (<c>BEBehaviorMPWaterWheel.TargetSpeed</c> is
-  /// <c>min(0.3, flowRate)</c>) and only reaches that unloaded; against this blower a well-fed
-  /// wheel settles near 0.18, where this figure just covers the two tuyeres of one blast furnace.
-  /// A poor stream will not run a furnace at all, which is the intent. An engine's MP generator
-  /// tapers out at speed 1.5, so steam drives the same blower some eight times faster - that spread
-  /// IS the progression, and it is why the figure looks large next to the old rated output.
+  /// Sized off the WATERWHEEL, which is the drive this is meant to be built around. A well-fed
+  /// wheel settles near speed 0.29 against this blower and delivers 20 L/s - one tuyere, so an
+  /// ungeared wheel runs a blast furnace at reduced rate. One large gear (vanilla ratio 5.5) takes
+  /// the same wheel to speed 1.6 and 60 L/s, which covers both tuyeres with headroom: gearing up is
+  /// what the furnace is built around. The curve is what stops it there - 5.5x the speed buys 3x
+  /// the air - and the ceiling means no gear train ever turns bellows into a steam blower.
   /// </para>
   /// </summary>
-  public float MpBlowerLitresPerSpeed { get; set; } = 140f;
+  public float MpBlowerMaxLitres { get; set; } = 110f;
+
+  /// <summary>
+  /// Axle speed at which the twin-tub blower delivers half of <see cref="MpBlowerMaxLitres"/>.
+  /// Sets how quickly the curve flattens: lower makes the bellows saturate sooner and flattens the
+  /// return on gearing up, higher keeps them closer to straight proportion.
+  /// </summary>
+  public float MpBlowerHalfOutputSpeed { get; set; } = 1.3f;
 
   /// <summary>
   /// Pressure ceiling (atm) the bellows can seal against, whatever drives them. Above
@@ -369,6 +376,23 @@ public class SmexConfig : IExVersionedConfig {
   /// <summary>Seconds an open charging door is tolerated before the furnace goes out.</summary>
   public float BfDoorOpenGraceSeconds { get; set; } = 10f;
 
+  /// <summary>
+  /// Seconds a hearth being lit survives with no blast arriving before its piles go out. A furnace
+  /// draws air from the moment its first pile catches, not from the moment the whole hearth is
+  /// alight, so this is what stops a player lighting the charge at leisure and starting the blower
+  /// afterwards. Short: the blower is meant to be running before the torch comes out.
+  /// </summary>
+  public float BfUnblownIgnitionSeconds { get; set; } = 10f;
+
+  /// <summary>
+  /// Share of a tuyere's rated volume a just-lit hearth draws, before it has heated. The demand
+  /// climbs from here to the melt model's own floor as the hearth approaches iron's melting point,
+  /// so a player watching the panel sees the requirement rise as the furnace comes up instead of a
+  /// figure that sits still until it is already melting.
+  /// </summary>
+  [ExConfigRange(0, 1)]
+  public float BfAirDemandIgnition { get; set; } = 0.25f;
+
   /// <summary>Molten iron (units) drained per tick through an open lower tap.</summary>
   public int BfIronTapDrainPerTick { get; set; } = 40;
 
@@ -385,13 +409,16 @@ public class SmexConfig : IExVersionedConfig {
   public float BfExhaustOutputPressure { get; set; } = 2.0f;
 
   /// <summary>
-  /// Exhaust (L/s) each gas outlet vents per litre of blast the tuyeres drew. What is blown in has
-  /// to come back out, so a furnace driven hard makes proportionally more flue gas - which is what
-  /// charges the regenerators faster and closes the hot-blast loop.
+  /// Exhaust (L/s) the furnace vents in total per litre of blast the tuyeres drew, shared across
+  /// its gas outlets. What is blown in has to come back out, so a furnace driven hard makes
+  /// proportionally more flue gas - which is what charges the regenerators faster and closes the
+  /// hot-blast loop. Keep <see cref="SmokestackGasIntakeVolume"/> at or above what this yields at
+  /// the furnace's maximum draw, or one stack cannot clear one furnace.
   /// </summary>
   public float BfExhaustPerAirDrawn { get; set; } = 1.0f;
 
-  /// <summary>Exhaust (L/s) each gas outlet vents on natural draught alone, with no blast at all.</summary>
+  /// <summary>Exhaust (L/s) the furnace vents in total on natural draught alone, with no blast at
+  /// all, shared across its gas outlets.</summary>
   public float BfExhaustBaseVolume { get; set; } = 24f;
 
   /// <summary>Share of the hearth temperature the flue gas carries out of the furnace.</summary>
@@ -407,8 +434,8 @@ public class SmexConfig : IExVersionedConfig {
   /// <summary>Molten slag (units) produced per melt cycle.</summary>
   public float BfSlagPerMeltCycle { get; set; } = 17f;
 
-  /// <summary>Blast-mix consumed per melt cycle.</summary>
-  public int BfBlastMixPerMeltCycle { get; set; } = 16;
+  /// <summary>Burden consumed per melt cycle.</summary>
+  public int BfBurdenPerMeltCycle { get; set; } = 16;
 
   /// <summary>
   /// Air/blast (L/s) one tuyere draws at a melt rate of 1.0. The furnace scales this by whatever
@@ -518,31 +545,40 @@ public class SmexConfig : IExVersionedConfig {
   public float RccBrokenDropsRatio { get; set; } = 1.0f;
   #endregion
 
-  #region Hopper bell (blast-mix maker)
+  #region Hopper bell (burden maker)
   /// <summary>Items the hopper magazine can buffer.</summary>
   public int HopperMaxMagazineCapacity { get; set; } = 48;
 
-  /// <summary>Iron ore consumed per blast-mix batch.</summary>
+  /// <summary>Crushed iron ore consumed per burden batch.</summary>
   public int HopperIronOreRequired { get; set; } = 12;
 
-  /// <summary>Coke consumed per blast-mix batch. Whole coke: the furnace no longer takes the
+  /// <summary>
+  /// Iron nuggets consumed per burden batch when the hopper is fed raw ore instead of crushed.
+  /// The two mix freely within one batch at that exchange rate. Equal to
+  /// <see cref="HopperIronOreRequired"/> by default, so a nugget is worth exactly what a piece of
+  /// crushed ore is: the furnace takes its iron however it comes, and crushing is a convenience on
+  /// this route rather than a toll. Raise it to make the pulverizer pay again.
+  /// </summary>
+  public int HopperNuggetRequired { get; set; } = 12;
+
+  /// <summary>Coke consumed per burden batch. Whole coke: the furnace no longer takes the
   /// crushed intermediate, and 3 crushed coke was 1.5 coke at the old 1:2 crush ratio.</summary>
   public int HopperCokeRequired { get; set; } = 2;
 
   /// <summary>
-  /// Charcoal consumed per blast-mix batch when the hopper is fed charcoal instead of coke.
+  /// Charcoal consumed per burden batch when the hopper is fed charcoal instead of coke.
   /// Charcoal carries roughly half the carbon of coke, so it takes twice as many pieces; the two
   /// fuels mix freely within one batch at that exchange rate.
   /// </summary>
   public int HopperCharcoalRequired { get; set; } = 4;
 
-  /// <summary>Lime consumed per blast-mix batch.</summary>
+  /// <summary>Lime consumed per burden batch.</summary>
   public int HopperLimeRequired { get; set; } = 1;
 
-  /// <summary>Blast-mix produced per batch.</summary>
-  public int HopperBlastmixProduced { get; set; } = 16;
+  /// <summary>Burden produced per batch.</summary>
+  public int HopperBurdenProduced { get; set; } = 16;
 
-  /// <summary>Blast-mix dropped per output pulse.</summary>
+  /// <summary>Burden dropped per output pulse.</summary>
   public int HopperDropAmount { get; set; } = 4;
   #endregion
 

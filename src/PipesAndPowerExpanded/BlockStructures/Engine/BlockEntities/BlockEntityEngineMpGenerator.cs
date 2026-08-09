@@ -3,6 +3,7 @@ using ExpandedLib.Helpers;
 using ExpandedLib.Registries.Entities;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 
 namespace PipesAndPowerExpanded.BlockStructures.Engine.BlockEntities;
 
@@ -30,19 +31,35 @@ public class BlockEntityEngineMpGenerator
   public int RenderRange => 64;
 
   /// <summary>
-  /// Full power whenever an engine is attached. An overloaded engine LABOURS, it does not switch
-  /// off: cutting demand to zero stopped the whole line dead and left a waterwheel - which merely
-  /// bogs down and keeps grinding - looking like the stronger machine. Demand stays at full and the
-  /// network settles at <c>speed = budget / load</c>, so a heavy shaft simply crawls, and it comes
-  /// to a genuine stand only when the load passes the torque the generator can raise at all - which
-  /// the divisor clamp in <see cref="BEBehaviorEngineMPGenerator.GetTorque"/> puts at four times the
-  /// budget. <c>IsMpOverstressed</c> survives to TELL the player the engine is labouring rather than
-  /// to punish them for it.
+  /// Full power whenever an engine is attached. An overloaded engine labours rather than switching
+  /// off: the network settles at <c>speed = budget / load</c>, so a heavy shaft crawls, and comes to
+  /// a stand only past the torque the generator can raise at all - four times the budget, per the
+  /// divisor clamp in <see cref="BEBehaviorEngineMPGenerator.GetTorque"/>. The readout below reports
+  /// the labouring state; nothing punishes it.
   /// </summary>
   public override float PowerDemand => Engine != null ? 1f : 0f;
 
   // No pipe work - power leaves as MP torque via the behavior.
   protected override void DoWork(float power, float dt) { }
+
+  protected override string? OutputInfo(float power) {
+    if (Engine is not { } engine)
+      return null;
+
+    float speed = System.Math.Abs(_mp?.Network?.Speed ?? 0f);
+    float load = _mp?.Network?.NetworkResistance ?? 0f;
+    string line = Lang.Get(
+      "ppex:enginempgenerator-info-driving",
+      speed.ToString("0.00"),
+      engine.ShaftSpeed.ToString("0.00")
+    );
+
+    // The one place the overstress state reaches a player: a shaft loaded past what the engine can
+    // hold turns slower than its cap and there is otherwise nothing to say why.
+    return engine.IsMpOverstressed(load)
+      ? line + " " + Lang.Get("ppex:enginempgenerator-info-labouring")
+      : line;
+  }
 
   public override void Initialize(ICoreAPI api) {
     base.Initialize(api);

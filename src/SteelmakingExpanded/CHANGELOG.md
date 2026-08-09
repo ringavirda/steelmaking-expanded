@@ -10,6 +10,17 @@ see the git history.
 The furnace rebalance. Three long-standing complaints and one exploit, plus the machine retune they
 pull in.
 
+### Added
+
+- **The blast furnace takes raw iron nuggets.** Limonite, hematite and magnetite go into the iron
+  slot alongside crushed ore, counted by ore content rather than by the piece the way the fuel slot
+  counts carbon - and worth the same as crushed ore, so 12 of either makes a batch and the two mix
+  freely. The furnace takes its iron however it comes; running it through a pulverizer first is a
+  convenience on this route rather than a requirement.
+- **Crushed ore and iron nuggets state what they are worth in the furnace.** Their tooltips now
+  carry the units of iron one piece finally yields, next to the bloomery figure vanilla already
+  shows.
+
 ### Changed
 
 - **Melting is a rate now, not a gate.** The furnace no longer sits at a ceiling waiting for a
@@ -22,8 +33,8 @@ pull in.
   proportional share of that, rather than nothing until it crosses a threshold.
 - **The blast furnace out-yields a bloomery.** 102 units of iron per melt cycle against 60, roughly
   1.7x what a bloomery returns for the same ore.
-- **Blast mix is never destroyed.** It no longer turns to slag when a furnace goes out. A lit pile
-  with no furnace drawing air through it simply burns down and goes cold, still blast mix, ready to
+- **Burden is never destroyed.** It no longer turns to slag when a furnace goes out. A lit pile
+  with no furnace drawing air through it simply burns down and goes cold, still burden, ready to
   be lit again.
 - **No more 20-minute campaign clock.** A fed furnace runs until you stop it. A full reservoir and a
   blocked flue now stall production instead of ending the run - tap the vessel or reopen the exhaust
@@ -37,6 +48,20 @@ pull in.
   three times what a mechanical pump does on the same engine.
 - **Canals reach.** A run used to deliver nothing from about eight blocks out. Canal capacity and
   throughput are both doubled, and the flow rule no longer costs a chunk of head at every block.
+- **Gearing up the twin-tub blower is now the intended build, and pays a falling return.** Output
+  follows a saturating curve rather than a straight proportion - worked harder the tubs have less
+  time to refill - so one large gear turns the bellows 5.5x faster for 3x the air: about 20 L/s from
+  a bare waterwheel against 60 L/s geared. One geared wheel runs one blast furnace with headroom
+  where it used to run four, and no gear train reaches what a steam air blower makes.
+- **The blast furnace breathes while it is being lit.** It drew nothing through its tuyeres until
+  the whole charge had caught, so a furnace could be lit at leisure and blown afterwards. Piles
+  catching one by one now need the blast from the first one, and an unblown hearth goes out.
+- **Blast at working pressure is a requirement, not just the melt's throttle.** Losing it stops
+  production at once and puts the furnace out on the usual disruption grace - long enough for a
+  deliberate cowper swap, not long enough for stopped blowers.
+- **Blast mix is now called burden**, which is what a blast furnace charge of ore, fuel and flux is
+  actually called - and what the Russian and Ukrainian translations already called it. Existing
+  stacks are converted on world load.
 - Cowper stoves cool when idle and drain faster under a heavy blast, so alternating two of them is a
   real decision rather than a formality.
 
@@ -48,12 +73,33 @@ pull in.
 
 ### Fixed
 
+- **The blast furnace build projection ignored the door's facing**, showing the outline as if the
+  door faced north. It now follows the door, and keeps up if the door is rotated after placement.
+- **The blast furnace door, tuyeres and molten metal taps have refractory tier variants.** All three
+  always showed tier-3 brick whatever you built with; their recipes now hand back the tier you spent.
+  Existing placements become tier 3.
+- **Refractory tiers are named.** The door, tuyere, tap, heat sink and smoke stack intake all read as
+  one block in the inventory; each now carries its tier in its name, the way the pipe blocks do.
+- The heat sink used a brick texture that does not cover a full face.
+- The Bessemer converter is raised from tier-2 refractory brick but was drawn in tier-3. It now
+  looks like what it is built from.
+- Engine sub-machines - the air blower, the water pump and the mechanical generator - now report what
+  they are producing. The generator also says when the shaft is loaded past what the engine can hold.
+- Charging scrap into the converter moved from the control panel to the vessel's upper hatch, next to
+  the chisel-out.
 - A clogged mold pedestal could not be chiselled clear. The interaction hint advertised it and the
   click did nothing.
 - A barrel parked under a canal tap cooled roughly twelve times faster than a barrel anywhere else.
 - Chiselling a barrel returned half the metal that chiselling anything else did.
 - A cowper stove held its charge forever while idle.
 - A furnace with less than a full cycle's charge in the hearth produced a whole cycle's iron.
+- **Machines behind a gear train read the wrong shaft speed.** The mechanical port ignored its own
+  gear ratio, so the twin-tub blower, the water pump and the mechanical generator reported the
+  drive's speed or their own depending on which end of the network loaded first - gearing appeared
+  to do nothing, or to multiply output, run to run.
+- A burden batch mixing crushed ore and nuggets could quietly cost up to 8 ore units more than the
+  batch was worth, because the last nugget cannot be split. The surplus is now banked against the
+  next batch, so a long run pays exactly the advertised rate per item.
 
 ### Configuration
 
@@ -68,7 +114,7 @@ Covers the 0.9.3 through 0.9.5 development bumps, which were never published sep
 
 - **Twin-Tub Blower** - axle-driven bellows, and the only air source that needs no steam.
   A waterwheel or windmill will now run a blast furnace, so the iron chain no longer waits
-  on a boiler. It delivers 60 L/s at full axle speed and raises its run to 2.0 atm, which
+  on a boiler. It raises its run to 2.0 atm, which
   clears the furnace's blast gate and never reaches the converter's - mechanical power
   makes iron, steam is still required for steel. Right-click constructed: the grid recipe
   gives a wooden frame, and the beam, axle, tubs and pipe connection follow.

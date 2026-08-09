@@ -9,7 +9,7 @@ namespace SteelmakingExpanded.Tests;
 /// <summary>
 /// The blast furnace's primary process driven end to end (handbook blast-furnace + hot-blast): a
 /// charged, lit hearth climbs past iron's melting point on whatever blast it is given, renders blast
-/// mix into molten iron at a rate set by its heat margin and its air supply together, and taps it
+/// burden into molten iron at a rate set by its heat margin and its air supply together, and taps it
 /// into a canal. Exercises the real tick with its real peripherals via <see cref="BlastFurnaceRig"/>.
 /// </summary>
 public class BlastFurnaceScenarioTests {
@@ -135,23 +135,232 @@ public class BlastFurnaceScenarioTests {
     Assert.Equal(full.MeltSpeed / 4f, starved.MeltSpeed, 2);
   }
 
+  #endregion
+
+  #region Lighting
+
+  // A hearth charged below the fire threshold never reaches Firing, so it stays in the state a
+  // player is in while torching the piles one by one.
+  private const int PartCharge = 100;
+
+  /// <summary>A blast furnace breathes through two tuyeres, and the rig stands up both.</summary>
+  private const int FurnaceTuyeres = 2;
+
   [Fact]
-  public void No_blast_at_all_stops_the_melt_without_ending_the_campaign() {
-    // Air, not temperature, is what the melt is gated on: an unblown furnace holds its heat and its
-    // charge and produces nothing, then picks straight back up when the blowers come back.
+  public void A_hearth_being_lit_breathes_before_the_furnace_is_formally_lit() {
+    var rig = new BlastFurnaceRig(burden: PartCharge).FeedBlast();
+
+    rig.Tick(1);
+
+    Assert.Equal(BlastFurnaceState.Idle, rig.State);
+    Assert.True(
+      rig.AirDrawn > 0f,
+      "a hearth with piles alight should draw blast before the whole charge has caught"
+    );
+  }
+
+  [Fact]
+  public void An_unblown_hearth_being_lit_goes_out() {
+    // The reported gap: with no blower running, a player could light the charge at leisure. Piles
+    // catching one by one now need the blast from the first one.
+    var rig = new BlastFurnaceRig(burden: PartCharge).CutBlast();
+
+    Assert.True(rig.HearthAlight, "the rig starts with its piles alight");
+
+    rig.Tick((int)SmexValues.BfUnblownIgnitionSeconds + 2);
+
+    Assert.False(
+      rig.HearthAlight,
+      "an unblown hearth being lit should go out inside the ignition grace"
+    );
+    Assert.Equal(BlastFurnaceState.Idle, rig.State);
+  }
+
+  [Fact]
+  public void The_air_requirement_climbs_as_the_hearth_heats() {
+    // The reported readout problem. The demand was read straight off the melt-rate factor, which is
+    // clamped at its floor for everything below about 1525 C - the whole firing phase - so the
+    // figure sat on one number until the furnace was already melting and looked unmetered. It has
+    // to visibly rise as the furnace comes up.
+    var rig = new BlastFurnaceRig()
+      .FeedBlast()
+      .SetState(BlastFurnaceState.Firing);
+
+    float[] asked = new float[4];
+    float[] temps =
+    [
+      SmexValues.BfIgnitionTemperature,
+      1100f,
+      1300f,
+      SmexValues.BfIronMeltingPoint - 1f,
+    ];
+    for (int i = 0; i < temps.Length; i++) {
+      rig.SetTemp(temps[i]).Tick(1);
+      asked[i] = rig.AirRequested;
+    }
+
+    for (int i = 1; i < asked.Length; i++)
+      Assert.True(
+        asked[i] > asked[i - 1],
+        $"the draw at {temps[i]} C ({asked[i]} L/s) should exceed the draw at "
+          + $"{temps[i - 1]} C ({asked[i - 1]} L/s)"
+      );
+
+    // And it must arrive at the melting point already asking for every tuyere's rated volume, which
+    // is what a melting hearth wants - otherwise the figure jumps the moment melting starts.
+    Assert.Equal(FurnaceTuyeres * SmexValues.TuyereIntakeVolume, asked[^1], 0);
+  }
+
+  [Fact]
+  public void A_furnace_vents_exactly_what_it_breathes_however_many_outlets() {
+    // What is blown in comes back out ONCE. The per-outlet figure was the whole draw rather than a
+    // share of it, so a two-outlet furnace vented double its own blast and one smoke stack - sized
+    // correctly against the furnace - could never keep up.
+    var rig = new BlastFurnaceRig()
+      .WithOpenExhaust()
+      .FeedBlast(1240f)
+      .SetState(BlastFurnaceState.Melting)
+      .SetTemp(SmexValues.BfNaturalMaxTemp);
+
+    // Two ticks: the flue is metered off the previous tick's draw, so the first settles it.
+    rig.Tick(2);
+
+    Assert.True(rig.AirDrawn > 0f, "the furnace must be drawing blast");
+    Assert.Equal(
+      System.Math.Max(
+        SmexValues.BfExhaustBaseVolume,
+        rig.AirDrawn * SmexValues.BfExhaustPerAirDrawn
+      ),
+      rig.ExhaustVented,
+      1
+    );
+  }
+
+  [Fact]
+  public void One_smoke_stack_clears_what_one_furnace_vents_flat_out() {
+    // The end-to-end version of the sizing rule: drive the furnace to its melt ceiling, which is the
+    // hardest it ever breathes, and the stack still has to swallow the lot.
+    var rig = new BlastFurnaceRig()
+      .WithOpenExhaust()
+      .FeedBlast(SmexValues.BfBlastTempReference)
+      .SetState(BlastFurnaceState.Melting)
+      .SetTemp(SmexValues.BfBoostedMaxTemp);
+
+    rig.Tick(2);
+
+    Assert.True(
+      rig.ExhaustVented <= SmexValues.SmokestackGasIntakeVolume,
+      $"a furnace at its melt ceiling vents {rig.ExhaustVented} L/s but one smoke stack clears "
+        + $"{SmexValues.SmokestackGasIntakeVolume} L/s"
+    );
+  }
+
+  [Fact]
+  public void A_melting_hearth_asks_for_its_rated_blast_and_more_when_driven() {
+    // The reported readout: a furnace sitting just over the melting point showed 20 L/s of 20 - half
+    // what its two tuyeres are rated for - because the demand was read off the melt-rate factor,
+    // whose floor is 0.5. A melting furnace wants the full 40, and more again once the heat margin
+    // drives the melt past 1x.
+    float Asked(float temp) {
+      var rig = new BlastFurnaceRig()
+        .FeedBlast(1240f)
+        .SetState(BlastFurnaceState.Melting)
+        .SetTemp(temp);
+      rig.Tick(1);
+      return rig.AirRequested;
+    }
+
+    float rated = FurnaceTuyeres * SmexValues.TuyereIntakeVolume;
+
+    Assert.Equal(rated, Asked(SmexValues.BfIronMeltingPoint + 1f), 0);
+    Assert.Equal(rated, Asked(SmexValues.BfNaturalMaxTemp), 0);
+    Assert.Equal(
+      rated * SmexValues.BfMeltSpeedMax,
+      Asked(SmexValues.BfBoostedMaxTemp),
+      0
+    );
+  }
+
+  [Fact]
+  public void A_hearth_being_lit_vents_exhaust() {
+    // It draws blast from the moment the first pile catches, so it has to vent it too - otherwise
+    // air goes in and nothing comes out, and the flue reads clear while the furnace is working.
+    var rig = new BlastFurnaceRig(burden: PartCharge)
+      .WithOpenExhaust()
+      .FeedBlast();
+
+    rig.Tick(1);
+
+    Assert.Equal(BlastFurnaceState.Idle, rig.State);
+    Assert.True(
+      rig.ExhaustProduced > 0f,
+      "a hearth being lit should be pushing exhaust into its gas outlets"
+    );
+  }
+
+  [Fact]
+  public void A_blown_hearth_being_lit_stays_alight() {
+    var rig = new BlastFurnaceRig(burden: PartCharge).FeedBlast();
+
+    rig.Tick((int)SmexValues.BfUnblownIgnitionSeconds * 3);
+
+    Assert.True(
+      rig.HearthAlight,
+      "blast at working pressure should keep a hearth being lit alive indefinitely"
+    );
+  }
+
+  #endregion
+
+  #region Melting - air
+
+  [Fact]
+  public void Blast_lost_stops_the_melt_at_once_and_the_campaign_on_the_grace() {
+    // Blast at working pressure is a requirement, not just the melt's throttle. Losing it stops
+    // production on the same tick and puts the furnace out once the disruption grace runs down -
+    // sized so a deliberate cowper swap passes through it, but stopped blowers do not.
     var rig = new BlastFurnaceRig()
       .CutBlast()
       .SetState(BlastFurnaceState.Melting)
       .SetTemp(SmexValues.BfBoostedMaxTemp);
 
     rig.Tick(1);
-    int mixBefore = rig.MixCount;
-    rig.Tick(60);
+    int burdenBefore = rig.BurdenCount;
 
     Assert.Equal(0f, rig.MeltSpeed, 3);
     Assert.Equal(0f, rig.AirDrawn, 3);
-    Assert.Equal(mixBefore, rig.MixCount);
     Assert.NotEqual(BlastFurnaceState.Idle, rig.State);
+
+    // Inside the grace the charge is untouched and the campaign is still alive.
+    rig.Tick((int)SmexValues.BfDisruptionGraceSeconds - 2);
+    Assert.Equal(burdenBefore, rig.BurdenCount);
+    Assert.NotEqual(BlastFurnaceState.Idle, rig.State);
+
+    rig.Tick(4);
+    Assert.Equal(BlastFurnaceState.Idle, rig.State);
+  }
+
+  [Fact]
+  public void Blast_returning_inside_the_grace_saves_the_campaign() {
+    // The other half: the grace exists so swapping the regenerator stoves over is a normal
+    // operation rather than a lost heat.
+    var rig = new BlastFurnaceRig()
+      .CutBlast()
+      .SetState(BlastFurnaceState.Melting)
+      .SetTemp(SmexValues.BfBoostedMaxTemp);
+
+    rig.Tick((int)SmexValues.BfDisruptionGraceSeconds - 5);
+    Assert.NotEqual(BlastFurnaceState.Idle, rig.State);
+
+    rig.FeedBlast().Tick(1);
+    Assert.Equal(0f, rig.ExtinguishSeconds, 3);
+
+    rig.Tick(60);
+    Assert.NotEqual(BlastFurnaceState.Idle, rig.State);
+    Assert.True(
+      rig.MeltSpeed > 0f,
+      "the melt should pick straight back up once the blast returns"
+    );
   }
 
   #endregion
@@ -159,7 +368,7 @@ public class BlastFurnaceScenarioTests {
   #region Melting - tapping
 
   [Fact]
-  public void Melting_renders_blast_mix_into_molten_iron() {
+  public void Melting_renders_burden_into_molten_iron() {
     var rig = new BlastFurnaceRig()
       .FeedBlast()
       .SetState(BlastFurnaceState.Melting)
@@ -203,12 +412,12 @@ public class BlastFurnaceScenarioTests {
       .SetMoltenIron(SmexValues.BfMaxMoltenIron);
 
     rig.Tick(1);
-    int mixBefore = rig.MixCount;
+    int burdenBefore = rig.BurdenCount;
     rig.Tick(60);
 
     Assert.Equal(BlastFurnaceState.Melting, rig.State);
     Assert.Equal(0f, rig.ExtinguishSeconds);
-    Assert.Equal(mixBefore, rig.MixCount);
+    Assert.Equal(burdenBefore, rig.BurdenCount);
   }
 
   #endregion
@@ -245,10 +454,10 @@ public class BlastFurnaceScenarioTests {
   [Fact]
   public void A_lit_furnace_is_never_put_out_by_a_clock() {
     // The 20-minute fuel burn used to end every campaign and take the charge with it. A furnace with
-    // air and mix now runs until the player stops it.
-    // Charged well past what 1500 s of melting consumes, so running out of mix cannot be what ends
+    // air and burden now runs until the player stops it.
+    // Charged well past what 1500 s of melting consumes, so running out of burden cannot be what ends
     // the run - only a clock could, and there is no longer one.
-    var rig = new BlastFurnaceRig(blastMix: 20000)
+    var rig = new BlastFurnaceRig(burden: 20000)
       .FeedBlast(1240f)
       .SetState(BlastFurnaceState.Melting)
       .SetTemp(SmexValues.BfBoostedMaxTemp)
@@ -258,7 +467,7 @@ public class BlastFurnaceScenarioTests {
 
     Assert.NotEqual(BlastFurnaceState.Idle, rig.State);
     Assert.True(
-      rig.MixCount > SmexValues.BlastMixRequiredToRun,
+      rig.BurdenCount > SmexValues.BurdenRequiredToRun,
       "the hearth should still be charged - otherwise starvation, not a clock, ended the run"
     );
   }
@@ -297,13 +506,13 @@ public class BlastFurnaceScenarioTests {
   public void A_blocked_flue_halts_the_melt() {
     var rig = ChokedRig();
     rig.Tick(1); // one tick to populate the cached hearth count
-    int mixBefore = rig.MixCount;
+    int burdenBefore = rig.BurdenCount;
 
     rig.Tick(60);
 
     // No melt cycle completes while the flue is blocked, so the charge is untouched.
     Assert.True(rig.Furnace.IsChoked);
-    Assert.Equal(mixBefore, rig.MixCount);
+    Assert.Equal(burdenBefore, rig.BurdenCount);
   }
 
   [Fact]
@@ -328,14 +537,14 @@ public class BlastFurnaceScenarioTests {
       .SetTemp(SmexValues.BfIronMeltingPoint + 20f)
       .FeedBlast();
     rig.Tick(1); // one tick to populate the cached hearth count
-    int mixBefore = rig.MixCount;
+    int burdenBefore = rig.BurdenCount;
 
     rig.Tick(60);
 
     Assert.False(rig.Furnace.IsChoked);
     Assert.True(
-      rig.MixCount < mixBefore || mixBefore == 0,
-      $"an unblocked furnace should burn its charge; mix went {mixBefore} -> {rig.MixCount}"
+      rig.BurdenCount < burdenBefore || burdenBefore == 0,
+      $"an unblocked furnace should burn its charge; burden went {burdenBefore} -> {rig.BurdenCount}"
     );
   }
 

@@ -14,9 +14,9 @@ namespace SteelmakingExpanded.Tests;
 /// <summary>
 /// Drives the blast furnace's primary process headlessly (handbook blast-furnace + hot-blast
 /// articles): a charged, lit hearth fed hot blast through its tuyeres climbs past iron's melting
-/// point, enters the Melting phase, turns blast mix into molten iron, and taps it into a canal -
+/// point, enters the Melting phase, turns burden into molten iron, and taps it into a canal -
 /// the steelmaking line's first stage. Stands up the peripherals the gated <c>OnProductionTick</c>
-/// reads (hearth blast-mix piles, blast-fed tuyeres) and the iron tap + canal, then drives the tick.
+/// reads (hearth burden piles, blast-fed tuyeres) and the iron tap + canal, then drives the tick.
 /// Timers are fast-forwarded so the multi-minute melt is reachable in a test.
 /// </summary>
 internal sealed class BlastFurnaceRig {
@@ -26,10 +26,13 @@ internal sealed class BlastFurnaceRig {
 
   private readonly BlockPos _pos = new(0, 16, 0);
   private readonly PipeNetwork[] _tuyeres;
+  private readonly System.Collections.Generic.List<BlockPos> _pilePositions =
+  [];
+  private PipeNetwork[]? _flues;
   private float _blastTemp = -1f;
   private float _blastVolume = 150f;
 
-  public BlastFurnaceRig(int blastMix = 400) {
+  public BlastFurnaceRig(int burden = 400) {
     World = new TestWorld();
     World.RegisterItem("game:ingot-iron", 1500f);
     World.RegisterItem("smex:slag");
@@ -58,9 +61,9 @@ internal sealed class BlastFurnaceRig {
     // so the tick reads the tuyeres we place below.
     ReflectionHelpers.Invoke(Furnace, "ScanForOutlets");
 
-    // Hearth piles holding the blast-mix charge (split across two cells in the hearth box), lit.
-    BlastmixPile(_pos.AddCopy(0, 0, 2), blastMix / 2);
-    BlastmixPile(_pos.AddCopy(0, -1, 2), blastMix - blastMix / 2);
+    // Hearth piles holding the burden charge (split across two cells in the hearth box), lit.
+    BurdenPile(_pos.AddCopy(0, 0, 2), burden / 2);
+    BurdenPile(_pos.AddCopy(0, -1, 2), burden - burden / 2);
 
     // Tuyeres: a pipe at each tuyere cell, each its own blast network.
     _tuyeres =
@@ -70,14 +73,14 @@ internal sealed class BlastFurnaceRig {
     ];
   }
 
-  private void BlastmixPile(BlockPos pos, int units) {
+  private void BurdenPile(BlockPos pos, int units) {
     var pile = new BlockEntityCoalPile { Pos = pos.Copy() };
     var inv = new InventoryGeneric(1, "coalpile", "test", World.Api, null);
-    var blastmix = new Item {
-      Code = new AssetLocation("smex", "blastmix"),
+    var burden = new Item {
+      Code = new AssetLocation("smex", "burden"),
       ItemId = 4242,
     };
-    inv[0].Itemstack = new ItemStack(blastmix, units);
+    inv[0].Itemstack = new ItemStack(burden, units);
     ReflectionHelpers.SetField(pile, "inventory", inv);
     ReflectionHelpers.SetField(pile, "burning", true);
     World.Place(
@@ -91,6 +94,49 @@ internal sealed class BlastFurnaceRig {
       pile
     );
     World.Attach(pile);
+    _pilePositions.Add(pos.Copy());
+  }
+
+  /// <summary>
+  /// Puts an accepting pipe on each gas-outlet cell, so the flue is open and the exhaust the
+  /// furnace pushes actually lands somewhere. The sealed-stub variant is
+  /// <see cref="WithBlockedExhaust"/>.
+  /// </summary>
+  public BlastFurnaceRig WithOpenExhaust() {
+    _flues =
+    [
+      Tuyere(_pos.AddCopy(0, 3, 1), 30),
+      Tuyere(_pos.AddCopy(0, 3, 3), 31),
+    ];
+    return this;
+  }
+
+  /// <summary>Exhaust (L/s) the furnace pushed into its outlets on the last tick, summed.</summary>
+  public float ExhaustVented =>
+    (float)ReflectionHelpers.GetField(Furnace, "_exhaustVented")!;
+
+  /// <summary>Exhaust gas standing in the flue networks - what the furnace has vented into them.</summary>
+  public float ExhaustProduced {
+    get {
+      float total = 0f;
+      foreach (var net in _flues ?? [])
+        if (net?.State is { MediumType: "Exhaust" } state)
+          total += state.Volume;
+      return total;
+    }
+  }
+
+  /// <summary>Whether any hearth pile is still burning - the hearth is alight.</summary>
+  public bool HearthAlight {
+    get {
+      foreach (var pos in _pilePositions)
+        if (
+          World.Api.World.BlockAccessor.GetBlockEntity(pos)
+          is BlockEntityCoalPile { IsBurning: true }
+        )
+          return true;
+      return false;
+    }
   }
 
   private PipeNetwork Tuyere(BlockPos pos, int id) {
@@ -230,10 +276,10 @@ internal sealed class BlastFurnaceRig {
   public float Temp =>
     (float)ReflectionHelpers.GetField(Furnace, "_internalTemp")!;
 
-  /// <summary>Blast mix still in the hearth, as the last tick counted it. Falls only when a melt
+  /// <summary>Burden still in the hearth, as the last tick counted it. Falls only when a melt
   /// cycle actually completes, so it is the honest witness for "is this furnace still working".</summary>
-  public int MixCount =>
-    (int)ReflectionHelpers.GetField(Furnace, "_cachedMixCount")!;
+  public int BurdenCount =>
+    (int)ReflectionHelpers.GetField(Furnace, "_cachedBurdenCount")!;
 
   /// <summary>Seconds accrued toward extinguishing. Stays 0 while nothing counts as a disruption.</summary>
   public float ExtinguishSeconds =>

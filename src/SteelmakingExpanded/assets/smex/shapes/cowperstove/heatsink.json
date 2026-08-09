@@ -7,7 +7,7 @@
   "textureHeight": 16,
   "textureSizes": {},
   "textures": {
-    "refractory": "game:block/clay/refractory/tier1/bricks"
+    "refractory": "game:block/clay/refractory/tier1/front1"
   },
   "elements": [
     {

@@ -55,8 +55,15 @@ public static class ExBlockNames {
   /// suffix. If the name already ends with a "(…)" group (a shape qualifier such as
   /// "Piping (Straight)"), the qualifier is merged into that group
   /// ("Piping (Straight, Steel)") so brackets never stack.
+  /// <para>
+  /// A qualifier already present is not added again. Overriding <c>GetHeldItemName</c> on a block
+  /// whose base already decorates would otherwise read "Tuyere (Refractory Tier 2, Refractory
+  /// Tier 2)", and which bases decorate is not visible at the override site.
+  /// </para>
   /// </summary>
   private static string AppendQualifier(string name, string qualifier) {
+    if (qualifier.Length == 0 || name.Contains(qualifier))
+      return name;
     if (name.EndsWith(')') && name.Contains('('))
       return name[..^1] + Lang.Get("exlib:blockname-listsep") + qualifier + ")";
     return Lang.Get("exlib:blockname-suffixed", name, qualifier);

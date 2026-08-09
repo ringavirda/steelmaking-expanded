@@ -23,7 +23,7 @@
   <li>Build the blast furnace: place the door block, hold Ctrl + right-click for the build outline, and fill in every highlighted block until it reports complete.</li>
   <li>Give it air: either set up steam power (see Pipes and Power Expanded) and an Air Blower sub-machine, or put a Twin-Tub Blower on an axle you already turn. Then add a pair of Cowper Stoves and a Smoke Stack. Pipe air through the blower and a cowper into the tuyeres, and pipe furnace exhaust through the cowpers out to the smoke stack.</li>
   <li>Load the Reinforced Hopper with crushed iron ore, lime, and coke or charcoal. The Bell Hopper below fills the shaft on its own (dropping is on by default).</li>
-  <li>Ignite the blast mix with a torch and close the door.</li>
+  <li>Ignite the burden with a torch and close the door.</li>
   <li>Charge one cowper stove on exhaust while the other blows hot blast in, swapping them with valves as they cool. Hold the furnace above about 1482 degrees Celsius and it begins to melt iron.</li>
   <li>Open the Molten Metal Taps to drain iron and slag down canals into molds or barrels.</li>
   <li>For steel, pour molten iron into a Bessemer converter and refine it - that is Stage II.</li>
@@ -42,7 +42,7 @@
   first run:
 </p>
 <ul>
-  <li><code>smex_values.json</code> - the gameplay tunables (melt temperatures and timings, how much blast mix a charge needs, canal and barrel cooldown rates, salvage drop ratios). Editable live with <code>/exmod config smex</code>.</li>
+  <li><code>smex_values.json</code> - the gameplay tunables (melt temperatures and timings, how much burden a charge needs, canal and barrel cooldown rates, salvage drop ratios). Editable live with <code>/exmod config smex</code>.</li>
   <li><code>smex_recipes.json</code> - the per-recipe and per-construction cost numbers for each level (normal and cheap). Pick the active level with <code>/exmod recipes smex</code> and fine-tune the numbers in this file; changes apply on the next world reload.</li>
 </ul>
 
@@ -54,14 +54,14 @@
       <img src="https://github.com/ringavirda/modding-vsexpanded/blob/main/docs/smex/screenshots/blast_furnace.png?raw=true" alt="" width="840" height="472" />
     </p>
     <p>The blast furnace is a tall multiblock built mostly from refractory bricks of any tier, with its own door, two tuyeres (hot-blast intakes) low on the shaft, two gas outlets (exhaust) high up, two hoppers on top, and two molten metal taps (the upper pours slag, the lower pours iron). Place the door first - it is the control block - then Ctrl + right-click for the build outline and fill it in.</p>
-    <p>The furnace does not consume ore directly; it burns blast mix (ore, fuel and flux). Load the ingredients into the reinforced hopper and the bell hopper drips blast mix down the shaft. Ignite it with a torch and close the door. While firing the temperature climbs to about 1400 degrees Celsius on its own - not enough to smelt iron - so you feed it hot blast through the tuyeres to push past iron's melting point (about 1482 degrees Celsius) and into the melting phase, where it turns the blast mix into a reservoir of molten iron and slag.</p>
-    <p>The furnace is temperamental: opening the door, running out of blast mix, or an overflowing reservoir all put the fire out and solidify everything inside into blocks you must clear before firing again. A choked exhaust is milder - it stalls the melt back to natural draught until the flue clears, which is what lets you swap cowper stoves without losing the campaign. You cannot open the door while it fires, so keep it fed through the hoppers for continuous melting.</p>
+    <p>The furnace does not consume ore directly; it burns burden (ore, fuel and flux). Load the ingredients into the reinforced hopper and the bell hopper drips burden down the shaft. Ignite it with a torch and close the door. While firing the temperature climbs to about 1400 degrees Celsius on its own - not enough to smelt iron - so you feed it hot blast through the tuyeres to push past iron's melting point (about 1482 degrees Celsius) and into the melting phase, where it turns the burden into a reservoir of molten iron and slag.</p>
+    <p>The furnace is temperamental: opening the door, running out of burden, or an overflowing reservoir all put the fire out and solidify everything inside into blocks you must clear before firing again. A choked exhaust is milder - it stalls the melt back to natural draught until the flue clears, which is what lets you swap cowper stoves without losing the campaign. You cannot open the door while it fires, so keep it fed through the hoppers for continuous melting.</p>
     <p>The hoppers:</p>
     <ul>
-      <li><strong>Reinforced hopper</strong> - holds crushed iron ore, lime and fuel, and combines 12 crushed iron, 1 lime and one batch of fuel into 16 blast mix at a time, stockpiling it internally. It also accepts reclaimed blast mix.</li>
-      <li><strong>Bell hopper</strong> - sits below and deploys blast mix into the shaft, stopping on its own when the furnace is full. Dropping is on by default; toggle it with Ctrl + right-click.</li>
+      <li><strong>Reinforced hopper</strong> - holds iron ore, lime and fuel, and combines 12 crushed iron, 1 lime and one batch of fuel into 16 burden at a time, stockpiling it internally. It also accepts reclaimed burden.</li>
+      <li><strong>Bell hopper</strong> - sits below and deploys burden into the shaft, stopping on its own when the furnace is full. Dropping is on by default; toggle it with Ctrl + right-click.</li>
     </ul>
-    <p>The fuel slot takes coke or charcoal and counts them by carbon rather than by the piece: 2 coke make a batch, 4 charcoal do the same work, the two mix freely within one batch, and coke is always spent first. Coke is baked from coal in a vanilla coke oven and iron ore is crushed in a vanilla pulverizer. The furnace needs a lot of both, so prepare ahead.</p>
+    <p>Both feed slots count what they hold by content rather than by the piece. The iron slot takes crushed ore or raw iron nuggets - limonite, hematite or magnetite - and the two are worth the same: 12 of either make a batch, and crushed ore is always spent first. The furnace takes its iron however it comes, so crushing it first is a convenience here rather than a requirement; every piece of feed states its yield on its tooltip. The fuel slot works the same way with carbon: 2 coke make a batch, 4 charcoal do the same work, the two mix freely within one batch, and coke is always spent first. Coke is baked from coal in a vanilla coke oven and iron ore is crushed in a vanilla pulverizer. The furnace needs a lot of both, so prepare ahead.</p>
     <p>
       <img src="https://github.com/ringavirda/modding-vsexpanded/blob/main/docs/smex/screenshots/cowpers_frombehind.png?raw=true" alt="" width="841" height="473" />
     </p>
@@ -69,7 +69,7 @@
     <p>The pressure the air has to reach depends on what is drinking it: the blast furnace fires from 1.5 atm, the Bessemer converter holds out for 2.5 atm. There are two ways to supply it.</p>
     <ul>
       <li><strong>Air blower</strong> - a steam-engine sub-machine (it sits in the engine's drive cell like the fluid pump or MP generator), so it runs on steam rather than an axle. Its output pressure is capped at about 75% of the engine's inlet steam pressure, so feed the engine well if you want the converter's 2.5 atm.</li>
-      <li><strong>Twin-tub blower</strong> - a pair of bellows worked by an axle, with no steam anywhere: a waterwheel or windmill will blow a blast furnace. It delivers 60 L/s at full speed and holds its main at 2.0 atm, which clears the furnace's gate and never the converter's, so mechanical power makes iron and steam is still what makes steel. Below axle speed 0.5 it delivers nothing and it reaches full output at 1.5; a vanilla waterwheel sits near speed 1, half output, still enough for one furnace. Craft its wooden frame on the grid and right-click it through the remaining stages (beam, axle and gear, tubs, pipe connection).</li>
+      <li><strong>Twin-tub blower</strong> - a pair of bellows worked by an axle, with no steam anywhere: a waterwheel or windmill will blow a blast furnace. It holds its main at 2.0 atm, which clears the furnace's gate and never the converter's, so mechanical power makes iron and steam is still what makes steel. Its output follows the shaft with falling returns - worked harder the tubs have less time to refill - so a waterwheel alone gives about 20 L/s, one tuyere's worth, while the same wheel through one large gear turns it 5.5x faster for 3x the air, about 60 L/s. Gearing up is part of the build. Craft its wooden frame on the grid and right-click it through the remaining stages (beam, axle and gear, tubs, pipe connection).</li>
     </ul>
     <p>Burning a coal pile in the open slot under the stove's intake speeds charging (anthracite is fastest); other fuels make the stove emit some exhaust of its own.</p>
     <p>Finally, the smoke stack is a multiblock that vents surplus exhaust to the sky so the line does not back up and choke the furnace. Because it tries to consume all the gas in its network, use directional pressure valves to route exhaust to the cowper stoves first and only the overflow to the stack.</p>
@@ -110,10 +110,10 @@
     <p>Smelting leaves byproducts, none of them wasted:</p>
     <ul>
       <li><strong>Slag</strong> - grinds into powdered slag, which makes mortar when mixed with slaked lime in a barrel, or acts as a phosphate fertilizer on farmland.</li>
-      <li><strong>Loose blast mix</strong> - behaves like a coal pile, so you can lay it back down, stack it, feed it through the hoppers, or burn it as ordinary fuel in a pinch.</li>
+      <li><strong>Loose burden</strong> - behaves like a coal pile, so you can lay it back down, stack it, feed it through the hoppers, or burn it as ordinary fuel in a pinch.</li>
       <li><strong>Solidified metal</strong> - chisels out of canals and barrels as bits. Per vanilla, recovering hardened metal from a ceramic mold shatters the mold.</li>
     </ul>
-    <p>The mod also swaps a few vanilla classes for drop-in replacements (Harmony patches) so the molten line works. None of this changes vanilla recipes or balance - it only adds the plumbing the new machines need: filled tool molds can be carried and racked while still holding metal (a molten one spills if racked before it sets), the mold rack enforces that, coal piles gain blast-mix burn-to-slag behaviour, and the larger plate, double-ingot and quad-rod mold variants are added.</p>
+    <p>The mod also swaps a few vanilla classes for drop-in replacements (Harmony patches) so the molten line works. None of this changes vanilla recipes or balance - it only adds the plumbing the new machines need: filled tool molds can be carried and racked while still holding metal (a molten one spills if racked before it sets), the mold rack enforces that, coal piles gain burden burn-to-slag behaviour, and the larger plate, double-ingot and quad-rod mold variants are added.</p>
   </div>
 </div>
 
@@ -135,8 +135,8 @@
 <ul>
   <li><strong>My furnace is stuck around 1400 degrees Celsius.</strong> It needs hot blast. Charge a cowper stove on exhaust, then route pressurised air through it into the tuyeres.</li>
   <li><strong>My converter will not blow, but the same air line runs the furnace.</strong> The two gates differ: 1.5 atm for the furnace, 2.5 atm for the converter. A twin-tub blower stops at 2.0 atm, so the converter needs a steam air blower with enough steam behind it.</li>
-  <li><strong>My furnace keeps going out.</strong> Do not open the door while it fires. Keep blast mix fed, keep the exhaust flowing through the smoke stack, and do not let the molten reservoir overflow.</li>
-  <li><strong>My cowper stove will not heat, or exhaust comes out the air line.</strong> Exhaust and blast mixed inside the stove - keep them on separate paths. Burning anything but anthracite also emits some exhaust.</li>
+  <li><strong>My furnace keeps going out.</strong> Do not open the door while it fires. Keep burden fed, keep the exhaust flowing through the smoke stack, and do not let the molten reservoir overflow.</li>
+  <li><strong>My cowper stove will not heat, or exhaust comes out the air line.</strong> Exhaust and burdened inside the stove - keep them on separate paths. Burning anything but anthracite also emits some exhaust.</li>
   <li><strong>My metal solidified in a canal, mold or converter.</strong> It cooled. Chisel canals, barrels and converter residue out, or break the converter with a steel pickaxe to recover. Keep runs short and fed - sleeping cools everything, it does not fast-forward the process.</li>
   <li><strong>A machine became an inert block I cannot interact with or break.</strong> Its block entity was lost (a load error or desync). It is recreated on reload, or an admin can run <code>/exmod heal</code>.</li>
   <li><strong>I see unknown blocks after updating.</strong> Save migrations run on load; replace any that slipped through in creative.</li>

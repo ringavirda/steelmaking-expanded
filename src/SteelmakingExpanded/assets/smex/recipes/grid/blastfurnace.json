@@ -36,7 +36,7 @@
     "height": 3,
     "output": {
       "type": "block",
-      "code": "smex:blastfurnacedoor"
+      "code": "smex:blastfurnacedoor-{tier}"
     }
   },
   {
@@ -77,7 +77,7 @@
     "height": 3,
     "output": {
       "type": "block",
-      "code": "smex:blastfurnacetap-south"
+      "code": "smex:blastfurnacetap-{tier}-south"
     }
   },
   {
@@ -110,7 +110,7 @@
     "height": 3,
     "output": {
       "type": "block",
-      "code": "smex:blastfurnace-tuyere-s"
+      "code": "smex:blastfurnace-tuyere-{tier}-s"
     }
   },
   {

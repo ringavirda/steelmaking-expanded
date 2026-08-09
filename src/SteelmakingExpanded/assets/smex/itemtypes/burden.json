@@ -1,5 +1,5 @@
 {
-  "code": "blastmix",
+  "code": "burden",
   "heldTpIdleAnimation": "holdbothhands",
   "heldRightReadyAnimation": "holdbothhands",
   "shape": { "base": "game:item/resource/crushed/normal" },
@@ -9,7 +9,7 @@
     "items": ["*"],
     "smex": ["*"]
   },
-  "class": "smex.ItemBlastmix",
+  "class": "smex.ItemBurden",
   "maxstacksize": 128,
   "attributes": {
     "placeSound": "game:sound/block/sand"

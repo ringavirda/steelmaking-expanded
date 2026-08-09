@@ -209,8 +209,7 @@ public class BlockEntityCowperStove : BlockEntityMultiblockStructure {
         // temperature to a trickle used to cost it exactly what a torrent did, so a furnace on
         // baseline and one in overdrive drained a stove at the same rate. A heavy blast now empties
         // it in proportion, which is what makes alternating two stoves a real operating decision.
-        float flowShare =
-          _intakeVolume > 0f ? airVol / _intakeVolume : 1f;
+        float flowShare = _intakeVolume > 0f ? airVol / _intakeVolume : 1f;
         _internalTemperature -= tempDiff * _coolingSpeedAir * flowShare * dt;
       }
 

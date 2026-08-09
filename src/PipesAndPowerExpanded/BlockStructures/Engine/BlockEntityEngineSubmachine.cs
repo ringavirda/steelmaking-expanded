@@ -1,10 +1,13 @@
 using System;
+using System.Text;
 using ExpandedLib.Blocks.Machines;
 using ExpandedLib.Blocks.Networks;
 using ExpandedLib.Helpers;
 using PipesAndPowerExpanded.BlockNetworkPipe;
+using PipesAndPowerExpanded.Helpers;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 
@@ -54,6 +57,32 @@ public abstract class BlockEntityEngineSubmachine : BlockEntityProductionMachine
   /// The engine reads it to consume only as much steam as is demanded (no waste).
   /// </summary>
   public virtual float PowerDemand => Engine != null ? 1f : 0f;
+
+  /// <summary>
+  /// What this sub-machine is delivering at <paramref name="power"/> units of engine power, as one
+  /// player-facing line. Return <c>null</c> to show nothing beyond the idle/no-engine states the
+  /// base already covers.
+  /// </summary>
+  protected abstract string? OutputInfo(float power);
+
+  public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc) {
+    base.GetBlockInfo(forPlayer, dsc);
+
+    var engine = Engine;
+    if (engine == null) {
+      dsc.AppendLine(Lang.Get("ppex:submachine-info-noengine"));
+      return;
+    }
+
+    float power = engine.AvailablePower;
+    if (power <= 0f) {
+      dsc.AppendLine(Lang.Get("ppex:submachine-info-idle"));
+      return;
+    }
+
+    if (OutputInfo(power) is { } line)
+      dsc.AppendLine(line);
+  }
 
   public override void Initialize(ICoreAPI api) {
     // The base registers the server production tick; this sub-machine adds the client visuals.

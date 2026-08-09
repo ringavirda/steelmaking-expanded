@@ -7,18 +7,18 @@ using Vintagestory.GameContent;
 namespace SteelmakingExpanded.Patches;
 
 /// <summary>
-/// Adds blast-mix behaviour to the vanilla coal pile without replacing its block-entity class: a
-/// pile of blast mix lit outside a working furnace burns itself out after a fixed time and goes
+/// Adds burden behaviour to the vanilla coal pile without replacing its block-entity class: a
+/// pile of burden lit outside a working furnace burns itself out after a fixed time and goes
 /// cold, while a pile a blast furnace is managing (drawing air through, and consuming) keeps
 /// burning for as long as the campaign runs. Per-pile state lives in a side table keyed by the
 /// vanilla block entity, so other mods that touch the coal pile can coexist.
 /// <para>
-/// Nothing is destroyed here. An unblown charge is mix that never got the air to work, so it is
+/// Nothing is destroyed here. An unblown charge is burden that never got the air to work, so it is
 /// left exactly as it was loaded, ready to be lit again - the furnace, not the pile, decides
 /// whether it becomes iron.
 /// </para>
 /// </summary>
-public static class BlastmixPiles {
+public static class BurdenPiles {
   private sealed class PileState {
     public int BurnTimer;
     public bool Managed;
@@ -40,7 +40,7 @@ public static class BlastmixPiles {
 
   /// <summary>
   /// Hands <paramref name="pile"/> back to its own burn clock and puts it out - what a furnace does
-  /// to its hearth when it goes out. The mix itself is untouched.
+  /// to its hearth when it goes out. The burden itself is untouched.
   /// </summary>
   public static void Release(BlockEntityCoalPile pile) {
     SetManagedByFurnace(pile, false);
@@ -67,35 +67,36 @@ public static class BlastmixPiles {
       && pile.inventory != null
       && pile.inventory.Count > 0
       && !pile.inventory[0].Empty
-      && pile.inventory[0].Itemstack?.Collectible.Code.Path == "blastmix"
+      && pile.inventory[0].Itemstack?.Collectible.Code.Path == "burden"
     ) {
       state.BurnTimer++;
-      if (state.BurnTimer >= SmexValues.BlastmixBurnTime)
+      if (state.BurnTimer >= SmexValues.BurdenBurnTime)
         BurnOut(pile);
     }
   }
 
   internal static void SaveTo(BlockEntityCoalPile pile, ITreeAttribute tree) =>
-    tree.SetInt("blastmixBurnTimer", _states.GetOrCreateValue(pile).BurnTimer);
+    tree.SetInt("burdenBurnTimer", _states.GetOrCreateValue(pile).BurnTimer);
 
   internal static void LoadFrom(
     BlockEntityCoalPile pile,
     ITreeAttribute tree
   ) =>
     _states.GetOrCreateValue(pile).BurnTimer = tree.GetInt(
-      "blastmixBurnTimer",
-      0
+      "burdenBurnTimer",
+      // Falls back to the pre-rename key so a burning pile keeps its timer across the upgrade.
+      tree.GetInt("blastmixBurnTimer", 0)
     );
 }
 
 /// <summary>
-/// Harmony hooks wiring <see cref="BlastmixPiles"/> into the vanilla coal pile's
+/// Harmony hooks wiring <see cref="BurdenPiles"/> into the vanilla coal pile's
 /// lifecycle: a server-side burn-check tick (registered through the block
 /// entity, so it is cleaned up on removal/unload automatically) and persistence
 /// of the burn timer.
 /// </summary>
 [HarmonyPatch(typeof(BlockEntityCoalPile))]
-public static class CoalPileBlastmixPatches {
+public static class CoalPileBurdenPatches {
   [HarmonyPostfix]
   [HarmonyPatch(nameof(BlockEntityCoalPile.Initialize))]
   public static void InitializePostfix(
@@ -104,7 +105,7 @@ public static class CoalPileBlastmixPatches {
   ) {
     if (api.Side == EnumAppSide.Server)
       __instance.RegisterGameTickListener(
-        _ => BlastmixPiles.OnCheckBurn(__instance),
+        _ => BurdenPiles.OnCheckBurn(__instance),
         1000
       );
   }
@@ -114,12 +115,12 @@ public static class CoalPileBlastmixPatches {
   public static void ToTreePostfix(
     BlockEntityCoalPile __instance,
     ITreeAttribute tree
-  ) => BlastmixPiles.SaveTo(__instance, tree);
+  ) => BurdenPiles.SaveTo(__instance, tree);
 
   [HarmonyPostfix]
   [HarmonyPatch(nameof(BlockEntityCoalPile.FromTreeAttributes))]
   public static void FromTreePostfix(
     BlockEntityCoalPile __instance,
     ITreeAttribute tree
-  ) => BlastmixPiles.LoadFrom(__instance, tree);
+  ) => BurdenPiles.LoadFrom(__instance, tree);
 }

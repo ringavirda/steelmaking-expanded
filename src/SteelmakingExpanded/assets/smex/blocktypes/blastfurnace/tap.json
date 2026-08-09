@@ -6,7 +6,11 @@
   "blockmaterial": "Ceramic",
   "maxstacksize": 1,
   "behaviors": [{ "name": "HorizontalOrientable" }],
+  "textures": {
+    "front1": { "base": "game:block/clay/refractory/{refractory}/front1" }
+  },
   "variantgroups": [
+    { "code": "refractory", "states": ["tier1", "tier2", "tier3"] },
     { "code": "side", "loadFromProperties": "abstract/horizontalorientation" }
   ],
   "shapebytype": {

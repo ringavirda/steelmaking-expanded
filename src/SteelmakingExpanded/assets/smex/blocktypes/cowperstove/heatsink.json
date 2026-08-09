@@ -48,7 +48,7 @@
   },
   "textures": {
     "refractory": {
-      "base": "game:block/clay/refractory/{refractory}/bricks"
+      "base": "game:block/clay/refractory/{refractory}/front1"
     }
   },
   "sidesolid": {

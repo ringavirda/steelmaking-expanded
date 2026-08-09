@@ -185,6 +185,9 @@
       }
     }
   ],
+  "textures": {
+    "front1": { "base": "game:block/clay/refractory/tier2/front1" }
+  },
   "variantgroups": [
     { "code": "side", "loadFromProperties": "abstract/horizontalorientation" }
   ],

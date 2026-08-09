@@ -5,31 +5,35 @@
   "blockmaterial": "Ceramic",
   "maxstacksize": 1,
   "behaviors": [{ "name": "Lockable" }],
+  "textures": {
+    "front1": { "base": "game:block/clay/refractory/{refractory}/front1" }
+  },
   "variantgroups": [
     { "code": "type", "states": ["tuyere"] },
+    { "code": "refractory", "states": ["tier1", "tier2", "tier3"] },
     { "code": "orientation", "states": ["s", "n", "w", "e"] }
   ],
   "shapebytype": {
-    "*-tuyere-s": {
+    "*-tuyere-*-s": {
       "base": "smex:blastfurnace/tuyere",
       "rotateY": 0
     },
-    "*-tuyere-e": {
+    "*-tuyere-*-e": {
       "base": "smex:blastfurnace/tuyere",
       "rotateY": 90
     },
-    "*-tuyere-n": {
+    "*-tuyere-*-n": {
       "base": "smex:blastfurnace/tuyere",
       "rotateY": 180
     },
-    "*-tuyere-w": {
+    "*-tuyere-*-w": {
       "base": "smex:blastfurnace/tuyere",
       "rotateY": -90
     }
   },
   "creativeinventory": {
-    "general": ["*-tuyere-s"],
-    "smex": ["*-tuyere-s"]
+    "general": ["*-tuyere-*-s"],
+    "smex": ["*-tuyere-*-s"]
   },
   "replaceable": 400,
   "resistance": 3.5,

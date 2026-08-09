@@ -3,6 +3,8 @@ using ExpandedLib.Registries.Entities;
 using PipesAndPowerExpanded;
 using PipesAndPowerExpanded.BlockNetworkPipe;
 using PipesAndPowerExpanded.BlockStructures.Engine;
+using PipesAndPowerExpanded.Helpers;
+using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 
 namespace SteelmakingExpanded.BlockStructures.Engine.BlockEntities;
@@ -38,6 +40,15 @@ public class BlockEntityEngineAirBlower : BlockEntityEngineSubmachine {
     if (PistonCycleSounds.CrossedFrame(last, cur, total, PistonBottomFrame))
       ExSounds.PlayLocal(Api.World, Pos, ExSounds.AnvilMergeHit, 0.2f, 16f);
   }
+
+  protected override string? OutputInfo(float power) =>
+    Lang.Get(
+      "smex:engineairblower-info-blowing",
+      ExMeasure.FlowRate(SmexValues.AirBlowerOutputPerSecond * power),
+      ExMeasure.Pressure(
+        (Engine?.InletPressure ?? 0f) * PpexValues.SteamEngineEfficiency
+      )
+    );
 
   protected override void DoWork(float power, float dt) {
     if (power <= 0f)

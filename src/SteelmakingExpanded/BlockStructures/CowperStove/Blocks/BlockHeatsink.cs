@@ -1,3 +1,4 @@
+using ExpandedLib.Helpers;
 using ExpandedLib.Registries.Entities;
 using SteelmakingExpanded.BlockNetworkMolten;
 using SteelmakingExpanded.BlockStructures.CowperStove.BlockEntities;
@@ -12,6 +13,11 @@ namespace SteelmakingExpanded.BlockStructures.CowperStove.Blocks;
 /// </summary>
 [BlockRegister]
 public partial class BlockHeatSink : Block {
+  /// <summary>Appends the refractory tier, so the tiers are distinguishable in the inventory,
+  /// handbook and look-at HUD rather than reading as one block.</summary>
+  public override string GetHeldItemName(ItemStack itemStack) =>
+    ExBlockNames.Decorate(this, base.GetHeldItemName(itemStack));
+
   public override byte[] GetLightHsv(
     IBlockAccessor blockAccessor,
     BlockPos pos,

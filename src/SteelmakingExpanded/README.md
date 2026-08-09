@@ -8,7 +8,7 @@ steel production chain on top of vanilla metalworking. Requires
 ## What it adds
 
 - **Blast furnace** - a tall multiblock of refractory brick in any tier, fed by a
-  hopper pair that combines crushed iron ore, lime and fuel into blast mix. The fuel
+  hopper pair that combines iron ore, lime and fuel into burden. The fuel
   slot takes coke or charcoal, counted by carbon (2 coke or 4 charcoal per batch,
   mixing freely). Fired and held above iron's melting point, it pools molten iron
   and slag.
@@ -44,7 +44,7 @@ construction costs in `ModConfig/smex_recipes.json`.
 - `Molds/` - the tool-mold blocks and their config-gated enable/disable.
 - `Commands/` - server `/exmod` sub-commands (the `molds` toggle).
 - `Patches/` - Harmony patches into vanilla (tool mold filled-mold flow + held
-  rendering, mold rack spill rule, coal pile blast-mix burn-to-slag).
+  rendering, mold rack spill rule, coal pile burden burn-out).
 - `Compat/` - other-mod compatibility (extra crushed-iron-ore item codes).
 - `BlockMigrations/` - save migrations for renamed block codes.
 - `assets/smex/` - blocktypes, shapes, recipes, patches, lang, handbook pages.

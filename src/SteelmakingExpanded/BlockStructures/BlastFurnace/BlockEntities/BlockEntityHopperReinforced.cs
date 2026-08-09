@@ -11,7 +11,7 @@ namespace SteelmakingExpanded.BlockStructures.BlastFurnace.BlockEntities;
 
 /// <summary>
 /// Block entity for the reinforced hopper: an 8-slot container holding the iron ore,
-/// coke and flux that the bell hopper below consumes to craft blast mix. Right-click
+/// coke and flux that the bell hopper below consumes to craft burden. Right-click
 /// opens its dialog; Ctrl + right-click toggles the bell hopper's dropping.
 /// </summary>
 [BlockEntityRegister]
@@ -26,7 +26,7 @@ public class BlockEntityHopperReinforced : BlockEntityContainer {
   private const int PacketIdOpen = 1000;
   private const int PacketIdClose = 1001;
 
-  // Cached, untranslated mesh of the blast-mix contents pile (built lazily client-side).
+  // Cached, untranslated mesh of the burden contents pile (built lazily client-side).
   private MeshData? _contentsBaseMesh;
 
   // The contents pile is drawn between these heights (in 1/16 block units) inside the
@@ -160,7 +160,7 @@ public class BlockEntityHopperReinforced : BlockEntityContainer {
       dsc.AppendLine(
         Lang.Get(
           "smex:hopper-info-magazine",
-          bell.BlastMixMagazine,
+          bell.BurdenMagazine,
           bell.MaxMagazineCapacity
         )
       );
@@ -174,7 +174,7 @@ public class BlockEntityHopperReinforced : BlockEntityContainer {
   }
 
   /// <summary>
-  /// Draws the blast-mix contents pile on top of the normal hopper mesh, raised
+  /// Draws the burden contents pile on top of the normal hopper mesh, raised
   /// between <see cref="ContentsMinY"/> and <see cref="ContentsMaxY"/> in proportion
   /// to how full the bell hopper's magazine is below. The bell re-triggers this
   /// tessellation whenever its magazine changes.
@@ -186,12 +186,12 @@ public class BlockEntityHopperReinforced : BlockEntityContainer {
     if (
       Api.World.BlockAccessor.GetBlockEntity(Pos.DownCopy())
         is BlockEntityHopperBell bell
-      && bell.BlastMixMagazine > 0
+      && bell.BurdenMagazine > 0
     ) {
       _contentsBaseMesh ??= BuildContentsMesh(tesselator);
       if (_contentsBaseMesh != null) {
         float fill = GameMath.Clamp(
-          (float)bell.BlastMixMagazine / bell.MaxMagazineCapacity,
+          (float)bell.BurdenMagazine / bell.MaxMagazineCapacity,
           0f,
           1f
         );
@@ -211,7 +211,7 @@ public class BlockEntityHopperReinforced : BlockEntityContainer {
   private MeshData? BuildContentsMesh(ITesselatorAPI tesselator) {
     Shape? shape = Api
       .Assets.TryGet(
-        new AssetLocation("smex:shapes/blastfurnace/contents-blastmix.json")
+        new AssetLocation("smex:shapes/blastfurnace/contents-burden.json")
       )
       ?.ToObject<Shape>();
     if (shape == null)
@@ -265,11 +265,12 @@ public class ItemSlotBlastFurnace : ItemSlotSurvival {
 
     string path = sourceSlot.Itemstack.Collectible.Code.Path;
 
-    // Iron slots also accept reclaimed blastmix (e.g. from broken-up piles), so
-    // it can be fed straight back into the bell hopper's magazine.
+    // The iron slot takes crushed ore or raw nuggets; the bell hopper below exchanges them by ore
+    // content, so a batch can be fed either or a mix of both. It also accepts reclaimed burden
+    // (e.g. from broken-up piles), so it can be fed straight back into the magazine.
     if (
       AllowedType == "iron"
-      && (IronOreCompat.IsCrushedIronOre(path) || path.Equals("blastmix"))
+      && (IronOreCompat.IsIronFeed(path) || path.Equals("burden"))
     )
       return base.CanTakeFrom(sourceSlot, priority);
     // The fuel slot takes coke or charcoal; the bell hopper below exchanges them by carbon

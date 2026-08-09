@@ -11,6 +11,15 @@ namespace SteelmakingExpanded.Compat;
 public static class IronOreCompat {
   private static readonly HashSet<string> ExtraIronOrePaths = new();
 
+  // The vanilla nuggets that smelt to an iron bloom. Other mods add crushed variants rather than
+  // new iron nuggets, so this set has no compat branch yet.
+  private static readonly HashSet<string> IronNuggetPaths =
+  [
+    "nugget-limonite",
+    "nugget-hematite",
+    "nugget-magnetite",
+  ];
+
   /// <summary>
   /// Populate the compat list.
   /// </summary>
@@ -37,4 +46,15 @@ public static class IronOreCompat {
   /// </summary>
   public static bool IsCrushedIronOre(string path) =>
     path.StartsWith("crushed-iron") || ExtraIronOrePaths.Contains(path);
+
+  /// <summary>
+  /// True if <paramref name="path"/> is an iron nugget the blast furnace takes uncrushed, at the
+  /// lower rate held by <see cref="BlockStructures.BlastFurnace.BurdenValue.OrePerNugget"/>.
+  /// </summary>
+  public static bool IsIronNugget(string path) =>
+    IronNuggetPaths.Contains(path);
+
+  /// <summary>True if <paramref name="path"/> is any iron feed the blast furnace burden accepts.</summary>
+  public static bool IsIronFeed(string path) =>
+    IsCrushedIronOre(path) || IsIronNugget(path);
 }

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using ExpandedLib.Helpers;
 using ExpandedLib.Registries.Entities;
 using PipesAndPowerExpanded.BlockNetworkPipe.Blocks;
+using Vintagestory.API.Common;
 
 namespace SteelmakingExpanded.BlockStructures.BlastFurnace.Blocks;
 

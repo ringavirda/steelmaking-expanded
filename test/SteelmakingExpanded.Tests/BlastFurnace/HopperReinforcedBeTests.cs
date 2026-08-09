@@ -9,7 +9,7 @@ using Xunit;
 namespace SteelmakingExpanded.Tests;
 
 /// <summary>
-/// The reinforced hopper block entity (the blast-mix magazine's loader): its typed 8-slot layout (the
+/// The reinforced hopper block entity (the burden magazine's loader): its typed 8-slot layout (the
 /// iron/coke/flux columns the bell hopper crafts from) and the block-info readout that surfaces the
 /// bell's magazine/dropping state below it. The slot accept rules are covered by
 /// <see cref="HopperSlotTests"/>; this pins the slot <em>layout</em> and the info text.

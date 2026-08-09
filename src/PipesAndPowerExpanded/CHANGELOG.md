@@ -15,6 +15,12 @@ see the git history.
   Sized at three mechanical pumps to one engine pump on the same engine.
 - The hand pump's delivery head is a config key rather than a fixed value.
 
+### Fixed
+
+- Engine sub-machines showed nothing when looked at. The water pump now reports its flow and delivery
+  pressure - and says so when it has no intake on the source line - and the mechanical generator
+  reports shaft speed against the engine's rating, including when the shaft is labouring.
+
 ## [0.6.6] - 2026-08-09
 
 Covers the 0.6.4 and 0.6.5 development bumps, which were never published separately.

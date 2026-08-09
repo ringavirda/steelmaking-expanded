@@ -7,8 +7,8 @@ namespace SteelmakingExpanded.Tests;
 
 /// <summary>
 /// The reinforced hopper's typed feed slots: iron slots take crushed iron ore (and reclaimed
-/// blastmix), coke slots take crushed coke, flux slots take lime - everything else is refused. This
-/// is the gate that stops the wrong material reaching the bell hopper's blast-mix recipe.
+/// burden), coke slots take crushed coke, flux slots take lime - everything else is refused. This
+/// is the gate that stops the wrong material reaching the bell hopper's burden recipe.
 /// </summary>
 public class HopperSlotTests {
   private static ItemSlot Source(string code) {
@@ -51,10 +51,10 @@ public class HopperSlotTests {
   #region CanTakeFrom
 
   [Fact]
-  public void Iron_slot_takes_crushed_iron_and_reclaimed_blastmix() {
+  public void Iron_slot_takes_crushed_iron_and_reclaimed_burden() {
     var iron = Slot("iron");
     Assert.True(iron.CanTakeFrom(Source("game:crushed-iron")));
-    Assert.True(iron.CanTakeFrom(Source("smex:blastmix")));
+    Assert.True(iron.CanTakeFrom(Source("smex:burden")));
   }
 
   [Fact]
@@ -76,7 +76,7 @@ public class HopperSlotTests {
   public void Lime_slot_takes_only_lime() {
     var lime = Slot("lime");
     Assert.True(lime.CanTakeFrom(Source("game:lime")));
-    Assert.False(lime.CanTakeFrom(Source("smex:blastmix")));
+    Assert.False(lime.CanTakeFrom(Source("smex:burden")));
   }
 
   #endregion

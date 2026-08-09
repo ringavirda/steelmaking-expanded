@@ -9,7 +9,7 @@ using Xunit;
 namespace SteelmakingExpanded.Tests;
 
 /// <summary>
-/// The bell hopper crafts blast mix from the iron/coke/flux in the reinforced hopper above into its
+/// The bell hopper crafts burden from the iron/coke/flux in the reinforced hopper above into its
 /// internal magazine, then drops it down the furnace shaft. Covers the magazine/dropping persistence,
 /// the furnace-full check, and the crafting recipe (consuming the exact feed into the magazine).
 /// </summary>
@@ -87,7 +87,7 @@ public class BellHopperTests {
   public void Magazine_and_dropping_round_trip_through_the_tree() {
     var world = new TestWorld();
     var src = Bell(world, new BlockPos(0, 16, 0));
-    ReflectionHelpers.SetField(src, "_blastMixMagazine", 24);
+    ReflectionHelpers.SetField(src, "_burdenMagazine", 24);
     src.IsDropping = true;
 
     var tree = new TreeAttribute();
@@ -96,7 +96,7 @@ public class BellHopperTests {
     var dst = Bell(world, new BlockPos(0, 16, 0));
     dst.FromTreeAttributes(tree, world.World);
 
-    Assert.Equal(24, dst.BlastMixMagazine);
+    Assert.Equal(24, dst.BurdenMagazine);
     Assert.True(dst.IsDropping);
   }
 
@@ -115,13 +115,13 @@ public class BellHopperTests {
   #region Crafting
 
   [Fact]
-  public void OnServerTick_crafts_blastmix_from_a_full_hopper_into_the_magazine() {
+  public void OnServerTick_crafts_burden_from_a_full_hopper_into_the_magazine() {
     var world = new TestWorld();
     var bellPos = new BlockPos(0, 16, 0);
     var bell = Bell(world, bellPos);
     var hopper = HopperAbove(world, bellPos);
 
-    // Exactly one recipe's worth of feed: 12 iron + 3 coke + 1 lime -> 16 blastmix.
+    // Exactly one recipe's worth of feed: 12 iron + 3 coke + 1 lime -> 16 burden.
     Put(
       hopper.Inventory,
       0,
@@ -133,7 +133,7 @@ public class BellHopperTests {
 
     ReflectionHelpers.Invoke(bell, "OnServerTick", 1f);
 
-    Assert.Equal(SmexValues.HopperBlastmixProduced, bell.BlastMixMagazine);
+    Assert.Equal(SmexValues.HopperBurdenProduced, bell.BurdenMagazine);
     Assert.True(hopper.Inventory[0].Empty); // iron consumed
     Assert.True(hopper.Inventory[2].Empty); // coke consumed
     Assert.True(hopper.Inventory[3].Empty); // lime consumed
@@ -157,23 +157,23 @@ public class BellHopperTests {
 
     ReflectionHelpers.Invoke(bell, "OnServerTick", 1f);
 
-    Assert.Equal(0, bell.BlastMixMagazine);
+    Assert.Equal(0, bell.BurdenMagazine);
     Assert.False(hopper.Inventory[0].Empty); // nothing consumed
   }
 
   [Fact]
-  public void OnServerTick_reclaims_loose_blastmix_into_the_magazine() {
+  public void OnServerTick_reclaims_loose_burden_into_the_magazine() {
     var world = new TestWorld();
     var bellPos = new BlockPos(0, 16, 0);
     var bell = Bell(world, bellPos);
     var hopper = HopperAbove(world, bellPos);
 
-    // Reclaimed blastmix sitting in an iron slot feeds 1:1 into the magazine.
-    Put(hopper.Inventory, 0, "smex:blastmix", 8);
+    // Reclaimed burden sitting in an iron slot feeds 1:1 into the magazine.
+    Put(hopper.Inventory, 0, "smex:burden", 8);
 
     ReflectionHelpers.Invoke(bell, "OnServerTick", 1f);
 
-    Assert.Equal(8, bell.BlastMixMagazine);
+    Assert.Equal(8, bell.BurdenMagazine);
     Assert.True(hopper.Inventory[0].Empty);
   }
 

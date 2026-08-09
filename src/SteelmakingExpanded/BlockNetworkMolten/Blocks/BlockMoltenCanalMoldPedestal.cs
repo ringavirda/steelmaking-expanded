@@ -72,8 +72,7 @@ public partial class BlockMoltenCanalMoldPedestal : BlockMoltenCanalTap {
     bool sneak = byPlayer.Entity.Controls.ShiftKey;
     bool opposite = byPlayer.Entity.Controls.CtrlKey;
     if (!sneak && !opposite)
-      return be.Solidified
-        && TryChiselClear(world, byPlayer, blockSel, be);
+      return be.Solidified && TryChiselClear(world, byPlayer, blockSel, be);
 
     if (world.Side == EnumAppSide.Client)
       return true;

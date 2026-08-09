@@ -7,8 +7,8 @@ using Vintagestory.API.MathTools;
 namespace SteelmakingExpanded.BlockStructures.BlastFurnace.Blocks;
 
 /// <summary>
-/// The bell hopper block; its <see cref="BlockEntityHopperBell"/> crafts blast
-/// mix and drops it into the furnace.
+/// The bell hopper block; its <see cref="BlockEntityHopperBell"/> crafts burden
+/// and drops it into the furnace.
 /// </summary>
 [BlockRegister]
 public partial class BlockHopperBell : Block {
@@ -22,14 +22,14 @@ public partial class BlockHopperBell : Block {
       base.GetDrops(world, pos, byPlayer, dropQuantityMultiplier)
     );
 
-    // Return the blast mix buffered in the internal magazine so it isn't lost.
+    // Return the burden buffered in the internal magazine so it isn't lost.
     if (
       world.BlockAccessor.GetBlockEntity(pos) is BlockEntityHopperBell be
-      && be.BlastMixMagazine > 0
+      && be.BurdenMagazine > 0
     ) {
-      Item? blastmix = world.GetItem(new AssetLocation("smex", "blastmix"));
-      if (blastmix != null)
-        drops.Add(new ItemStack(blastmix, be.BlastMixMagazine));
+      Item? burden = world.GetItem(new AssetLocation("smex", "burden"));
+      if (burden != null)
+        drops.Add(new ItemStack(burden, be.BurdenMagazine));
     }
 
     return drops.ToArray();

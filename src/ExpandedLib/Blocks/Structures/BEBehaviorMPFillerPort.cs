@@ -44,10 +44,18 @@ public class BEBehaviorMPFillerPort(BlockEntity blockentity)
   public bool IsTurning => Network is { Speed: > 0.001f or < -0.001f };
 
   /// <summary>
-  /// The network's rotation speed, absolute; 0 when the port has no network. A principal scales the
-  /// work it does by it.
+  /// This port's own rotation speed, absolute; 0 when the port has no network. A principal scales
+  /// the work it does by it.
+  /// <para>
+  /// Geared through <see cref="BEBehaviorMPBase.GearedRatio"/>, as vanilla's
+  /// <c>BEBehaviorMPConsumer.TrueSpeed</c> is. The network's own speed is held in the frame of
+  /// whichever node seeded it, so reading it raw made a machine behind a gear train report the
+  /// drive's speed or its own depending on chunk load order - gearing up appeared to do nothing, or
+  /// to multiply output, run to run.
+  /// </para>
   /// </summary>
-  public float Speed => Network != null ? Math.Abs(Network.Speed) : 0f;
+  public float Speed =>
+    Network != null ? Math.Abs(Network.Speed * GearedRatio) : 0f;
 
   /// <summary>
   /// Which way the axle turns: true when the vanilla network runs negative. <see cref="Speed"/> is

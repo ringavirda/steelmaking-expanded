@@ -140,7 +140,7 @@ public class BlastFurnaceTests {
     ReflectionHelpers.SetField(src, "_internalTemp", 1456f);
     ReflectionHelpers.SetField(src, "_moltenIron", 80f);
     ReflectionHelpers.SetField(src, "_moltenSlag", 40f);
-    ReflectionHelpers.SetField(src, "_cachedMixCount", 220);
+    ReflectionHelpers.SetField(src, "_cachedBurdenCount", 220);
     ReflectionHelpers.SetField(src, "_cachedIsFull", true);
 
     var tree = new TreeAttribute();
@@ -166,7 +166,52 @@ public class BlastFurnaceTests {
       (float)ReflectionHelpers.GetField(dst, "_moltenSlag")!,
       1
     );
-    Assert.Equal(220, (int)ReflectionHelpers.GetField(dst, "_cachedMixCount")!);
+    Assert.Equal(
+      220,
+      (int)ReflectionHelpers.GetField(dst, "_cachedBurdenCount")!
+    );
+  }
+
+  /// <summary>
+  /// Every figure the block info prints, checked as a set. <c>GetBlockInfo</c> runs CLIENT-side off
+  /// the synced tree, so a readout field left out of <c>ToTreeAttributes</c> is not merely stale -
+  /// it reads as zero no matter what the server computed, and looks exactly like the machine being
+  /// broken. The blast pressure shipped that way and showed 0.00 atm on a furnace that was melting.
+  /// </summary>
+  [Fact]
+  public void Every_field_the_readout_prints_reaches_the_client() {
+    string[] readoutFields =
+    [
+      "_internalTemp",
+      "_targetTemp",
+      "_meltSpeed",
+      "_airDrawn",
+      "_airRequested",
+      "_blastPressure",
+      "_moltenIron",
+      "_moltenSlag",
+      "_extinguishSeconds",
+      "_unblownSeconds",
+    ];
+
+    var world = NewWorld();
+    var src = Furnace(world);
+    // A distinct value per field, so a mix-up between two of them fails as loudly as a missing one.
+    for (int i = 0; i < readoutFields.Length; i++)
+      ReflectionHelpers.SetField(src, readoutFields[i], 11f + i);
+
+    var tree = new TreeAttribute();
+    src.ToTreeAttributes(tree);
+
+    var dst = Furnace(world);
+    dst.FromTreeAttributes(tree, world.World);
+
+    for (int i = 0; i < readoutFields.Length; i++)
+      Assert.Equal(
+        11f + i,
+        (float)ReflectionHelpers.GetField(dst, readoutFields[i])!,
+        2
+      );
   }
 
   #endregion

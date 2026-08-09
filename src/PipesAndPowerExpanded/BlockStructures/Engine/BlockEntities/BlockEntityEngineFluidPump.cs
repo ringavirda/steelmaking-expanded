@@ -3,8 +3,10 @@ using ExpandedLib.Helpers;
 using ExpandedLib.Registries.Entities;
 using PipesAndPowerExpanded.BlockNetworkPipe;
 using PipesAndPowerExpanded.BlockNetworkPipe.BlockEntities;
+using PipesAndPowerExpanded.Helpers;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 
@@ -23,6 +25,17 @@ public class BlockEntityEngineFluidPump : BlockEntityEngineSubmachine {
   private bool _drawingWater;
 
   private ILoadedSound? _waterSound;
+
+  protected override string? OutputInfo(float power) =>
+    Lang.Get(
+      _drawingWater
+        ? "ppex:enginefluidpump-info-pumping"
+        : "ppex:enginefluidpump-info-nointake",
+      ExMeasure.FlowRate(PpexValues.PumpWaterPerSecond * power),
+      ExMeasure.Pressure(
+        (Engine?.InletPressure ?? 0f) * PpexValues.SteamEngineEfficiency
+      )
+    );
 
   protected override void DoWork(float power, float dt) {
     if (power <= 0f) {

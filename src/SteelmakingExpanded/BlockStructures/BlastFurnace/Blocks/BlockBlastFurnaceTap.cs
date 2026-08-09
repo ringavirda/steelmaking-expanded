@@ -17,6 +17,11 @@ namespace SteelmakingExpanded.BlockStructures.BlastFurnace.Blocks;
 /// </summary>
 [BlockRegister]
 public partial class BlockBlastFurnaceTap : Block {
+  /// <summary>Appends the refractory tier, so the tiers are distinguishable in the inventory,
+  /// handbook and look-at HUD rather than reading as one block.</summary>
+  public override string GetHeldItemName(ItemStack itemStack) =>
+    ExBlockNames.Decorate(this, base.GetHeldItemName(itemStack));
+
   public override bool OnBlockInteractStart(
     IWorldAccessor world,
     IPlayer byPlayer,

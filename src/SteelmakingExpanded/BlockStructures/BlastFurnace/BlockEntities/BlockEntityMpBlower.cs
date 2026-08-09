@@ -228,13 +228,20 @@ public class BlockEntityMpBlower : BlockEntity, IRenderer {
   }
 
   /// <summary>
-  /// Air (L/s) the bellows deliver at axle <paramref name="speed"/> - straight proportion, because
-  /// the tubs displace a fixed volume per turn of the shaft. No threshold and no ceiling: a shaft
-  /// barely turning moves a little air, which is what a bellows does. What limits the blower is the
-  /// pressure it works against, through <see cref="ShaftLoadAt"/>, not a band drawn on its speed.
+  /// Air (L/s) the bellows deliver at axle <paramref name="speed"/>. Proportional near zero - a
+  /// shaft barely turning moves a little air, which is what a bellows does - then flattening toward
+  /// <see cref="SmexConfig.MpBlowerMaxLitres"/>, the volume the tubs can sweep. Driven hard they
+  /// cannot refill between strokes, so speed past
+  /// <see cref="SmexConfig.MpBlowerHalfOutputSpeed"/> buys steadily less air and the ceiling is
+  /// never reached. Still no threshold and no band: the curve is smooth and monotonic, and what
+  /// limits the pressure reached is <see cref="ShaftLoadAt"/>.
   /// </summary>
-  public static float OutputAt(float speed) =>
-    SmexValues.MpBlowerLitresPerSpeed * GameMath.Max(0f, speed);
+  public static float OutputAt(float speed) {
+    float s = GameMath.Max(0f, speed);
+    return SmexValues.MpBlowerMaxLitres
+      * s
+      / (s + SmexValues.MpBlowerHalfOutputSpeed);
+  }
 
   #endregion
 

@@ -46,7 +46,7 @@ public class SmexRecipeConfig : IExVersionedConfig {
 
       // Blast furnace + converter machine grid recipes.
       ["blastfurnace-tuyere-grid"] = Grid("smex:blastfurnace-tuyere-*"),
-      ["blastfurnacedoor-grid"] = Grid("smex:blastfurnacedoor"),
+      ["blastfurnacedoor-grid"] = Grid("smex:blastfurnacedoor-*"),
       ["blastfurnacetap-grid"] = Grid("smex:blastfurnacetap-*"),
       ["converter-intake-grid"] = Grid("smex:converter-intake-*"),
       ["convertercontrol-grid"] = Grid("smex:convertercontrol-*"),

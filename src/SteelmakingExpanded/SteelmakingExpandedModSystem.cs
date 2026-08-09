@@ -185,7 +185,7 @@ public class SteelmakingExpandedModSystem : ModSystem {
     IronOreCompat.Init(api);
 
     // Harmony patches that extend the vanilla tool mold, mold rack and coal pile
-    // (filled-mold handling and blast-mix burn-to-slag) without replacing their
+    // (filled-mold handling and burden burn-to-slag) without replacing their
     // registered classes, so other mods touching those blocks can coexist.
     if (!Harmony.HasAnyPatches(Mod.Info.ModID)) {
       _harmony = new Harmony(Mod.Info.ModID);

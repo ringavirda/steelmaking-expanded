@@ -436,10 +436,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
   /// </para>
   /// </summary>
   private static float ProcessTemperature(float pressure) {
-    float overGate = Math.Max(
-      0f,
-      pressure - SmexValues.BlastPressureThreshold
-    );
+    float overGate = Math.Max(0f, pressure - SmexValues.BlastPressureThreshold);
     return SmexValues.BessemerBaseTemperature
       + overGate * SmexValues.BessemerPressureTempGain
       - SmexValues.BessemerRadiationLoss;
@@ -636,8 +633,7 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
     foreach (
       string entry in SmexValues.BessemerScrapCodes.Split(
         ',',
-        StringSplitOptions.RemoveEmptyEntries
-          | StringSplitOptions.TrimEntries
+        StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
       )
     )
       if (new AssetLocation(entry).ToString() == code)
@@ -1132,6 +1128,17 @@ public class BlockEntityConverterControl : BlockEntityMultiblockStructure {
           ExMeasure.Temperature(_processTemp)
         )
       );
+
+    // The gate the intake has to clear, always shown. It is the hardest requirement in the mod -
+    // only a steam blower reaches it - and a converter sitting idle on a well-fed but under-pressure
+    // main gives the player nothing to go on otherwise.
+    dsc.AppendLine(
+      Lang.Get(
+        "smex:bessemer-info-blastpressure",
+        ExMeasure.Pressure(BlastPressure()),
+        ExMeasure.Pressure(SmexValues.BlastPressureThreshold)
+      )
+    );
 
     dsc.AppendLine(Lang.Get("smex:bessemer-info-status", _status));
   }

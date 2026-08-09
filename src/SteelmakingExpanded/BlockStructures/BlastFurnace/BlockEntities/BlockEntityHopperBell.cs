@@ -12,27 +12,33 @@ using Vintagestory.GameContent;
 namespace SteelmakingExpanded.BlockStructures.BlastFurnace.BlockEntities;
 
 /// <summary>
-/// Block entity for the bell hopper beneath the reinforced hopper. Crafts blast mix
+/// Block entity for the bell hopper beneath the reinforced hopper. Crafts burden
 /// from the iron/coke/flux in the hopper above into an internal magazine, then drops
 /// it into the furnace shaft below while dropping is enabled.
 /// </summary>
 [BlockEntityRegister]
 public class BlockEntityHopperBell : BlockEntity {
   private long _tickId;
-  private Item? _blastMixItem;
-  private int _blastMixMagazine = 0;
+  private Item? _burdenItem;
+  private int _burdenMagazine = 0;
+
+  // Feed over-spent on the last batch because the last piece could not be split, banked against the
+  // next one. Always under one piece of the bulkier feed, so a run of mixed batches costs exactly
+  // the advertised rate per item instead of losing a fraction to rounding every time.
+  private int _oreCredit = 0;
+  private int _carbonCredit = 0;
 
   // Dropping is on by default so a freshly built furnace feeds itself without the
   // player having to discover the Ctrl + right-click toggle first.
   private bool _isDropping = true;
 
-  /// <summary>Blast mix currently buffered in the hopper's internal magazine.</summary>
-  public int BlastMixMagazine => _blastMixMagazine;
+  /// <summary>Burden currently buffered in the hopper's internal magazine.</summary>
+  public int BurdenMagazine => _burdenMagazine;
 
-  /// <summary>Maximum blast mix the magazine can hold.</summary>
+  /// <summary>Maximum burden the magazine can hold.</summary>
   public int MaxMagazineCapacity => SmexValues.HopperMaxMagazineCapacity;
 
-  /// <summary>Whether the hopper is dropping blast mix into the furnace.</summary>
+  /// <summary>Whether the hopper is dropping burden into the furnace.</summary>
   public bool IsDropping {
     get => _isDropping;
     set {
@@ -52,7 +58,7 @@ public class BlockEntityHopperBell : BlockEntity {
     base.Initialize(api);
 
     if (api.Side == EnumAppSide.Server) {
-      _blastMixItem = api.World.GetItem(new AssetLocation("smex", "blastmix"));
+      _burdenItem = api.World.GetItem(new AssetLocation("smex", "burden"));
       if (_isDropping)
         StartTicking();
     }
@@ -75,21 +81,29 @@ public class BlockEntityHopperBell : BlockEntity {
     IWorldAccessor worldForResolving
   ) {
     base.FromTreeAttributes(tree, worldForResolving);
-    int oldMagazine = _blastMixMagazine;
-    _blastMixMagazine = tree.GetInt("blastMixMagazine");
+    int oldMagazine = _burdenMagazine;
+    // Falls back to the pre-rename key so a stocked magazine survives the upgrade.
+    _burdenMagazine = tree.GetInt(
+      "burdenMagazine",
+      tree.GetInt("blastMixMagazine")
+    );
     IsDropping = tree.GetBool("isDropping", true);
+    _oreCredit = tree.GetInt("oreCredit");
+    _carbonCredit = tree.GetInt("carbonCredit");
 
     // The reinforced hopper above renders its contents pile from our magazine level,
     // so nudge it to re-tessellate whenever that level changes on the client.
-    if (oldMagazine != _blastMixMagazine && Api?.Side == EnumAppSide.Client) {
+    if (oldMagazine != _burdenMagazine && Api?.Side == EnumAppSide.Client) {
       Api.World.BlockAccessor.GetBlockEntity(Pos.UpCopy())?.MarkDirty(true);
     }
   }
 
   public override void ToTreeAttributes(ITreeAttribute tree) {
     base.ToTreeAttributes(tree);
-    tree.SetInt("blastMixMagazine", _blastMixMagazine);
+    tree.SetInt("burdenMagazine", _burdenMagazine);
     tree.SetBool("isDropping", IsDropping);
+    tree.SetInt("oreCredit", _oreCredit);
+    tree.SetInt("carbonCredit", _carbonCredit);
   }
 
   private void OnServerTick(float dt) {
@@ -107,35 +121,34 @@ public class BlockEntityHopperBell : BlockEntity {
     // per tick rather than one per craft cycle.
     bool feedChanged = false;
 
-    int ironOreReq = SmexValues.HopperIronOreRequired;
     int limeReq = SmexValues.HopperLimeRequired;
-    int blastmixProd = SmexValues.HopperBlastmixProduced;
+    int burdenProd = SmexValues.HopperBurdenProduced;
     int dropAmount = SmexValues.HopperDropAmount;
 
-    // Reclaimed blastmix sitting in the hopper feeds straight into the magazine
-    // (1:1), taking priority over crafting fresh blastmix from ore.
-    int magazineSpace = MaxMagazineCapacity - _blastMixMagazine;
+    // Reclaimed burden sitting in the hopper feeds straight into the magazine
+    // (1:1), taking priority over crafting fresh burden from ore.
+    int magazineSpace = MaxMagazineCapacity - _burdenMagazine;
     if (magazineSpace > 0) {
-      int reclaim = System.Math.Min(magazineSpace, CountItems(inv, IsBlastmix));
+      int reclaim = System.Math.Min(magazineSpace, CountItems(inv, IsBurden));
       if (reclaim > 0) {
-        ConsumeItems(inv, IsBlastmix, reclaim);
-        _blastMixMagazine += reclaim;
+        ConsumeItems(inv, IsBurden, reclaim);
+        _burdenMagazine += reclaim;
         feedChanged = true;
         MarkDirty(true);
       }
     }
 
-    while (_blastMixMagazine <= MaxMagazineCapacity - blastmixProd) {
+    while (_burdenMagazine <= MaxMagazineCapacity - burdenProd) {
       if (
-        CountItems(inv, IsIronOre) >= ironOreReq
-        && CountCarbon(inv) >= CarbonPerBatch
+        CountOre(inv) + _oreCredit >= BurdenValue.OrePerBatch
+        && CountCarbon(inv) + _carbonCredit >= BurdenValue.CarbonPerBatch
         && CountItems(inv, IsLime) >= limeReq
       ) {
-        ConsumeItems(inv, IsIronOre, ironOreReq);
+        ConsumeOre(inv);
         ConsumeCarbon(inv);
         ConsumeItems(inv, IsLime, limeReq);
 
-        _blastMixMagazine += blastmixProd;
+        _burdenMagazine += burdenProd;
         feedChanged = true;
         MarkDirty(true);
       } else {
@@ -143,11 +156,11 @@ public class BlockEntityHopperBell : BlockEntity {
       }
     }
 
-    if (_blastMixMagazine >= dropAmount && !IsFurnaceFull()) {
+    if (_burdenMagazine >= dropAmount && !IsFurnaceFull()) {
       BlockPos? targetPos = FindBestPileLocation(dropAmount);
       if (targetPos != null) {
-        DropBlastMix(targetPos, dropAmount);
-        _blastMixMagazine -= dropAmount;
+        DropBurden(targetPos, dropAmount);
+        _burdenMagazine -= dropAmount;
         MarkDirty(true);
       }
     }
@@ -162,7 +175,7 @@ public class BlockEntityHopperBell : BlockEntity {
       topHopper.MarkDirty();
   }
 
-  /// <summary>Returns <c>true</c> when the furnace shaft below has no room for more blast mix.</summary>
+  /// <summary>Returns <c>true</c> when the furnace shaft below has no room for more burden.</summary>
   public bool IsFurnaceFull() {
     if (Api == null)
       return false;
@@ -241,7 +254,7 @@ public class BlockEntityHopperBell : BlockEntity {
         if (slot.Empty)
           return true;
 
-        if (slot.Itemstack.Collectible.Code.Path.Equals("blastmix")) {
+        if (slot.Itemstack.Collectible.Code.Path.Equals("burden")) {
           if (slot.StackSize + dropAmount <= pileBe.MaxStackSize)
             return true;
         }
@@ -251,8 +264,8 @@ public class BlockEntityHopperBell : BlockEntity {
     return false;
   }
 
-  private void DropBlastMix(BlockPos targetPos, int amount) {
-    if (_blastMixItem == null)
+  private void DropBurden(BlockPos targetPos, int amount) {
+    if (_burdenItem == null)
       return;
 
     Block blockAtTarget = Api.World.BlockAccessor.GetBlock(targetPos);
@@ -275,7 +288,7 @@ public class BlockEntityHopperBell : BlockEntity {
         var slot = pileBe.inventory[0];
 
         if (slot.Empty) {
-          slot.Itemstack = new ItemStack(_blastMixItem, amount);
+          slot.Itemstack = new ItemStack(_burdenItem, amount);
         } else {
           slot.Itemstack.StackSize += amount;
         }
@@ -294,11 +307,14 @@ public class BlockEntityHopperBell : BlockEntity {
   private void SpawnFallingParticles() =>
     ExParticles.FallingDust(Api.World, Pos);
 
-  private bool IsBlastmix(ItemStack stack) =>
-    stack.Collectible.Code.Path.Equals("blastmix");
+  private bool IsBurden(ItemStack stack) =>
+    stack.Collectible.Code.Path.Equals("burden");
 
-  private bool IsIronOre(ItemStack stack) =>
+  private bool IsCrushedIronOre(ItemStack stack) =>
     IronOreCompat.IsCrushedIronOre(stack.Collectible.Code.Path);
+
+  private bool IsIronNugget(ItemStack stack) =>
+    IronOreCompat.IsIronNugget(stack.Collectible.Code.Path);
 
   // Coke goes into the burden whole. The crushed intermediate is retired: it existed only to be
   // fed here, and its pulverizer route collided with other mods' crushing economies.
@@ -310,49 +326,82 @@ public class BlockEntityHopperBell : BlockEntity {
 
   #region Burden carbon
 
-  // The two fuels are counted in a shared unit rather than as separate quotas, so a batch can be
-  // fed coke, charcoal or any mix of the two at one exchange rate. Scaling by BOTH configured
-  // amounts keeps the arithmetic exact in integers whatever the two are set to: at the defaults
-  // (2 coke or 4 charcoal) a batch costs 8 units, coke is worth 4 and charcoal 2.
-
-  /// <summary>Carbon units one piece of coke contributes.</summary>
-  private static int CarbonPerCoke => SmexValues.HopperCharcoalRequired;
-
-  /// <summary>Carbon units one piece of charcoal contributes.</summary>
-  private static int CarbonPerCharcoal => SmexValues.HopperCokeRequired;
-
-  /// <summary>Carbon units one blast-mix batch costs.</summary>
-  private static int CarbonPerBatch =>
-    SmexValues.HopperCokeRequired * SmexValues.HopperCharcoalRequired;
-
   /// <summary>Total carbon units the hopper's fuel slots currently hold.</summary>
   private int CountCarbon(InventoryBase inv) =>
-    CountItems(inv, IsCoke) * CarbonPerCoke
-    + CountItems(inv, IsCharcoal) * CarbonPerCharcoal;
+    CountItems(inv, IsCoke) * BurdenValue.CarbonPerCoke
+    + CountItems(inv, IsCharcoal) * BurdenValue.CarbonPerCharcoal;
 
   /// <summary>
   /// Takes one batch worth of carbon, spending coke first so the denser fuel is used up before
-  /// the bulkier one. The charcoal remainder is rounded up to a whole piece, which can only
-  /// over-spend when the two configured amounts do not divide evenly.
+  /// the bulkier one.
   /// </summary>
-  private void ConsumeCarbon(InventoryBase inv) {
-    int needed = CarbonPerBatch;
+  private void ConsumeCarbon(InventoryBase inv) =>
+    _carbonCredit = TakeUnits(
+      inv,
+      BurdenValue.CarbonPerBatch - _carbonCredit,
+      IsCoke,
+      BurdenValue.CarbonPerCoke,
+      IsCharcoal,
+      BurdenValue.CarbonPerCharcoal
+    );
 
-    int cokeAvailable = CountItems(inv, IsCoke);
-    int cokeTaken = Math.Min(cokeAvailable, needed / CarbonPerCoke);
-    if (cokeTaken > 0) {
-      ConsumeItems(inv, IsCoke, cokeTaken);
-      needed -= cokeTaken * CarbonPerCoke;
+  #endregion
+
+  #region Burden ore
+
+  /// <summary>Total ore units the hopper's iron slots currently hold.</summary>
+  private int CountOre(InventoryBase inv) =>
+    CountItems(inv, IsCrushedIronOre) * BurdenValue.OrePerCrushed
+    + CountItems(inv, IsIronNugget) * BurdenValue.OrePerNugget;
+
+  /// <summary>
+  /// Takes one batch worth of ore, spending crushed ore before raw nuggets so the prepared feed
+  /// is used up first.
+  /// </summary>
+  private void ConsumeOre(InventoryBase inv) =>
+    _oreCredit = TakeUnits(
+      inv,
+      BurdenValue.OrePerBatch - _oreCredit,
+      IsCrushedIronOre,
+      BurdenValue.OrePerCrushed,
+      IsIronNugget,
+      BurdenValue.OrePerNugget
+    );
+
+  #endregion
+
+  /// <summary>
+  /// Takes <paramref name="needed"/> units from two interchangeable feeds, spending the denser one
+  /// first, and returns whatever it had to over-spend to get there.
+  /// <para>
+  /// The last piece of the bulkier feed cannot be split, so a remainder that is not a whole number
+  /// of them is rounded up - at the shipped rates a mixed batch of crushed ore and nuggets can cost
+  /// up to 8 ore units more than the batch is worth. The surplus is returned rather than discarded
+  /// so the caller can bank it against the next batch, which is what keeps a long run of mixed
+  /// feeds paying exactly the advertised rate per item.
+  /// </para>
+  /// </summary>
+  private static int TakeUnits(
+    InventoryBase inv,
+    int needed,
+    System.Func<ItemStack, bool> dense,
+    int densePerItem,
+    System.Func<ItemStack, bool> bulky,
+    int bulkyPerItem
+  ) {
+    int denseTaken = Math.Min(CountItems(inv, dense), needed / densePerItem);
+    if (denseTaken > 0) {
+      ConsumeItems(inv, dense, denseTaken);
+      needed -= denseTaken * densePerItem;
     }
 
     if (needed <= 0)
-      return;
+      return -needed;
 
-    int charcoalTaken = (needed + CarbonPerCharcoal - 1) / CarbonPerCharcoal;
-    ConsumeItems(inv, IsCharcoal, charcoalTaken);
+    int bulkyTaken = (needed + bulkyPerItem - 1) / bulkyPerItem;
+    ConsumeItems(inv, bulky, bulkyTaken);
+    return bulkyTaken * bulkyPerItem - needed;
   }
-
-  #endregion
 
   private bool IsLime(ItemStack stack) =>
     stack.Collectible.Code.Path.Equals("lime");
@@ -405,11 +454,7 @@ public class BlockEntityHopperBell : BlockEntity {
       )
     );
     dsc.AppendLine(
-      Lang.Get(
-        "smex:hopper-info-magazine",
-        BlastMixMagazine,
-        MaxMagazineCapacity
-      )
+      Lang.Get("smex:hopper-info-magazine", BurdenMagazine, MaxMagazineCapacity)
     );
   }
 }

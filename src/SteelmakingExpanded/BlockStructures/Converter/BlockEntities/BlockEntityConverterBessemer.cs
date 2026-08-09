@@ -242,6 +242,21 @@ public class BlockEntityConverterBessemer : BlockEntity, IChiselableMolten {
 
   #endregion
 
+  #region Scrap charging (forwarded to the control)
+
+  /// <summary>
+  /// Charges cold scrap from the player's hotbar into the vessel through its hatch. Returns
+  /// <c>false</c> when the held item is not scrap, so the click falls through to the vessel's other
+  /// interactions.
+  /// </summary>
+  public bool TryChargeScrap(IPlayer byPlayer, out string error) {
+    error = "";
+    var control = GetControl();
+    return control != null && control.TryChargeScrap(byPlayer, out error);
+  }
+
+  #endregion
+
   #region Chisel-out (IChiselableMolten, forwarded to the control)
 
   /// <summary>True when the vessel holds a solidified charge (see the control).</summary>

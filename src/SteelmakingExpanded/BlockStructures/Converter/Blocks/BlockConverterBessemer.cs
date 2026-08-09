@@ -122,11 +122,12 @@ public partial class BlockConverterBessemer
     BlockSelection principalSel,
     BlockPos clickedCell
   ) {
-    if (
-      IsChiselCell(principalSel.Position, clickedCell)
-      && TryChiselOut(world, byPlayer, principalSel.Position)
-    )
-      return true;
+    if (IsChiselCell(principalSel.Position, clickedCell)) {
+      if (TryChargeScrap(world, byPlayer, principalSel.Position))
+        return true;
+      if (TryChiselOut(world, byPlayer, principalSel.Position))
+        return true;
+    }
     return OnBlockInteractStart(world, byPlayer, principalSel);
   }
 
@@ -155,20 +156,30 @@ public partial class BlockConverterBessemer
     WorldInteraction[] baseHelp =
       GetPlacedBlockInteractionHelp(world, principalSel, forPlayer) ?? [];
 
-    // The chisel hint shows only on the hatch cell, and only once the residue is small + hardened.
+    if (!IsChiselCell(principalSel.Position, clickedCell))
+      return baseHelp;
+
+    var hints = new List<WorldInteraction>(baseHelp)
+    {
+      new()
+      {
+        ActionLangCode = "smex:blockhelp-bessemer-scrap",
+        MouseButton = EnumMouseButton.Right,
+        Itemstacks = ScrapStacks(world),
+      },
+    };
+
+    // The chisel hint shows only once the residue is small and hardened.
     if (
-      IsChiselCell(principalSel.Position, clickedCell)
-      && world.BlockAccessor.GetBlockEntity(principalSel.Position)
+      world.BlockAccessor.GetBlockEntity(principalSel.Position)
         is BlockEntityConverterBessemer be
       && be.CanChiselOut()
     )
-      return
-      [
-        .. baseHelp,
-        MoltenChisel.ChiselHelp(world, "smex:blockhelp-bessemer-chiselresidue"),
-      ];
+      hints.Add(
+        MoltenChisel.ChiselHelp(world, "smex:blockhelp-bessemer-chiselresidue")
+      );
 
-    return baseHelp;
+    return [.. hints];
   }
 
   private bool IsChiselCell(BlockPos principalPos, BlockPos clickedCell) {
@@ -179,6 +190,45 @@ public partial class BlockConverterBessemer
       ExOrientation.AngleFromSide(Variant["side"])
     );
     return clickedCell.Equals(chiselCell);
+  }
+
+  // The scrap items the hatch advertises, resolved once from the configured code list.
+  private ItemStack[]? _scrapStacks;
+
+  private ItemStack[] ScrapStacks(IWorldAccessor world) {
+    if (_scrapStacks != null)
+      return _scrapStacks;
+    var stacks = new List<ItemStack>();
+    foreach (
+      string code in SmexValues.BessemerScrapCodes.Split(
+        ',',
+        StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
+      )
+    )
+      if (world.GetItem(new AssetLocation(code)) is { } item)
+        stacks.Add(new ItemStack(item));
+    return _scrapStacks = [.. stacks];
+  }
+
+  // Scrap in hand charges it into the vessel through the same hatch the chisel reaches. Returns true
+  // when this owns the click, so it isn't forwarded to construction handling.
+  private static bool TryChargeScrap(
+    IWorldAccessor world,
+    IPlayer byPlayer,
+    BlockPos principalPos
+  ) {
+    if (
+      world.BlockAccessor.GetBlockEntity(principalPos)
+      is not BlockEntityConverterBessemer be
+    )
+      return false;
+
+    if (!be.TryChargeScrap(byPlayer, out string error))
+      return false;
+
+    if (world.Side == EnumAppSide.Client && error.Length > 0)
+      (byPlayer as IClientPlayer)?.ShowChatNotification(error);
+    return true;
   }
 
   // Chisel in hand + hammer in the off-hand chips a hardened residue out of the vessel via the shared

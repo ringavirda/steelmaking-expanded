@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ExpandedLib.Helpers;
 using ExpandedLib.Registries.Entities;
 using SteelmakingExpanded.BlockStructures.BlastFurnace.BlockEntities;
 using Vintagestory.API.Common;
@@ -15,6 +16,11 @@ namespace SteelmakingExpanded.BlockStructures.BlastFurnace.Blocks;
 /// </summary>
 [BlockRegister]
 public partial class BlockBlastFurnaceDoor : BlockBeeHiveKilnDoor {
+  /// <summary>Appends the refractory tier, so the tiers are distinguishable in the inventory,
+  /// handbook and look-at HUD rather than reading as one block.</summary>
+  public override string GetHeldItemName(ItemStack itemStack) =>
+    ExBlockNames.Decorate(this, base.GetHeldItemName(itemStack));
+
   public override bool TryPlaceBlock(
     IWorldAccessor world,
     IPlayer byPlayer,

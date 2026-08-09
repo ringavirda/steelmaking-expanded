@@ -10,8 +10,8 @@ using Xunit;
 namespace SteelmakingExpanded.Tests;
 
 /// <summary>
-/// The blast furnace's melting math, driven directly: the per-cycle conversion of hearth blast mix
-/// into molten iron + slag (capacity-clamped) and the hearth blast-mix accounting. These are the
+/// The blast furnace's melting math, driven directly: the per-cycle conversion of hearth burden
+/// into molten iron + slag (capacity-clamped) and the hearth burden accounting. These are the
 /// numbers the firing/melting tick relies on but the gated <c>OnProductionTick</c> made unreachable.
 /// </summary>
 public class BlastFurnaceLifecycleTests {
@@ -39,21 +39,21 @@ public class BlastFurnaceLifecycleTests {
     return be;
   }
 
-  /// <summary>A hearth coal pile holding <paramref name="units"/> of blast mix, lit.</summary>
-  private static BlockEntityCoalPile BlastmixPile(
+  /// <summary>A hearth coal pile holding <paramref name="units"/> of burden, lit.</summary>
+  private static BlockEntityCoalPile BurdenPile(
     TestWorld world,
     BlockPos pos,
     int units
   ) {
     var pile = new BlockEntityCoalPile { Pos = pos.Copy() };
     // Pass a real Api so slot.MarkDirty() (DidModifyItemSlot) doesn't NRE when ConsumeForMelting
-    // takes blast mix out of the slot.
+    // takes burden out of the slot.
     var inv = new InventoryGeneric(1, "coalpile", "test", world.Api, null);
-    var blastmix = new Item {
-      Code = new AssetLocation("smex", "blastmix"),
+    var burden = new Item {
+      Code = new AssetLocation("smex", "burden"),
       ItemId = 4242,
     };
-    inv[0].Itemstack = new ItemStack(blastmix, units);
+    inv[0].Itemstack = new ItemStack(burden, units);
     ReflectionHelpers.SetField(pile, "inventory", inv);
     ReflectionHelpers.SetField(pile, "burning", true);
     world.Place(
@@ -69,7 +69,7 @@ public class BlastFurnaceLifecycleTests {
     params (BlockPos, BlockEntityCoalPile)[] p
   ) => new(p);
 
-  private static int Mix(BlockEntityCoalPile pile) =>
+  private static int Burden(BlockEntityCoalPile pile) =>
     pile.inventory[0].StackSize;
 
   private static float Iron(BlockEntityBlastFurnace be) =>
@@ -81,10 +81,10 @@ public class BlastFurnaceLifecycleTests {
   #region ConsumeForMelting
 
   [Fact]
-  public void A_melt_cycle_burns_blast_mix_into_molten_iron_and_slag() {
+  public void A_melt_cycle_burns_burden_into_molten_iron_and_slag() {
     var world = NewWorld();
     var be = Furnace(world);
-    var pile = BlastmixPile(world, new BlockPos(0, 13, 0), 100);
+    var pile = BurdenPile(world, new BlockPos(0, 13, 0), 100);
 
     ReflectionHelpers.Invoke(
       be,
@@ -95,7 +95,7 @@ public class BlastFurnaceLifecycleTests {
       10f
     );
 
-    Assert.Equal(84, Mix(pile)); // 16 blast mix consumed
+    Assert.Equal(84, Burden(pile)); // 16 burden consumed
     Assert.Equal(60f, Iron(be), 3); // one cycle of iron
     Assert.Equal(10f, Slag(be), 3); // one cycle of slag
   }
@@ -104,7 +104,7 @@ public class BlastFurnaceLifecycleTests {
   public void Molten_output_is_clamped_at_the_furnace_capacity() {
     var world = NewWorld();
     var be = Furnace(world);
-    var pile = BlastmixPile(world, new BlockPos(0, 13, 0), 100);
+    var pile = BurdenPile(world, new BlockPos(0, 13, 0), 100);
     // Already near the iron ceiling (2400 default).
     ReflectionHelpers.SetField(
       be,
@@ -128,8 +128,8 @@ public class BlastFurnaceLifecycleTests {
   public void Melting_draws_from_the_upper_piles_first() {
     var world = NewWorld();
     var be = Furnace(world);
-    var low = BlastmixPile(world, new BlockPos(0, 12, 0), 50);
-    var high = BlastmixPile(world, new BlockPos(0, 14, 0), 50);
+    var low = BurdenPile(world, new BlockPos(0, 12, 0), 50);
+    var high = BurdenPile(world, new BlockPos(0, 14, 0), 50);
 
     ReflectionHelpers.Invoke(
       be,
@@ -140,28 +140,28 @@ public class BlastFurnaceLifecycleTests {
       10f
     );
 
-    Assert.Equal(34, Mix(high)); // the higher pile is drained first
-    Assert.Equal(50, Mix(low)); // the lower pile is untouched
+    Assert.Equal(34, Burden(high)); // the higher pile is drained first
+    Assert.Equal(50, Burden(low)); // the lower pile is untouched
   }
 
   #endregion
 
-  #region Blast-mix accounting
+  #region Burden accounting
 
   [Fact]
   public void Mix_count_totals_the_hearth_and_reports_full_at_the_fire_threshold() {
     var world = NewWorld();
     var be = Furnace(world);
-    var pile = BlastmixPile(
+    var pile = BurdenPile(
       world,
       new BlockPos(0, 13, 0),
-      SmexValues.BlastMixRequiredToFire
+      SmexValues.BurdenRequiredToFire
     );
 
     object[] args = { Piles((pile.Pos, pile)), false };
-    int count = (int)ReflectionHelpers.Invoke(be, "GetBlastMixCount", args)!;
+    int count = (int)ReflectionHelpers.Invoke(be, "GetBurdenCount", args)!;
 
-    Assert.Equal(SmexValues.BlastMixRequiredToFire, count);
+    Assert.Equal(SmexValues.BurdenRequiredToFire, count);
     Assert.True((bool)args[1], "a hearth at the threshold should read as full"); // out isFull
   }
 
@@ -169,10 +169,10 @@ public class BlastFurnaceLifecycleTests {
   public void A_thin_charge_does_not_read_as_full() {
     var world = NewWorld();
     var be = Furnace(world);
-    var pile = BlastmixPile(world, new BlockPos(0, 13, 0), 10);
+    var pile = BurdenPile(world, new BlockPos(0, 13, 0), 10);
 
     object[] args = { Piles((pile.Pos, pile)), true };
-    int count = (int)ReflectionHelpers.Invoke(be, "GetBlastMixCount", args)!;
+    int count = (int)ReflectionHelpers.Invoke(be, "GetBurdenCount", args)!;
 
     Assert.Equal(10, count);
     Assert.False((bool)args[1]);

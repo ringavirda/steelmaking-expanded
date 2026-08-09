@@ -1,5 +1,11 @@
 {
   "code": "blastfurnacedoor",
+  "variantgroups": [
+    { "code": "refractory", "states": ["tier1", "tier2", "tier3"] }
+  ],
+  "textures": {
+    "front1": { "base": "game:block/clay/refractory/{refractory}/front1" }
+  },
   "class": "smex.BlockBlastFurnaceDoor",
   "entityClass": "smex.BlockEntityBlastFurnace",
   "behaviors": [

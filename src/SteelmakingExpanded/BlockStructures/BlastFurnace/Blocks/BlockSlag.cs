@@ -5,7 +5,7 @@ using Vintagestory.API.MathTools;
 
 namespace SteelmakingExpanded.BlockStructures.BlastFurnace.Blocks;
 
-/// <summary>Solidified slag block left when blast mix finishes burning; drops slag items scaled to its stored count.</summary>
+/// <summary>Solidified slag block left when burden finishes burning; drops slag items scaled to its stored count.</summary>
 [BlockRegister]
 public partial class BlockSlag : Block {
   public override ItemStack[] GetDrops(
@@ -17,7 +17,7 @@ public partial class BlockSlag : Block {
     if (worldMap.BlockAccessor.GetBlockEntity(pos) is BlockEntitySlag be) {
       Item? slagItem = worldMap.GetItem(new AssetLocation("smex", "slag"));
       if (slagItem != null && be.SlagCount > 0) {
-        // Randomize the drop slightly (e.g. 80-100% of the original mix)
+        // Randomize the drop slightly (e.g. 80-100% of the stored count)
         int dropCount = (int)(
           be.SlagCount * (0.8f + (worldMap.Rand.NextDouble() * 0.2f))
         );

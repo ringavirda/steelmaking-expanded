@@ -9,7 +9,7 @@ namespace SteelmakingExpanded.Tests;
 
 /// <summary>
 /// The burden's fuel side: the bell hopper counts coke and charcoal in one shared carbon unit, so a
-/// blast-mix batch can be fed either fuel or any mix of the two. Coke carries twice the carbon of
+/// burden batch can be fed either fuel or any mix of the two. Coke carries twice the carbon of
 /// charcoal, is spent first, and a feed short of a whole batch's carbon makes nothing at all.
 /// </summary>
 public class BurdenFuelTests {
@@ -49,7 +49,7 @@ public class BurdenFuelTests {
     inv[slot].Itemstack = new ItemStack(item, count);
   }
 
-  /// <summary>Everything one blast-mix batch needs except the fuel, which each test supplies.</summary>
+  /// <summary>Everything one burden batch needs except the fuel, which each test supplies.</summary>
   private static void PutOreAndFlux(InventoryBase inv) {
     Put(inv, IronSlot, "game:crushed-iron", SmexValues.HopperIronOreRequired);
     Put(inv, LimeSlot, "game:lime", SmexValues.HopperLimeRequired);
@@ -74,7 +74,7 @@ public class BurdenFuelTests {
 
     ReflectionHelpers.Invoke(bell, "OnServerTick", 1f);
 
-    Assert.Equal(SmexValues.HopperBlastmixProduced, bell.BlastMixMagazine);
+    Assert.Equal(SmexValues.HopperBurdenProduced, bell.BurdenMagazine);
     Assert.Equal(0, StackSize(hopper.Inventory, FuelSlot));
   }
 
@@ -94,7 +94,7 @@ public class BurdenFuelTests {
 
     ReflectionHelpers.Invoke(bell, "OnServerTick", 1f);
 
-    Assert.Equal(SmexValues.HopperBlastmixProduced, bell.BlastMixMagazine);
+    Assert.Equal(SmexValues.HopperBurdenProduced, bell.BurdenMagazine);
     Assert.Equal(0, StackSize(hopper.Inventory, FuelSlot));
   }
 
@@ -116,7 +116,7 @@ public class BurdenFuelTests {
 
     ReflectionHelpers.Invoke(bell, "OnServerTick", 1f);
 
-    Assert.Equal(SmexValues.HopperBlastmixProduced, bell.BlastMixMagazine);
+    Assert.Equal(SmexValues.HopperBurdenProduced, bell.BurdenMagazine);
     Assert.Equal(0, StackSize(hopper.Inventory, FuelSlot));
     Assert.Equal(0, StackSize(hopper.Inventory, SecondFuelSlot));
   }
@@ -140,7 +140,7 @@ public class BurdenFuelTests {
 
     ReflectionHelpers.Invoke(bell, "OnServerTick", 1f);
 
-    Assert.Equal(SmexValues.HopperBlastmixProduced, bell.BlastMixMagazine);
+    Assert.Equal(SmexValues.HopperBurdenProduced, bell.BurdenMagazine);
     Assert.Equal(0, StackSize(hopper.Inventory, FuelSlot));
     Assert.Equal(
       SmexValues.HopperCharcoalRequired,
@@ -173,7 +173,7 @@ public class BurdenFuelTests {
 
     ReflectionHelpers.Invoke(bell, "OnServerTick", 1f);
 
-    Assert.Equal(0, bell.BlastMixMagazine);
+    Assert.Equal(0, bell.BurdenMagazine);
     Assert.Equal(coke, StackSize(hopper.Inventory, FuelSlot));
     Assert.Equal(charcoal, StackSize(hopper.Inventory, SecondFuelSlot));
     // The ore and flux must be left alone too - a short fuel feed is not a partial craft.

@@ -34,21 +34,53 @@ public class MpBlowerTests {
 
   private static readonly BlockPos Origin = new(0, 16, 0);
 
+  // Shaft speed measured in game on a waterwheel fed by five source blocks, taken from the blower's
+  // own printed output at the time (40 L/s against the straight proportion of 140 L/s per unit
+  // speed it ran on then).
+  private const float UngearedWheelSpeed = 0.29f;
+
+  // BEBehaviorMPLargeGear3m.ratio, read out of the shipped VSSurvivalMod assembly.
+  private const float LargeGearRatio = 5.5f;
+
+  private const float GearedWheelSpeed = UngearedWheelSpeed * LargeGearRatio;
+
   #region Speed response
 
-  // Straight proportion: the tubs sweep a fixed volume per turn, so the rate follows the shaft.
+  // A saturating curve, not a straight proportion: proportional near zero, then flattening as the
+  // tubs run out of time to refill between strokes.
   [Theory]
   [InlineData(0f, 0f)]
-  [InlineData(0.25f, 35f)]
-  [InlineData(0.5f, 70f)]
-  [InlineData(1.0f, 140f)]
-  [InlineData(1.5f, 210f)]
-  [InlineData(4f, 560f)]
-  public void Output_is_a_straight_proportion_of_axle_speed(
-    float speed,
-    float expected
-  ) {
+  [InlineData(0.25f, 17.742f)]
+  [InlineData(0.5f, 30.556f)]
+  [InlineData(1.0f, 47.826f)]
+  [InlineData(1.3f, 55f)] // the half-output speed, by definition half the ceiling
+  [InlineData(4f, 83.019f)]
+  public void Output_follows_a_saturating_curve(float speed, float expected) {
     Assert.Equal(expected, BlockEntityMpBlower.OutputAt(speed), 3);
+  }
+
+  [Fact]
+  public void The_swept_ceiling_is_approached_but_never_reached() {
+    float ceiling = SmexValues.MpBlowerMaxLitres;
+
+    Assert.True(BlockEntityMpBlower.OutputAt(1000f) < ceiling);
+    Assert.True(BlockEntityMpBlower.OutputAt(1000f) > ceiling * 0.99f);
+  }
+
+  [Fact]
+  public void Gearing_up_buys_less_air_than_it_buys_speed() {
+    // The point of the curve. One large gear turns the blower 5.5x faster; under a straight
+    // proportion that bought 5.5x the air and one wheel ran four furnaces.
+    float speedGain = GearedWheelSpeed / UngearedWheelSpeed;
+    float airGain =
+      BlockEntityMpBlower.OutputAt(GearedWheelSpeed)
+      / BlockEntityMpBlower.OutputAt(UngearedWheelSpeed);
+
+    Assert.True(
+      airGain < speedGain,
+      $"gearing bought {airGain}x the air for {speedGain}x the speed"
+    );
+    Assert.Equal(3f, airGain, 1);
   }
 
   [Fact]
@@ -68,15 +100,22 @@ public class MpBlowerTests {
   }
 
   [Fact]
-  public void Retuning_the_displacement_scales_the_whole_curve() {
-    float rate = SmexValues.MpBlowerLitresPerSpeed;
+  public void Retuning_the_ceiling_scales_the_whole_curve() {
+    float ceiling = SmexValues.MpBlowerMaxLitres;
+    float half = SmexValues.MpBlowerHalfOutputSpeed;
     try {
-      SmexValues.Edit(c => c.MpBlowerLitresPerSpeed = 12f);
+      SmexValues.Edit(c => {
+        c.MpBlowerMaxLitres = 12f;
+        c.MpBlowerHalfOutputSpeed = 1f;
+      });
 
-      Assert.Equal(12f, BlockEntityMpBlower.OutputAt(1f), 3);
-      Assert.Equal(6f, BlockEntityMpBlower.OutputAt(0.5f), 3);
+      Assert.Equal(6f, BlockEntityMpBlower.OutputAt(1f), 3);
+      Assert.Equal(4f, BlockEntityMpBlower.OutputAt(0.5f), 3);
     } finally {
-      SmexValues.Edit(c => c.MpBlowerLitresPerSpeed = rate);
+      SmexValues.Edit(c => {
+        c.MpBlowerMaxLitres = ceiling;
+        c.MpBlowerHalfOutputSpeed = half;
+      });
     }
   }
 
@@ -163,23 +202,14 @@ public class MpBlowerTests {
 
   #region Air budget
 
-  [Fact]
-  public void A_waterwheel_covers_both_tuyeres_of_one_blast_furnace() {
-    // The design anchor: the blower is meant to be built around a waterwheel, turning slowly. A
-    // vanilla wheel is a speed-seeking source - torque = (TargetSpeed - speed) * flowRate - so it
-    // settles at TargetSpeed - load/flowRate, and TargetSpeed is min(0.3, flowRate). Even unloaded
-    // it cannot pass 0.3, which is why the old band's 0.5 floor made a waterwheel useless: it was
-    // above the wheel's top speed outright.
-    float speed = WaterwheelSpeed(
-      flowRate: 1f,
-      load: BlockEntityMpBlower.ShaftLoadAt(SmexValues.BfBlastPressureThreshold)
-    );
-    float delivered = BlockEntityMpBlower.OutputAt(speed);
-
-    // The furnace's draw scales with the melt rate its heat margin supports, so the figure to cover
-    // is the COLD-BLAST baseline: a mechanically blown plant has no regenerators, so its hearth sits
-    // at BfNaturalMaxTemp and melts at the rate that margin buys. Anything hotter than that is a
-    // steam blower's job, which is the progression the two machines exist to express.
+  /// <summary>
+  /// What one blast furnace draws through both tuyeres at the COLD-BLAST baseline. A melting hearth
+  /// wants every tuyere's rated volume, and more again as its heat margin drives the melt harder; a
+  /// mechanically blown plant has no regenerators, so it sits at BfNaturalMaxTemp, whose margin is
+  /// worth less than one rated volume - the baseline is the rated draw flat. Anything hotter is a
+  /// steam blower's job, which is the progression the two machines exist to express.
+  /// </summary>
+  private static float BaselineFurnaceDraw() {
     float coldBlastMargin =
       SmexValues.BfNaturalMaxTemp - SmexValues.BfIronMeltingPoint;
     float baselineMeltSpeed = Math.Clamp(
@@ -188,39 +218,66 @@ public class MpBlowerTests {
       SmexValues.BfMeltSpeedMin,
       SmexValues.BfMeltSpeedMax
     );
-    float draw =
-      FurnaceTuyeres * SmexValues.TuyereIntakeVolume * baselineMeltSpeed;
+    return FurnaceTuyeres
+      * SmexValues.TuyereIntakeVolume
+      * Math.Max(1f, baselineMeltSpeed);
+  }
+
+  /// <summary>The most air one furnace can ask for - both tuyeres at the melt-rate ceiling.</summary>
+  private static float OverdriveFurnaceDraw() =>
+    FurnaceTuyeres * SmexValues.TuyereIntakeVolume * SmexValues.BfMeltSpeedMax;
+
+  [Fact]
+  public void A_geared_waterwheel_covers_both_tuyeres_of_one_blast_furnace() {
+    // The design anchor: the geared wheel is the setup the furnace is built around, and it is what
+    // has to cover the furnace. Gearing up is a real build step, not an optimisation.
+    float delivered = BlockEntityMpBlower.OutputAt(GearedWheelSpeed);
 
     Assert.True(
-      speed > 0f,
-      "a waterwheel must be able to turn the blower at all"
-    );
-    Assert.True(
-      draw <= delivered,
-      $"a waterwheel settles the shaft at {speed} and delivers {delivered} L/s, "
-        + $"but two tuyeres draw {draw} L/s at the cold-blast baseline"
+      BaselineFurnaceDraw() <= delivered,
+      $"a geared waterwheel delivers {delivered} L/s, but two tuyeres draw "
+        + $"{BaselineFurnaceDraw()} L/s at the cold-blast baseline"
     );
   }
 
   [Fact]
-  public void A_waterwheel_cannot_hold_a_furnace_in_overdrive() {
-    // The other half of the same ruling: one mechanical blower covers one furnace at baseline and
-    // no more. Driving a hearth to its boosted ceiling takes air a waterwheel cannot make, so
-    // overdrive is what a steam blower is for.
-    float speed = WaterwheelSpeed(
-      flowRate: 1f,
-      load: BlockEntityMpBlower.ShaftLoadAt(SmexValues.BfBlastPressureThreshold)
+  public void An_ungeared_waterwheel_runs_a_furnace_slowly_rather_than_not_at_all() {
+    // The other half of the ruling. An ungeared wheel falls short of the baseline draw, so the
+    // furnace melts in proportion to the air arriving - it works, just slowly. It must never fall
+    // to nothing: bellows worked slowly blow slowly.
+    float delivered = BlockEntityMpBlower.OutputAt(UngearedWheelSpeed);
+
+    Assert.True(delivered > 0f, "an ungeared wheel must still blow something");
+    Assert.True(
+      delivered < BaselineFurnaceDraw(),
+      $"an ungeared waterwheel delivers {delivered} L/s, which should fall short "
+        + $"of the {BaselineFurnaceDraw()} L/s baseline draw - otherwise gearing up buys nothing"
     );
-    float delivered = BlockEntityMpBlower.OutputAt(speed);
-    float overdriveDraw =
-      FurnaceTuyeres
-      * SmexValues.TuyereIntakeVolume
-      * SmexValues.BfMeltSpeedMax;
+  }
+
+  [Fact]
+  public void A_waterwheel_cannot_hold_a_furnace_in_overdrive_even_geared() {
+    // Driving a hearth to its boosted ceiling takes air no waterwheel can make, geared or not -
+    // that is what a steam blower is for. The ceiling on the curve is what guarantees it: no gear
+    // train can get past MpBlowerMaxLitres.
+    float overdriveDraw = OverdriveFurnaceDraw();
 
     Assert.True(
-      delivered < overdriveDraw,
-      $"a waterwheel delivers {delivered} L/s, which should fall short of the "
-        + $"{overdriveDraw} L/s an overdriven furnace draws"
+      BlockEntityMpBlower.OutputAt(GearedWheelSpeed) < overdriveDraw,
+      $"a geared waterwheel delivers {BlockEntityMpBlower.OutputAt(GearedWheelSpeed)} L/s, "
+        + $"which should fall short of the {overdriveDraw} L/s an overdriven furnace draws"
+    );
+  }
+
+  [Fact]
+  public void No_gear_train_makes_the_bellows_a_steam_blower() {
+    // What the ceiling is really for. Gearing harder always pays something, so a big enough train
+    // does eventually overdrive a furnace - that is a build cost, not a hole. What it can never do
+    // is catch the steam blower, which is the machine the progression is built on.
+    Assert.True(
+      SmexValues.MpBlowerMaxLitres < SmexValues.AirBlowerOutputPerSecond,
+      $"the bellows' swept ceiling ({SmexValues.MpBlowerMaxLitres} L/s) must stay under the "
+        + $"steam blower's {SmexValues.AirBlowerOutputPerSecond} L/s, whatever drives it"
     );
   }
 
@@ -271,7 +328,27 @@ public class MpBlowerTests {
     );
 
   [Fact]
-  public void A_watt_engine_driving_the_blower_covers_both_tuyeres() {
+  public void One_smoke_stack_clears_one_furnace_driven_flat_out() {
+    // What is blown in comes back out, so the stack has to be sized against the furnace's HARDEST
+    // draw, not its baseline. The furnace shares its exhaust across its outlets rather than venting
+    // the whole draw through each, which is what made a correctly sized stack look undersized.
+    float peakExhaust =
+      OverdriveFurnaceDraw() * SmexValues.BfExhaustPerAirDrawn;
+
+    Assert.True(
+      SmexValues.SmokestackGasIntakeVolume >= peakExhaust,
+      $"a smoke stack vents {SmexValues.SmokestackGasIntakeVolume} L/s but a furnace in overdrive "
+        + $"makes {peakExhaust} L/s of flue gas - a stack that cannot keep up chokes the furnace"
+    );
+    // And on natural draught alone, which is the other end of the range.
+    Assert.True(
+      SmexValues.SmokestackGasIntakeVolume >= SmexValues.BfExhaustBaseVolume,
+      "a stack must clear an unblown furnace's natural draught too"
+    );
+  }
+
+  [Fact]
+  public void A_watt_engine_driving_the_blower_is_never_starved() {
     // The reported failure, as a number, driven off the shipped constants end to end. The engine is
     // a constant-power source, so the shaft settles at speed = budget / load; under the old band
     // that speed landed at 1% of rated output and the furnace starved.
@@ -279,17 +356,23 @@ public class MpBlowerTests {
     // the furnace refuses the blast outright, and above it the main is fuller than the furnace
     // can draw down - so this is the hardest pressure the blower must hold while actually
     // feeding one.
+    // What it does NOT claim is full coverage. Bellows are sized off the waterwheel, and a small
+    // engine bolted straight to them clears well over one tuyere but not both - gear the shaft, or
+    // build the steam air blower, which is the point of having two machines.
     float speed = EngineSpeed(
       PpexValues.WattEngineMaxPower,
       BlockEntityMpBlower.ShaftLoadAt(SmexValues.BfBlastPressureThreshold)
     );
     float delivered = BlockEntityMpBlower.OutputAt(speed);
-    float draw = FurnaceTuyeres * SmexValues.TuyereIntakeVolume;
 
     Assert.True(
-      draw <= delivered,
+      delivered > SmexValues.TuyereIntakeVolume,
       $"a Watt engine settles the shaft at {speed} and delivers {delivered} L/s, "
-        + $"but two tuyeres draw {draw} L/s"
+        + $"which should comfortably clear one tuyere's {SmexValues.TuyereIntakeVolume} L/s"
+    );
+    Assert.True(
+      delivered > BlockEntityMpBlower.OutputAt(UngearedWheelSpeed),
+      "an engine must beat a bare waterwheel on the same machine"
     );
   }
 

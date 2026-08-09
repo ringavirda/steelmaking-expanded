@@ -2,7 +2,7 @@
   {
     "file": "game:blocktypes/coalpile.json",
     "op": "add",
-    "path": "/textures/blastmix",
+    "path": "/textures/burden",
     "value": {
       "base": "game:block/coal/orecoalmix"
     }

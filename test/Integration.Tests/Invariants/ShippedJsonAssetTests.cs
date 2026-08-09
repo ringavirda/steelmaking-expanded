@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using Vintagestory.API.Util;
 using Xunit;
 
 namespace Integration.Tests;
@@ -71,6 +72,81 @@ public class ShippedJsonAssetTests {
         + string.Join(", ", bad.Take(8))
     );
   }
+
+  public static TheoryData<string> EveryShippedBlocktype() {
+    var data = new TheoryData<string>();
+    foreach (string path in AssetFiles())
+      if (path.Contains("/blocktypes/"))
+        data.Add(path);
+    return data;
+  }
+
+  [Theory]
+  [MemberData(nameof(EveryShippedBlocktype))]
+  public void Every_block_variant_resolves_a_shape(string repoRelativePath) {
+    // A "shapebytype" pattern is matched against the whole block code, so adding a variant group
+    // ahead of an existing one moves the code out from under every pattern that anchored on it -
+    // silently, leaving the block with no shape at all. That is what a new refractory tier did to
+    // the tuyere, whose selectors read "*-tuyere-s" and had to become "*-tuyere-*-s".
+    using JsonDocument doc = Parse(repoRelativePath);
+    JsonElement root = doc.RootElement;
+    if (root.ValueKind != JsonValueKind.Object)
+      return;
+
+    JsonElement shapes = default;
+    foreach (JsonProperty p in root.EnumerateObject())
+      if (p.NameEquals("shapebytype") || p.NameEquals("shapeByType"))
+        shapes = p.Value;
+    if (shapes.ValueKind != JsonValueKind.Object)
+      return;
+
+    var patterns = shapes.EnumerateObject().Select(p => p.Name).ToList();
+    var unmatched = BlockCodes(root)
+      .Where(code => !patterns.Any(pat => WildcardUtil.Match(pat, code)))
+      .ToList();
+
+    Assert.True(
+      unmatched.Count == 0,
+      $"{repoRelativePath}: {unmatched.Count} variant(s) match no shape pattern "
+        + $"[{string.Join(", ", patterns)}]: {string.Join(", ", unmatched.Take(6))}"
+    );
+  }
+
+  /// <summary>Every full block code the file's variant groups produce.</summary>
+  private static IEnumerable<string> BlockCodes(JsonElement root) {
+    string code = root.TryGetProperty("code", out JsonElement c)
+      ? c.GetString() ?? ""
+      : "";
+    if (code.Length == 0)
+      yield break;
+
+    var axes = new List<string[]>();
+    if (root.TryGetProperty("variantgroups", out JsonElement groups))
+      foreach (JsonElement g in groups.EnumerateArray()) {
+        if (g.TryGetProperty("states", out JsonElement states))
+          axes.Add([
+            .. states.EnumerateArray().Select(s => s.GetString() ?? ""),
+          ]);
+        else
+          // The only loadFromProperties in use is the horizontal orientation.
+          axes.Add(["north", "south", "east", "west"]);
+      }
+
+    IEnumerable<string> codes = [code];
+    foreach (string[] axis in axes)
+      codes = codes.SelectMany(prefix => axis.Select(v => prefix + "-" + v));
+    foreach (string full in codes)
+      yield return full;
+  }
+
+  private static JsonDocument Parse(string repoRelativePath) =>
+    JsonDocument.Parse(
+      File.ReadAllText(Path.Combine(RepoRoot(), repoRelativePath)),
+      new JsonDocumentOptions {
+        CommentHandling = JsonCommentHandling.Skip,
+        AllowTrailingCommas = true,
+      }
+    );
 
   // Every JSON under a mod's assets folder, repo-relative and with forward slashes so the theory
   // labels read the same on any platform. Build outputs (bin/obj) are copies and are skipped.

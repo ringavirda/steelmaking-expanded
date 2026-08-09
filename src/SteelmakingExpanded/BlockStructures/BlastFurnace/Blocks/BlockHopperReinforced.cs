@@ -9,7 +9,7 @@ namespace SteelmakingExpanded.BlockStructures.BlastFurnace.Blocks;
 
 /// <summary>
 /// The reinforced hopper that feeds the blast furnace. Right-click opens its
-/// iron/coke/flux inventory; Ctrl + right-click toggles blast-mix dropping on the
+/// iron/coke/flux inventory; Ctrl + right-click toggles burden dropping on the
 /// bell hopper below.
 /// </summary>
 [BlockRegister]
