@@ -33,9 +33,12 @@ public class MoltenRenderer : SurfaceRenderer {
   /// Creates a renderer whose surface footprint is <paramref name="footprintBoxes"/> (in 0-16
   /// pixel space, NOT 0-1). <paramref name="fillStartY"/> is the surface Y at fill ratio 0;
   /// <paramref name="fillHeightLevels"/> is how many 1/16-unit steps it rises from 0 → 1.
-  /// fillQuadsByLevel may list one cross-section per fill level (e.g. the anvil mold); only the
-  /// current level's box is drawn, so the surface matches the cavity at its height rather than the
-  /// union of all levels.
+  /// <para>
+  /// The boxes are one footprint, not one cross-section per fill level: a molten cell holds a single
+  /// pool, so every arm of a bend, tee or cross is one surface at one height and they are combined
+  /// into one mesh. Selecting a box by fill level instead left a tee drawing its through-channel
+  /// under half full and only its side stub over it.
+  /// </para>
   /// </summary>
   public MoltenRenderer(
     BlockPos pos,
@@ -45,7 +48,7 @@ public class MoltenRenderer : SurfaceRenderer {
     float fillStartY = 0.125f,
     float fillHeightLevels = 12
   )
-    : base(pos, api, footprintBoxes, rotationY, combine: false) {
+    : base(pos, api, footprintBoxes, rotationY, combine: true) {
     _fillStartY = fillStartY;
     _fillHeightLevels = fillHeightLevels - 0.01f;
   }
@@ -56,12 +59,6 @@ public class MoltenRenderer : SurfaceRenderer {
   // per fill-ratio unit, up to fillHeightLevels steps at ratio = 1.
   protected override float SurfaceY =>
     _fillStartY + FillRatio * _fillHeightLevels / 16f;
-
-  // Draw only the cross-section at the current fill level. Single-box footprints (canals, barrels,
-  // simple molds) always resolve to box 0; multi-level molds (anvil) show the cavity shape at the
-  // surface instead of every level at once.
-  protected override int SelectMeshIndex() =>
-    (int)(FillRatio * MeshRefs.Length);
 
   protected override void ConfigureShader(
     IStandardShaderProgram shader,
