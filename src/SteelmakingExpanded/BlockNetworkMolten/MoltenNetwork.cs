@@ -10,8 +10,9 @@ namespace SteelmakingExpanded.BlockNetworkMolten;
 /// <summary>
 /// Concrete <see cref="BlockNetwork"/> for the molten-canal system. Each canal block
 /// (<see cref="BlockEntityMoltenCanal"/>) owns its own metal; the network only provides
-/// connectivity plus the per-tick driver that flows metal cell-to-cell (level-equalisation) and
-/// runs each cell's cooling. Because cells own their metal, merge/split need no redistribution.
+/// connectivity plus the per-tick driver that flows metal cell-to-cell - conveyed outward from the
+/// run's start, levelled where it backs up - and runs each cell's cooling. Because cells own their
+/// metal, merge/split need no redistribution.
 /// </summary>
 public class MoltenNetwork(BlockNetworkModSystem system) : BlockNetwork(system) {
   public override string NetworkType => "molten";
@@ -191,7 +192,7 @@ public class MoltenNetwork(BlockNetworkModSystem system) : BlockNetwork(system) 
         if (CompareFlowOrder(a, b, distFromStart) >= 0)
           continue;
 
-        FlowEdge(a, b, maxFlow, world);
+        FlowEdge(a, b, maxFlow, distFromStart, world);
       }
     }
 
@@ -200,11 +201,20 @@ public class MoltenNetwork(BlockNetworkModSystem system) : BlockNetwork(system) 
       c.UpdateThermal(world);
   }
 
-  /// <summary>Moves metal across one connection toward equal fill ratio, capped at <paramref name="maxFlow"/> units.</summary>
+  /// <summary>The cell's hop distance from the nearest start, or <see cref="int.MaxValue"/> for a cell
+  /// no start reaches (a run whose anchor was broken or is not loaded).</summary>
+  private static int DistanceOf(
+    Dictionary<BlockPos, int> distFromStart,
+    BlockEntityMoltenCanal cell
+  ) => distFromStart.TryGetValue(cell.Pos, out int d) ? d : int.MaxValue;
+
+  /// <summary>Moves metal across one connection, capped at <paramref name="maxFlow"/> units: the whole
+  /// surplus where the metal is running away from the start, half the gap where it is levelling back.</summary>
   private static void FlowEdge(
     BlockEntityMoltenCanal aNode,
     BlockEntityMoltenCanal bNode,
     int maxFlow,
+    Dictionary<BlockPos, int> distFromStart,
     IWorldAccessor world
   ) {
     var aCap = aNode.MaxUnitCapacity;
@@ -235,15 +245,26 @@ public class MoltenNetwork(BlockNetworkModSystem system) : BlockNetwork(system) 
       receiver is BlockEntityMoltenCanalMoldPedestal
       || receiver is BlockEntityMoltenCanalTap;
 
-    // Level toward the midpoint instead of moving the whole difference: the latter overshoots and
-    // inverts the pair, so 40/0 becomes 0/40 and a run sloshes back and forth every tick forever
-    // rather than settling.
-    var step = drain ? diff : diff / 2;
+    // Metal running away from the start - into a drain fitting or into a cell farther out than the
+    // one giving it - is being conveyed, not levelled, so the giver hands over its whole surplus.
+    // Halving it instead makes every block cost half the remaining head, which is a hydraulic
+    // gradient the run has to pay for out of one cell's capacity: the far end of a long run then
+    // gets a trickle, or nothing at all, however much metal is poured in behind it.
+    bool conveys =
+      drain
+      || DistanceOf(distFromStart, receiver)
+        > DistanceOf(distFromStart, giver);
 
-    // Whole units only. The floor is on the TRANSFER, not on the gap: a floor on the gap costs its
-    // whole value in head at every block, which strands a run a few blocks from its source.
-    if (!drain && step < SmexValues.MoltenMinFlowAmount)
+    // Whole units only, and never a dribble below the configured minimum. The floor is on the GAP:
+    // on the halved step it takes twice the minimum in head before an edge moves at all, doubling
+    // what each block costs a run.
+    if (!drain && diff < SmexValues.MoltenMinFlowAmount)
       return;
+
+    // Levelling the other way (backfill toward the start, or between two cells the same distance
+    // out) still moves toward the midpoint: the whole difference overshoots and inverts the pair, so
+    // 40/0 becomes 0/40 and an idle run sloshes back and forth every tick rather than settling.
+    var step = conveys ? diff : diff / 2;
     if (step <= 0)
       return;
 

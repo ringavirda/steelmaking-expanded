@@ -138,10 +138,10 @@ public class SmexConfig : IExVersionedConfig {
   public int MoltenFlowRate { get; set; } = 100;
 
   /// <summary>
-  /// Minimum metal (units) that must actually move across a canal connection for any flow that tick.
-  /// This is a floor on the transfer, not on the difference between the two cells: a floor on the
-  /// difference costs its whole value in head at every block, which is what used to leave a canal
-  /// delivering nothing past about eight blocks.
+  /// Minimum difference (units) between two canal cells before any metal moves between them that
+  /// tick - the dribble a run does not bother with. Raising it costs a levelling connection up to
+  /// its value in head, so keep it small: at ten it took twenty units of head per block and a run
+  /// died three blocks from its source.
   /// </summary>
   public int MoltenMinFlowAmount { get; set; } = 1;
 

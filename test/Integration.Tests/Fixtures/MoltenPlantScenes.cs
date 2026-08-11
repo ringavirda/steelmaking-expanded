@@ -20,7 +20,7 @@ namespace SteelmakingExpanded.Tests;
 internal sealed class CastingLine {
   private const string Iron = "game:ingot-iron";
 
-  public readonly BlockEntityMoltenCanal Head;
+  public readonly BlockEntityMoltenCanalStart Head;
   public readonly BlockEntityMoltenCanalMoldPedestal? Pedestal;
   public readonly BlockEntityMoltenCanalTap? Tap;
 
@@ -30,7 +30,8 @@ internal sealed class CastingLine {
   /// <summary>
   /// Builds an N-cell ns canal run at <paramref name="origin"/>. The last cell is a mold pedestal
   /// (when <paramref name="endsInPedestal"/>) or a canal tap draining a barrel; the rest are straights.
-  /// The head (origin) cell stands in for the furnace tap that pours metal into the run.
+  /// The head (origin) cell is a canal start - the only cell a furnace tap or a crucible can pour
+  /// into, and the anchor the run's flow direction is measured from.
   /// </summary>
   public CastingLine(
     Scene scene,
@@ -42,7 +43,16 @@ internal sealed class CastingLine {
     scene.World.RegisterItem(Iron, 1500f);
 
     _cells = new BlockEntityMoltenCanal[length];
-    for (int i = 0; i < length; i++) {
+
+    var headBlock = CanalBlock(scene, 1);
+    Head = new BlockEntityMoltenCanalStart {
+      Pos = origin.Copy(),
+      Block = headBlock,
+    };
+    scene.Node(origin, headBlock, Head, "molten");
+    _cells[0] = Head;
+
+    for (int i = 1; i < length; i++) {
       BlockPos pos = origin.AddCopy(0, 0, i);
       bool last = i == length - 1;
       var block = CanalBlock(scene, i + 1);
@@ -67,7 +77,6 @@ internal sealed class CastingLine {
         scene.Node(pos, block, _cells[i], "molten");
       }
     }
-    Head = _cells[0];
   }
 
   private static BlockMoltenCanal CanalBlock(Scene scene, int id) {
@@ -110,12 +119,15 @@ internal sealed class CastingLine {
   }
 
   /// <summary>
-  /// Advances the line: each tick the molten network flows metal toward the fitting, then the fitting
-  /// drains its cell into the mold/barrel. Fittings are attached (not Initialized) so their drain tick
-  /// is driven here rather than by the scene's listener pump - keeping the order explicit.
+  /// Advances the line: each tick the furnace tap tops the head up by <paramref name="feedPerTick"/>
+  /// units, the molten network flows metal toward the fitting, then the fitting drains its cell into
+  /// the mold/barrel. Fittings are attached (not Initialized) so their drain tick is driven here
+  /// rather than by the scene's listener pump - keeping the order explicit.
   /// </summary>
-  public CastingLine Run(int ticks) {
+  public CastingLine Run(int ticks, int feedPerTick = 0) {
     for (int i = 0; i < ticks; i++) {
+      if (feedPerTick > 0)
+        PourIn(feedPerTick);
       _scene.Step(1); // molten network flow + cooling
       if (Pedestal != null)
         ReflectionHelpers.Invoke(Pedestal, "OnServerTick", 1f);
@@ -124,6 +136,12 @@ internal sealed class CastingLine {
     }
     return this;
   }
+
+  /// <summary>The cell <paramref name="index"/> blocks along the run; 0 is the start.</summary>
+  public BlockEntityMoltenCanal Cell(int index) => _cells[index];
+
+  /// <summary>The far end of the run - the pedestal, the tap, or the last straight.</summary>
+  public BlockEntityMoltenCanal Last => _cells[^1];
 
   /// <summary>Total liquid metal still standing in the canal cells (excludes what's cast into the mold/barrel).</summary>
   public int TotalInRun {
