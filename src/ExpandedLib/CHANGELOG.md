@@ -5,6 +5,24 @@ All notable changes to this mod are documented here. The format is based on
 [Semantic Versioning](https://semver.org/). For changes before this file existed,
 see the git history.
 
+## [0.7.2] - 2026-08-13
+
+### Fixed
+
+- **Updating no longer resets the machines an update renames.** When a release moved a block to a
+  new code - the blast furnace parts onto their refractory tiers, the cowper heat sink, the pipes
+  that came across from Steelmaking Expanded - the world swap replaced the block and dropped
+  everything its block entity had stored. A machine came back on the first load after the update
+  knowing nothing: a heat sink with no temperature to report, a furnace tap that would not run, a
+  pipe with no idea what it was connected to, and boilers venting into a line that no longer carried
+  anything. The state is carried onto the replacement now. A rename leaves it meaning exactly what
+  it meant before, so this is the default; a migration that has to reinterpret it says so.
+- **Legacy items lying on the ground are converted like everything else.** A rename rewrote stacks in
+  chests and in the inventory you were carrying, but never ones dropped in the world - a stack thrown
+  away, or scattered by a broken container, stayed on the old code. Once the old item's asset is gone
+  that leaves an unusable "unknown item" with nothing able to convert it. Loose stacks are now swept
+  along with the rest as their chunk loads.
+
 ## [0.7.1] - 2026-08-09
 
 ### Added

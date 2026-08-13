@@ -5,6 +5,44 @@ All notable changes to this mod are documented here. The format is based on
 [Semantic Versioning](https://semver.org/). For changes before this file existed,
 see the git history.
 
+## [0.9.8] - 2026-08-13
+
+Requires Expanded Library 0.7.2, which stops the blast furnace parts and the cowper heat sink losing
+their state when an update renames them. If a furnace has been going out since the last update, or a
+heat sink stopped reporting a temperature, that is the fix.
+
+### Changed
+
+- **Roasted iron ore is worth more in the burden than raw ore.** Roasting is a heat step in its own
+  right, so the furnace pays for it: a roasted piece counts 14 ore units against raw ore's 12, about
+  1.98x what the same ore returns down the bloomery route against 1.70x. Set `HopperRoastedOreBonus`
+  to 0 to price the two the same.
+- **The furnace no longer takes vanilla crushed iron when Industrial Story is installed.** That mod
+  routes every ore and nugget to its own crushed items and leaves iron bits as the only thing that
+  pulverizes into `crushed-iron` - and bits are what the furnace itself drops, so feeding them back
+  returned more iron than they were cast from. Industrial Story's own crushed and roasted ores are
+  taken as before; nothing changes without it installed.
+- **Iron feed is matched on the whole item code rather than a prefix**, so another mod's item cannot
+  be accepted as full-value iron ore by sharing the first few letters of one.
+
+### Fixed
+
+- **The molten metal tap dropped an unknown item when broken.** It handed back a code that stopped
+  existing when the taps gained refractory tiers. A world that had placed one before then still
+  resolves that code - to the placeholder the game keeps for it - so the fallback never ran and the
+  tap dropped something unusable. Only ever affected worlds carried across that change, which is why
+  the handbook looked right. It now drops its own tier, facing north.
+- **A roasted iron nugget is accepted by the reinforced hopper.** Industrial Story roasts limonite
+  and siderite rather than crushing them, so on that route the roasted nugget is the first solid form
+  the ore takes - and the hopper refused it with nothing on screen to say why.
+- **Two patch errors on every server start with Industrial Story installed.** Our nugget crushing
+  patch fought that mod's ore overhaul, which removes limonite and galena crushing outright because
+  those ores must be roasted first. The patch now stands aside for any mod that owns nugget crushing,
+  as it already did for Expanded Matter, and stops rewriting values those mods had set deliberately.
+- **A molten canal or barrel no longer swallows metal it cannot hand back.** Pouring a metal with no
+  bit item of its own - another mod's ingot, say - left the cell empty and dropped nothing at all.
+  It comes back as slag now, the same as the converter already did.
+
 ## [0.9.7] - 2026-08-09
 
 The furnace rebalance. Three long-standing complaints and one exploit, plus the machine retune they

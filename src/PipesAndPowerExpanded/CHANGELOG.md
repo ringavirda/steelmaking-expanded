@@ -5,6 +5,12 @@ All notable changes to this mod are documented here. The format is based on
 [Semantic Versioning](https://semver.org/). For changes before this file existed,
 see the git history.
 
+## [0.6.8] - 2026-08-13
+
+No changes to this mod. It requires Expanded Library 0.7.2, which stops a pipe losing what it knows
+about its network when an update renames it - the fix lives there, and this release is what makes
+sure you have it.
+
 ## [0.6.7] - 2026-08-09
 
 ### Changed

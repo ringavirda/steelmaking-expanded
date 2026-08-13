@@ -5,7 +5,7 @@
   "name": "Expanded Library",
   "authors": ["fallenstar"],
   "description": "Shared framework library for the Fallenstar's Expanded mods.",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "dependencies": {
     "game": "1.22.0"
   }
