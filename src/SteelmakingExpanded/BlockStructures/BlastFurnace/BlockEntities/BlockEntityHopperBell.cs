@@ -316,6 +316,9 @@ public class BlockEntityHopperBell : BlockEntity {
   private bool IsIronNugget(ItemStack stack) =>
     IronOreCompat.IsIronNugget(stack.Collectible.Code.Path);
 
+  private bool IsRoastedIronOre(ItemStack stack) =>
+    IronOreCompat.IsRoastedIronOre(stack.Collectible.Code.Path);
+
   // Coke goes into the burden whole. The crushed intermediate is retired: it existed only to be
   // fed here, and its pulverizer route collided with other mods' crushing economies.
   private bool IsCoke(ItemStack stack) =>
@@ -339,10 +342,8 @@ public class BlockEntityHopperBell : BlockEntity {
     _carbonCredit = TakeUnits(
       inv,
       BurdenValue.CarbonPerBatch - _carbonCredit,
-      IsCoke,
-      BurdenValue.CarbonPerCoke,
-      IsCharcoal,
-      BurdenValue.CarbonPerCharcoal
+      (IsCoke, BurdenValue.CarbonPerCoke),
+      (IsCharcoal, BurdenValue.CarbonPerCharcoal)
     );
 
   #endregion
@@ -351,53 +352,55 @@ public class BlockEntityHopperBell : BlockEntity {
 
   /// <summary>Total ore units the hopper's iron slots currently hold.</summary>
   private int CountOre(InventoryBase inv) =>
-    CountItems(inv, IsCrushedIronOre) * BurdenValue.OrePerCrushed
+    CountItems(inv, IsRoastedIronOre) * BurdenValue.OrePerRoasted
+    + CountItems(inv, IsCrushedIronOre) * BurdenValue.OrePerCrushed
     + CountItems(inv, IsIronNugget) * BurdenValue.OrePerNugget;
 
   /// <summary>
-  /// Takes one batch worth of ore, spending crushed ore before raw nuggets so the prepared feed
-  /// is used up first.
+  /// Takes one batch worth of ore, spending roasted ore before crushed and crushed before raw
+  /// nuggets, so the most prepared feed is used up first.
   /// </summary>
   private void ConsumeOre(InventoryBase inv) =>
     _oreCredit = TakeUnits(
       inv,
       BurdenValue.OrePerBatch - _oreCredit,
-      IsCrushedIronOre,
-      BurdenValue.OrePerCrushed,
-      IsIronNugget,
-      BurdenValue.OrePerNugget
+      (IsRoastedIronOre, BurdenValue.OrePerRoasted),
+      (IsCrushedIronOre, BurdenValue.OrePerCrushed),
+      (IsIronNugget, BurdenValue.OrePerNugget)
     );
 
   #endregion
 
   /// <summary>
-  /// Takes <paramref name="needed"/> units from two interchangeable feeds, spending the denser one
-  /// first, and returns whatever it had to over-spend to get there.
+  /// Takes <paramref name="needed"/> units from a set of interchangeable <paramref name="feeds"/>
+  /// given densest first, and returns whatever it had to over-spend to get there.
   /// <para>
-  /// The last piece of the bulkier feed cannot be split, so a remainder that is not a whole number
-  /// of them is rounded up - at the shipped rates a mixed batch of crushed ore and nuggets can cost
-  /// up to 8 ore units more than the batch is worth. The surplus is returned rather than discarded
-  /// so the caller can bank it against the next batch, which is what keeps a long run of mixed
-  /// feeds paying exactly the advertised rate per item.
+  /// Every feed but the last is spent only in whole units that still fit, so the bulkiest one covers
+  /// the remainder. That last piece cannot be split, so a remainder that is not a whole number of
+  /// them is rounded up - at the shipped rates a mixed batch of crushed ore and nuggets can cost up
+  /// to 8 ore units more than the batch is worth. The surplus is returned rather than discarded so
+  /// the caller can bank it against the next batch, which is what keeps a long run of mixed feeds
+  /// paying exactly the advertised rate per item.
   /// </para>
   /// </summary>
   private static int TakeUnits(
     InventoryBase inv,
     int needed,
-    System.Func<ItemStack, bool> dense,
-    int densePerItem,
-    System.Func<ItemStack, bool> bulky,
-    int bulkyPerItem
+    params (System.Func<ItemStack, bool> Matches, int PerItem)[] feeds
   ) {
-    int denseTaken = Math.Min(CountItems(inv, dense), needed / densePerItem);
-    if (denseTaken > 0) {
-      ConsumeItems(inv, dense, denseTaken);
-      needed -= denseTaken * densePerItem;
+    for (int i = 0; i < feeds.Length - 1 && needed > 0; i++) {
+      var (matches, perItem) = feeds[i];
+      int taken = Math.Min(CountItems(inv, matches), needed / perItem);
+      if (taken > 0) {
+        ConsumeItems(inv, matches, taken);
+        needed -= taken * perItem;
+      }
     }
 
     if (needed <= 0)
       return -needed;
 
+    var (bulky, bulkyPerItem) = feeds[^1];
     int bulkyTaken = (needed + bulkyPerItem - 1) / bulkyPerItem;
     ConsumeItems(inv, bulky, bulkyTaken);
     return bulkyTaken * bulkyPerItem - needed;

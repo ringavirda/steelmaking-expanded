@@ -27,7 +27,8 @@ public static class IronFeedInfoPatch {
       return;
 
     int oreUnits =
-      IronOreCompat.IsCrushedIronOre(path) ? BurdenValue.OrePerCrushed
+      IronOreCompat.IsRoastedIronOre(path) ? BurdenValue.OrePerRoasted
+      : IronOreCompat.IsCrushedIronOre(path) ? BurdenValue.OrePerCrushed
       : IronOreCompat.IsIronNugget(path) ? BurdenValue.OrePerNugget
       : 0;
     if (oreUnits <= 0)

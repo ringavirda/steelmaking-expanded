@@ -1,3 +1,6 @@
+using System.Linq;
+using NSubstitute;
+using SteelmakingExpanded.BlockStructures.BlastFurnace;
 using SteelmakingExpanded.BlockStructures.BlastFurnace.BlockEntities;
 using SteelmakingExpanded.Compat;
 using Vintagestory.API.Common;
@@ -83,16 +86,93 @@ public class HopperSlotTests {
 
   #region IronOreCompat
 
+  private static ICoreAPI ApiWithMods(params string[] enabled) {
+    var api = Substitute.For<ICoreAPI>();
+    var modLoader = Substitute.For<IModLoader>();
+    modLoader
+      .IsModEnabled(Arg.Any<string>())
+      .Returns(call => enabled.Contains(call.Arg<string>()));
+    api.ModLoader.Returns(modLoader);
+    return api;
+  }
+
   [Theory]
   [InlineData("crushed-iron", true)]
-  [InlineData("crushed-iron-magnetite", true)]
+  [InlineData("crushed-iron-magnetite", false)]
   [InlineData("coke", false)]
   [InlineData("lime", false)]
-  public void IsCrushedIronOre_matches_the_crushed_iron_prefix(
+  public void IsCrushedIronOre_matches_whole_codes_not_prefixes(
     string path,
     bool expected
   ) {
     Assert.Equal(expected, IronOreCompat.IsCrushedIronOre(path));
+  }
+
+  [Fact]
+  public void Init_without_an_overhaul_takes_the_vanilla_crushed_iron() {
+    try {
+      IronOreCompat.Init(ApiWithMods());
+
+      Assert.True(IronOreCompat.IsCrushedIronOre("crushed-iron"));
+      Assert.True(IronOreCompat.IsIronNugget("nugget-limonite"));
+      Assert.False(IronOreCompat.IsIronNugget("roasted-nugget-iron"));
+    } finally {
+      IronOreCompat.Init(ApiWithMods());
+    }
+  }
+
+  [Fact]
+  public void Init_with_industrialstory_swaps_the_vanilla_feed_for_its_own() {
+    try {
+      IronOreCompat.Init(ApiWithMods("industrialstory"));
+
+      Assert.False(IronOreCompat.IsCrushedIronOre("crushed-iron"));
+      Assert.True(IronOreCompat.IsCrushedIronOre("crushed-hematite"));
+      Assert.True(IronOreCompat.IsRoastedIronOre("roasted-crushed-iron"));
+      Assert.True(IronOreCompat.IsRoastedIronOre("roasted-nugget-iron"));
+      Assert.True(IronOreCompat.IsIronFeed("roasted-nugget-iron"));
+    } finally {
+      IronOreCompat.Init(ApiWithMods());
+    }
+  }
+
+  // What the same ore is worth down the bloomery route instead: a vanilla iron nugget smelts at 20
+  // to the ingot, and an ingot is 100 units of metal.
+  private const float BloomeryUnitsPerOre = 5f;
+
+  [Fact]
+  public void Roasted_ore_is_worth_more_than_the_raw_feed_it_came_from() {
+    Assert.True(BurdenValue.OrePerRoasted > BurdenValue.OrePerNugget);
+    Assert.True(BurdenValue.OrePerRoasted > BurdenValue.OrePerCrushed);
+  }
+
+  [Theory]
+  [InlineData(12, 1.70)] // raw ore, crushed or nugget
+  [InlineData(14, 1.98)] // roasted
+  public void Furnace_pays_the_agreed_multiple_of_the_bloomery_route(
+    int oreUnits,
+    double expectedMultiple
+  ) {
+    // The furnace's advantage over a bloomery is the number being tuned here, so it is stated
+    // against that route rather than in raw molten units. Retuning any of BfIronPerMeltCycle,
+    // the Hopper*Required counts or HopperRoastedOreBonus moves these.
+    Assert.Equal(
+      expectedMultiple,
+      BurdenValue.IronPerOreUnits(oreUnits) / BloomeryUnitsPerOre,
+      1
+    );
+  }
+
+  [Fact]
+  public void Crushed_ore_returns_more_iron_than_the_bit_it_could_be_made_from() {
+    // The premise behind refusing vanilla crushed iron under IndustrialStory: there the furnace's
+    // own iron bits are the only thing that pulverises into it, and one bit costs
+    // MoltenUnitsPerBit to cast but buys OrePerCrushed of burden. If a retune ever makes this
+    // exchange break even, the guard in Init has lost its reason.
+    Assert.True(
+      BurdenValue.IronPerOreUnits(BurdenValue.OrePerCrushed)
+        > SmexValues.MoltenUnitsPerBit
+    );
   }
 
   #endregion

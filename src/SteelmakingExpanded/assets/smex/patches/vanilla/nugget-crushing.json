@@ -1,0 +1,47 @@
+[
+  {
+    "comment": "Vanilla crushes iron-group and galena nuggets at avg .33; these ops raise it to 1:1 by bumping ONLY quantity.avg. We deliberately do NOT replace the whole crushing entry or touch crushedStack, so the vanilla, per-version crushed code is preserved automatically (crushed-iron on every version; galena -> crushed-galena on 1.22, crushed-leadoxide before 1.22). An earlier version replaced the whole entry and hard-coded a version-specific crushed code, which crashed every client when the code did not resolve: vanilla CollectibleObject.GetHeldItemInfo computes quantity.avg * CrushedStack.ResolvedItemstack.StackSize with a 'crushingProps != null' guard but NO null-check on Quantity or CrushedStack.ResolvedItemstack, and CreateSearchCache builds a tooltip for every item on world-load. Cassiterite/chromite/ilmenite stay at vanilla 0.33. Gated off whenever a mod that owns nugget crushing outright is present, because each already yields 1:1 and rewriting their values would clobber their tuning: Expanded Matter full-replaces /crushingPropsByType, and IndustrialStory reroutes hematite/magnetite to its own crushed items while REMOVING nugget-limonite and nugget-galena entirely (those ores must be roasted first), which makes the two ops below resolve against a path that no longer exists.",
+    "file": "game:itemtypes/resource/nugget.json",
+    "op": "replace",
+    "path": "/crushingPropsByType/nugget-limonite/quantity/avg",
+    "value": 1,
+    "side": "Server",
+    "dependsOn": [
+      { "modid": "em", "invert": true },
+      { "modid": "industrialstory", "invert": true }
+    ]
+  },
+  {
+    "file": "game:itemtypes/resource/nugget.json",
+    "op": "replace",
+    "path": "/crushingPropsByType/nugget-magnetite/quantity/avg",
+    "value": 1,
+    "side": "Server",
+    "dependsOn": [
+      { "modid": "em", "invert": true },
+      { "modid": "industrialstory", "invert": true }
+    ]
+  },
+  {
+    "file": "game:itemtypes/resource/nugget.json",
+    "op": "replace",
+    "path": "/crushingPropsByType/nugget-hematite/quantity/avg",
+    "value": 1,
+    "side": "Server",
+    "dependsOn": [
+      { "modid": "em", "invert": true },
+      { "modid": "industrialstory", "invert": true }
+    ]
+  },
+  {
+    "file": "game:itemtypes/resource/nugget.json",
+    "op": "replace",
+    "path": "/crushingPropsByType/nugget-galena/quantity/avg",
+    "value": 1,
+    "side": "Server",
+    "dependsOn": [
+      { "modid": "em", "invert": true },
+      { "modid": "industrialstory", "invert": true }
+    ]
+  }
+]

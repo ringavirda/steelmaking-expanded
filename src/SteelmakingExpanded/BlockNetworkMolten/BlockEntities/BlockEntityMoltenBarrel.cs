@@ -245,7 +245,11 @@ public class BlockEntityMoltenBarrel
 
   string? IChiselableMolten.ChiselBlockedError => null;
 
-  /// <summary>Server-side: empties the barrel and returns the recovered metal bits (10 units each).</summary>
+  /// <summary>
+  /// Server-side: empties the barrel and returns the recovered metal bits, at the shared
+  /// <see cref="SmexValues.MoltenUnitsPerBit"/> rate. Metals with no bit item of their own come back
+  /// as slag, since the barrel is emptied either way.
+  /// </summary>
   public ItemStack? ChiselOut() {
     if (
       Api?.Side != EnumAppSide.Server
@@ -259,7 +263,8 @@ public class BlockEntityMoltenBarrel
       Api.World,
       MetalContent.Collectible.Code,
       Temperature,
-      CurrentUnitAmount
+      CurrentUnitAmount,
+      slagFallback: true
     );
     MetalContent = null;
     CurrentUnitAmount = 0;
@@ -314,8 +319,9 @@ public class BlockEntityMoltenBarrel
   }
 
   /// <summary>
-  /// Returns the drops for the metal inside the barrel when it is broken: the
-  /// block-defined drop(s) when full and hardened, otherwise metal bits at 5 units each.
+  /// Returns the drops for the metal inside the barrel when it is broken: the block-defined drop(s)
+  /// when full and hardened, otherwise metal bits at the shared
+  /// <see cref="SmexValues.MoltenUnitsPerBit"/> rate.
   /// </summary>
   public ItemStack[] GetMetalDrops() {
     if (MetalContent == null || CurrentUnitAmount <= 0)
@@ -324,12 +330,14 @@ public class BlockEntityMoltenBarrel
     if (IsFull && IsHardened)
       return GetMoldedStacks(MetalContent);
 
-    // Breaking a not-yet-cast barrel scatters metal bits at 5 units each (vs the chisel-out's 10).
+    // The block is going away regardless, so a metal with no bit item of its own falls back to slag
+    // rather than dropping nothing.
     ItemStack? drop = MoltenChisel.BuildRecovery(
       Api.World,
       MetalContent.Collectible.Code,
       Temperature,
-      CurrentUnitAmount
+      CurrentUnitAmount,
+      slagFallback: true
     );
     return drop != null ? [drop] : [];
   }

@@ -356,7 +356,11 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten 
   /// <summary>Whether breaking this canal would let still-liquid metal spill out.</summary>
   public bool WouldSpillOnRemoval() => !Solidified && CellAmount > 0f;
 
-  /// <summary>Returns the solid metal-bit drop for this solidified cell, or <c>null</c> if there's nothing to drop.</summary>
+  /// <summary>
+  /// Returns the solid metal-bit drop for this solidified cell, or <c>null</c> if the cell holds
+  /// nothing. A metal with no bit item of its own comes back as slag rather than nothing, because
+  /// both callers empty the cell whatever this returns.
+  /// </summary>
   public ItemStack? GetSolidifiedDrop(IWorldAccessor world) {
     if (!Solidified || CellAmount <= 0f || CellMetalType.Length == 0)
       return null;
@@ -365,7 +369,8 @@ public class BlockEntityMoltenCanal : BlockEntityNetworkNode, IChiselableMolten 
       world,
       new AssetLocation(CellMetalType),
       _cellTemperature,
-      (int)CellAmount
+      (int)CellAmount,
+      slagFallback: true
     );
   }
   #endregion

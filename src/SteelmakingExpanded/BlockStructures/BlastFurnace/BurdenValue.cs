@@ -38,6 +38,13 @@ public static class BurdenValue {
   /// <summary>Ore units one iron nugget contributes.</summary>
   public static int OrePerNugget => SmexValues.HopperIronOreRequired;
 
+  /// <summary>
+  /// Ore units one piece of roasted iron ore contributes. Roasting is a heat step that returns the
+  /// ore one for one, so it pays a premium over the raw feed rather than a rate of its own.
+  /// </summary>
+  public static int OrePerRoasted =>
+    OrePerCrushed + SmexValues.HopperRoastedOreBonus;
+
   /// <summary>Ore units one burden batch costs.</summary>
   public static int OrePerBatch =>
     SmexValues.HopperIronOreRequired * SmexValues.HopperNuggetRequired;

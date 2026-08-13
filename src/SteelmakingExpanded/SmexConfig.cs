@@ -581,6 +581,19 @@ public class SmexConfig : IExVersionedConfig {
   /// </summary>
   public int HopperNuggetRequired { get; set; } = 12;
 
+  /// <summary>
+  /// Extra ore units a roasted piece of iron ore carries over an unroasted one. Roasting is a
+  /// separate heat step that returns the ore one for one, so the burden pays a premium for it
+  /// rather than promoting it to a tier of its own. Only mods that roast ore produce a feed this
+  /// applies to; at 0 roasted ore is worth exactly what raw ore is.
+  /// <para>
+  /// Measured against the bloomery route the ore could take instead - a vanilla iron nugget smelts
+  /// at 20 to the ingot, so 5 units of metal - the shipped rates put raw ore at 1.70x that and
+  /// roasted ore at 1.98x.
+  /// </para>
+  /// </summary>
+  public int HopperRoastedOreBonus { get; set; } = 2;
+
   /// <summary>Coke consumed per burden batch. Whole coke: the furnace no longer takes the
   /// crushed intermediate, and 3 crushed coke was 1.5 coke at the old 1:2 crush ratio.</summary>
   public int HopperCokeRequired { get; set; } = 2;
