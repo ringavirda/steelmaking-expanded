@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Vintagestory.API.Common;
+using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
@@ -18,11 +19,12 @@ namespace ExpandedLib.Blocks.Migrations;
 /// renumbers ids on load) so it also catches the missing-block placeholders the engine keeps for
 /// removed codes.
 /// <para>
-/// A plain migration is a bare block-id swap (state reconstructed from the new variant code); one
-/// that also implements <see cref="IBlockEntityMigration"/> gets the old BE's tree handed to it. A
-/// removal deletes the block in place. Either way the same matching content held as item stacks
-/// (container BEs, player inventories) is rewritten or stripped too, migrations preserving stack size
-/// and attributes.
+/// A migration swaps the block and carries the old block entity's state onto the replacement, since
+/// a variant rename leaves that state meaning what it always did; one that also implements
+/// <see cref="IBlockEntityMigration"/> takes that step over and can reinterpret or drop it. A removal
+/// deletes the block in place. Either way the same matching content held as item stacks (container
+/// BEs, player inventories) is rewritten or stripped too, migrations preserving stack size and
+/// attributes.
 /// </para>
 /// </summary>
 public class BlockMigrationModSystem : ModSystem {
@@ -176,6 +178,8 @@ public class BlockMigrationModSystem : ModSystem {
           }
         }
 
+    migrated += RemapGroundItems(chunk);
+
     return migrated;
   }
 
@@ -187,43 +191,79 @@ public class BlockMigrationModSystem : ModSystem {
   private int RemapInventory(IInventory inv) {
     int changed = 0;
     foreach (ItemSlot slot in inv) {
-      ItemStack? stack = slot.Itemstack;
-      if (stack?.Collectible?.Code == null)
+      if (slot.Itemstack is not { } stack || !TryRemap(stack, out var updated))
         continue;
 
-      // Item stacks go through the item table only. Matching them against the block table would
-      // rewrite an item into a same-named block, or delete it outright when no block resolves.
-      if (stack.Class == EnumItemClass.Item) {
-        if (!_itemRemap.TryGetValue(stack.Collectible.Code, out Item? newItem))
-          continue;
-
-        ItemStack itemReplacement = new(newItem, stack.StackSize);
-        if (stack.Attributes is { Count: > 0 })
-          itemReplacement.Attributes = stack.Attributes.Clone();
-        slot.Itemstack = itemReplacement;
-        slot.MarkDirty();
-        changed++;
-        continue;
-      }
-
-      if (!_remap.TryGetValue(stack.Collectible.Code, out RemapEntry entry))
-        continue;
-
-      // A removal: drop the stack from the slot entirely.
-      if (entry.NewBlock == null) {
-        slot.Itemstack = null;
-        slot.MarkDirty();
-        changed++;
-        continue;
-      }
-
-      ItemStack replacement = new(entry.NewBlock, stack.StackSize);
-      if (stack.Attributes is { Count: > 0 })
-        replacement.Attributes = stack.Attributes.Clone();
-      slot.Itemstack = replacement;
+      slot.Itemstack = updated; // null for a purge: the slot empties
       slot.MarkDirty();
       changed++;
     }
+    return changed;
+  }
+
+  /// <summary>
+  /// Resolves what the migration tables do to <paramref name="stack"/>. Returns <c>false</c> when
+  /// nothing maps it; on <c>true</c>, <paramref name="replacement"/> is the stack to put in its place,
+  /// or <c>null</c> when a removal means it should go away entirely. Stack size and attributes carry
+  /// over, so a filled mold keeps its contents.
+  /// <para>
+  /// Item stacks go through the item table only. Matching them against the block table would rewrite
+  /// an item into a same-named block, or delete it outright when no block resolves.
+  /// </para>
+  /// </summary>
+  private bool TryRemap(ItemStack stack, out ItemStack? replacement) {
+    replacement = null;
+    if (stack.Collectible?.Code is not { } code)
+      return false;
+
+    if (stack.Class == EnumItemClass.Item) {
+      if (!_itemRemap.TryGetValue(code, out Item? newItem))
+        return false;
+      replacement = new ItemStack(newItem, stack.StackSize);
+    } else {
+      if (!_remap.TryGetValue(code, out RemapEntry entry))
+        return false;
+      if (entry.NewBlock == null)
+        return true; // a purge: matched, with nothing to put back
+      replacement = new ItemStack(entry.NewBlock, stack.StackSize);
+    }
+
+    if (stack.Attributes is { Count: > 0 })
+      replacement.Attributes = stack.Attributes.Clone();
+    return true;
+  }
+
+  /// <summary>
+  /// Rewrites migrated stacks lying loose in the world as dropped items. Neither the voxel loop nor
+  /// the container sweep can see these: a stack a player threw away, or one a broken container
+  /// scattered, is an entity rather than a block or an inventory slot - and a code whose item asset
+  /// is gone leaves it an unusable "unknown item" until something converts it. A stack matched by a
+  /// removal is despawned. Returns how many changed.
+  /// </summary>
+  private int RemapGroundItems(IWorldChunk chunk) {
+    Entity[]? entities = chunk.Entities;
+    if (entities == null)
+      return 0;
+
+    // The array is allocated larger than the live entity count, so trust the count, not the length.
+    int live = Math.Min(chunk.EntitiesCount, entities.Length);
+    int changed = 0;
+
+    for (int i = 0; i < live; i++) {
+      if (
+        entities[i] is not EntityItem item
+        || item.Itemstack is not { } stack
+        || !TryRemap(stack, out ItemStack? updated)
+      )
+        continue;
+
+      if (updated == null)
+        item.Die(EnumDespawnReason.Removed);
+      else
+        item.Itemstack = updated;
+      changed++;
+    }
+
     return changed;
   }
 
@@ -401,9 +441,21 @@ public class BlockMigrationModSystem : ModSystem {
   }
 
   /// <summary>
-  /// Swaps the block at <paramref name="pos"/> for its replacement. A plain migration is a bare
-  /// <c>SetBlock</c>; one that handles BE state captures the old entity's tree first and applies it
-  /// to the new entity afterwards.
+  /// Swaps the block at <paramref name="pos"/> for its replacement, carrying the old block entity's
+  /// state onto the new one.
+  /// <para>
+  /// <c>SetBlock</c> runs OnBlockRemoved/OnBlockPlaced, so the entity at this cell is destroyed and a
+  /// fresh one placed - that is precisely the distinction <c>ExchangeBlock</c> is documented against.
+  /// Everything a migrated machine had learned lives in that entity (a heat sink's temperature, a
+  /// furnace tap's state, a pipe's network bindings), and a variant rename leaves those fields meaning
+  /// exactly what they meant before, so the default is to hand the captured tree to the replacement.
+  /// Skipping that resets every migrated machine in the world on the first load after an update, which
+  /// reads to a player as the update having broken their base.
+  /// </para>
+  /// <para>
+  /// A migration whose replacement reinterprets the state implements <see cref="IBlockEntityMigration"/>
+  /// and takes over; an empty implementation is the way to ask for a deliberately fresh entity.
+  /// </para>
   /// </summary>
   private void ReplaceBlock(IBlockAccessor ba, BlockPos pos, RemapEntry entry) {
     // A removal: delete the block (and its entity) outright.
@@ -412,11 +464,8 @@ public class BlockMigrationModSystem : ModSystem {
       return;
     }
 
-    if (entry.BlockEntityMigration == null) {
-      ba.SetBlock(entry.NewBlock.BlockId, pos);
-      return;
-    }
-
+    // Capture before the swap. For a legacy code the engine kept only as a missing-block
+    // placeholder, this is the original saved tree, held verbatim for exactly this purpose.
     ITreeAttribute? oldState = null;
     if (ba.GetBlockEntity(pos) is BlockEntity oldBe) {
       oldState = new TreeAttribute();
@@ -425,7 +474,10 @@ public class BlockMigrationModSystem : ModSystem {
 
     ba.SetBlock(entry.NewBlock.BlockId, pos);
 
-    if (ba.GetBlockEntity(pos) is BlockEntity newBe) {
+    if (ba.GetBlockEntity(pos) is not BlockEntity newBe)
+      return;
+
+    if (entry.BlockEntityMigration != null)
       entry.BlockEntityMigration.MigrateBlockEntity(
         entry.OldCode,
         entry.NewCode!, // non-null for a migration entry (removals return above)
@@ -433,8 +485,10 @@ public class BlockMigrationModSystem : ModSystem {
         newBe,
         _sapi.World
       );
-      newBe.MarkDirty(true);
-    }
+    else if (oldState != null)
+      newBe.FromTreeAttributes(oldState, _sapi.World);
+
+    newBe.MarkDirty(true);
   }
 
   // Scan every loaded assembly for parameterless implementations of T: this system lives in exlib,

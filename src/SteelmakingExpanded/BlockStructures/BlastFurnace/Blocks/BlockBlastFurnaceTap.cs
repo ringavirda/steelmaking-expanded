@@ -90,24 +90,27 @@ public partial class BlockBlastFurnaceTap : Block {
     return baseHelp.Append(toggleHelp).ToArray();
   }
 
-  public override ItemStack OnPickBlock(IWorldAccessor world, BlockPos pos) {
-    return new ItemStack(
-      world.GetBlock(new AssetLocation("smex", "blastfurnacetap-north")) ?? this
-    );
-  }
+  /// <summary>
+  /// The north-facing tap of this tap's own refractory tier: picking and breaking hand back one
+  /// canonical facing so the four orientations stack together, while the tier - what the tap is
+  /// built from - is preserved.
+  /// <para>
+  /// Derived from this block's code rather than a written-out one. The pre-tier code
+  /// <c>blastfurnacetap-north</c> is still known to any world that once placed it, where the engine
+  /// keeps it as a missing-block placeholder; looking that up returns the placeholder instead of
+  /// null, so a <c>?? this</c> fallback never fires and the tap hands out an unknown item.
+  /// </para>
+  /// </summary>
+  private Block CanonicalFacing(IWorldAccessor world) =>
+    world.GetBlock(CodeWithVariant("side", "north")) ?? this;
+
+  public override ItemStack OnPickBlock(IWorldAccessor world, BlockPos pos) =>
+    new(CanonicalFacing(world));
 
   public override ItemStack[] GetDrops(
     IWorldAccessor worldMap,
     BlockPos pos,
     IPlayer? byPlayer,
     float dropQuantityMultiplier = 1f
-  ) {
-    return
-    [
-      new ItemStack(
-        worldMap.GetBlock(new AssetLocation("smex", "blastfurnacetap-north"))
-          ?? this
-      ),
-    ];
-  }
+  ) => [new ItemStack(CanonicalFacing(worldMap))];
 }

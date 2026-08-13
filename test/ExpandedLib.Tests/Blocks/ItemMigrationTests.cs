@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using ExpandedLib.Blocks.Migrations;
 using ExpandedLib.Testing;
+using NSubstitute;
 using Vintagestory.API.Common;
+using Vintagestory.API.Common.Entities;
 using Xunit;
 
 namespace ExpandedLib.Tests;
@@ -78,6 +80,90 @@ public class ItemMigrationTests {
     Assert.Equal(Shared, inv[0].Itemstack!.Collectible.Code);
     Assert.Equal(EnumItemClass.Block, inv[0].Itemstack!.Class);
   }
+
+  #endregion
+
+  #region Stacks lying on the ground
+
+  // A legacy stack a player threw away, or one a broken container scattered, is an entity rather
+  // than a block or an inventory slot, so neither the voxel loop nor the container sweep reaches it.
+  // Once the old item's asset is gone that stack is an unusable "unknown item" for good.
+
+  [Fact]
+  public void A_dropped_stack_is_rewritten_by_the_ground_sweep() {
+    var world = new TestWorld();
+    var old = new Item { Code = Shared, ItemId = 1 };
+    var replacement = new Item {
+      Code = new AssetLocation("smex", "burden"),
+      ItemId = 2,
+    };
+    var (sys, _) = Rig(world, new ItemStack(old, 4), replacement);
+
+    var dropped = new EntityItem { Itemstack = new ItemStack(old, 4) };
+    int changed = (int)
+      ReflectionHelpers.Invoke(sys, "RemapGroundItems", Chunk(dropped))!;
+
+    Assert.Equal(1, changed);
+    Assert.Equal(replacement.Code, dropped.Itemstack.Collectible.Code);
+    Assert.Equal(4, dropped.Itemstack.StackSize);
+  }
+
+  [Fact]
+  public void An_unmapped_dropped_stack_is_left_alone() {
+    var world = new TestWorld();
+    var other = new Item {
+      Code = new AssetLocation("smex", "unrelated"),
+      ItemId = 9,
+    };
+    var replacement = new Item {
+      Code = new AssetLocation("smex", "burden"),
+      ItemId = 2,
+    };
+    var (sys, _) = Rig(world, new ItemStack(other, 1), replacement);
+
+    var dropped = new EntityItem { Itemstack = new ItemStack(other, 3) };
+
+    Assert.Equal(
+      0,
+      (int)ReflectionHelpers.Invoke(sys, "RemapGroundItems", Chunk(dropped))!
+    );
+    Assert.Equal(other.Code, dropped.Itemstack.Collectible.Code);
+  }
+
+  [Fact]
+  public void Entities_past_the_live_count_are_not_touched() {
+    // IWorldChunk.Entities is allocated larger than the live entity count, so a sweep that trusted
+    // the array length would read stale slots left behind by despawned entities.
+    var world = new TestWorld();
+    var old = new Item { Code = Shared, ItemId = 1 };
+    var replacement = new Item {
+      Code = new AssetLocation("smex", "burden"),
+      ItemId = 2,
+    };
+    var (sys, _) = Rig(world, new ItemStack(old, 1), replacement);
+
+    var stale = new EntityItem { Itemstack = new ItemStack(old, 1) };
+    var chunk = Substitute.For<IWorldChunk>();
+    chunk.Entities.Returns([stale]);
+    chunk.EntitiesCount.Returns(0); // the slot is stale, not live
+
+    Assert.Equal(
+      0,
+      (int)ReflectionHelpers.Invoke(sys, "RemapGroundItems", chunk)!
+    );
+    Assert.Equal(Shared, stale.Itemstack.Collectible.Code);
+  }
+
+  private static IWorldChunk Chunk(params Entity[] entities) {
+    var chunk = Substitute.For<IWorldChunk>();
+    chunk.Entities.Returns(entities);
+    chunk.EntitiesCount.Returns(entities.Length);
+    return chunk;
+  }
+
+  #endregion
+
+  #region Routing by stack class (continued)
 
   [Fact]
   public void An_unmapped_item_stack_is_left_alone() {

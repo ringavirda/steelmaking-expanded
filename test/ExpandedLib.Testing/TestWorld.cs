@@ -387,14 +387,31 @@ public sealed class TestWorld {
       ? b
       : null;
 
+  /// <summary>
+  /// Models the engine's <c>SetBlock</c>: it runs OnBlockRemoved/OnBlockPlaced, so the block entity
+  /// at this cell is <b>removed and re-placed</b>, losing whatever state it held. That is the whole
+  /// distinction the API draws against <c>ExchangeBlock</c>, which is documented as setting the block
+  /// "without calling OnBlockRemoved or OnBlockPlaced, which prevents any block entity from being
+  /// removed or placed". Anything that has to survive a SetBlock must be carried across explicitly.
+  /// <para>
+  /// The replacement is only spawned when a factory is registered for the new block's entity class
+  /// (see <see cref="RegisterBlockEntityFactory"/>); without one the cell is left entity-less, which
+  /// is also what the engine does for a block that declares no entity class.
+  /// </para>
+  /// </summary>
   private void DoSetBlock(int id, BlockPos pos) {
     if (id == 0) {
       _blocks.Remove(pos);
       _blockEntities.Remove(pos);
       return;
     }
-    if (_blocksById.TryGetValue(id, out var b))
-      _blocks[pos] = b;
+    if (!_blocksById.TryGetValue(id, out var b))
+      return;
+
+    _blocks[pos] = b;
+    _blockEntities.Remove(pos);
+    if (b.EntityClass != null)
+      DoSpawnBlockEntity(b.EntityClass, pos);
   }
 
   private void DoSpawnBlockEntity(string classname, BlockPos pos) {
